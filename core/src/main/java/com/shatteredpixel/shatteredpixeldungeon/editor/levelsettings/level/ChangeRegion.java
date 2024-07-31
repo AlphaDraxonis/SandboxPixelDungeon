@@ -152,7 +152,7 @@ public class ChangeRegion extends Component {
             RedButton save, cancel;
 
             @Override
-            protected void createChildren(Object... params) {
+            protected void createChildren() {
 
                 save = new RedButton(Messages.get(ChangeRegion.class, "close")) {
                     @Override

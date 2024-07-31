@@ -110,9 +110,9 @@ public class ItemSlot extends Button {
     }
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
 
-        super.createChildren(params);
+        super.createChildren();
 
         sprite = new ItemSprite();
         add(sprite);

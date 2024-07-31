@@ -61,12 +61,6 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
     public LevelGenComp(LevelScheme newLevelScheme) {
         super(newLevelScheme);
-    }
-
-    @Override
-    protected void createChildren(Object... params) {
-
-        super.createChildren(params);
 
         content = new Component();
 
@@ -291,7 +285,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             }) {
                 @Override
                 protected void onAddClick() {
-                   EditorScene.show( new WndMobSettings(newLevelScheme.spawnMobs) {
+                    EditorScene.show( new WndMobSettings(newLevelScheme.spawnMobs) {
                         @Override
                         protected void finish() {
                             newLevelScheme.spawnMobs = cb.checked();

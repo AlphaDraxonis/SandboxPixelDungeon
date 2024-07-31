@@ -35,8 +35,8 @@ public class ItemButton extends Component {
 	protected ItemSlot slot;
 
 	@Override
-	protected void createChildren(Object... params) {
-		super.createChildren(params);
+	protected void createChildren() {
+		super.createChildren();
 
 		bg = Chrome.get(Chrome.Type.RED_BUTTON);
 		add(bg);

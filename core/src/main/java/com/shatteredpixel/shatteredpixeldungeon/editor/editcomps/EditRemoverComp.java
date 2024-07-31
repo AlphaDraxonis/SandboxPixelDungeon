@@ -154,11 +154,11 @@ public class EditRemoverComp extends DefaultEditComp<EditorItem.NullItemClass> {
             }
 
             @Override
-            protected void createChildren(Object... params) {
+            protected void createChildren() {
                 bg = new ColorBlock(1, 1, InventorySlot.NORMAL);
                 add(bg);
 
-                super.createChildren(params);
+                super.createChildren();
             }
 
             @Override

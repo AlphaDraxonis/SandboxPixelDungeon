@@ -34,7 +34,7 @@ public class FoldableComp extends Component {
     }
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
 
         line = new ColorBlock(1, 1, 0xFF222222);
         add(line);

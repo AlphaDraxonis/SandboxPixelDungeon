@@ -30,7 +30,7 @@ public class ReorderHeapComp extends Component {
 
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
 
         moveLeft = new IconButton(Icons.LEFT.get()) {
             @Override

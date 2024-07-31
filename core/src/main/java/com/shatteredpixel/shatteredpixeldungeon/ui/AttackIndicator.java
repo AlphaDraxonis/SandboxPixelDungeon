@@ -71,11 +71,6 @@ public class AttackIndicator extends Tag {
 	}
 	
 	@Override
-	protected void createChildren(Object... params) {
-		super.createChildren(params);
-	}
-	
-	@Override
 	protected synchronized void layout() {
 		super.layout();
 

@@ -64,8 +64,8 @@ public abstract class ItemsWithChanceDistrComp extends Component {
             Component restore;
 
             @Override
-            protected void createChildren(Object... params) {
-                super.createChildren(params);
+            protected void createChildren() {
+                super.createChildren();
                 addItem = new RedButton(addItemLabel) {
                     @Override
                     protected void onClick() {

@@ -21,21 +21,13 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndChallenges;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndGame;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndStory;
+import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Game;
@@ -67,8 +59,8 @@ public class MenuPane extends Component {
 	public static final int WIDTH = 32;
 
 	@Override
-	protected void createChildren(Object... params) {
-		super.createChildren(params);
+	protected void createChildren() {
+		super.createChildren();
 
 		bg = new Image(Assets.Interfaces.MENU);
 		add(bg);
@@ -237,8 +229,8 @@ public class MenuPane extends Component {
 		}
 
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
+		protected void createChildren() {
+			super.createChildren();
 
 			bg = new Image( Assets.Interfaces.MENU_BTN, 2, 2, 13, 11 );
 			add( bg );
@@ -359,8 +351,8 @@ public class MenuPane extends Component {
 		}
 
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
+		protected void createChildren() {
+			super.createChildren();
 
 			image = new Image( Assets.Interfaces.MENU_BTN, 17, 2, 12, 11 );
 			add( image );

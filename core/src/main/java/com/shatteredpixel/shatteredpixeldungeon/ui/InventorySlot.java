@@ -45,11 +45,11 @@ public class InventorySlot extends ItemSlot {
 	}
 
 	@Override
-	protected void createChildren(Object... params) {
+	protected void createChildren() {
 		bg = new ColorBlock( 1, 1, NORMAL );
 		add( bg );
 
-		super.createChildren(params);
+		super.createChildren();
 	}
 
 	@Override

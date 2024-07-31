@@ -48,8 +48,8 @@ public class ResumeIndicator extends Tag {
 	}
 
 	@Override
-	protected void createChildren(Object... params) {
-		super.createChildren(params);
+	protected void createChildren() {
+		super.createChildren();
 
 		icon = Icons.get( Icons.ARROW);
 		add( icon );

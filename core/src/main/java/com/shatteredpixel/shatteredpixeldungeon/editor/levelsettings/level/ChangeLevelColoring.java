@@ -136,8 +136,8 @@ public class ChangeLevelColoring extends Component {
         }
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
 
             bg = new ColorBlock(1, 1, 0xFFFFFFFF);
             add(bg);

@@ -130,7 +130,7 @@ public class ScrollPane extends Component {
     }
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
         controller = new PointerController();
         add(controller);
 

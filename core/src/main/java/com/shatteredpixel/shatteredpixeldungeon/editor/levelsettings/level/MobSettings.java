@@ -100,7 +100,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
 
         outsideSp = new MultiWindowTabComp.OutsideSpSwitchTabs() {
             @Override
-            protected void createChildren(Object... params) {
+            protected void createChildren() {
                 tabs = new TabControlButton[2];
                 for (int j = 0; j < tabs.length; j++) {
                     tabs[j] = new TabControlButton(j);
@@ -113,7 +113,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
                 tabs[1].icon(new SkeletonSprite());
                 tabs[1].text(getTabName(1));
 
-                super.createChildren(params);
+                super.createChildren();
 
                 select(0);
             }

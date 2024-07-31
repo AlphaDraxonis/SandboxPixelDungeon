@@ -141,8 +141,8 @@ public class StartScene extends PixelScene {
 		private boolean newGame;
 		
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
+		protected void createChildren() {
+			super.createChildren();
 			
 			bg = Chrome.get(Chrome.Type.GEM);
 			add( bg);

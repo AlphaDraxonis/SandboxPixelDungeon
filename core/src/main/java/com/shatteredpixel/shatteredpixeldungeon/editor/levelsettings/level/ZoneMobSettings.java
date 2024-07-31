@@ -68,8 +68,8 @@ public class ZoneMobSettings extends Component {
 
         return title = new Component() {
             @Override
-            protected void createChildren(Object... params) {
-                super.createChildren(params);
+            protected void createChildren() {
+                super.createChildren();
                 titleText = PixelScene.renderTextBlock(Messages.get(ZoneMobSettings.class, "title"), 11);
                 titleText.hardlight(Window.TITLE_COLOR);
                 add(titleText);

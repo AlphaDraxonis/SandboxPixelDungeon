@@ -48,7 +48,7 @@ public class EToolbar extends Component {
     }
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
 
         btnQuick = new QuickslotTileTool[QuickSlot.SIZE];
         for (int i = 0; i < btnQuick.length; i++) {
@@ -559,8 +559,8 @@ public class EToolbar extends Component {
         }
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
             bg = new ColorBlock(1, 1, -16777216);
             bg.color(0.1059f, 0.5490f, 0.1961f);//27 140 50 -> green
             add(bg);

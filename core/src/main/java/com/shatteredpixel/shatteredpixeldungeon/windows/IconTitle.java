@@ -70,7 +70,7 @@ public class IconTitle extends Component {
     }
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
         imIcon = new Image();
         add(imIcon);
 

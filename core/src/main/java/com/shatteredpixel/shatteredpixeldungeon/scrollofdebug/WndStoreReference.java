@@ -58,7 +58,7 @@ public class WndStoreReference extends SimpleWindow {
 
 		Component content = new Component() {
 			@Override
-			protected void createChildren(Object... params) {
+			protected void createChildren() {
 				nameInput = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, PixelScene.uiCamera.zoom);
 				nameInput.setMaxLength(100);
 				add(nameInput);
@@ -99,7 +99,7 @@ public class WndStoreReference extends SimpleWindow {
 			RedButton save, cancel;
 
 			@Override
-			protected void createChildren(Object... params) {
+			protected void createChildren() {
 
 				save = new RedButton(Messages.get(WndItemDistribution.class, "save")) {
 					@Override

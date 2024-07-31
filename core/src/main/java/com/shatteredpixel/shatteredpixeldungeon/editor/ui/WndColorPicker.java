@@ -248,8 +248,8 @@ public class WndColorPicker extends Window {
         }
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
 
             colorBlock = new ColorBlock(1, 1, 0xFF000000);
             add(colorBlock);

@@ -121,8 +121,8 @@ public class SideControlPane extends Component {
         }
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
 
             bg = new Image(Assets.Interfaces.SIDE_CONTROL_PANE);
             add(bg);

@@ -22,7 +22,6 @@
 package com.watabou.noosa.ui;
 
 import com.watabou.noosa.Group;
-import com.watabou.noosa.Image;
 
 public class Component extends Group {
 	
@@ -33,7 +32,7 @@ public class Component extends Group {
 
 	public Component(Object... params) {
 		super();
-		createChildren(params);
+		createChildren();
 	}
 	
 	public Component setPos( float x, float y ) {
@@ -102,7 +101,7 @@ public class Component extends Group {
 		return height;
 	}
 
-	protected  void  createChildren(Object... params){
+	protected void createChildren(){
 	}
 	
 	protected void layout() {

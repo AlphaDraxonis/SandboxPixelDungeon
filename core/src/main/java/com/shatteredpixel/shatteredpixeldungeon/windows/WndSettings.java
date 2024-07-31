@@ -158,17 +158,8 @@ public class WndSettings extends WndTabbed {
 
 
 		IconTab langsTab = new IconTab(Icons.get(Icons.LANGS)){
-			@Override
-			protected void select(boolean value) {
-				super.select(value);
-				langs.visible = langs.active = value;
-				if (value) last_index = 5;
-			}
-
-			@Override
-			protected void createChildren(Object... params) {
-				super.createChildren(params);
-				switch(Messages.lang().status()){
+			{
+				switch (Messages.lang().status()) {
 					case X_UNFINISH:
 						icon.hardlight(1.5f, 0, 0);
 						break;
@@ -176,6 +167,12 @@ public class WndSettings extends WndTabbed {
 						icon.hardlight(1.5f, 0.75f, 0f);
 						break;
 				}
+			}
+			@Override
+			protected void select(boolean value) {
+				super.select(value);
+				langs.visible = langs.active = value;
+				if (value) last_index = 5;
 			}
 
 		};
@@ -227,7 +224,7 @@ public class WndSettings extends WndTabbed {
 		OptionSlider optAutoSave;
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);
@@ -432,7 +429,7 @@ public class WndSettings extends WndTabbed {
 		CheckBox chkVibrate;
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);
@@ -733,7 +730,7 @@ public class WndSettings extends WndTabbed {
 		OptionSlider optHoldMoveSens;
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);
@@ -851,7 +848,7 @@ public class WndSettings extends WndTabbed {
 		CheckBox chkWifi;
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);
@@ -960,7 +957,7 @@ public class WndSettings extends WndTabbed {
 		CheckBox vibration;
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);
@@ -1135,7 +1132,7 @@ public class WndSettings extends WndTabbed {
 		RedButton btnCredits;
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);

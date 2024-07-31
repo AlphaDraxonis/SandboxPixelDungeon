@@ -73,8 +73,8 @@ public class FieldComp extends ObjInspectorTabComp {
 	}
 
 	@Override
-	protected void createChildren(Object... params) {
-		super.createChildren(params);
+	protected void createChildren() {
+		super.createChildren();
 
 		value = new Spinner.SpinnerTextBlock(Chrome.get(Chrome.Type.TOAST_WHITE), 7);
 		add(value);

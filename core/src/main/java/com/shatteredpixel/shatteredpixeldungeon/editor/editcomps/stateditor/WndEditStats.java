@@ -79,8 +79,8 @@ public class WndEditStats extends MultiWindowTabComp {
 			RenderedTextBlock t;
 
 			@Override
-			protected void createChildren(Object... params) {
-				super.createChildren(params);
+			protected void createChildren() {
+				super.createChildren();
 				t = PixelScene.renderTextBlock(Messages.get(EditMobComp.class, "edit_stats"), 10);
 				t.hardlight(Window.TITLE_COLOR);
 				t.maxWidth(myWidth);

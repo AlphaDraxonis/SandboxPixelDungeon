@@ -1183,8 +1183,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
             rename = new IconButton(Icons.RENAME_ON.get()) {
                 @Override
                 protected void onClick() {

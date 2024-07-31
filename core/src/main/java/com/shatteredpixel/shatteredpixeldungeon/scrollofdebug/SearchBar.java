@@ -12,7 +12,7 @@ public class SearchBar extends Component {
 	protected TextInput input;
 
 	@Override
-	protected void createChildren(Object... params) {
+	protected void createChildren() {
 
 		label = PixelScene.renderTextBlock(Messages.get(this, "label"), 8);
 		add(label);

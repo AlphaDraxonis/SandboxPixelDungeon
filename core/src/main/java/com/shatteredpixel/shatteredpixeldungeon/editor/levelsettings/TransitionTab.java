@@ -33,7 +33,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
     protected Map<Integer, TransitionCompRow> transitionCompMap;
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
 
         title = PixelScene.renderTextBlock(Messages.get(TransitionTab.class, "title"), 10);
         title.hardlight(Window.TITLE_COLOR);

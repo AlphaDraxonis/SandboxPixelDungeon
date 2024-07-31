@@ -445,7 +445,7 @@ public class IDEWindow extends Component {
 		private StyledButton btnCopy, btnPaste;
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			btnCompile = new RedButton(Messages.get(IDEWindow.class, "compile"), PixelScene.landscape() ? 8 : 6) {
 				@Override
 				protected void onClick() {

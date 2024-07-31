@@ -50,9 +50,9 @@ public class Tag extends Button {
 	}
 	
 	@Override
-	protected void createChildren(Object... params) {
+	protected void createChildren() {
 		
-		super.createChildren(params);
+		super.createChildren();
 		
 		bg = Chrome.get( Chrome.Type.TAG );
 		bg.hardlight( r, g, b );

@@ -398,8 +398,8 @@ public class TitleScene extends PixelScene {
 		private Image image;
 		private BitmapText text;
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
+		protected void createChildren() {
+			super.createChildren();
 
 			image = Icons.BUG.get();
 			add(image);
@@ -450,8 +450,8 @@ public class TitleScene extends PixelScene {
         private boolean increasing;
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
 
             scale = new PointF(1, 1);
             increasing = true;

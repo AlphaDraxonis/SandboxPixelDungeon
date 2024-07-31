@@ -52,7 +52,7 @@ public class Fireball extends Component {
 	private int color, flameColor;
 	
 	@Override
-	protected void createChildren(Object... params) {
+	protected void createChildren() {
 		
 		sparks = new Group();
 		add( sparks );

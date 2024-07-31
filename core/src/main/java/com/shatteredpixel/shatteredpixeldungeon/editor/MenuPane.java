@@ -39,8 +39,8 @@ public class MenuPane extends Component {
     public static final int WIDTH = 32;
 
     @Override
-    protected void createChildren(Object... params) {
-        super.createChildren(params);
+    protected void createChildren() {
+        super.createChildren();
 
         bg = new Image(Assets.Interfaces.MENU);
         add(bg);
@@ -149,8 +149,8 @@ public class MenuPane extends Component {
         }
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
 
             bg = new Image(Assets.Interfaces.MENU_BTN, 2, 2, 13, 11);
             add(bg);
@@ -223,8 +223,8 @@ public class MenuPane extends Component {
         }
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
 
             image = new Image(Assets.Interfaces.MENU_BTN, 17, 2, 12, 11);
             add(image);

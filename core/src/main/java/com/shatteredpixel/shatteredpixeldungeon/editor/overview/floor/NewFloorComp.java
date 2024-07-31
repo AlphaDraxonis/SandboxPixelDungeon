@@ -35,13 +35,7 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
 
     public NewFloorComp(LevelScheme newLevelScheme) {
         super(newLevelScheme);
-        chooseType.selectObject(CustomLevel.class);
-        chooseTemplate.selectObject(null);
-    }
 
-    @Override
-    protected void createChildren(Object... params) {
-        super.createChildren(params);
         title = PixelScene.renderTextBlock(Messages.get(WndNewFloor.class, "title"), 10);
         title.hardlight(Window.TITLE_COLOR);
         add(title);
@@ -139,6 +133,9 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
         numInRegion.setButtonWidth(13);
         numInRegion.addChangeListener(()->newLevelScheme.setNumInRegion((Integer) numInRegion.getValue()));
         add(numInRegion);
+
+        chooseType.selectObject(CustomLevel.class);
+        chooseTemplate.selectObject(null);
     }
 
     @Override

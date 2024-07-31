@@ -325,8 +325,8 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		}
 
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
+		protected void createChildren() {
+			super.createChildren();
 
 			title = PixelScene.renderTextBlock(7);
 			title.setHighlighting(false);

@@ -82,8 +82,8 @@ public class QuickSlotButton extends Button {
 	}
 	
 	@Override
-	protected void createChildren(Object... params) {
-		super.createChildren(params);
+	protected void createChildren() {
+		super.createChildren();
 
 		if (CustomDungeon.isEditing()) {
 			slot = new QuickItemSlot() {

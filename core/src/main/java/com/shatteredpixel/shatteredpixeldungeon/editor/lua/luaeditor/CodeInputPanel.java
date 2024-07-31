@@ -188,7 +188,7 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd implements Code
 
 	private class BodyWrapper extends Component {
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			textInput = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), true, 7, PixelScene.uiCamera.zoom) {
 				@Override
 				protected void layout() {

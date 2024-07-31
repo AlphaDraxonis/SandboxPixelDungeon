@@ -50,7 +50,7 @@ public class Button extends Component {
 	}
 
 	@Override
-	protected void createChildren(Object... params) {
+	protected void createChildren() {
 		hotArea = new PointerArea( 0, 0, 0, 0 ) {
 			{
 				handleHoverEvents = true;

@@ -86,7 +86,7 @@ public class Toolbar extends Component {
 	}
 
 	@Override
-	protected void createChildren(Object... params) {
+	protected void createChildren() {
 
 		add(btnSwap = new SlotSwapTool(128, 0, 21, 23));
 
@@ -351,8 +351,8 @@ public class Toolbar extends Component {
 			}
 
 			@Override
-			protected void createChildren(Object... params) {
-				super.createChildren(params);
+			protected void createChildren() {
+				super.createChildren();
 				arrow = Icons.get(Icons.COMPASS);
 				arrow.originToCenter();
 				arrow.visible = SPDSettings.interfaceSize() == 2;
@@ -722,8 +722,8 @@ public class Toolbar extends Component {
 		}
 		
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
+		protected void createChildren() {
+			super.createChildren();
 			
 			base = new Image( Assets.Interfaces.TOOLBAR );
 			add( base );

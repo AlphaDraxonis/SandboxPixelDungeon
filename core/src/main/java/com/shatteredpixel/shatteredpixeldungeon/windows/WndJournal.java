@@ -163,7 +163,7 @@ public class WndJournal extends WndTabbed {
 		private ScrollingListPane list;
 		
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			list = new ScrollingListPane();
 			add( list );
 		}
@@ -234,9 +234,9 @@ public class WndJournal extends WndTabbed {
 		
 		private ScrollPane list;
 		private ArrayList<QuickRecipe> recipes = new ArrayList<>();
-		
+
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			pageButtons = new RedButton[NUM_BUTTONS +  (Dungeon.customDungeon.recipes.isEmpty() ? 0 : 1)];
 			for (int i = 0; i < pageButtons.length; i++){
 				final int idx = i;
@@ -255,13 +255,13 @@ public class WndJournal extends WndTabbed {
 				}
 				add( pageButtons[i] );
 			}
-			
+
 			title = new IconTitle();
 			title.icon( new ItemSprite(ItemSpriteSheet.ALCH_PAGE));
 			title.visible = false;
 
 			body = PixelScene.renderTextBlock(6);
-			
+
 			list = new ScrollPane(new Component());
 			add(list);
 		}
@@ -403,7 +403,7 @@ public class WndJournal extends WndTabbed {
 		private ScrollingListPane list;
 		
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			list = new ScrollingListPane();
 			add( list );
 		}
@@ -478,7 +478,7 @@ public class WndJournal extends WndTabbed {
 		private ScrollingListPane list;
 		
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			itemButtons = new RedButton[NUM_BUTTONS];
 			for (int i = 0; i < NUM_BUTTONS; i++){
 				final int idx = i;
@@ -626,7 +626,7 @@ public class WndJournal extends WndTabbed {
 		private ScrollingListPane list;
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			list = new ScrollingListPane();
 			add( list );
 		}

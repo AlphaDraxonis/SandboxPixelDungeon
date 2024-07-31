@@ -42,8 +42,8 @@ public abstract class ObjInspectorTabComp extends Component {
 		this.obj = obj;
 	}
 	@Override
-	protected void createChildren(Object... params) {
-		super.createChildren(params);
+	protected void createChildren() {
+		super.createChildren();
 
 		modifiersTxt = PixelScene.renderTextBlock(6);
 		add(modifiersTxt);

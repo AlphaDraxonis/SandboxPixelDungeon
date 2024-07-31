@@ -118,7 +118,7 @@ public class WndEditFloorInOverview extends WndTabbed {
         }
 
         @Override
-        protected void createChildren(Object... params) {
+        protected void createChildren() {
             content = new Component();
 
             title = PixelScene.renderTextBlock(levelScheme.getName() + " (" + levelScheme.getType().getSimpleName() + ")", 9);

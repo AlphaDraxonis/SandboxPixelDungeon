@@ -768,8 +768,8 @@ public class AlchemyScene extends PixelScene {
 		private Item item = null;
 		
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
+		protected void createChildren() {
+			super.createChildren();
 			
 			bg = Chrome.get( Chrome.Type.RED_BUTTON);
 			add( bg );
@@ -879,8 +879,8 @@ public class AlchemyScene extends PixelScene {
 		}
 
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
+		protected void createChildren() {
+			super.createChildren();
 
 			button = new RedButton(""){
 				@Override
@@ -956,7 +956,7 @@ public class AlchemyScene extends PixelScene {
 		protected ItemSlot slot;
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 
 			bg = Chrome.get(Chrome.Type.TOAST_TR);
 			add(bg);

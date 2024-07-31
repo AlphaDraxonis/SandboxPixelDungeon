@@ -141,7 +141,7 @@ public class DurationSettings extends Component {
         }
 
         @Override
-        protected void createChildren(Object... params) {
+        protected void createChildren() {
 
             info = PixelScene.renderTextBlock(Messages.get(DurationSettings.class, "info"), 6);
             add(info);
@@ -181,8 +181,8 @@ public class DurationSettings extends Component {
     private static class TabOne extends SettingsTab {
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
 
             final EffectDuration ed = Dungeon.customDungeon.effectDuration;
 

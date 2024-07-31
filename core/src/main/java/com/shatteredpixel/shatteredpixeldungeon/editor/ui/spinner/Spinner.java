@@ -26,12 +26,10 @@ public class Spinner extends Component {
 
 
     public Spinner(SpinnerModel model, String name, int textSize) {
-        super(model, name, textSize);
-    }
+        super();
 
-    @Override
-    protected void createChildren(Object... params) {
-        model = (SpinnerModel) params[0];
+        this.model = model;
+
         rightButton = new RedButton(">") {
             @Override
             protected void onClick() {
@@ -68,16 +66,21 @@ public class Spinner extends Component {
                 model.afterClick();
             }
         };
-        inputField = model.createInputField((int) params[2]);
+        inputField = model.createInputField(textSize);
 
         model.setValue(model.getValue());
 
-        label = PixelScene.renderTextBlock((String) params[1], (int) params[2]);
+        label = PixelScene.renderTextBlock(name, textSize);
         add(rightButton);
         add(leftButton);
         add(label);
         addToBack(inputField);
         layout();
+    }
+
+    @Override
+    protected final void createChildren() {
+        super.createChildren();
     }
 
     @Override

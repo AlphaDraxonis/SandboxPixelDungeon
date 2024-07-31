@@ -100,7 +100,7 @@ public class WndTitledMessage extends Window {
 
             sp = new ScrollPane(new Component() {
                 @Override
-                protected void createChildren(Object... params) {
+                protected void createChildren() {
                     text = PixelScene.renderTextBlock( 6 );
                     text.text( message );
                     add(text);

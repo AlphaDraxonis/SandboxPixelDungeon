@@ -32,7 +32,7 @@ public class ChangeMapSize extends Component {
             private RedButton cancel, save;
 
             @Override
-            protected void createChildren(Object... params) {
+            protected void createChildren() {
                 cancel = new RedButton(Messages.get(ChangeRegion.class, "cancel")) {
                     @Override
                     protected void onClick() {
@@ -61,7 +61,7 @@ public class ChangeMapSize extends Component {
     }
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
         info = PixelScene.renderTextBlock(Messages.get(ChangeMapSize.class, "info"), 6);
         add(info);
 

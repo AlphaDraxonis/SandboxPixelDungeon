@@ -58,8 +58,8 @@ public class ZonePrompt extends ToastWithButtons {
     }
 
     @Override
-    protected void createChildren(Object... params) {
-        super.createChildren(params);
+    protected void createChildren() {
+        super.createChildren();
 
         //Think before changing order!
         IconButton placeZone = new IconButton(Icons.PLUS.get()) {
@@ -206,9 +206,9 @@ public class ZonePrompt extends ToastWithButtons {
         }
 
         @Override
-        protected void createChildren(Object... params) {
+        protected void createChildren() {
 
-            super.createChildren(params);
+            super.createChildren();
 
             changeZone = new IconButtonWithPublicMethods(Icons.FOLD.get()) {
                 {

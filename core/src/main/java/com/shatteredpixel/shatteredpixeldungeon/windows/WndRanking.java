@@ -476,7 +476,7 @@ public class WndRanking extends WndTabbed {
 		}
 		
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			
 			bg = new ColorBlock( 28, HEIGHT, 0x9953564D );
 			add( bg );
@@ -487,7 +487,7 @@ public class WndRanking extends WndTabbed {
 			name = PixelScene.renderTextBlock( 7 );
 			add( name );
 			
-			super.createChildren(params);
+			super.createChildren();
 		}
 		
 		@Override
@@ -544,11 +544,11 @@ public class WndRanking extends WndTabbed {
 		}
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 			bg = new ColorBlock( 1, 1, 0x9953564D );
 			add( bg );
 
-			super.createChildren(params);
+			super.createChildren();
 		}
 
 		@Override

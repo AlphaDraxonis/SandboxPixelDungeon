@@ -16,13 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -121,12 +115,7 @@ public class WndItemDistribution extends Window {
 
         public DistributionCompInList(ItemDistribution<?> distribution) {
             super(new Image(), null, "");
-            this.distribution = distribution;
-        }
 
-        @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
             remove = new IconButton(Icons.get(Icons.CLOSE)) {
                 @Override
                 protected void onClick() {
@@ -134,6 +123,8 @@ public class WndItemDistribution extends Window {
                 }
             };
             add(remove);
+
+            this.distribution = distribution;
         }
 
         @Override

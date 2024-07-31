@@ -156,13 +156,19 @@ public class ScrollingListPane extends ScrollPane {
         }
 
         public ListItem(Image icon, String iconText, String text, float iconTextScale) {
-            super(icon);
+            super();
 
-            if (icon == null) {
-                remove(label);
-                label = PixelScene.renderTextBlock(9);
-                add(label);
-            }
+            this.icon = icon == null ? new Image() : icon;
+            add(this.icon);
+
+            iconLabel = new BitmapText(PixelScene.pixelFont);
+            add(iconLabel);
+
+            label = PixelScene.renderTextBlock(icon == null ? 9 : 7);
+            add(label);
+
+            line = new ColorBlock(1, 1, 0xFF222222);
+            add(line);
 
             label.text(text);
 
@@ -171,6 +177,11 @@ public class ScrollingListPane extends ScrollPane {
                 iconLabel.scale.set(iconTextScale);
                 iconLabel.measure();
             }
+        }
+
+        @Override
+        protected final void createChildren() {
+            super.createChildren();
         }
 
         public boolean onClick(float x, float y) {
@@ -192,26 +203,6 @@ public class ScrollingListPane extends ScrollPane {
 
         public void hardlightIcon(int color) {
             icon.hardlight(color);
-        }
-
-        @Override
-        protected void createChildren(Object... params) {
-
-            super.createChildren(params);
-
-            if (params != null && params.length > 0) icon = (Image) params[0];
-            else icon = new Image();
-            add(icon);
-
-            iconLabel = new BitmapText(PixelScene.pixelFont);
-            add(iconLabel);
-
-            label = PixelScene.renderTextBlock(7);
-            add(label);
-
-            line = new ColorBlock(1, 1, 0xFF222222);
-            add(line);
-
         }
 
         @Override
@@ -261,7 +252,7 @@ public class ScrollingListPane extends ScrollPane {
         }
 
         @Override
-        protected void createChildren(Object... params) {
+        protected void createChildren() {
             label = PixelScene.renderTextBlock(9);
             label.hardlight(Window.TITLE_COLOR);
             add(label);
@@ -292,11 +283,7 @@ public class ScrollingListPane extends ScrollPane {
 
         public ListButton() {
             super(new Image(), "");
-        }
 
-        @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
             remove(icon);
             remove(label);
             hotArea.destroy();

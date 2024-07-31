@@ -58,7 +58,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
             private RedButton cancel, upload;
 
             @Override
-            protected void createChildren(Object... params) {
+            protected void createChildren() {
                 cancel = new RedButton(Messages.get(UploadDungeon.class, "cancel")) {
                     @Override
                     protected void onClick() {

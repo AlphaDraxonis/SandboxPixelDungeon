@@ -242,8 +242,8 @@ public class WndTabbed extends Window {
 		}
 		
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
+		protected void createChildren() {
+			super.createChildren();
 			
 			btLabel = PixelScene.renderTextBlock( 9 );
 			add( btLabel );
@@ -273,20 +273,19 @@ public class WndTabbed extends Window {
 		protected RectF defaultFrame;
 		
 		public IconTab( Image icon ){
-			super(icon);
+			super();
 
-			this.defaultFrame = icon.frame();
+			this.icon = icon == null ? new Image() : icon;
+			add(this.icon);
+
+			this.defaultFrame = this.icon.frame();
 		}
-		
+
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
-
-			if (params != null && params.length > 0) this.icon = (Image) params[0];
-			else this.icon = new Image();
-			add( icon );
+		protected final void createChildren() {
+			super.createChildren();
 		}
-		
+
 		@Override
 		protected void layout() {
 			super.layout();

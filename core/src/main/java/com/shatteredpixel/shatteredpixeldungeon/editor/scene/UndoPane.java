@@ -23,8 +23,8 @@ public class UndoPane extends Component {
 
 
     @Override
-    protected void createChildren(Object... params) {
-        super.createChildren(params);
+    protected void createChildren() {
+        super.createChildren();
 
         bg = new Image(Assets.Interfaces.UNDO);
         add(bg);
@@ -110,8 +110,8 @@ public class UndoPane extends Component {
         }
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
 
             enabled = new Image(Assets.Interfaces.UNDO_BTN, 2, 2, 20, 14);
             add(enabled);
@@ -141,8 +141,8 @@ public class UndoPane extends Component {
         }
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
 
             enabled = new Image(Assets.Interfaces.UNDO_BTN, 24, 2, 21, 14);
             add(enabled);

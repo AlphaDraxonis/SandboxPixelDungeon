@@ -572,7 +572,7 @@ public class HeroSelectScene extends PixelScene {
 		private ArrayList<ColorBlock> spacers;
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 
 			bg = Chrome.get(Chrome.Type.GREY_BUTTON_TR);
 			add(bg);

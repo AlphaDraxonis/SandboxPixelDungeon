@@ -75,7 +75,7 @@ public abstract class DefaultEditComp<T> extends Component {
 
         title = new Component() {
             @Override
-            protected void createChildren(Object... params) {
+            protected void createChildren() {
                 add(mainTitleComp);
                 add(rename);
                 add(delete);

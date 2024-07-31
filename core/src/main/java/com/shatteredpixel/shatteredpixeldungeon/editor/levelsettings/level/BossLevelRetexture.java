@@ -19,7 +19,7 @@ public class BossLevelRetexture extends Component {
     protected CheckBox none, caves, city;
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
         info = PixelScene.renderTextBlock(Messages.get(BossLevelRetexture.class, "info"), 6);
         add(info);
 

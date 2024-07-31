@@ -79,15 +79,6 @@ public final class WndZones {
 
             public ListItem(Zone zone, ZoneListPane listPane) {
                 super(Icons.get(Icons.ZONE), null, zone.getName());
-                this.zone = zone;
-                label.setHighlighting(false);
-
-                onUpdate();
-            }
-
-            @Override
-            protected void createChildren(Object... params) {
-                super.createChildren(params);
 
                 editButton = new IconButton(Icons.get(Icons.RENAME_ON)) {
                     @Override
@@ -96,6 +87,11 @@ public final class WndZones {
                     }
                 };
                 add(editButton);
+
+                this.zone = zone;
+                label.setHighlighting(false);
+
+                onUpdate();
             }
 
             public void openEditWindow() {

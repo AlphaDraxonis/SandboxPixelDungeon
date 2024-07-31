@@ -98,8 +98,8 @@ public abstract class OptionSlider extends Component {
     }
 
     @Override
-    protected void createChildren(Object... params) {
-        super.createChildren(params);
+    protected void createChildren() {
+        super.createChildren();
 
         add(BG = Chrome.get(Chrome.Type.RED_BUTTON));
         BG.alpha(0.5f);

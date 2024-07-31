@@ -38,7 +38,7 @@ public class CustomRecipeList extends Component {
             private IconButton disableRecipes;
 
             @Override
-            protected void createChildren(Object... params) {
+            protected void createChildren() {
                 addBtn = new RedButton(Messages.get(CustomRecipeList.class, "add_recipe")) {
                     @Override
                     protected void onClick() {
@@ -85,7 +85,7 @@ public class CustomRecipeList extends Component {
     }
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
         recipeListItems = new ArrayList<>(5);
         for (CustomRecipe recipe : Dungeon.customDungeon.recipes) {
             RecipeListItem c = new RecipeListItem(recipe);
@@ -147,8 +147,8 @@ public class CustomRecipeList extends Component {
         }
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+        protected void createChildren() {
+            super.createChildren();
 
             remove = new IconButton(Icons.CLOSE.get()) {
                 @Override

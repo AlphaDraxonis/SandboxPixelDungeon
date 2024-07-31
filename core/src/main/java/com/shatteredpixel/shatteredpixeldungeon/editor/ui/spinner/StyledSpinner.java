@@ -30,20 +30,16 @@ public class StyledSpinner extends Spinner {
 
     public StyledSpinner(SpinnerModel model, String name, int textSize, int spinnerHeight, Image icon) {
         super(model, name, textSize);
+
+        bg = Chrome.get(Chrome.Type.GREY_BUTTON_TR);
+        addToBack(bg);
+
         setSpinnerHeight(spinnerHeight);
         setAlignmentSpinnerX(ALIGNMENT_CENTER);
 
         icon(icon);
 
         layout();
-    }
-
-    @Override
-    protected void createChildren(Object... params) {
-        bg = Chrome.get(Chrome.Type.GREY_BUTTON_TR);
-        add(bg);
-        super.createChildren(params);
-        sendToBack(bg);
     }
 
     @Override

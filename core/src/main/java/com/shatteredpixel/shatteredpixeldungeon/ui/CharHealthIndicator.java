@@ -37,8 +37,8 @@ public class CharHealthIndicator extends HealthBar {
 	}
 
 	@Override
-	protected void createChildren(Object... params) {
-		super.createChildren(params);
+	protected void createChildren() {
+		super.createChildren();
 		height = HEIGHT;
 	}
 	

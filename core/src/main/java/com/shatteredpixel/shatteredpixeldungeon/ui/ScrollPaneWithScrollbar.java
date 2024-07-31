@@ -124,7 +124,7 @@ public class ScrollPaneWithScrollbar extends ScrollPane {
 		}
 
 		@Override
-		protected void createChildren(Object... params) {
+		protected void createChildren() {
 
 			//intentionally don't call super!
 

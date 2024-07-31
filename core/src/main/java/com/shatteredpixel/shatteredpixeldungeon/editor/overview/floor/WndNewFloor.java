@@ -229,12 +229,8 @@ public class WndNewFloor extends WndTabbed {
         protected LevelScheme newLevelScheme;
 
         public OwnTab(LevelScheme newLevelScheme) {
-            super(newLevelScheme);
-        }
-
-        @Override
-        protected void createChildren(Object... params) {
-            newLevelScheme = (LevelScheme) params[0];
+            super();
+            this.newLevelScheme = newLevelScheme;
         }
 
         @Override

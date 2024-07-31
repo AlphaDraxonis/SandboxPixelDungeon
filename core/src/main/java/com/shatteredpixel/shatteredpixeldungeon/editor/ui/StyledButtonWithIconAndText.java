@@ -18,9 +18,9 @@ public class StyledButtonWithIconAndText extends StyledButton {
     }
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
         multiline = true;
-        super.createChildren(params);
+        super.createChildren();
     }
 
     @Override

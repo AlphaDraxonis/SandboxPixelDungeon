@@ -276,8 +276,8 @@ public class BuffIndicator extends Component {
 		}
 
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
+		protected void createChildren() {
+			super.createChildren();
 			grey = new Image( TextureCache.createSolid(0xCC666666));
 			add( grey );
 

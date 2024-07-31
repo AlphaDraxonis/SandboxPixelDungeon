@@ -18,8 +18,8 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
     }
 
     @Override
-    protected void createChildren(Object... params) {
-        super.createChildren(params);
+    protected void createChildren() {
+        super.createChildren();
         remover = new IconButton(Icons.get(Icons.CLOSE)) {
             @Override
             protected void onClick() {

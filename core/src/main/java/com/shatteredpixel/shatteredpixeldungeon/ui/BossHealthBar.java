@@ -157,15 +157,8 @@ public class BossHealthBar extends Component {
         private final Mob boss;
 
         public BossHealthBarComp(Mob boss) {
-            super(boss);
+            super();
             this.boss = boss;
-            layout();
-        }
-
-        @Override
-        protected void createChildren(Object... params) {
-
-            Mob boss = (Mob) params[0];
 
             bar = new Image(asset, 0, 0, 64, 16);
             add(bar);
@@ -218,6 +211,13 @@ public class BossHealthBar extends Component {
             blood.autoKill = false;
             blood.on = false;
             add(blood);
+
+            layout();
+        }
+
+        @Override
+        protected final void createChildren() {
+            super.createChildren();
         }
 
         @Override

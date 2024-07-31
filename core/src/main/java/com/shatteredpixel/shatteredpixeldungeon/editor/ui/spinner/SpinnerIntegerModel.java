@@ -59,8 +59,8 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
             private Button button;
 
             @Override
-            protected void createChildren(Object... params) {
-                super.createChildren(params);
+            protected void createChildren() {
+                super.createChildren();
                 button = new Button() {
                     @Override
                     protected void onClick() {

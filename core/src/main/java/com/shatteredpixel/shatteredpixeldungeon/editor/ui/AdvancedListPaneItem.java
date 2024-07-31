@@ -15,21 +15,18 @@ public abstract class AdvancedListPaneItem extends ScrollingListPane.ListItem {
 
     public AdvancedListPaneItem(Image icon, Image subIcon, String text) {
         super(icon, text);
-        if ((this.subIcon = subIcon) != null) add(subIcon);
 
-        onUpdate();
-    }
-
-    @Override
-    protected void createChildren(Object... params) {
         bg = new ColorBlock(1, 1, -16777216);
         bg.color(0.5882f, 0.2117f, 0.2745f);//150 54 70 255
         bg.visible = false;
-        add(bg);
-        super.createChildren(params);
+        addToBack(bg);
 
         lvlLabel = new BitmapText(PixelScene.pixelFont);
         add(lvlLabel);
+
+        if ((this.subIcon = subIcon) != null) add(subIcon);
+
+        onUpdate();
     }
 
     @Override

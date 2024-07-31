@@ -43,8 +43,8 @@ public class LootIndicator extends Tag {
 	}
 
 	@Override
-	protected void createChildren(Object... params) {
-		super.createChildren(params);
+	protected void createChildren() {
+		super.createChildren();
 
 		slot = new ItemSlot() {
 			protected void onClick() {

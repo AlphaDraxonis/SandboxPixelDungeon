@@ -108,7 +108,7 @@ public class InventoryPane extends Component {
 	}
 
     @Override
-    protected void createChildren(Object... params) {
+    protected void createChildren() {
 
 		bg = Chrome.get(Chrome.Type.TOAST_TR);
 		add(bg);
@@ -656,8 +656,8 @@ public class InventoryPane extends Component {
 		}
 
 		@Override
-		protected void createChildren(Object... params) {
-			super.createChildren(params);
+		protected void createChildren() {
+			super.createChildren();
 
 			bgTop = new ColorBlock(1, 1, ACTIVE);
 			add(bgTop);
