@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Healing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
@@ -153,14 +154,24 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 			return;
 		}
 
-		Sample.INSTANCE.play(Assets.Sounds.DEWDROP, 1.6f);
+		Actor.addDelayed(new Actor() {
+			{
+				actPriority = HERO_PRIO + 1;//right before hero
+			}
+			@Override
+			protected boolean act() {
+				Sample.INSTANCE.play(Assets.Sounds.DEWDROP, 1.6f);
 
-		Dungeon.reachedCheckpoint = new ReachedCheckpoint();
-		Dungeon.reachedCheckpoint.set(pos);
+				Dungeon.reachedCheckpoint = new ReachedCheckpoint();
+				Dungeon.reachedCheckpoint.set(pos);
 
-		DungeonScene.updateAllCheckpointSprites();
+				DungeonScene.updateAllCheckpointSprites();
+				doSave();
 
-		doSave();
+				Actor.remove(this);
+				return true;
+			}
+		}, 1);
 	}
 
 	public static void doSave() {
