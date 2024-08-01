@@ -223,6 +223,12 @@ public class ServerDungeonList extends MultiWindowTabComp {
 					else if (page > 0 && dungeons[page - 1] != null  && !pagesLoading.contains(page-1)) loadPageFromServer(page-1, true);
 				}
 			}
+
+			@Override
+			public void failed(Throwable t) {
+				super.failed(t);
+				pagesLoading.remove(page);
+			}
 		}, page);
 	}
 

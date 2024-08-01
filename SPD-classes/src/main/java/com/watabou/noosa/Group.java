@@ -285,6 +285,17 @@ public class Group extends Gizmo {
 			return null;
 		}
 	}
+
+	public synchronized <T extends Gizmo> ArrayList<T> members(Class<T> clazz) {
+		ArrayList<T> result = new ArrayList<>();
+		for (int i=0; i < length; i++) {
+			Gizmo g = members.get( i );
+			if (g != null && clazz.isAssignableFrom(g.getClass())) {
+				result.add((T) g);
+			}
+		}
+		return result;
+	}
 	
 	public synchronized void clear() {
 		if (length == 0) return;

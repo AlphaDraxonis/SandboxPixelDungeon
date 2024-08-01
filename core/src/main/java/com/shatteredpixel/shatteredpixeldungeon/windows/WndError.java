@@ -35,6 +35,11 @@ public class WndError extends WndTitledMessage {
 
 	public WndError( String message ) {
 		super( Icons.WARNING.get(), Messages.get(WndError.class, "title"), message );
+
+		//hide other windows with an identical error message
+		for (WndError w : Game.scene().members(WndError.class)) {
+			if (w.text.text().equals(text.text())) w.hide();
+		}
 	}
 
 	public WndError( LuaError error ) {
