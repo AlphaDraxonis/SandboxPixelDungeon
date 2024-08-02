@@ -24,6 +24,8 @@
 
 package com.watabou.idewindowactions;
 
+import com.watabou.noosa.Game;
+
 import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -99,5 +101,25 @@ public interface CodeInputPanelInterface {
 		int indexNormalComma = cleanedCode.indexOf(',', indexValueStart);
 		int indexEnd = Math.min(indexSemikolon == -1 ? Integer.MAX_VALUE : indexSemikolon, indexNormalComma == -1 ? Integer.MAX_VALUE : indexNormalComma);
 		return indexEnd == Integer.MAX_VALUE ? originalCode.substring(indexValueStart) : originalCode.substring(indexValueStart, indexEnd);
+	}
+
+
+
+	static void viewDocumentation() {
+		Game.platform.openURI("https://docs.google.com/document/d/1uXWzyO0wXJ6jDfKB3wrzVcFY4WvaCsX7oLtc5EkxDi0/?usp=sharing");
+	}
+
+	static String compileResult(CodeInputPanelInterface[] codeInputPanels) {//null means no errors
+		StringBuilder b = new StringBuilder();
+		for (CodeInputPanelInterface inputPanel : codeInputPanels) {
+			String msg = inputPanel.compile();
+			if (msg != null) {
+				if (b.length() > 0) b.append("\n\n");
+				b.append('_').append(inputPanel.getLabel()).append("_:\n");
+				b.append(msg);
+			}
+		}
+		String result = b.toString();
+		return result.isEmpty() ? null : result;
 	}
 }

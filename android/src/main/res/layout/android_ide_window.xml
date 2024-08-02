@@ -14,8 +14,6 @@
         android:padding="10dp"
         android:orientation="vertical">
 
-<!--        check syntax, new instance, insert script, view help-->
-
 <!--        Toolbar (at top to be accessible even with visible OnScreenKeyboard)-->
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -23,44 +21,42 @@
 
             <Button
                 android:id="@+id/btn_compile"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Check Syntax"
-                app:layout_constraintEnd_toStartOf="@id/btn_new_instance"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintWidth_default="spread"
+                app:layout_constraintHorizontal_weight="2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_more"
+                app:layout_constraintStart_toStartOf="parent"/>
 
             <Button
-                android:id="@+id/btn_new_instance"
-                android:layout_width="wrap_content"
+                android:id="@+id/btn_more"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="New Instance"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintWidth_default="spread"
+                app:layout_constraintHorizontal_weight="1"
+                android:layout_marginEnd="10dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toEndOf="@id/btn_compile"
-                app:layout_constraintEnd_toEndOf="@id/btn_insert_full" />
+                app:layout_constraintEnd_toStartOf="@id/btn_exit" />
 
-            <Button
-                android:id="@+id/btn_insert_full"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Insert full"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btn_new_instance"
-                app:layout_constraintEnd_toEndOf="@id/btn_documentation" />
-
-            <Button
-                android:id="@+id/btn_documentation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Docu"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btn_insert_full"
-                app:layout_constraintEnd_toEndOf="parent" />
+            <ImageButton
+                android:id="@+id/btn_exit"
+                android:layout_width="42dp"
+                android:layout_height="27dp"
+                android:layout_gravity="center"
+                android:src="@drawable/btn_exit"
+                android:scaleType="fitXY"
+                android:background="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
         </android.support.constraint.ConstraintLayout>
 
 
 
-        <!--    Path, with text line, switch button tzz und exit button nicht vergessen-->
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -90,10 +86,10 @@
 
             <ImageButton
                 android:id="@+id/btn_change"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_gravity="center"
-                android:src="@drawable/btn_add"
+                android:src="@drawable/btn_change"
                 android:scaleType="fitXY"
                 android:background="@null"
                 app:layout_constraintEnd_toEndOf="parent"

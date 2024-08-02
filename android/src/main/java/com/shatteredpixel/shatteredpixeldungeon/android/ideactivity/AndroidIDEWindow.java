@@ -51,7 +51,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
-import com.watabou.idewindowactions.IDEWindowActions;
 import com.watabou.idewindowactions.LuaScript;
 
 import java.util.List;
@@ -77,28 +76,48 @@ public class AndroidIDEWindow extends Activity {
 		clazz = luaCodeHolder.clazz;
 
 		Button btnCompile = findViewById(R.id.btn_compile);
-		Button btnNewInstance = findViewById(R.id.btn_new_instance);
-		Button btnInsertFull = findViewById(R.id.btn_insert_full);
-		Button btnDocumentation = findViewById(R.id.btn_documentation);
+		Button btnMore = findViewById(R.id.btn_more);
+		ImageButton btnExit = findViewById(R.id.btn_exit);
+
+		ImageButtonTouchFeedback.attach(btnExit);
 
 		btnCompile.setText(Messages.get(IDEWindow.class, "compile"));
-		btnNewInstance.setText(Messages.get(NewInstanceButton.class, "label"));
-		btnInsertFull.setText(Messages.get(IDEWindow.class, "insert_full"));
-		btnDocumentation.setText(Messages.get(IDEWindow.class, "view_documentation"));
+		btnMore.setText(Messages.get(IDEWindow.class, "more"));
 
 		btnCompile.setOnClickListener(v -> compile());
-		btnNewInstance.setOnClickListener(v -> {
-			doInGameSelection(() -> IDEWindow.chooseClassName((clName, obj) -> {
-				goBackAfterInGameSelection("insertCode", NewInstanceButton.generateCodeForNewInstance(clName, obj));
-			}));
+
+		btnMore.setOnClickListener(v -> {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setItems(new String[]{
+					Messages.get(NewInstanceButton.class, "label"),
+					Messages.get(IDEWindow.class, "insert_full"),
+					Messages.get(IDEWindow.class, "view_documentation")
+			}, (dialog, which) -> {
+				switch (which) {
+					case 0:
+						doInGameSelection(() -> IDEWindow.chooseClassName((clName, obj) -> {
+							goBackAfterInGameSelection("insertCode", NewInstanceButton.generateCodeForNewInstance(clName, obj));
+							dialog.dismiss();
+						}));
+						break;
+					case 1:
+						doInGameSelection(() -> LuaTemplates.show(script -> {
+							selectedScriptFromSelectionDialog = script;
+							goBackAfterInGameSelection(script == null ? null : "force", "false");
+							dialog.dismiss();
+						}, clazz));
+						break;
+					case 2:
+						CodeInputPanelInterface.viewDocumentation();
+						dialog.dismiss();
+						break;
+				}
+			});
+
+			builder.create().show();
 		});
-		btnInsertFull.setOnClickListener(v -> {
-			doInGameSelection(() -> LuaTemplates.show(script -> {
-				selectedScriptFromSelectionDialog = script;
-				goBackAfterInGameSelection(script == null ? null : "force", "false");
-			}, clazz));
-		});
-		btnDocumentation.setOnClickListener(v -> IDEWindowActions.viewDocumentation());
+
+		btnExit.setOnClickListener(v -> onBackPressed());
 
 
 		LinearLayout compGroup = findViewById(R.id.comp_group);
@@ -108,6 +127,7 @@ public class AndroidIDEWindow extends Activity {
 		TextView pathLabel = findViewById(R.id.path_label);
 		pathLabel.setText(Messages.get(IDEWindow.class, "path"));
 		ImageButton btnChange = findViewById(R.id.btn_change);
+		ImageButtonTouchFeedback.attach(btnChange);
 
 		ViewTreeObserver toolbarObserver = pathInput.getViewTreeObserver();
 		toolbarObserver.addOnGlobalLayoutListener(() -> {
@@ -293,7 +313,7 @@ public class AndroidIDEWindow extends Activity {
 	}
 
 	private void compile() {
-		String result = IDEWindowActions.compileResult(codeInputPanels);
+		String result = CodeInputPanelInterface.compileResult(codeInputPanels);
 
 		if (result != null) {
 			showErrorWindow(result);
@@ -414,6 +434,8 @@ public class AndroidIDEWindow extends Activity {
 
 		if (intent.hasExtra("insertCode")) {
 			String insertCode = intent.getStringExtra("insertCode");
+			if (insertCode == null) return;
+
 			View focused = findViewById(R.id.comp_group).findFocus();
 			if (focused instanceof EditText) {
 				((EditText) focused).getText().insert(((EditText) focused).getSelectionEnd(), insertCode);

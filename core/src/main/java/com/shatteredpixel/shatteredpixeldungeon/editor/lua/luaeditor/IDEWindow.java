@@ -51,7 +51,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.watabou.idewindowactions.IDEWindowActions;
+import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.idewindowactions.LuaScript;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Game;
@@ -319,7 +319,7 @@ public class IDEWindow extends Component {
 	}
 
 	private void compile() {
-		String result = IDEWindowActions.compileResult(codeInputPanels);
+		String result = CodeInputPanelInterface.compileResult(codeInputPanels);
 		if (result != null) {
 			EditorScene.show(new WndError(result));
 		} else {
@@ -530,6 +530,11 @@ public class IDEWindow extends Component {
 
 					});
 				}
+
+				@Override
+				protected String hoverText() {
+					return Messages.get(IDEWindow.class, "more");
+				}
 			};
 			btnOpenMenu.icon(Icons.MENU.get());
 			add(btnOpenMenu);
@@ -590,7 +595,7 @@ public class IDEWindow extends Component {
 					new RedButton(Messages.get(IDEWindow.class, "view_documentation")) {
 						@Override
 						protected void onClick() {
-							IDEWindowActions.viewDocumentation();
+							CodeInputPanelInterface.viewDocumentation();
 						}
 					},
 //					new RedButton(Messages.get(IDEWindow.class, "insert_line")) {
