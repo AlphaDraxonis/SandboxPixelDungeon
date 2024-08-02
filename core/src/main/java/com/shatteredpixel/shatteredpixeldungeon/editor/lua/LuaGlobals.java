@@ -226,7 +226,7 @@ public class LuaGlobals extends Globals {
 			@Override
 			public LuaValue call(LuaValue array, LuaValue consumer) {
 
-				if (consumer.isnil()) throw new LuaError("Illegal arguments: consumer must not be null: use something like >>  function(obj) print(obj) end  << as second parameter ");
+				if (consumer.isnil()) throw new LuaError("Illegal arguments: consumer must not be null: use something like   function(obj) print(obj) end   as second parameter ");
 
 				Object java = CoerceLuaToJava.coerce(array, Object.class);
 				LuaFunction function = consumer.checkfunction();
@@ -345,7 +345,10 @@ public class LuaGlobals extends Globals {
 		randomUtils.set("pushGenerator", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue seed) {
-				if (seed.islong()) Random.pushGenerator(seed.checklong());
+				if (seed.islong()) {
+					Random.pushGenerator(seed.checklong());
+					return LuaValue.NIL;
+				}
 				throw new LuaError("Illegal arguments: use Random.pushGenerator(long seed)");
 			}
 		});
@@ -596,6 +599,7 @@ public class LuaGlobals extends Globals {
 					if (obj instanceof Mob) {
 						((Mob) obj).pos = pos.checkint();
 						Level.placeMob((Mob) obj);
+						return LuaValue.NIL;
 					}
 				}
 				throw new LuaError("Illegal arguments: use placeMob(Mob mob, int pos)");
@@ -650,6 +654,7 @@ public class LuaGlobals extends Globals {
 						if (!((Item) obj).collect()) {
 							Dungeon.level.drop((Item) obj, Dungeon.hero.pos);
 						}
+						return LuaValue.NIL;
 					}
 				}
 				throw new LuaError("Illegal arguments: use giveItem(Item item)");
@@ -681,6 +686,7 @@ public class LuaGlobals extends Globals {
 				if (cell.isint()) {
 					DungeonScene.updateMap(cell.checkint());
 					Dungeon.level.cleanWallCell(cell.checkint());
+					return LuaValue.NIL;
 				}
 				throw new LuaError("Illegal arguments: use updateCell(int cell)");
 			}
