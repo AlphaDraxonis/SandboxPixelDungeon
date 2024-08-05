@@ -350,7 +350,7 @@ public class IDEWindow extends Component {
 					}
 					if (luca == GameObject.class || luca == Object.class) {
 						EditorScene.show(new WndError(Messages.get(IDEWindow.class, "save_duplicate_name_error", luaCodeHolder.pathToScript)) {{
-							setHighligtingEnabled(false);
+							setHighlightingEnabled(false);
 						}});
 						return false;
 					}
@@ -364,7 +364,8 @@ public class IDEWindow extends Component {
 			unsavedChanges = false;
 			return true;
 		} catch (Exception e) {
-			EditorScene.show(new WndError(Messages.get(IDEWindow.class, "write_file_exception", e.getClass().getSimpleName(), e.getMessage())) {{setHighligtingEnabled(false);}});
+			EditorScene.show(new WndError(Messages.get(IDEWindow.class, "write_file_exception", e.getClass().getSimpleName(), e.getMessage())) {{
+				setHighlightingEnabled(false);}});
 			return false;
 		}
 	}

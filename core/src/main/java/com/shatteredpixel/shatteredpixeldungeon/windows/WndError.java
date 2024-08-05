@@ -45,7 +45,7 @@ public class WndError extends WndTitledMessage {
 	public WndError( LuaError error ) {
 		this( addLineNumbers(error.getMessage()) );
 		content.sp.scrollTo(0, text.bottom());
-		setHighligtingEnabled(false);
+		setHighlightingEnabled(false);
 
 		if (Game.scene() instanceof InterlevelScene) {
 			Gdx.app.getClipboard().setContents(addLineNumbers(error.getMessage()));
@@ -55,7 +55,7 @@ public class WndError extends WndTitledMessage {
 	public WndError ( Throwable throwable ) {
 		super(Icons.WARNING.get(),  Messages.get(WndError.class, "title"), Messages.get(WndError.class, "error_msg", Game.version) + createStackTrace(throwable, false) );
 		Game.reportException(throwable);
-		setHighligtingEnabled(false);
+		setHighlightingEnabled(false);
 	}
 
 	public static String createStackTrace(Throwable throwable, boolean limitLength ) {

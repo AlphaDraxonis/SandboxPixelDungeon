@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditBuffComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaMob;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 
 public class BuffIndicatorEditor extends BuffIndicator {
@@ -16,17 +17,20 @@ public class BuffIndicatorEditor extends BuffIndicator {
     }
 
     protected BuffButton createBuffButton(Buff buff, boolean large) {
-        return new BuffButtonEditor(buff, large);
+        return new BuffButtonEditor(buff, large, ch);
     }
 
     private class BuffButtonEditor extends BuffButton {
 
-        public BuffButtonEditor(Buff buff, boolean large) {
+        private final Char ch;
+
+        public BuffButtonEditor(Buff buff, boolean large, Char ch) {
             super(buff, large);
+            this.ch = ch;
         }
 
         protected void onClick() {
-            if (buff.icon() != NONE)
+            if (buff.icon() != NONE && (!(ch instanceof LuaMob) || !((LuaMob) ch).getInheritsStats() || ((LuaMob) ch).isOriginal()))
                 DefaultEditComp.showSingleWindow(new EditBuffComp(buff, editComp), null);
         }
 

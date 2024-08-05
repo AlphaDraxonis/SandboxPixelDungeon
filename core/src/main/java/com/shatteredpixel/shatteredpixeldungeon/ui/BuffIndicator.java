@@ -129,7 +129,7 @@ public class BuffIndicator extends Component {
 	
 	protected LinkedHashMap<Buff, BuffButton> buffButtons = new LinkedHashMap<>();
 	private boolean needsRefresh;
-	private Char ch;
+	protected Char ch;
 
 	private boolean large = false;
 	

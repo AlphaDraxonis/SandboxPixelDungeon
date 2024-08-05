@@ -151,7 +151,7 @@ public class WndSelectMusic extends WndChooseOneInCategories {
                 protected void onInfo() {
                     DungeonScene.show(new WndTitledMessage(Icons.get(Icons.INFO), name, info()) {
                         {
-                            setHighligtingEnabled(false);
+                            setHighlightingEnabled(false);
                         }
                     });
                 }

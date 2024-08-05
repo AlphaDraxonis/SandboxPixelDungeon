@@ -310,7 +310,7 @@ public class InterlevelScene extends PixelScene {
 				add( new WndError( errorMsg ) {
 					{
 						if (error.getCause() instanceof CustomDungeonSaves.RenameRequiredException) {
-							setHighligtingEnabled(false);
+							setHighlightingEnabled(false);
 						}
 					}
 					public void onBackPressed() {

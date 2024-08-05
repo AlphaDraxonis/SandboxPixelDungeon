@@ -157,7 +157,7 @@ public class CustomDungeonSaves {
         public void showExceptionWindow() {
             Game.runOnRenderThread(() -> {
                 WndTitledMessage w = new WndError(getMessage());
-                w.setHighligtingEnabled(false);
+                w.setHighlightingEnabled(false);
                 EditorScene.show(w);
             });
         }

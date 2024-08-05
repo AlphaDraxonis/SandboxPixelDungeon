@@ -1,105 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#3E4039"
+            android:padding="10dp"
             android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/comp_group"
+    <!-- Toolbar (at top to be accessible even with visible OnScreenKeyboard)-->
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_compile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintWidth_default="spread"
+            app:layout_constraintHorizontal_weight="2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_more"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <Button
+            android:id="@+id/btn_more"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintWidth_default="spread"
+            app:layout_constraintHorizontal_weight="1"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_compile"
+            app:layout_constraintEnd_toStartOf="@id/btn_exit" />
+
+        <ImageButton
+            android:id="@+id/btn_exit"
+            android:layout_width="42dp"
+            android:layout_height="27dp"
+            android:layout_gravity="center"
+            android:src="@drawable/btn_exit"
+            android:scaleType="fitXY"
+            android:background="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </android.support.constraint.ConstraintLayout>
+
+
+    <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:orientation="vertical">
 
-<!--        Toolbar (at top to be accessible even with visible OnScreenKeyboard)-->
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/btn_compile"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintHorizontal_chainStyle="spread"
-                app:layout_constraintWidth_default="spread"
-                app:layout_constraintHorizontal_weight="2"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btn_more"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <Button
-                android:id="@+id/btn_more"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintHorizontal_chainStyle="spread"
-                app:layout_constraintWidth_default="spread"
-                app:layout_constraintHorizontal_weight="1"
-                android:layout_marginEnd="10dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btn_compile"
-                app:layout_constraintEnd_toStartOf="@id/btn_exit" />
-
-            <ImageButton
-                android:id="@+id/btn_exit"
-                android:layout_width="42dp"
-                android:layout_height="27dp"
-                android:layout_gravity="center"
-                android:src="@drawable/btn_exit"
-                android:scaleType="fitXY"
-                android:background="@null"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-        </android.support.constraint.ConstraintLayout>
-
-
-
-        <android.support.constraint.ConstraintLayout
+        <LinearLayout
+            android:id="@+id/comp_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/path_label"
-                android:layout_width="wrap_content"
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/path_input"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="10dp"
-                android:inputType="text"
-                android:textSize="15sp"
-                app:layout_constraintStart_toEndOf="@id/path_label"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                <TextView
+                    android:id="@+id/path_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <EditText
+                    android:id="@+id/path_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="10dp"
+                    android:inputType="text"
+                    android:textSize="15sp"
+                    app:layout_constraintStart_toEndOf="@id/path_label"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
 
-            <ImageButton
-                android:id="@+id/btn_change"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:src="@drawable/btn_change"
-                android:scaleType="fitXY"
-                android:background="@null"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                <ImageButton
+                    android:id="@+id/btn_change"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/btn_change"
+                    android:scaleType="fitXY"
+                    android:background="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
-        </android.support.constraint.ConstraintLayout>
+            </android.support.constraint.ConstraintLayout>
 
-        <!--    Toolbar with buttons "Syntax". "Copy", "Paste", "Menu"-->
+        </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
 
-</ScrollView>
+
+</LinearLayout>

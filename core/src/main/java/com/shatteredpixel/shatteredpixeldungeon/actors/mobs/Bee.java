@@ -209,7 +209,7 @@ public class Bee extends Mob implements MobBasedOnDepth {
 	
 	@Override
 	public String description() {
-		if (customDesc != null || alignment == Alignment.ALLY && buffs(AllyBuff.class).isEmpty()){
+		if (customDesc == null && alignment == Alignment.ALLY && buffs(AllyBuff.class).isEmpty()){
 			return Messages.get(this, "desc_honey");
 		} else {
 			return super.description();

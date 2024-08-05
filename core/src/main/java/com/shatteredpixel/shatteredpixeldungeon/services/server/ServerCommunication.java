@@ -144,7 +144,7 @@ public final class ServerCommunication {
             else
                 Game.scene().addToFront(new WndError(Messages.get(ServerCommunication.class, "error") + ":\n" + t.getClass().getSimpleName() + ": " + t.getMessage()) {
                     {
-                        setHighligtingEnabled(false);
+                        setHighlightingEnabled(false);
                     }
                 });
         }

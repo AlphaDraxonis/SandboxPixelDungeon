@@ -472,6 +472,9 @@ public class Dungeon {
 
 	public static void switchLevel( final Level level, int pos ) {
 
+		Dungeon.level = level;
+		Dungeon.levelName = level.name;
+
 		//Position of -2 specifically means trying to place the hero the exit
 		if (pos == -2){
 			LevelTransition t = level.getTransition(LevelTransition.Type.REGULAR_EXIT);
@@ -494,8 +497,6 @@ public class Dungeon {
 
 		PathFinder.setMapSize(level.width(), level.height());
 
-		Dungeon.level = level;
-		Dungeon.levelName = level.name;
 		hero.pos = pos;
 
 		if (hero.buff(AscensionChallenge.class) != null){

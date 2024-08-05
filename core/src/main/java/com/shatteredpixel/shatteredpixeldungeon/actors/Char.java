@@ -341,6 +341,7 @@ public abstract class Char extends Actor {
 			}
 		}
 
+		buffs.clear();
 		for (Bundlable b : bundle.getCollection( BUFFS )) {
 			if (b != null) {
 				((Buff)b).attachTo( this );
