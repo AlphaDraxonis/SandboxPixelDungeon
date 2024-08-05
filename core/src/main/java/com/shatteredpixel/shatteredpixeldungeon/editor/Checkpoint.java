@@ -64,10 +64,10 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 
 	public int pos;
 	public int totalSaves = 1000;
-	public int totalHeals;
-	public int totalSatiates;
-	public int totalDebuffCuring;
-	public int totalUncurse;
+	public boolean healingAvailable;
+	public boolean satiationAvailable;
+	public boolean debuffCuringAvailable;
+	public boolean uncursesAvailable;
 
 	public String name() {
 		return Messages.get(this, "name");
@@ -95,19 +95,19 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 	}
 
 	public int healingsAvailable() {
-		return totalHeals - timesUsed;
+		return healingAvailable ? usesAvailable() : 0;
 	}
 
 	public int satiationsAvailable() {
-		return totalSatiates - timesUsed;
+		return satiationAvailable ? usesAvailable() : 0;
 	}
 
 	public int debuffCuringAvailable() {
-		return totalDebuffCuring - timesUsed;
+		return debuffCuringAvailable ? usesAvailable() : 0;
 	}
 
 	public int uncursesAvailable() {
-		return totalUncurse - timesUsed;
+		return uncursesAvailable ? usesAvailable() : 0;
 	}
 
 	public void use() {
@@ -122,20 +122,20 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 		}
 
 
-		if (healingsAvailable() >= 0) {
+		if (healingAvailable) {
 			Buff.affect(Dungeon.hero, Healing.class).setHeal((int) (0.8f * Dungeon.hero.HT + 14), 0.25f, 0);
 			GLog.p( Messages.get(PotionOfHealing.class, "heal") );
 		}
 
-		if (satiationsAvailable() >= 0) {
+		if (satiationAvailable) {
 			Buff.affect(Dungeon.hero, Hunger.class).satisfy(10000);
 		}
 
-		if (debuffCuringAvailable() >= 0) {
+		if (debuffCuringAvailable) {
 			PotionOfCleansing.cleanse(Dungeon.hero, 0);
 		}
 
-		if (uncursesAvailable() >= 0) {
+		if (uncursesAvailable) {
 			Dungeon.hero.belongings.uncurseEquipped();
 		}
 
@@ -149,8 +149,12 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 				&& Dungeon.reachedCheckpoint.level.equals(Dungeon.levelName);
 	}
 
+	public boolean canReach() {
+		return usesAvailable() > 0 && !isReached();
+	}
+
 	public void reachCheckpoint() {
-		if (usesAvailable() <= 0 || isReached()) {
+		if (!canReach()) {
 			return;
 		}
 
@@ -232,10 +236,10 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 
 	private static final String POS = "pos";
 	private static final String TOTAL_SAVES = "total_saves";
-	private static final String TOTAL_HEALS = "total_heals";
-	private static final String TOTAL_SATIATES = "total_satiates";
-	private static final String TOTAL_DEBUFF_CURING = "total_debuff_curing";
-	private static final String TOTAL_UNCURSE = "total_uncurse";
+	private static final String HEALING_AVAILABLE = "healing_available";
+	private static final String SATIATION_AVAILABLE = "satiation_available";
+	private static final String DEBUFF_CURING_AVAILABLE = "debuff_curing_available";
+	private static final String UNCURSES_AVAILABLE = "uncurses_available";
 
 	private static final String TIMES_USED = "times_used";
 
@@ -244,10 +248,18 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 		pos = bundle.getInt(POS);
 
 		totalSaves = bundle.getInt(TOTAL_SAVES);
-		totalHeals = bundle.getInt(TOTAL_HEALS);
-		totalSatiates = bundle.getInt(TOTAL_SATIATES);
-		totalDebuffCuring = bundle.getInt(TOTAL_DEBUFF_CURING);
-		totalUncurse = bundle.getInt(TOTAL_UNCURSE);
+
+		if (bundle.contains("total_heals")) {
+			healingAvailable = bundle.getInt("total_heals") > 0;
+			satiationAvailable = bundle.getInt("total_satiates") > 0;
+			debuffCuringAvailable = bundle.getInt("total_debuff_curing") > 0;
+			uncursesAvailable = bundle.getInt("total_uncurse") > 0;
+		} else {
+			healingAvailable = bundle.getBoolean(HEALING_AVAILABLE);
+			satiationAvailable = bundle.getBoolean(SATIATION_AVAILABLE);
+			debuffCuringAvailable = bundle.getBoolean(DEBUFF_CURING_AVAILABLE);
+			uncursesAvailable = bundle.getBoolean(UNCURSES_AVAILABLE);
+		}
 
 		timesUsed = bundle.getInt(TIMES_USED);
 	}
@@ -257,10 +269,11 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 		bundle.put(POS, pos);
 
 		bundle.put(TOTAL_SAVES, totalSaves);
-		bundle.put(TOTAL_HEALS, totalHeals);
-		bundle.put(TOTAL_SATIATES, totalSatiates);
-		bundle.put(TOTAL_DEBUFF_CURING, totalDebuffCuring);
-		bundle.put(TOTAL_UNCURSE, totalUncurse);
+
+		bundle.put(HEALING_AVAILABLE, healingAvailable);
+		bundle.put(SATIATION_AVAILABLE, satiationAvailable);
+		bundle.put(DEBUFF_CURING_AVAILABLE, debuffCuringAvailable);
+		bundle.put(UNCURSES_AVAILABLE, uncursesAvailable);
 
 		bundle.put(TIMES_USED, timesUsed);
 	}

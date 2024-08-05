@@ -790,6 +790,9 @@ public class Hero extends Char {
 			} else if (curAction instanceof HeroAction.ReadSign) {
 				actResult = actReadSign((HeroAction.ReadSign) curAction);
 
+			} else if (curAction instanceof HeroAction.ReachCheckpoint) {
+				actResult = actReachCheckpoint((HeroAction.ReachCheckpoint) curAction);
+
 			} else {
 				actResult = false;
 			}
@@ -976,6 +979,31 @@ public class Hero extends Char {
 					}
 				}
 			}));
+
+			return false;
+
+		} else if (getCloser( dst )) {
+
+			return true;
+
+		} else {
+			ready();
+			return false;
+		}
+	}
+
+	private boolean actReachCheckpoint(HeroAction.ReachCheckpoint action){
+		int dst = action.dst;
+		if (Dungeon.level.distance(dst, pos) <= 1) {
+
+			if (Dungeon.level.checkpoints.get(action.dst) != null) {
+				sprite.turnTo(pos, action.dst);
+				spend(TICK);
+				Dungeon.level.checkpoints.get(action.dst).reachCheckpoint();
+				next();
+			}
+			ready();
+
 
 			return false;
 
@@ -1792,6 +1820,10 @@ public class Hero extends Char {
 		} else if (TileItem.isSignTerrainCell(Dungeon.level.map[cell]) && cell != pos) {
 
 			curAction = new HeroAction.ReadSign(cell);
+
+		} else if (Dungeon.level.checkpoints.get(cell) != null && Dungeon.level.checkpoints.get(cell).canReach()) {
+
+			curAction = new HeroAction.ReachCheckpoint(cell);
 
 		} else if (fieldOfView[cell] && ch instanceof Mob) {
 

@@ -86,6 +86,11 @@ public class HeroAction {
 			this.dst = pot;
 		}
 	}
+	public static class ReachCheckpoint extends HeroAction {
+		public ReachCheckpoint(int pot ) {
+			this.dst = pot;
+		}
+	}
 
 	public static class Attack extends HeroAction {
 		public Char target;

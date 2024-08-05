@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CheckpointItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -17,7 +18,8 @@ import com.watabou.utils.RectF;
 
 public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
 
-    protected StyledSpinner saves, heals, satiates, debuffs, uncurses;
+    protected StyledSpinner saves;
+    protected StyledCheckBox heals, satiates, debuffs, uncurses;
 
     private final CheckpointItem checkpointItem;//used for linking the item with the sprite in the toolbar
 
@@ -56,17 +58,9 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
         });
         add(saves);
 
-        heals = new StyledSpinner(new SpinnerIntegerModel(0, 1000, obj.totalHeals) {
-            @Override
-            public float getInputFieldWidth(float height) {
-                return StyledSpinner.FILL;
-            }
-
-            @Override
-            public void afterClick() {
-                updateObj();
-            }
-        }, Messages.get(this, "heals"));
+        heals = new StyledCheckBox(Messages.get(this, "heals"));
+        heals.checked(obj.healingAvailable);
+        heals.addChangeListener(v -> obj.healingAvailable = v);
         RectF r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.POTION_HEALING);
         if (r != null) {
             Image icon = new Image(Assets.Sprites.ITEM_ICONS);
@@ -74,43 +68,17 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             icon.scale.set(10 / Math.max(icon.width(), icon.height()));
             heals.icon(icon);
         }
-        heals.addChangeListener(() -> {
-            obj.totalHeals = (int) heals.getValue();
-            if (obj.totalHeals % 20 == 0)
-                updateObj();
-        });
         add(heals);
 
-        satiates = new StyledSpinner(new SpinnerIntegerModel(0, 1000, obj.totalSatiates) {
-            @Override
-            public float getInputFieldWidth(float height) {
-                return StyledSpinner.FILL;
-            }
-
-            @Override
-            public void afterClick() {
-                updateObj();
-            }
-        }, Messages.get(this, "satiates"));
+        satiates = new StyledCheckBox(Messages.get(this, "satiates"));
+        satiates.checked(obj.satiationAvailable);
+        satiates.addChangeListener(v -> obj.satiationAvailable = v);
         satiates.icon(new ItemSprite(ItemSpriteSheet.RATION));
-        satiates.addChangeListener(() -> {
-            obj.totalSatiates = (int) satiates.getValue();
-            if (obj.totalSatiates % 20 == 0)
-                updateObj();
-        });
         add(satiates);
 
-        debuffs = new StyledSpinner(new SpinnerIntegerModel(0, 1000, obj.totalDebuffCuring) {
-            @Override
-            public float getInputFieldWidth(float height) {
-                return StyledSpinner.FILL;
-            }
-
-            @Override
-            public void afterClick() {
-                updateObj();
-            }
-        }, Messages.get(this, "debuffs"));
+        debuffs = new StyledCheckBox(Messages.get(this, "debuffs"));
+        debuffs.checked(obj.debuffCuringAvailable);
+        debuffs.addChangeListener(v -> obj.debuffCuringAvailable = v);
         r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.POTION_CLEANSE);
         if (r != null) {
             Image icon = new Image(Assets.Sprites.ITEM_ICONS);
@@ -118,24 +86,11 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             icon.scale.set(10 / Math.max(icon.width(), icon.height()));
             debuffs.icon(icon);
         }
-        debuffs.addChangeListener(() -> {
-            obj.totalDebuffCuring = (int) debuffs.getValue();
-            if (obj.totalDebuffCuring % 20 == 0)
-                updateObj();
-        });
         add(debuffs);
 
-        uncurses = new StyledSpinner(new SpinnerIntegerModel(0, 1000, obj.totalUncurse) {
-            @Override
-            public float getInputFieldWidth(float height) {
-                return StyledSpinner.FILL;
-            }
-
-            @Override
-            public void afterClick() {
-                updateObj();
-            }
-        }, Messages.get(this, "uncurses"));
+        uncurses = new StyledCheckBox(Messages.get(this, "uncurses"));
+        uncurses.checked(obj.uncursesAvailable);
+        uncurses.addChangeListener(v -> obj.uncursesAvailable = v);
         r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_REMCURSE);
         if (r != null) {
             Image icon = new Image(Assets.Sprites.ITEM_ICONS);
@@ -143,11 +98,6 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             icon.scale.set(10 / Math.max(icon.width(), icon.height()));
             uncurses.icon(icon);
         }
-        uncurses.addChangeListener(() -> {
-            obj.totalUncurse = (int) uncurses.getValue();
-            if (obj.totalUncurse % 20 == 0)
-                updateObj();
-        });
         add(uncurses);
 
         comps = new Component[]{
@@ -198,10 +148,10 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
         if (a.getClass() != b.getClass()) return false;
         if (a.pos != b.pos) return false;
         if (a.totalSaves != b.totalSaves) return false;
-        if (a.totalHeals != b.totalHeals) return false;
-        if (a.totalSatiates != b.totalSatiates) return false;
-        if (a.totalDebuffCuring != b.totalDebuffCuring) return false;
-        if (a.totalUncurse != b.totalUncurse) return false;
+        if (a.healingAvailable != b.healingAvailable) return false;
+        if (a.satiationAvailable != b.satiationAvailable) return false;
+        if (a.debuffCuringAvailable != b.debuffCuringAvailable) return false;
+        if (a.uncursesAvailable != b.uncursesAvailable) return false;
         return true;
     }
 }

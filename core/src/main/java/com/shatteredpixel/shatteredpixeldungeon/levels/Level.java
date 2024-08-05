@@ -1504,6 +1504,14 @@ public abstract class Level implements Bundlable {
 			losBlocking[i + width()-1] = solid[i + width()-1] = true;
 		}
 
+		for (Checkpoint cp : checkpoints.values()) {
+			passable[cp.pos] = false;
+		}
+
+		for (int i=0; i < length(); i++) {
+			passableHero[i] = passableMob[i] = passableAlly[i] = passable[i];
+		}
+
 		for (Barrier barrier : barriers.values()) {
 			if (barrier.blocksHero()) passableHero[barrier.pos] = false;
 			if (barrier.blocksMobs()) passableMob[barrier.pos] = false;
@@ -1947,9 +1955,6 @@ public abstract class Level implements Bundlable {
 		if (!CustomDungeon.isEditing()) {
 			applyZoneBuffs(ch);
 			if (zone[ch.pos] != null) zone[ch.pos].onZoneEntered(ch);
-
-			if (ch == Dungeon.hero && checkpoints.get(ch.pos) != null)
-				checkpoints.get(ch.pos).reachCheckpoint();
 		}
 
 		if (!ch.isFlying() && pit[ch.pos]) {
