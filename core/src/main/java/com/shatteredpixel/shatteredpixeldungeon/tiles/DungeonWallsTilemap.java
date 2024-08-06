@@ -65,7 +65,7 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 				} else if (map[pos + mapWidth] == Terrain.LOCKED_DOOR){
 					return DungeonTileSheet.DOOR_SIDEWAYS_LOCKED;
 				} else if (map[pos + mapWidth] == Terrain.COIN_DOOR){
-					return DungeonTileSheet.DOOR_SIDEWAYS_GOLD;
+					return DungeonTileSheet.DOOR_SIDEWAYS_COIN;
 				} else if (map[pos + mapWidth] == Terrain.CRYSTAL_DOOR){
 					return DungeonTileSheet.DOOR_SIDEWAYS_CRYSTAL;
 				} else if (TileItem.isSecretDoor(map[pos + mapWidth])){
@@ -110,6 +110,8 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 			return DungeonTileSheet.DOOR_OVERHANG_OPEN;
 		} else if (Dungeon.level.insideMap(pos) && map[pos+mapWidth] == Terrain.CRYSTAL_DOOR ) {
 			return DungeonTileSheet.DOOR_OVERHANG_CRYSTAL;
+		} else if (Dungeon.level.insideMap(pos) && map[pos+mapWidth] == Terrain.SECRET_CRYSTAL_DOOR && Dungeon.customDungeon.seeSecrets ) {
+			return DungeonTileSheet.DOOR_OVERHANG_CRYSTAL_SECRET;
 		} else if (Dungeon.level.insideMap(pos) && TileItem.isSecretDoor(map[pos+mapWidth]) && Dungeon.customDungeon.seeSecrets ) {
 			return DungeonTileSheet.DOOR_OVERHANG_SECRET;
 		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.STATUE){

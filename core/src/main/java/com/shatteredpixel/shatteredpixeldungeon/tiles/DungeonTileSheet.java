@@ -51,7 +51,7 @@ public class DungeonTileSheet {
 	 * Floor Tiles
 	 **********************************************************************/
 
-	private static final int GROUND         =                               xy(1, 1);   //24 slots
+	private static final int GROUND         =                               xy(1, 1);   //28 slots
 	public static final int FLOOR           = GROUND +0;
 	public static final int FLOOR_DECO      = GROUND +1;
 	public static final int GRASS           = GROUND +2;
@@ -74,7 +74,7 @@ public class DungeonTileSheet {
 
 	public static final int ENTRANCE_SP     = GROUND +22;
 
-	public static final int CHASM           =                               xy(9, 2);   //8 slots
+	public static final int CHASM           =                               xy(9, 2);   //6 slots
 	//chasm stitching visuals...
 	public static final int CHASM_FLOOR     = CHASM+1;
 	public static final int CHASM_FLOOR_SP  = CHASM+2;
@@ -198,14 +198,14 @@ public class DungeonTileSheet {
 
 	public static final int FLAT_DOOR           = FLAT_WALLS+6;
 	public static final int FLAT_DOOR_OPEN      = FLAT_WALLS+7;
-	public static final int FLAT_DOOR_LOCKED    = FLAT_WALLS+8;
-	public static final int FLAT_DOOR_CRYSTAL   = FLAT_WALLS+9;
-	public static final int UNLOCKED_EXIT       = FLAT_WALLS+10;
+	public static final int FLAT_DOOR_COIN      = FLAT_WALLS+8;
+	public static final int FLAT_DOOR_LOCKED    = FLAT_WALLS+9;
+	public static final int FLAT_DOOR_CRYSTAL   = FLAT_WALLS+10;
 	public static final int LOCKED_EXIT         = FLAT_WALLS+11;
-	public static final int FLAT_DOOR_SECRET    = FLAT_WALLS+12;
-	public static final int FLAT_LOCKED_DOOR_SECRET     = FLAT_WALLS+13;
-	public static final int FLAT_CRYSTAL_DOOR_SECRET    = FLAT_WALLS+14;
-	public static final int FLAT_DOOR_COIN      = FLAT_WALLS+15;
+	public static final int UNLOCKED_EXIT       = FLAT_WALLS+12;
+	public static final int FLAT_DOOR_SECRET    = FLAT_WALLS+13;
+	public static final int FLAT_LOCKED_DOOR_SECRET     = FLAT_WALLS+14;
+	public static final int FLAT_CRYSTAL_DOOR_SECRET    = FLAT_WALLS+15;
 
 	public static final int FLAT_OTHER          =                           xy(1, 5);   //16 slots
 	public static final int FLAT_ALCHEMY_POT    = FLAT_OTHER+0;
@@ -213,20 +213,20 @@ public class DungeonTileSheet {
 	public static final int FLAT_HIGH_GRASS     = FLAT_OTHER+2;
 	public static final int FLAT_FURROWED_GRASS = FLAT_OTHER+3;
 
-	public static final int FLAT_HIGH_GRASS_ALT = FLAT_OTHER+5;
-	public static final int FLAT_FURROWED_ALT   = FLAT_OTHER+6;
+	public static final int FLAT_HIGH_GRASS_ALT = FLAT_OTHER+4;
+	public static final int FLAT_FURROWED_ALT   = FLAT_OTHER+5;
 
-	public static final int FLAT_STATUE         = FLAT_OTHER+8;
-	public static final int FLAT_STATUE_SP      = FLAT_OTHER+9;
-	public static final int FLAT_SIGN           = FLAT_OTHER+10;
-	public static final int FLAT_SIGN_SP        = FLAT_OTHER+10;
+	public static final int FLAT_STATUE         = FLAT_OTHER+6;
+	public static final int FLAT_STATUE_SP      = FLAT_OTHER+7;
+	public static final int FLAT_SIGN           = FLAT_OTHER+8;
+	public static final int FLAT_SIGN_SP        = FLAT_OTHER+9;
 
-	public static final int FLAT_MINE_CRYSTAL         = FLAT_OTHER+12;
-	public static final int FLAT_MINE_CRYSTAL_ALT     = FLAT_OTHER+13;
-	public static final int FLAT_MINE_CRYSTAL_ALT_2   = FLAT_OTHER+14;
-	public static final int FLAT_MINE_BOULDER         = 128+13;
-	public static final int FLAT_MINE_BOULDER_ALT     = 128+14;
-	public static final int FLAT_MINE_BOULDER_ALT_2   = 128+15;
+	public static final int FLAT_MINE_CRYSTAL         = FLAT_OTHER+10;
+	public static final int FLAT_MINE_CRYSTAL_ALT     = FLAT_OTHER+11;
+	public static final int FLAT_MINE_CRYSTAL_ALT_2   = FLAT_OTHER+12;
+	public static final int FLAT_MINE_BOULDER         = FLAT_OTHER+13;
+	public static final int FLAT_MINE_BOULDER_ALT     = FLAT_OTHER+14;
+	public static final int FLAT_MINE_BOULDER_ALT_2   = FLAT_OTHER+15;
 
 	/**********************************************************************
 	 * Raised Tiles, Lower Layer
@@ -277,15 +277,17 @@ public class DungeonTileSheet {
 		return result;
 	}
 
-	private static final int RAISED_DOORS           =                       xy(1, 8);  //8 slots
+	private static final int RAISED_DOORS           =                       xy(1, 9);  //9 slots
 	public static final int RAISED_DOOR             = RAISED_DOORS+0;
 	public static final int RAISED_DOOR_OPEN        = RAISED_DOORS+1;
-	public static final int RAISED_DOOR_LOCKED      = RAISED_DOORS+2;
-	public static final int RAISED_DOOR_CRYSTAL     = RAISED_DOORS+3;
+	public static final int RAISED_DOOR_COIN        = RAISED_DOORS+2;
+	public static final int RAISED_DOOR_LOCKED      = RAISED_DOORS+3;
+	public static final int RAISED_DOOR_CRYSTAL     = RAISED_DOORS+4;
 	public static final int RAISED_DOOR_SECRET		= RAISED_DOORS+5;
-	public static final int RAISED_DOOR_COIN        = RAISED_DOORS+6;
+	public static final int RAISED_DOOR_SECRET_LOCKED= RAISED_DOORS+6;
+	public static final int RAISED_DOOR_SECRET_CRYSTAL= RAISED_DOORS+7;
 	//floor tile that appears on a top/bottom doorway
-	public static final int RAISED_DOOR_SIDEWAYS    = RAISED_DOORS+4;
+	public static final int RAISED_DOOR_SIDEWAYS    = RAISED_DOORS+8;
 
 
 	public static int getRaisedDoorTile(int tile, int below){
@@ -296,6 +298,8 @@ public class DungeonTileSheet {
 		else if (tile == Terrain.COIN_DOOR)     return DungeonTileSheet.RAISED_DOOR_COIN;
 		else if (tile == Terrain.LOCKED_DOOR)   return DungeonTileSheet.RAISED_DOOR_LOCKED;
 		else if (tile == Terrain.CRYSTAL_DOOR)  return DungeonTileSheet.RAISED_DOOR_CRYSTAL;
+		else if (tile == Terrain.SECRET_LOCKED_DOOR) return DungeonTileSheet.RAISED_DOOR_SECRET_LOCKED;
+		else if (tile == Terrain.SECRET_CRYSTAL_DOOR) return DungeonTileSheet.RAISED_DOOR_SECRET_CRYSTAL;
 		else if (TileItem.isSecretDoor(tile))   return DungeonTileSheet.RAISED_DOOR_SECRET;
 		else return -1;
 	}
@@ -311,26 +315,26 @@ public class DungeonTileSheet {
 		return TileItem.isSecretDoor(tile) && CustomDungeon.showHiddenDoors();
 	}
 
-	private static final int RAISED_OTHER           =                       xy(9, 8);  //24 slots
+	private static final int RAISED_OTHER           =                       xy(1, 11);  //16 slots
 	public static final int RAISED_ALCHEMY_POT      = RAISED_OTHER+0;
 	public static final int RAISED_BARRICADE        = RAISED_OTHER+1;
 	public static final int RAISED_HIGH_GRASS       = RAISED_OTHER+2;
 	public static final int RAISED_FURROWED_GRASS   = RAISED_OTHER+3;
 
-	public static final int RAISED_HIGH_GRASS_ALT   = RAISED_OTHER+5;
-	public static final int RAISED_FURROWED_ALT     = RAISED_OTHER+6;
+	public static final int RAISED_HIGH_GRASS_ALT   = RAISED_OTHER+4;
+	public static final int RAISED_FURROWED_ALT     = RAISED_OTHER+5;
 
-	public static final int RAISED_STATUE           = RAISED_OTHER+8;
-	public static final int RAISED_STATUE_SP        = RAISED_OTHER+9;
-	public static final int RAISED_SIGN             = RAISED_OTHER+10;
-	public static final int RAISED_SIGN_SP          = RAISED_OTHER+10;
+	public static final int RAISED_STATUE           = RAISED_OTHER+6;
+	public static final int RAISED_STATUE_SP        = RAISED_OTHER+7;
+	public static final int RAISED_SIGN             = RAISED_OTHER+8;
+	public static final int RAISED_SIGN_SP          = RAISED_OTHER+9;
 
-	public static final int RAISED_MINE_CRYSTAL     = RAISED_OTHER+12;
-	public static final int RAISED_MINE_CRYSTAL_ALT = RAISED_OTHER+13;
-	public static final int RAISED_MINE_CRYSTAL_ALT_2=RAISED_OTHER+14;
-	public static final int RAISED_MINE_BOULDER     = RAISED_OTHER+16;
-	public static final int RAISED_MINE_BOULDER_ALT = RAISED_OTHER+17;
-	public static final int RAISED_MINE_BOULDER_ALT_2=RAISED_OTHER+18;
+	public static final int RAISED_MINE_CRYSTAL     = RAISED_OTHER+10;
+	public static final int RAISED_MINE_CRYSTAL_ALT = RAISED_OTHER+11;
+	public static final int RAISED_MINE_CRYSTAL_ALT_2=RAISED_OTHER+12;
+	public static final int RAISED_MINE_BOULDER     = RAISED_OTHER+13;
+	public static final int RAISED_MINE_BOULDER_ALT = RAISED_OTHER+14;
+	public static final int RAISED_MINE_BOULDER_ALT_2=RAISED_OTHER+15;
 
 
 	/**********************************************************************
@@ -338,7 +342,7 @@ public class DungeonTileSheet {
 	 **********************************************************************/
 
 	//+1 for open right, +2 for open right-below, +4 for open left-below, +8 for open left.
-	public static final int WALLS_INTERNAL              =                   xy(1, 10);  //48 slots
+	public static final int WALLS_INTERNAL              =                   xy(1, 12);  //48 slots
 	private static final int WALL_INTERNAL              = WALLS_INTERNAL+0;
 	private static final int WALL_INTERNAL_DECO         = WALLS_INTERNAL+16;
 	private static final int WALL_INTERNAL_WOODEN       = WALLS_INTERNAL+32;
@@ -359,7 +363,7 @@ public class DungeonTileSheet {
 	}
 
 	//+1 for open to the down-right, +2 for open to the down-left
-	private static final int WALLS_OVERHANG             =                   xy(1, 13);  //32 slots
+	private static final int WALLS_OVERHANG             =                   xy(1, 15);  //32 slots
 	public static final int WALL_OVERHANG                   = WALLS_OVERHANG+0;
 	public static final int WALL_OVERHANG_DECO              = WALLS_OVERHANG+4;
 	public static final int WALL_OVERHANG_WOODEN            = WALLS_OVERHANG+8;
@@ -368,7 +372,8 @@ public class DungeonTileSheet {
 	public static final int DOOR_SIDEWAYS_OVERHANG_CLOSED   = WALLS_OVERHANG+20;
 	public static final int DOOR_SIDEWAYS_OVERHANG_LOCKED   = WALLS_OVERHANG+24;
 	public static final int DOOR_SIDEWAYS_OVERHANG_CRYSTAL  = WALLS_OVERHANG+28;
-	public static final int DOOR_SIDEWAYS_OVERHANG_COIN		= 29;
+	public static final int DOOR_SIDEWAYS_OVERHANG_COIN		= 138;
+	//secret locked and crystal door is missing!
 
 
 	public static int stitchWallOverhangTile(int tile, int rightBelow, int below, int leftBelow){
@@ -394,43 +399,45 @@ public class DungeonTileSheet {
 		return visual;
 	}
 
-	public static final int DOOR_OVERHANG               =                   xy(1, 15);  //8 slots
+	public static final int DOOR_OVERHANG               =                   xy(1, 8);  //14+1 slots
 	public static final int DOOR_OVERHANG_OPEN          = DOOR_OVERHANG+1;
-	public static final int DOOR_OVERHANG_CRYSTAL       = DOOR_OVERHANG+2;
-	public static final int DOOR_OVERHANG_SECRET        = DOOR_OVERHANG+3;
-	public static final int DOOR_SIDEWAYS               = DOOR_OVERHANG+4;
-	public static final int DOOR_SIDEWAYS_LOCKED        = DOOR_OVERHANG+5;
-	public static final int DOOR_SIDEWAYS_CRYSTAL       = DOOR_OVERHANG+6;
-	public static final int DOOR_SIDEWAYS_SECRET        = DOOR_OVERHANG+7;
-	public static final int DOOR_SIDEWAYS_GOLD          = 13;
+	public static final int DOOR_OVERHANG_CRYSTAL       = DOOR_OVERHANG+4;
+	public static final int DOOR_OVERHANG_SECRET        = DOOR_OVERHANG+5;
+	public static final int DOOR_OVERHANG_CRYSTAL_SECRET= DOOR_OVERHANG+7;//tzz
+	public static final int DOOR_SIDEWAYS               = DOOR_OVERHANG+9;
+	public static final int DOOR_SIDEWAYS_COIN		    = DOOR_OVERHANG+10;
+	public static final int DOOR_SIDEWAYS_LOCKED        = DOOR_OVERHANG+11;
+	public static final int DOOR_SIDEWAYS_CRYSTAL       = DOOR_OVERHANG+12;
+	public static final int DOOR_SIDEWAYS_SECRET        = DOOR_OVERHANG+13;
+	//secret locked and crystal door missing!
 	//exit visuals are rendered flat atm, so they actually underhang
-	public static final int EXIT_UNDERHANG              = DOOR_OVERHANG+18;
+	public static final int EXIT_UNDERHANG              = DOOR_OVERHANG+25;
 
 
-	private static final int OTHER_OVERHANG             =                   xy(9, 15);  //24 slots
+	private static final int OTHER_OVERHANG             =                   xy(1, 10);  //16 slots
 	public static final int ALCHEMY_POT_OVERHANG        = OTHER_OVERHANG+0;
 	public static final int BARRICADE_OVERHANG          = OTHER_OVERHANG+1;
-	public static final int HIGH_GRASS_OVERHANG         = OTHER_OVERHANG+2;
-	public static final int FURROWED_OVERHANG           = OTHER_OVERHANG+3;
+	public static final int HIGH_GRASS_OVERHANG         = 14;
+	public static final int FURROWED_OVERHANG           = 15;
 
-	public static final int HIGH_GRASS_OVERHANG_ALT     = OTHER_OVERHANG+5;
-	public static final int FURROWED_OVERHANG_ALT       = OTHER_OVERHANG+6;
+	public static final int HIGH_GRASS_OVERHANG_ALT     = OTHER_OVERHANG-18;
+	public static final int FURROWED_OVERHANG_ALT       = OTHER_OVERHANG-17;
 
-	public static final int STATUE_OVERHANG             = OTHER_OVERHANG+8;
-	public static final int STATUE_SP_OVERHANG          = OTHER_OVERHANG+9;
+	public static final int STATUE_OVERHANG             = OTHER_OVERHANG+6;
+	public static final int STATUE_SP_OVERHANG          = OTHER_OVERHANG+7;
 
-	public static final int MINE_CRYSTAL_OVERHANG       = OTHER_OVERHANG+11;
-	public static final int MINE_CRYSTAL_OVERHANG_ALT   = OTHER_OVERHANG+12;
-	public static final int MINE_CRYSTAL_OVERHANG_ALT_2 = OTHER_OVERHANG+13;
-	public static final int MINE_BOULDER_OVERHANG       = OTHER_OVERHANG+15;
-	public static final int MINE_BOULDER_OVERHANG_ALT   = OTHER_OVERHANG+16;
-	public static final int MINE_BOULDER_OVERHANG_ALT_2 = OTHER_OVERHANG+17;
+	public static final int MINE_CRYSTAL_OVERHANG       = OTHER_OVERHANG+10;
+	public static final int MINE_CRYSTAL_OVERHANG_ALT   = OTHER_OVERHANG+11;
+	public static final int MINE_CRYSTAL_OVERHANG_ALT_2 = OTHER_OVERHANG+12;
+	public static final int MINE_BOULDER_OVERHANG       = OTHER_OVERHANG+13;
+	public static final int MINE_BOULDER_OVERHANG_ALT   = OTHER_OVERHANG+114;
+	public static final int MINE_BOULDER_OVERHANG_ALT_2 = OTHER_OVERHANG+15;
 
-	public static final int HIGH_GRASS_UNDERHANG        = OTHER_OVERHANG+18;
-	public static final int FURROWED_UNDERHANG          = OTHER_OVERHANG+19;
+	public static final int HIGH_GRASS_UNDERHANG        = 30;
+	public static final int FURROWED_UNDERHANG          = 31;
 
-	public static final int HIGH_GRASS_UNDERHANG_ALT    = OTHER_OVERHANG+21;
-	public static final int FURROWED_UNDERHANG_ALT      = OTHER_OVERHANG+22;
+	public static final int HIGH_GRASS_UNDERHANG_ALT    = OTHER_OVERHANG-2;
+	public static final int FURROWED_UNDERHANG_ALT      = OTHER_OVERHANG-1;
 
 	/**********************************************************************
 	 * Logic for the selection of tile visuals
