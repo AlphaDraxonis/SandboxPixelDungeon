@@ -55,17 +55,15 @@ public class LevelTab extends MultiWindowTabComp {
 
         StyledButton editScript;
 
-        if (level != null) {
-            region = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "region"), 8) {
-                @Override
-                protected void onClick() {
-                    ChangeRegion changeRegion = new ChangeRegion(() -> closeCurrentSubMenu());
-                    changeContent(ChangeRegion.createTitle(), changeRegion, changeRegion.getOutsideSp());
-                }
-            };
-            region.icon(Icons.get(Icons.CHANGES));
-            content.add(region);
-        } else region = null;
+        region = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "region"), 8) {
+            @Override
+            protected void onClick() {
+                ChangeRegion changeRegion = new ChangeRegion(levelScheme, () -> closeCurrentSubMenu());
+                changeContent(ChangeRegion.createTitle(), changeRegion, changeRegion.getOutsideSp());
+            }
+        };
+        region.icon(Icons.get(Icons.CHANGES));
+        content.add(region);
 
         if (level != null) {
             mobSpawn = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "mobs"), 8) {

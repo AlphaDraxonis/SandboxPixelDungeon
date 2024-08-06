@@ -61,8 +61,14 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     private Class<? extends Level> type;
     private Level level;
-    int region = REGION_SEWERS;//only for custom levels
+    int region = REGION_SEWERS;
     private int numInRegion = 3;
+
+    public int waterTexture = REGION_NONE;
+    public int musicRegion = REGION_NONE;
+    public String musicFile = null;
+    public String customTilesTex, customWaterTex;
+
     private Level.Feeling feeling = Level.Feeling.NONE;
     public float shopPriceMultiplier = 1f;
 
@@ -418,7 +424,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public void setLevel(Level level) {
         this.level = level;
         setType(level.getClass());
-        level.levelScheme = this;
+        level.setLevelScheme(this);
 
         if (luaScript != null) luaScript.loadScript();
     }
@@ -444,8 +450,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             Random.pushGenerator(seed);
             level = luaScript == null ? Reflection.newInstance(type)
                     : (Level) Reflection.newInstance(LuaLevel.getLuaLevelClass(type));
-            level.name = name;
-            level.levelScheme = this;
+            level.setLevelScheme(this);
 
             if (luaScript != null) {
                 if (luaScript.getScript().get("vars").istable()) {
@@ -468,8 +473,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             } catch (CustomDungeonSaves.RenameRequiredException e) {
                 throw new RuntimeException(e);//Caught by InterlevelScene
             }
-            level.name = name;
-            level.levelScheme = this;
+            level.setLevelScheme(this);
 
             if (luaScript != null) {
                 if (luaScript.getScript().get("vars").istable()) {
@@ -633,6 +637,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String DEPTH = "depth";
     private static final String TYPE = "type";
             static final String REGION = "region";
+            static final String WATER_TEXTURE = "water_texture";
+            static final String MUSIC_REGION = "music_region";
+            static final String MUSIC_FILE = "music_file";
     private static final String NUM_IN_REGION = "num_in_region";
     private static final String FEELING = "feeling";
     private static final String SEED = "seed";
@@ -720,6 +727,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(SPAWN_ITEMS, spawnItems);
         bundle.put(HUNGER_SPEED, hungerSpeed);
         bundle.put(NATURAL_REGEN, naturalRegeneration);
+
+        bundle.put(WATER_TEXTURE, waterTexture);
+        bundle.put(MUSIC_REGION, musicRegion);
+        if (musicFile != null) bundle.put(MUSIC_FILE, musicFile);
+
         if (builder != null) bundle.put(BUILDER, builder);
 
         if (luaScript != null && !luaScript.pathToScript.isEmpty()) bundle.put(LUA_SCRIPT, luaScript);
@@ -781,6 +793,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         type = bundle.getClass(TYPE);
         region = bundle.getInt(REGION);
         if (region == REGION_NONE) region = getRegion(type);
+
+        waterTexture = bundle.getInt(WATER_TEXTURE);
+
+        musicRegion = bundle.getInt(MUSIC_REGION) + bundle.getInt("music");
+        if (bundle.contains(MUSIC_FILE)) musicFile = bundle.getString(MUSIC_FILE);
+
         numInRegion = bundle.getInt(NUM_IN_REGION);
         seed = bundle.getLong(SEED);
         seedSet = bundle.getBoolean(SEED_SET);
@@ -839,8 +857,13 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (type == CustomLevel.class) {
             try {
                 level = CustomDungeonSaves.loadLevel(name, removeInvalidTransitions, null);
-                level.levelScheme = this;
-                if (region == REGION_NONE) region = ((CustomLevel) level).storeRegionTempSoItCanBeTransferredToLevelScheme;
+                level.setLevelScheme(this);
+
+                if (((CustomLevel) level).dataTransferToLevelScheme != null) {
+                    ((CustomLevel) level).dataTransferToLevelScheme.apply(this);
+                    ((CustomLevel) level).dataTransferToLevelScheme = null;
+                }
+
                 levelLoadingException = null;
             } catch (GdxRuntimeException gdxEx) {
                 levelLoadingException = gdxEx.getCause() instanceof IOException ? (Exception) gdxEx.getCause() : gdxEx;
@@ -872,14 +895,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (Dungeon.branch != 0) {
             return QuestLevels.getRegion(Dungeon.branch);
         }
-        if (level instanceof CustomLevel) return ((CustomLevel) level).getRegionValue();
-        if (level instanceof SewerLevel) return REGION_SEWERS;
-        if (level instanceof PrisonLevel || level instanceof PrisonBossLevel) return REGION_PRISON;
-        if (level instanceof CavesLevel || level instanceof CavesBossLevel) return REGION_CAVES;
-        if (level instanceof CityLevel || level instanceof CityBossLevel) return REGION_CITY;
-        if (level instanceof HallsLevel || level instanceof HallsBossLevel || level instanceof LastLevel || level instanceof DeadEndLevel)
-            return REGION_HALLS;
-        return REGION_NONE;
+        return level.getRegionValue();
     }
 
     public static int getRegion(Class<? extends Level> level) {
@@ -904,7 +920,18 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     public final int getRegion() {
         if (Dungeon.branch == QuestLevels.MINING.ID) return REGION_CAVES;
+        if (CustomLevel.class.isAssignableFrom(type)) return region;
+        return getRegion(type);
+    }
+
+    public final int getVisualRegion() {
+        if (Dungeon.branch == QuestLevels.MINING.ID) return REGION_CAVES;
         return region;
+    }
+
+    public final void setRegion(int region) {
+        this.region = region;
+        if (level != null) level.initRegionColors();
     }
 
     public final int getBoss() {

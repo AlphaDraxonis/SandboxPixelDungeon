@@ -21,11 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels;
 
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY_SP;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_EXIT;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL_DECO;
-
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Bones;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -60,6 +55,8 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.*;
+
 public class HallsBossLevel extends Level {
 
 	{
@@ -93,16 +90,6 @@ public class HallsBossLevel extends Level {
 		} else {
 			Music.INSTANCE.playTracks(HallsLevel.HALLS_TRACK_LIST, HallsLevel.HALLS_TRACK_CHANCES, false);
 		}
-	}
-
-	@Override
-	public String tilesTex() {
-		return Assets.Environment.TILES_HALLS;
-	}
-
-	@Override
-	public String waterTex() {
-		return Assets.Environment.WATER_HALLS;
 	}
 
 	@Override

@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Bones;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -48,16 +47,6 @@ public class LastShopLevel extends RegularLevel {
 	{
 		color1 = 0x4b6636;
 		color2 = 0xf2f2f2;
-	}
-	
-	@Override
-	public String tilesTex() {
-		return Assets.Environment.TILES_CITY;
-	}
-	
-	@Override
-	public String waterTex() {
-		return Assets.Environment.WATER_CITY;
 	}
 	
 	@Override

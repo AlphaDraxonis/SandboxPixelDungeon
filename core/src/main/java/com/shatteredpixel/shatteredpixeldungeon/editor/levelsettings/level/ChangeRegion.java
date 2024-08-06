@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
@@ -9,20 +10,28 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesB
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.watabou.gltextures.SmartTexture;
+import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class ChangeRegion extends Component {
 
@@ -64,29 +73,29 @@ public class ChangeRegion extends Component {
 
     protected StyledButton music;
 
+    protected StyledButton customRegion, customWater;
+
     private final Component outsideSp;
 
-    private String newMusicFile;
-
-    public ChangeRegion(Runnable onClose) {
+    public ChangeRegion(LevelScheme levelScheme, Runnable onClose) {
         super();
 
-        CustomLevel f = EditorScene.getCustomLevel();
+        Object[] oldValues = {
+                levelScheme.getRegion(),
+                levelScheme.waterTexture,
+                levelScheme.musicRegion,
+                levelScheme.musicFile,
 
-        int[] oldValues = {
-                f.getRegionValue(),
-                f.getWaterTextureValue(),
-                f.musicRegion,
+                levelScheme.customTilesTex,
+                levelScheme.customWaterTex
         };
-        String oldMusic = f.musicFile;
-        int[] newValues = {
-                oldValues[0],
-                oldValues[1],
-                oldValues[2]
-        };
-        newMusicFile = oldMusic;
 
-        region = new StyledSpinner(new SpinnerTextIconModel(true, oldValues[0] - 1, REGION_DATA) {
+        Object[] newValues = new Object[oldValues.length];
+        for (int i = 0; i < oldValues.length; i++) {
+            newValues[i] = oldValues[i];
+        }
+
+        region = new StyledSpinner(new SpinnerTextIconModel(true, ((int) oldValues[0]) - 1, REGION_DATA) {
             @Override
             protected Image getIcon(Object value) {
                 return new TileSprite(CustomLevel.tilesTex((int) value, false), Terrain.EMPTY);
@@ -100,7 +109,7 @@ public class ChangeRegion extends Component {
         region.setSpinnerHeight(21);
         add(region);
 
-        water = new StyledSpinner(new SpinnerTextIconModel(true, oldValues[1], WATER_DATA) {
+        water = new StyledSpinner(new SpinnerTextIconModel(true, ((int) oldValues[1]), WATER_DATA) {
             @Override
             protected Image getIcon(Object value) {
                 int waterRegion = (int) ((int) value == LevelScheme.REGION_NONE ? region == null ? oldValues[0] : region.getValue() : value);
@@ -113,12 +122,12 @@ public class ChangeRegion extends Component {
                 return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) value - 1]);
             }
         }, Messages.get(ChangeRegion.class, "water"), 9);
-        water.addChangeListener(() -> newValues[1] = (int) water.getValue());
+        water.addChangeListener(() -> newValues[1] = water.getValue());
         water.setSpinnerHeight(21);
         add(water);
 
         region.addChangeListener(() -> {
-            newValues[0] = (int) region.getValue();
+            newValues[0] = region.getValue();
             water.setValue(water.getValue());
         });
 
@@ -134,19 +143,156 @@ public class ChangeRegion extends Component {
                     protected void onSelect(Object music) {
                         super.onSelect(music);
                         if (music instanceof Integer) {
-                            newValues[2] = (int) music;
-                            newMusicFile = null;
+                            newValues[2] = music;
+                            newValues[3] = null;
                         }
                         if (music instanceof String) {
-                            newMusicFile = (String) music;
+                            newValues[3] = music;
                         }
-                        text(musicLabel + "\n" + WndSelectMusic.getDisplayName(newMusicFile == null ? newValues[2] : newMusicFile));
+                        text(musicLabel + "\n" + WndSelectMusic.getDisplayName(newValues[3] == null ? newValues[2] : newValues[3]));
                     }
                 });
             }
         };
         add(music);
-        music.text(musicLabel + "\n" + WndSelectMusic.getDisplayName(newMusicFile == null ? newValues[2] : newMusicFile));
+        music.text(musicLabel + "\n" + WndSelectMusic.getDisplayName(newValues[3] == null ? newValues[2] : newValues[3]));
+
+
+        String customRegionLabel = Messages.get(ChangeRegion.class, "custom_tilesheet");
+        customRegion = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, customRegionLabel) {
+            {
+                text.setHighlighting(false);
+            }
+            @Override
+            protected void onClick() {
+                List<String> imgFiles = new ArrayList<>(8);
+
+                Set<FileHandle> files = CustomDungeonSaves.findAllFiles("png");
+                if (files != null) {
+                    String rootDir = CustomDungeonSaves.getAdditionalFilesDir().path() + "/";
+                    for (FileHandle f : files) {
+                        String rawPath = f.path().replaceFirst(rootDir, "");
+                        SmartTexture tx = TextureCache.get(TextureCache.EXTERNAL_ASSET_PREFIX + CustomDungeonSaves.getExternalFilePath(rawPath));
+                        if (tx != null && tx.width == 256 && tx.height == 256) {
+                            imgFiles.add(rawPath);
+                        }
+                    }
+                    Collections.sort(imgFiles);
+                }
+
+                String[] options = new String[imgFiles.size() + 2];
+                int i = 0;
+                options[i++] = Messages.get(ChangeRegion.class, "view_game_assets");
+                options[i++] = Messages.get(ChangeRegion.class, "no_custom_spritesheet");
+                for (String m : imgFiles) {
+                    options[i++] = m;
+                }
+                EditorScene.show(new WndOptions(
+                        Messages.titleCase(Messages.get(ChangeRegion.class, "custom_tilesheet")),
+                        Messages.get(ChangeRegion.class, "custom_spritesheet_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()),
+                        options
+                ) {
+                    {
+                        tfMessage.setHighlighting(false);
+                    }
+
+                    @Override
+                    protected Image getIcon(int index) {
+                        if (index < 2) {
+                            return new Image();
+                        }
+                        Image img = new Image(TextureCache.getFromCurrentSavePath(CustomDungeonSaves.getExternalFilePath(options[index])));
+                        img.scale.set(ItemSpriteSheet.SIZE / Math.max(img.width, img.height));
+                        return img;
+                    }
+
+                    @Override
+                    protected void onSelect(int index) {
+                        super.onSelect(index);
+                        if (index == 0) {
+                            Game.platform.openURI("https://github.com/AlphaDraxonis/SandboxPixelDungeon/tree/master/core/src/main/assets/environment");
+                            return;
+                        }
+                        if (index == 1) {
+                            newValues[4] = null;
+                        } else {
+                            newValues[4] = options[index];
+                        }
+                        customRegion.text(customRegionLabel + "\n" + (newValues[4] == null ? Messages.get(ChangeRegion.class, "no_custom_spritesheet") : newValues[4]));
+                    }
+                });
+            }
+        };
+        add(customRegion);
+        customRegion.text(customRegionLabel + "\n" + (newValues[4] == null ? Messages.get(ChangeRegion.class, "no_custom_spritesheet") : newValues[4]));
+
+        String customWaterLabel = Messages.get(ChangeRegion.class, "custom_watersheet");
+        customWater = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, customWaterLabel) {
+            {
+                text.setHighlighting(false);
+            }
+            @Override
+            protected void onClick() {
+                List<String> imgFiles = new ArrayList<>(8);
+
+                Set<FileHandle> files = CustomDungeonSaves.findAllFiles("png");
+                if (files != null) {
+                    String rootDir = CustomDungeonSaves.getAdditionalFilesDir().path() + "/";
+                    for (FileHandle f : files) {
+                        String rawPath = f.path().replaceFirst(rootDir, "");
+                        SmartTexture tx = TextureCache.get(TextureCache.EXTERNAL_ASSET_PREFIX + CustomDungeonSaves.getExternalFilePath(rawPath));
+                        if (tx != null && tx.width == 32 && tx.height == 32) {
+                            imgFiles.add(rawPath);
+                        }
+                    }
+                    Collections.sort(imgFiles);
+                }
+
+                String[] options = new String[imgFiles.size() + 2];
+                int i = 0;
+                options[i++] = Messages.get(ChangeRegion.class, "view_game_assets");
+                options[i++] = Messages.get(ChangeRegion.class, "no_custom_spritesheet");
+                for (String m : imgFiles) {
+                    options[i++] = m;
+                }
+                EditorScene.show(new WndOptions(
+                        Messages.titleCase(Messages.get(ChangeRegion.class, "custom_watersheet")),
+                        Messages.get(ChangeRegion.class, "custom_watersheet_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()),
+                        options
+                ) {
+                    {
+                        tfMessage.setHighlighting(false);
+                    }
+
+                    @Override
+                    protected Image getIcon(int index) {
+                        if (index < 2) {
+                            return new Image();
+                        }
+                        Image img = new Image(TextureCache.getFromCurrentSavePath(CustomDungeonSaves.getExternalFilePath(options[index])));
+                        img.scale.set(ItemSpriteSheet.SIZE / Math.max(img.width, img.height));
+                        return img;
+                    }
+
+                    @Override
+                    protected void onSelect(int index) {
+                        super.onSelect(index);
+                        if (index == 0) {
+                            Game.platform.openURI("https://github.com/AlphaDraxonis/SandboxPixelDungeon/tree/master/core/src/main/assets/environment");
+                            return;
+                        }
+                        if (index == 1) {
+                            newValues[5] = null;
+                        } else {
+                            newValues[5] = options[index];
+                        }
+                        customWater.text(customWaterLabel + "\n" + (newValues[5] == null ? Messages.get(ChangeRegion.class, "no_custom_spritesheet") : newValues[5]));
+                    }
+                });
+            }
+        };
+        add(customWater);
+        customWater.text(customWaterLabel + "\n" + (newValues[5] == null ? Messages.get(ChangeRegion.class, "no_custom_spritesheet") : newValues[5]));
 
         outsideSp = new Component() {
             RedButton save, cancel;
@@ -160,11 +306,13 @@ public class ChangeRegion extends Component {
 
                         onClose.run();
                         for (int i = 0; i < newValues.length; i++) {
-                            if (newValues[i] != oldValues[i] || !Objects.equals(oldMusic, newMusicFile)) {
-                                f.setRegion(newValues[0]);
-                                f.setWaterTexture(newValues[1]);
-                                f.musicRegion = newValues[2];
-                                f.musicFile = newMusicFile;
+                            if (newValues[i] != oldValues[i]) {
+                                levelScheme.setRegion((int) newValues[0]);
+                                levelScheme.waterTexture = (int) newValues[1];
+                                levelScheme.musicRegion = (int) newValues[2];
+                                levelScheme.musicFile = (String) newValues[3];
+                                levelScheme.customTilesTex = (String) newValues[4];
+                                levelScheme.customWaterTex = (String) newValues[5];
                                 Game.switchScene(EditorScene.class);
                                 return;
                             }
@@ -200,6 +348,9 @@ public class ChangeRegion extends Component {
         height = 0;
         height = EditorUtilies.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, region, water) + 2;
         height = EditorUtilies.layoutStyledCompsInRectangles(2, width, 24, 1, this, music);
+
+        height += 10;
+        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, customRegion, customWater);
     }
 
     public static Component createTitle() {

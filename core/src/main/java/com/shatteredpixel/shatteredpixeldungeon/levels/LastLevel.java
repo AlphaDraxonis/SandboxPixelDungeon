@@ -62,16 +62,6 @@ public class LastLevel extends Level {
 	}
 
 	@Override
-	public String tilesTex() {
-		return Assets.Environment.TILES_HALLS;
-	}
-
-	@Override
-	public String waterTex() {
-		return Assets.Environment.WATER_HALLS;
-	}
-
-	@Override
 	public void create() {
 		super.create();
 		for (int i=0; i < length(); i++) {

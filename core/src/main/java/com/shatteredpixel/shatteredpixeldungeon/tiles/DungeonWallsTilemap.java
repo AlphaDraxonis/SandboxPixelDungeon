@@ -36,7 +36,7 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 	private final int region;
 
 	public DungeonWallsTilemap(int region){
-		super(CustomLevel.tilesTex(region == LevelScheme.REGION_NONE ? Dungeon.region() : region, false));
+		super(region == LevelScheme.REGION_NONE ? Dungeon.level.tilesTex() : CustomLevel.tilesTex(region, false));
 
 		this.region = region;
 
@@ -54,7 +54,7 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 		if (!DungeonTileSheet.wallStitcheable(tile) || posBelow < map.length && !DungeonTileSheet.wallStitcheable(map[posBelow]))
 			region = posBelow < Dungeon.level.visualRegions.length ? Dungeon.level.visualRegions[posBelow] : 0;
 		else region = Dungeon.level.visualRegions[pos];
-		if (region != this.region && !(this.region == 0 && region == Dungeon.region()))
+		if (region != this.region && !(this.region == 0 && region == Dungeon.visualRegion()))
 			return -1;
 
 		if (DungeonTileSheet.wallStitcheable(tile)) {

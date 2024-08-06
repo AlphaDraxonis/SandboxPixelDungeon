@@ -367,6 +367,10 @@ public class Dungeon {
         return LevelScheme.getRegion(Dungeon.level);
     }
 
+	public static int visualRegion() {
+		return Dungeon.level.getVisualRegionValue();
+	}
+
     public static boolean isChallenged(int mask) {
         if (CustomDungeon.isEditing()) return false;
         return (challenges & mask) != 0;
@@ -389,7 +393,7 @@ public class Dungeon {
         if (branch == QuestLevels.MINING.ID) {
 //            if (MiningLevel.generateWithThisQuest == null) MiningLevel.generateWithThisQuest = new Blacksmith(new BlacksmithQuest());
             Dungeon.level = level = new MiningLevel();
-            level.levelScheme = customDungeon.getFloor(levelName);
+            level.setLevelScheme(customDungeon.getFloor(levelName));
             level.name = levelName;
             ((MiningLevel) level).destCell = Dungeon.hero.pos;
             level.create();

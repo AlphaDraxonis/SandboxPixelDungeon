@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.KeepProguard;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlowParticle;
@@ -87,6 +88,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.audio.Music;
@@ -228,6 +230,12 @@ public abstract class Level implements Bundlable {
 	private static final String MUSIC_REQUESTS_MOB_IDS = "music_requests_mob_ids";
 	private static final String INIT_FOR_PLAY_CALLED = "init_for_play_called";
 
+
+	public void setLevelScheme(LevelScheme levelScheme) {
+		this.levelScheme = levelScheme;
+		name = levelScheme.getName();
+		initRegionColors();
+	}
 
 	public void create() {
 
@@ -450,7 +458,19 @@ public abstract class Level implements Bundlable {
 	}
 
 	public void playLevelMusic(){
-		//do nothing by default
+		if (Dungeon.hero != null && Zone.getMusic(this, Dungeon.hero.pos) != null) {
+			zoneWithPlayedMusic = zone[Dungeon.hero.pos];
+			currentMusic = Zone.getMusic(this, Dungeon.hero.pos);
+			if (currentMusic.isEmpty()) Music.INSTANCE.end();
+			else Music.INSTANCE.play(currentMusic, true);
+		}
+		else if (musicRequests.isEmpty() && levelScheme.musicFile != null) {
+			if (levelScheme.musicFile.isEmpty()) Music.INSTANCE.end();
+			else Music.INSTANCE.play(levelScheme.musicFile, true);
+		}
+		else {
+			playLevelMusic(levelScheme.musicRegion == REGION_NONE ? getVisualRegionValue() : levelScheme.musicRegion);
+		}
 	}
 
 	public static final String[][] SPECIAL_MUSIC = {
@@ -798,13 +818,84 @@ public abstract class Level implements Bundlable {
 	public int length() {
 		return length;
 	}
-	
-	public String tilesTex() {
-		return null;
+
+	public int getRegionValue() {
+		return levelScheme.getRegion();
 	}
-	
+
+	public int getVisualRegionValue() {
+		return levelScheme.getVisualRegion();
+	}
+
+	public final void initRegionColors() {
+		switch (levelScheme.getVisualRegion()) {
+			//region colors and music are hardcoded in their region level...; not gonna create a new level just to read the color values
+			case REGION_PRISON:
+				color1 = 0x6a723d;
+				color2 = 0x88924c;
+				break;
+			case REGION_CAVES:
+				color1 = 0x534f3e;
+				color2 = 0xb9d661;
+				break;
+			case REGION_CITY:
+				color1 = 0x4b6636;
+				color2 = 0xf2f2f2;
+				break;
+			case REGION_HALLS:
+				color1 = 0x801500;
+				color2 = 0xa68521;
+				break;
+
+			default:
+				color1 = 0x48763c;
+				color2 = 0x59994a;
+				break;
+		}
+	}
+
+	public String tilesTex() {
+		return levelScheme.customTilesTex != null
+				? TextureCache.EXTERNAL_ASSET_PREFIX + CustomDungeonSaves.getExternalFilePath(levelScheme.customTilesTex)
+				: tilesTex(getVisualRegionValue(), false);
+	}
+
 	public String waterTex() {
-		return null;
+		return levelScheme.customWaterTex != null
+				? TextureCache.EXTERNAL_ASSET_PREFIX + CustomDungeonSaves.getExternalFilePath(levelScheme.customWaterTex)
+				: tilesTex(levelScheme.waterTexture == REGION_NONE ? getVisualRegionValue() : levelScheme.waterTexture, true);
+	}
+
+	public static String tilesTex(int region, boolean water) {
+		if (water) {
+			switch (region) {
+				case REGION_PRISON:
+					return Assets.Environment.WATER_PRISON;
+				case REGION_CAVES:
+					return Assets.Environment.WATER_CAVES;
+				case REGION_CITY:
+					return Assets.Environment.WATER_CITY;
+				case REGION_HALLS:
+					return Assets.Environment.WATER_HALLS;
+
+				default:
+					return Assets.Environment.WATER_SEWERS;
+			}
+		}
+
+		switch (region) {
+			case REGION_PRISON:
+				return Assets.Environment.TILES_PRISON;
+			case REGION_CAVES:
+				return Assets.Environment.TILES_CAVES;
+			case REGION_CITY:
+				return Assets.Environment.TILES_CITY;
+			case REGION_HALLS:
+				return Assets.Environment.TILES_HALLS;
+
+			default:
+				return Assets.Environment.TILES_SEWERS;
+		}
 	}
 	
 	abstract protected boolean build();

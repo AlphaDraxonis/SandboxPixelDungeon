@@ -49,11 +49,6 @@ public class CityLevel extends RegularLevel {
 			Assets.Music.CITY_1, Assets.Music.CITY_3, Assets.Music.CITY_3};
 	public static final float[] CITY_TRACK_CHANCES = new float[]{1f, 1f, 0.5f, 0.25f, 1f, 0.5f};
 
-	@Override
-	public void playLevelMusic() {
-		playLevelMusic(LevelScheme.REGION_CITY);
-	}
-
 	public static void playCityLevelMusic() {
 		if (Statistics.amuletObtained){
 			Music.INSTANCE.play(Assets.Music.CITY_TENSE, true);
@@ -74,16 +69,6 @@ public class CityLevel extends RegularLevel {
 		if (forceMax) return 3;
 		//2 to 3, average 2.33
 		return 2 + Random.chances(new float[]{2, 1});
-	}
-	
-	@Override
-	public String tilesTex() {
-		return Assets.Environment.TILES_CITY;
-	}
-	
-	@Override
-	public String waterTex() {
-		return Assets.Environment.WATER_CITY;
 	}
 	
 	@Override

@@ -291,22 +291,6 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
     }
 
     @Override
-    public void setWaterTexture(int arg0) {
-        LuaValue luaScript = levelScheme.luaScript.getScript();
-        if (luaScript != null && !luaScript.get("setWaterTexture").isnil()) {
-            try {
-                luaScript.get("setWaterTexture").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-                return;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.setWaterTexture(arg0);
-    }
-
-    public void super_setWaterTexture(int arg0) {
-        super.setWaterTexture(arg0);
-    }
-
-    @Override
     public int randomDestination(Char arg0) {
         LuaValue luaScript = levelScheme.luaScript.getScript();
         if (luaScript != null && !luaScript.get("randomDestination").isnil()) {
@@ -336,22 +320,6 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
 
     public int super_mobCount() {
         return super.mobCount();
-    }
-
-    @Override
-    public int getWaterTextureValue() {
-        LuaValue luaScript = levelScheme.luaScript.getScript();
-        if (luaScript != null && !luaScript.get("getWaterTextureValue").isnil()) {
-            try {
-                int ret = luaScript.get("getWaterTextureValue").call(CoerceJavaToLua.coerce(this), vars).toint();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.getWaterTextureValue();
-    }
-
-    public int super_getWaterTextureValue() {
-        return super.getWaterTextureValue();
     }
 
     @Override
@@ -432,22 +400,6 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
 
     public boolean[] super_getPassableAndAvoidVarForBoth(Char arg0, Char arg1) {
         return super.getPassableAndAvoidVarForBoth(arg0, arg1);
-    }
-
-    @Override
-    public void setRegion(int arg0) {
-        LuaValue luaScript = levelScheme.luaScript.getScript();
-        if (luaScript != null && !luaScript.get("setRegion").isnil()) {
-            try {
-                luaScript.get("setRegion").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-                return;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.setRegion(arg0);
-    }
-
-    public void super_setRegion(int arg0) {
-        super.setRegion(arg0);
     }
 
     @Override

@@ -193,19 +193,19 @@ public class GameScene extends DungeonScene {
 
 			raisedTerrain = new RaisedTerrainTilemap[6];
 			for (int i = 0; i < raisedTerrain.length; i++) {
-				if (i == Dungeon.region()) continue;
+				if (i == Dungeon.visualRegion()) continue;
 				raisedTerrain[i] = new RaisedTerrainTilemap(i);
 				add(raisedTerrain[i]);
 			}
-			raisedTerrain[Dungeon.region()] = raisedTerrain[0];
+			raisedTerrain[Dungeon.visualRegion()] = raisedTerrain[0];
 
 			walls = new DungeonWallsTilemap[6];
 			for (int i = 0; i < walls.length; i++) {
-				if (i == Dungeon.region()) continue;
+				if (i == Dungeon.visualRegion()) continue;
 				walls[i] = new DungeonWallsTilemap(i);
 				add(walls[i]);
 			}
-			walls[Dungeon.region()] = walls[0];
+			walls[Dungeon.visualRegion()] = walls[0];
 		}
 
 		customWalls = new Group();
@@ -556,11 +556,11 @@ public class GameScene extends DungeonScene {
 	protected void initAndAddDungeonTilemap() {
 		tiles = new DungeonTerrainTilemap[6];
 		for (int i = 0; i < tiles.length; i++) {
-			if (i == Dungeon.region()) continue;
+			if (i == Dungeon.visualRegion()) continue;
 			tiles[i] = new DungeonTerrainTilemap(i);
 			terrain.add(tiles[i]);
 		}
-		tiles[Dungeon.region()] = tiles[0];
+		tiles[Dungeon.visualRegion()] = tiles[0];
 	}
 	
 	public void destroy() {

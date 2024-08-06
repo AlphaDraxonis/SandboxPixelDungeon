@@ -85,6 +85,9 @@ public class WndOptions extends Window {
 		for (int i=0; i < options.length; i++) {
 			final int index = i;
 			buttons[i] = new RedButton( options[i] ) {
+				{
+					setHighlightingEnabled(false);
+				}
 				@Override
 				protected void onClick() {
 					hide();

@@ -111,16 +111,6 @@ public class CityBossLevel extends Level {
 		return exit == 0 ? exitCell : exit;
 	}
 
-	@Override
-	public String tilesTex() {
-		return Assets.Environment.TILES_CITY;
-	}
-
-	@Override
-	public String waterTex() {
-		return Assets.Environment.WATER_CITY;
-	}
-
 	private static final String IMP_SHOP = "imp_shop";
 	private static final String ENTRANCE_CELL = "entrance_cell";
 	private static final String EXIT_CELL = "exit_cell";

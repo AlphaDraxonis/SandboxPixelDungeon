@@ -130,7 +130,7 @@ public class LevelColoring extends Group {
                         altComps2 = new SparseArray<>();
                         altComps3 = new SparseArray<>();
 
-                        initRegion(Dungeon.region());
+                        initRegion(Dungeon.visualRegion());
                     }
                     super.makeExistent();
                 }

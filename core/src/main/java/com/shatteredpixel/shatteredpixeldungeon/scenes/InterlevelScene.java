@@ -135,7 +135,7 @@ public class InterlevelScene extends PixelScene {
 
         //flush the texture cache whenever moving between regions, helps reduce memory load
         if (curTransition != null) {
-            int region = Dungeon.customDungeon.getFloor(curTransition.destLevel).getRegion();
+            int region = Dungeon.customDungeon.getFloor(curTransition.destLevel).getVisualRegion();
             if (region != lastRegion) {
                 TextureCache.clear();
                 lastRegion = region;

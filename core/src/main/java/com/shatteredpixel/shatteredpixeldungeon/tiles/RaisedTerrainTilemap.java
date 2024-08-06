@@ -33,7 +33,7 @@ public class RaisedTerrainTilemap extends DungeonTilemap {
 	private final int region;
 
 	public RaisedTerrainTilemap(int region) {
-		super(CustomLevel.tilesTex(region == LevelScheme.REGION_NONE ? Dungeon.region() : region, false));
+		super(region == LevelScheme.REGION_NONE ? Dungeon.level.tilesTex() : CustomLevel.tilesTex(region, false));
 
 		this.region = region;
 
@@ -46,7 +46,7 @@ public class RaisedTerrainTilemap extends DungeonTilemap {
 		if (flat) return -1;
 
 		int region = Dungeon.level.visualRegions[pos];
-		if (region != this.region && !(this.region == 0 && region == Dungeon.region()))
+		if (region != this.region && !(this.region == 0 && region == Dungeon.visualRegion()))
 			return -1;
 
 		if (DungeonWallsTilemap.skipCells.contains(pos)){

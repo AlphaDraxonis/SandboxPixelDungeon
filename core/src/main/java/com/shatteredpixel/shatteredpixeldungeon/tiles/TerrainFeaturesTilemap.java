@@ -77,7 +77,7 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 				&& CustomTileItem.findAnyCustomTileAt(pos) == null) return -1;
 
 		int stage = Dungeon.level.visualRegions[pos];
-		if(stage == 0) stage = Dungeon.curLvlScheme().getRegion() - 1;
+		if(stage == 0) stage = Dungeon.curLvlScheme().getVisualRegion() - 1;
 		else stage--;
 		if (tile == Terrain.HIGH_GRASS || grassType == Zone.GrassType.HIGH_GRASS){
 			return 9 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);

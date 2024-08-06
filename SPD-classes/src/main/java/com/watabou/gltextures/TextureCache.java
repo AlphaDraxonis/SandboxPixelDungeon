@@ -30,7 +30,10 @@ import com.watabou.utils.FileUtils;
 import java.util.HashMap;
 
 public class TextureCache {
-	
+
+	public static final String EXTERNAL_ASSET_PREFIX = "external/";
+	private static final int EXTERNAL_ASSET_PREFIX_LENGTH = EXTERNAL_ASSET_PREFIX.length();
+
 	private static HashMap<Object,SmartTexture> all = new HashMap<>();
 
 	public synchronized static SmartTexture createSolid( int color ) {
@@ -167,8 +170,13 @@ public class TextureCache {
 				return null;
 				
 			} else if (src instanceof String) {
-				
-				return new Pixmap(Gdx.files.internal((String)src));
+
+				String s = (String) src;
+				if (s.startsWith(EXTERNAL_ASSET_PREFIX)) {
+					return new Pixmap(FileUtils.getFileHandle(s.substring(EXTERNAL_ASSET_PREFIX_LENGTH)));
+				} else {
+					return new Pixmap(Gdx.files.internal(s));
+				}
 				
 			} else if (src instanceof Pixmap) {
 				

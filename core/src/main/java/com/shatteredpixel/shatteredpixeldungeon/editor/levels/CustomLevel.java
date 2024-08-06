@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -37,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Random;
 import com.watabou.utils.*;
 
@@ -51,10 +49,6 @@ public class CustomLevel extends Level {
 
 
     private static final Map<String, TextureFilm> textureFilms = new HashMap<>();
-
-    private int waterTexture = REGION_NONE;
-    public int musicRegion = REGION_NONE;
-    public String musicFile = null;
 
     public boolean enableRespawning = true;
     private float respawnCooldown = TIME_TO_RESPAWN;//How often new mobs spawn
@@ -109,8 +103,8 @@ public class CustomLevel extends Level {
     //avg max map size is 85x85 (v2.0.2)
     public CustomLevel(String name, Class<? extends Level> levelTemplate, Level.Feeling feeling, Long seed, int numInRegion, int depth, LevelScheme levelScheme) {
         super();
+        setLevelScheme(levelScheme);
         this.name = name;
-        this.levelScheme = levelScheme;
 
         Dungeon.depth = depth;
         if (seed == null) seed = DungeonSeed.randomSeed();
@@ -303,105 +297,6 @@ public class CustomLevel extends Level {
     }
 
     @Override
-    public String tilesTex() {
-        return tilesTex(getRegionValue(), false);
-    }
-
-    public static String tilesTex(int region, boolean water) {
-        if (water) {
-            switch (region) {
-                case REGION_PRISON:
-                    return Assets.Environment.WATER_PRISON;
-                case REGION_CAVES:
-                    return Assets.Environment.WATER_CAVES;
-                case REGION_CITY:
-                    return Assets.Environment.WATER_CITY;
-                case REGION_HALLS:
-                    return Assets.Environment.WATER_HALLS;
-
-                default:
-                    return Assets.Environment.WATER_SEWERS;
-            }
-        }
-
-        switch (region) {
-            case REGION_PRISON:
-                return Assets.Environment.TILES_PRISON;
-            case REGION_CAVES:
-                return Assets.Environment.TILES_CAVES;
-            case REGION_CITY:
-                return Assets.Environment.TILES_CITY;
-            case REGION_HALLS:
-                return Assets.Environment.TILES_HALLS;
-
-            default:
-                return Assets.Environment.TILES_SEWERS;
-        }
-    }
-
-    @Override
-    public String waterTex() {
-        return tilesTex(waterTexture == REGION_NONE ? getRegionValue() : waterTexture, true);
-    }
-
-    public int getRegionValue() {
-        return levelScheme.region;
-    }
-
-    public void setRegion(int region) {
-        levelScheme.region = region;
-        switch (region) {
-            //region colors and music are hardcoded in their region level...; not gonna create a new level just to read the color values
-            case REGION_PRISON:
-                color1 = 0x6a723d;
-                color2 = 0x88924c;
-                break;
-            case REGION_CAVES:
-                color1 = 0x534f3e;
-                color2 = 0xb9d661;
-                break;
-            case REGION_CITY:
-                color1 = 0x4b6636;
-                color2 = 0xf2f2f2;
-                break;
-            case REGION_HALLS:
-                color1 = 0x801500;
-                color2 = 0xa68521;
-                break;
-
-            default:
-                color1 = 0x48763c;
-                color2 = 0x59994a;
-                break;
-        }
-    }
-
-    public void setWaterTexture(int waterTexture) {
-        this.waterTexture = waterTexture;
-    }
-
-    public int getWaterTextureValue() {
-        return waterTexture;
-    }
-
-    @Override
-    public void playLevelMusic() {
-        if (Dungeon.hero != null && Zone.getMusic(this, Dungeon.hero.pos) != null) {
-            zoneWithPlayedMusic = zone[Dungeon.hero.pos];
-            currentMusic = Zone.getMusic(this, Dungeon.hero.pos);
-            if (currentMusic.isEmpty()) Music.INSTANCE.end();
-            else Music.INSTANCE.play(currentMusic, true);
-        }
-        else if (musicRequests.isEmpty() && musicFile != null) {
-            if (musicFile.isEmpty()) Music.INSTANCE.end();
-            else Music.INSTANCE.play(musicFile, true);
-        }
-        else {
-            playLevelMusic(musicRegion == REGION_NONE ? getRegionValue() : musicRegion);
-        }
-    }
-
-    @Override
     public Group addVisuals() {
         Group g = super.addVisuals();
         SewerLevel  .addSewerVisuals( this, g);
@@ -575,9 +470,6 @@ public class CustomLevel extends Level {
         return ret;
     }
 
-    private static final String WATER_TEXTUTE = "water_texture";
-    private static final String MUSIC_REGION = "music_region";
-    private static final String MUSIC_FILE = "music_file";
     private static final String ENABLE_RESPAWNING = "enable_respawning";
     private static final String RESPAWN_COOLDOWN = "respawn_cooldown";
     private static final String MOB_LIMIT = "mob_limit";
@@ -588,9 +480,6 @@ public class CustomLevel extends Level {
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
 
-        bundle.put(WATER_TEXTUTE, waterTexture);
-        bundle.put(MUSIC_REGION, musicRegion);
-        if (musicFile != null) bundle.put(MUSIC_FILE, musicFile);
         bundle.put(ENABLE_RESPAWNING, enableRespawning);
         bundle.put(RESPAWN_COOLDOWN, respawnCooldown);
         bundle.put(MOB_LIMIT, mobLimit);
@@ -598,18 +487,41 @@ public class CustomLevel extends Level {
         bundle.put(IGNORE_TERRAIN_FOR_EXPLORING_SCORE, ignoreTerrainForExploringScore);
     }
 
-    int storeRegionTempSoItCanBeTransferredToLevelScheme = REGION_NONE;
+    static class DataTransferToLevelScheme {
+        private int region = REGION_NONE;
+        private int waterTexture = REGION_NONE;
+        private int musicRegion = REGION_NONE;
+        private String musicFile = null;
+
+        void apply(LevelScheme levelScheme) {
+            if (region != REGION_NONE) levelScheme.region = region;
+            levelScheme.waterTexture = waterTexture;
+            levelScheme.musicRegion = musicRegion;
+            levelScheme.musicFile = musicFile;
+        }
+    }
+    DataTransferToLevelScheme dataTransferToLevelScheme;
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         assignBossCustomTiles();
 
-        storeRegionTempSoItCanBeTransferredToLevelScheme = bundle.getInt(REGION);
-        if (storeRegionTempSoItCanBeTransferredToLevelScheme != REGION_NONE && levelScheme != null)
-            levelScheme.region = storeRegionTempSoItCanBeTransferredToLevelScheme;
+        if (bundle.contains(WATER_TEXTURE) || bundle.contains(REGION)) {
+            dataTransferToLevelScheme = new DataTransferToLevelScheme();
+            dataTransferToLevelScheme.region = bundle.getInt(REGION);
+            dataTransferToLevelScheme.waterTexture = bundle.getInt(WATER_TEXTURE);
 
-        waterTexture = bundle.getInt(WATER_TEXTUTE);
+            dataTransferToLevelScheme.musicRegion = bundle.getInt(MUSIC_REGION) + bundle.getInt("music");
+            if (bundle.contains("custom_music")) dataTransferToLevelScheme.musicFile = bundle.getString("custom_music");
+            else if (bundle.contains(MUSIC_FILE)) dataTransferToLevelScheme.musicFile = bundle.getString(MUSIC_FILE);
+
+            if (levelScheme != null) {
+                dataTransferToLevelScheme.apply(levelScheme);
+                dataTransferToLevelScheme = null;
+            }
+        }
+
         enableRespawning = bundle.getBoolean(ENABLE_RESPAWNING);
         respawnCooldown = bundle.getInt(RESPAWN_COOLDOWN);
         mobLimit = bundle.getInt(MOB_LIMIT);
@@ -621,10 +533,6 @@ public class CustomLevel extends Level {
         for (Mob m : mobs) {
             m.clearTime();//Fix wrong time caused by v0.7
         }
-
-        musicRegion = bundle.getInt(MUSIC_REGION) + bundle.getInt("music");
-        if (bundle.contains("custom_music")) musicFile = bundle.getString("custom_music");
-        else if (bundle.contains(MUSIC_FILE)) musicFile = bundle.getString(MUSIC_FILE);
 
         if (bundle.contains("init_for_play_called") && !bundle.getBoolean("init_for_play_called")) {//TODO remove in 1.2
             blobs.remove(Alchemy.class);

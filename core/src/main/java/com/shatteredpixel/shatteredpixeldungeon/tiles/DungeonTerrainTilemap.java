@@ -35,21 +35,21 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 	final int region;
 
 	public DungeonTerrainTilemap(int region){
-		super(CustomLevel.tilesTex(region == LevelScheme.REGION_NONE ? Dungeon.region() : region, false));
+		super(region == LevelScheme.REGION_NONE ? Dungeon.level.tilesTex() : CustomLevel.tilesTex(region, false));
 
 		this.region = region;
 
 		map( CustomDungeon.isEditing() ? Dungeon.level.map : Dungeon.level.visualMap, Dungeon.level.width() );
 
 		instances[region] = this;
-		if (region == 0) instances[Dungeon.region()] = this;
+		if (region == 0) instances[Dungeon.visualRegion()] = this;
 	}
 
 	@Override
 	protected int getTileVisual(int pos, int tile, boolean flat) {
 
 		int region = pos >= 0 ? Dungeon.level.visualRegions[pos] : 0;
-		if (region != this.region && !(this.region == 0 && region == Dungeon.region()))
+		if (region != this.region && !(this.region == 0 && region == Dungeon.visualRegion()))
 			return DungeonTileSheet.NULL_TILE;
 
 		int visual = DungeonTileSheet.directVisuals.get(tile, -1);

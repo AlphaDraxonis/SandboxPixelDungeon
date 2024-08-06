@@ -26,11 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Bones;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bat;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalWisp;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGuard;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
@@ -46,11 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.MiningLevelPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MineEntrance;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MineGiantRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MineLargeRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MineSecretRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MineSmallRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -110,11 +102,6 @@ public class MiningLevel extends CavesLevel {
 			generateWithThisQuest = null;
 		}
 		super.create();
-	}
-
-	@Override
-	public String tilesTex() {
-		return Assets.Environment.TILES_CAVES;
 	}
 
 	@Override

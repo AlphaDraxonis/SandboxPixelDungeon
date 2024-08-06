@@ -98,16 +98,6 @@ public class PrisonBossLevel extends Level {
 		return state;
 	}
 	
-	@Override
-	public String tilesTex() {
-		return Assets.Environment.TILES_PRISON;
-	}
-	
-	@Override
-	public String waterTex() {
-		return Assets.Environment.WATER_PRISON;
-	}
-	
 	private static final String STATE	        = "state";
 	private static final String TENGU	        = "tengu";
 	private static final String STORED_ITEMS    = "storeditems";

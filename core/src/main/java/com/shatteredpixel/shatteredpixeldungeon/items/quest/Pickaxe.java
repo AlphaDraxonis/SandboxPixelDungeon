@@ -99,7 +99,7 @@ public class Pickaxe extends MeleeWeapon {
 		
 		if (action.equals(AC_MINE)) {
 			
-			if (Dungeon.level.levelScheme.getRegion() != LevelScheme.REGION_CAVES) {
+			if (Dungeon.level.levelScheme.getVisualRegion() != LevelScheme.REGION_CAVES) {
 				GLog.w( Messages.get(this, "no_vein") );
 				return;
 			}

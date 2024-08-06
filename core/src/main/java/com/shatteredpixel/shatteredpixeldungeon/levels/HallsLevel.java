@@ -30,24 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.HallsPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.DemonSpawnerRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BlazingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CorrosionTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CursingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisarmingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DistortionTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FlashingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FrostTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GatewayTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GeyserTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrimTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GuardianTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.RockfallTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.StormTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.SummoningTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WarpingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WeakeningTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.glwrap.Blending;
@@ -74,13 +57,6 @@ public class HallsLevel extends RegularLevel {
 			= new String[]{Assets.Music.HALLS_1, Assets.Music.HALLS_2, Assets.Music.HALLS_2,
 			Assets.Music.HALLS_1, Assets.Music.HALLS_3, Assets.Music.HALLS_3};
 	public static final float[] HALLS_TRACK_CHANCES = new float[]{1f, 1f, 0.5f, 0.25f, 1f, 0.5f};
-
-
-	@Override
-	public void playLevelMusic() {
-		playLevelMusic(LevelScheme.REGION_HALLS);
-	}
-
 	public static void playHallsLevelMusic() {
 		if (Statistics.amuletObtained){
 			Music.INSTANCE.play(Assets.Music.HALLS_TENSE, true);
@@ -125,16 +101,6 @@ public class HallsLevel extends RegularLevel {
 		addItemToSpawn( new Torch() );
 		addItemToSpawn( new Torch() );
 		super.create();
-	}
-	
-	@Override
-	public String tilesTex() {
-		return Assets.Environment.TILES_HALLS;
-	}
-	
-	@Override
-	public String waterTex() {
-		return Assets.Environment.WATER_HALLS;
 	}
 	
 	@Override

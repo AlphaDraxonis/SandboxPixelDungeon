@@ -50,11 +50,6 @@ public class CavesLevel extends RegularLevel {
 			Assets.Music.CAVES_1, Assets.Music.CAVES_3, Assets.Music.CAVES_3};
 	public static final float[] CAVES_TRACK_CHANCES = new float[]{1f, 1f, 0.5f, 0.25f, 1f, 0.5f};
 
-	@Override
-	public void playLevelMusic() {
-		playLevelMusic(LevelScheme.REGION_CAVES);
-	}
-
 	public static void playCavesLevelMusic() {
 		if (Statistics.amuletObtained || Dungeon.level instanceof MiningLevel){
 			Music.INSTANCE.play(Assets.Music.CAVES_TENSE, true);
@@ -83,16 +78,6 @@ public class CavesLevel extends RegularLevel {
 				.setWater(feeling == Feeling.WATER ? 0.85f : 0.30f, 6)
 				.setGrass(feeling == Feeling.GRASS ? 0.65f : 0.15f, 3)
 				.setTraps(nTraps(), trapClasses(), trapChances());
-	}
-
-	@Override
-	public String tilesTex() {
-		return Assets.Environment.TILES_CAVES;
-	}
-	
-	@Override
-	public String waterTex() {
-		return Assets.Environment.WATER_CAVES;
 	}
 	
 	@Override

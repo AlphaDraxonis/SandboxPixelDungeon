@@ -54,11 +54,6 @@ public class SewerLevel extends RegularLevel {
 			Assets.Music.SEWERS_1, Assets.Music.SEWERS_3, Assets.Music.SEWERS_3};
 	public static final float[] SEWER_TRACK_CHANCES = new float[]{1f, 1f, 0.5f, 0.25f, 1f, 0.5f};
 
-	@Override
-	public void playLevelMusic(){
-		playLevelMusic(LevelScheme.REGION_SEWERS);
-	}
-
 	public static boolean playingQuestMusic;
 	public static void playSewersLevelMusic() {
 
@@ -92,16 +87,6 @@ public class SewerLevel extends RegularLevel {
 				.setWater(feeling == Feeling.WATER ? 0.85f : 0.30f, 5)
 				.setGrass(feeling == Feeling.GRASS ? 0.80f : 0.20f, 4)
 				.setTraps(nTraps(), trapClasses(), trapChances());
-	}
-	
-	@Override
-	public String tilesTex() {
-		return Assets.Environment.TILES_SEWERS;
-	}
-	
-	@Override
-	public String waterTex() {
-		return Assets.Environment.WATER_SEWERS;
 	}
 	
 	@Override

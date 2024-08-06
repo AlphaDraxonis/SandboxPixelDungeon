@@ -69,7 +69,7 @@ public class CustomObject extends LuaCodeHolder {
 				}
 			}
 		}
-		LuaManager.globals.set("globals", globalVars);
+		LuaManager.globals.set("globals", globalVars == null ? LuaValue.NIL : globalVars);
 
 		for (CustomObject obj : customObjects.values()) {
 			obj.loadScript();
@@ -173,6 +173,8 @@ public class CustomObject extends LuaCodeHolder {
 		LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, GLOBAL_VARS);
 		if (loaded != null && loaded.istable()) {
 			globalVars = loaded.checktable();
+		} else {
+			globalVars = null;
 		}
 	}
 

@@ -290,7 +290,7 @@ public class Shopkeeper extends NPC {
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
 			return Messages.get(this, "talk_ascent");
 		}
-		switch (Dungeon.curLvlScheme().getRegion()){
+		switch (Dungeon.curLvlScheme().getVisualRegion()){
             case LevelScheme.REGION_PRISON: default:
 				return Messages.get(this, "talk_prison_intro") + "\n\n" + Messages.get(this, "talk_prison_" + Dungeon.hero.heroClass.name());
             case LevelScheme.REGION_CAVES:

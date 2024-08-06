@@ -108,7 +108,7 @@ public class DungeonToJsonConverter {
             appendParam(b, "height", height);
             appendParam(b, "region", l.getRegion());//1 to 5   is value??!
             appendParam(b, "view_distance", f.viewDistance);
-            appendMusic(b, f.getRegionValue());
+            appendMusic(b, f.getVisualRegionValue());
             appendArrayReplace(b, "map", f.map, Terrain.SIGN_SP, Terrain.SIGN);
 
             appendArrayHead(b, "entrances");

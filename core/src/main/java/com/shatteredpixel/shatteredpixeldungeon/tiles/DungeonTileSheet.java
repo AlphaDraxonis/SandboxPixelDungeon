@@ -348,7 +348,7 @@ public class DungeonTileSheet {
 
 		if (tile == Terrain.BOOKSHELF || below == Terrain.BOOKSHELF)        result = WALL_INTERNAL_WOODEN;
 		//TODO currently this line on triggers on mining floors, do we want to make it universal?
-		else if (Dungeon.curLvlScheme().getRegion() == LevelScheme.REGION_CAVES && tile == Terrain.WALL_DECO) result = WALL_INTERNAL_DECO;
+		else if (Dungeon.curLvlScheme().getVisualRegion() == LevelScheme.REGION_CAVES && tile == Terrain.WALL_DECO) result = WALL_INTERNAL_DECO;
 		else                                                                result = WALL_INTERNAL;
 
 		if (!wallStitcheable(right))        result += 1;
