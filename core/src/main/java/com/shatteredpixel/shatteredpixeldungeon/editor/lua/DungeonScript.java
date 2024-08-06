@@ -27,32 +27,43 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import org.luaj.vm2.LuaValue;
 
-public class DungeonScript {
+public abstract class DungeonScript extends LuaCodeHolder {
+
+	{
+		clazz = DungeonScript.class;
+	}
 
 	//***************
 	//**** ITEMS ****
 	//***************
 
 	@KeepProguard
-	public boolean onExecuteItem(Item item, Hero hero) {
-		if (item.defaultAction() != null) return onExecuteItem(item, hero, item.defaultAction());
-		return true;//false = cancel execution
+	public final void executeItem(Item item, Hero hero, Executer doExecute) {
+		executeItem(item, hero, item.defaultAction(), doExecute);
 	}
 
 	@KeepProguard
-	public boolean onExecuteItem(Item item, Hero hero, String action) {
-		return true;//false = cancel execution
+	public void executeItem(Item item, Hero hero, String action, Executer doExecute) {
+		doExecute.execute(item, hero, action);
 	}
 
-	//Only for Lua
+	public static class Executer {
+		protected void execute(Item item, Hero hero, String action) {
+			item.execute(hero, action);
+		}
+	}
+
 	@KeepProguard
-	public void onItemCollected(Item item) {
+	public boolean onItemCollected(Item item) {
+		return true;//false = don't collect
 	}
 
-	//blocked items can not appear in game by any means
+	//blocked items cannot appear in game by any means
 	@KeepProguard
 	public boolean isItemBlocked(Item item) {
 		if (Dungeon.isChallenged(Challenges.NO_HERBALISM) && item instanceof Dewdrop){
@@ -62,4 +73,16 @@ public class DungeonScript {
 		return false;
 	}
 
+	@KeepProguard
+	public int onEarnXP(int amount, Class<?> source) {
+		return amount;
+	}
+
+	@KeepProguard
+	public void onLevelUp() {
+	}
+
+	final LuaValue currentScript() {
+		return CustomDungeon.isEditing() ? null : script;
+	}
 }

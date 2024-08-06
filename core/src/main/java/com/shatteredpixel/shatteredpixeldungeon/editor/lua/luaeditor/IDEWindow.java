@@ -31,10 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaLevel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.PopupMenu;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -192,7 +189,7 @@ public class IDEWindow extends Component {
 		};
 		add(inputDesc);
 
-		codeInputPanels[i++] = inputLocalVars = new VariablesPanel(Messages.get(IDEWindow.class, "vars_title"), "vars") {
+		codeInputPanels[i++] = inputLocalVars = new VariablesPanel(Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars_") + "_title"), "vars") {
 			@Override
 			protected void layoutParent() {
 				layoutParent.run();
@@ -200,7 +197,7 @@ public class IDEWindow extends Component {
 
 			@Override
 			protected String createDescription() {
-				return Messages.get(IDEWindow.class, "vars_info");
+				return Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars_") + "_info");
 			}
 
 			@Override
@@ -210,23 +207,27 @@ public class IDEWindow extends Component {
 		};
 		add(inputLocalVars);
 
-		codeInputPanels[i++] = inputScriptVars = new VariablesPanel(Messages.get(IDEWindow.class, "static_title"), "static") {
-			@Override
-			protected void layoutParent() {
-				layoutParent.run();
-			}
+		if (clazz != DungeonScript.class) {
+			codeInputPanels[i++] = inputScriptVars = new VariablesPanel(Messages.get(IDEWindow.class, "static_title"), "static") {
+				@Override
+				protected void layoutParent() {
+					layoutParent.run();
+				}
 
-			@Override
-			protected String createDescription() {
-				return Messages.get(IDEWindow.class, "static_info");
-			}
+				@Override
+				protected String createDescription() {
+					return Messages.get(IDEWindow.class, "static_info");
+				}
 
-			@Override
-			protected void onTextChange() {
-				unsavedChanges = true;
-			}
-		};
-		add(inputScriptVars);
+				@Override
+				protected void onTextChange() {
+					unsavedChanges = true;
+				}
+			};
+			add(inputScriptVars);
+		} else {
+			codeInputPanels[i++] = inputScriptVars = null;
+		}
 
 		codeInputPanels[codeInputPanels.length-1] = additionalCode = new AdditionalCodePanel() {
 			@Override
@@ -240,6 +241,7 @@ public class IDEWindow extends Component {
 			}
 		};
 		add(additionalCode);
+
 
 
 		for (LuaMethodManager methodInfo : methods) {
@@ -295,6 +297,7 @@ public class IDEWindow extends Component {
 		StringBuilder functions = new StringBuilder();
 
 		for (int i = 1; i < codeInputPanels.length; i++) {
+			if (codeInputPanels[i] == null) continue;
 			String code = codeInputPanels[i].convertToLuaCode();
 			if (code != null) {
 				functions.append(code);
@@ -434,6 +437,7 @@ public class IDEWindow extends Component {
 
 		List<String> functions = LuaScript.allFunctionNames(cleanedCode);
 		for (CodeInputPanel inputPanel : codeInputPanels) {
+			if (inputPanel == null) continue;
 			inputPanel.applyScript(force, currentScript, cleanedCode);
 			if (inputPanel instanceof MethodPanel) functions.remove(((MethodPanel) inputPanel).getMethodName());
 		}

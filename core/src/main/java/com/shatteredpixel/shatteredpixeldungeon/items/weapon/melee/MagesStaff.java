@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
@@ -151,8 +152,7 @@ public class MagesStaff extends MeleeWeapon {
 
 			wand.cursed = cursed || hasCurseEnchant();
 
-			if (!Dungeon.level.onExecuteItem(wand, hero, action)) return;
-			wand.execute(hero, action);
+			Dungeon.dungeonScript.executeItem(wand, hero, action, new DungeonScript.Executer());
 		}
 	}
 

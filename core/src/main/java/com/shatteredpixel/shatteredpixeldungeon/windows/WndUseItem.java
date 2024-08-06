@@ -22,6 +22,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.ui.InventoryPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -53,14 +55,16 @@ public class WndUseItem extends WndInfoItem {
 						if (owner != null && owner.parent != null) owner.hide();
 						if (Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(item)){
 
-							if (Dungeon.level.onExecuteItem(item, Dungeon.hero, action)) {
-								item.execute(Dungeon.hero, action);
-
-								Item.updateQuickslot();
-								if (action.equals(item.defaultAction()) && item.usesTargeting && owner == null){
-									InventoryPane.useTargeting();
+							Dungeon.dungeonScript.executeItem(item, Dungeon.hero, action, new DungeonScript.Executer() {
+								@Override
+								protected void execute(Item item, Hero hero, String action) {
+									super.execute(item, hero, action);
+									Item.updateQuickslot();
+									if (action.equals(item.defaultAction()) && item.usesTargeting && owner == null){
+										InventoryPane.useTargeting();
+									}
 								}
-							}
+							});
 
 						}
 					}

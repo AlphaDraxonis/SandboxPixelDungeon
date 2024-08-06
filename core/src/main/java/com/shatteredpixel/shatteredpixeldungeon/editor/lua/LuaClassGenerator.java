@@ -43,33 +43,21 @@ import java.util.Map;
 
 public final class LuaClassGenerator {
 
-    public static void enterClass() {
-        int i = 0;
-    }
-
-    private static final String vars =
-            "vars = { " +
-//                    "local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
-                    "item = nil;" +
-                    "test = 11;" +
-                    "static = {" +
-                    "aNumber = 17" +
-                    "};" +
-                    "globals = {" +
-                    "globalValue = 99" +
-                    "}" +
-                    " }  ";
-
     private static final String ROOT_DIR = System.getProperty("user.home")
             + "/ZZDaten/Freizeit/Programmieren/ShatteredPD/SPD-Sandbox/Projekt/core/src/main/java/";
-//            Mob.class.getPackage().getName().replace('.', '/') + "/luamobs/";
 
     private LuaClassGenerator() {
     }
 
     public static void genaaa_IMPORTANT_BeforeGeneratingMakeSure_ACCESS_CHECHER_isPublicgenerateLevelSourceFilesgenerateMobFiles(){}
 
-    public static void generateLevelSourceFiles() {
+    public static void generateAll() {
+        generateLevelSourceFiles();
+        generateMobSourceFiles();
+        generateDungeonScriptSourceFile();
+    }
+
+    private static void generateLevelSourceFiles() {
         generateLevelFile(CavesBossLevel.class);
         generateLevelFile(CavesLevel.class);
         generateLevelFile(CavesBossLevel.class);
@@ -88,7 +76,7 @@ public final class LuaClassGenerator {
         generateLevelFile(CustomLevel.class);
     }
 
-    public static void generateMobFiles() {
+    public static void generateMobSourceFiles() {
 
         Class<?>[][] mobs = EditorInvCategory.getAll(Mobs.values());
 
@@ -145,6 +133,96 @@ public final class LuaClassGenerator {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void generateDungeonScriptSourceFile() {
+        String source = generateSourceCodeDungeonScript();
+
+        String path = ROOT_DIR
+                + (DungeonScript.class.getPackage().getName()).replaceAll("\\.", "/") + "/"
+                + DungeonScript.class.getSimpleName() + "_lua.java";
+
+        File f = new File(path);
+
+        if (f.exists()) f.delete();
+
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (FileWriter writer = new FileWriter(f)) {
+            writer.write(source);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String generateSourceCodeDungeonScript() {
+        String pckge = "package " + DungeonScript.class.getPackage().getName() + ";\n\n";
+        String imprt = "import " + Messages.MAIN_PACKAGE_NAME + "actors.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "actors.buffs.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "actors.mobs.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "actors.mobs.npcs.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "actors.hero.Hero;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.levels.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.lua.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.ui.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.util.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "items.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "items.armor.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "items.weapon.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "items.wands.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "levels.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "levels.rooms.special.SentryRoom;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "sprites.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "windows.WndError;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "ui.Window;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "scenes.DungeonScene;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "GameObject;\n" +
+                "import com.watabou.noosa.Game;\n" +
+                "import com.watabou.utils.*;\n" +
+                "import org.luaj.vm2.*;\n" +
+                "import org.luaj.vm2.lib.jse.CoerceJavaToLua;\n" +
+                "import java.util.*;\n\n";
+        String extents = DungeonScript.class.getSimpleName();
+        String classHead = "public class " + DungeonScript.class.getSimpleName() + "_lua extends " + extents + " implements LuaClass {\n\n";
+
+        String implementLuaClassStuff =
+                "\n" +
+                        "    private LuaValue vars;\n\n" +
+                        "    @Override\n" +
+                        "    public void setIdentifier(int identifier) {\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public int getIdentifier() {\n" +
+                        "        return -1;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public LuaClass newInstance() {\n" +
+                        "        return new DungeonScript_lua();\n" +
+                        "    }\n\n" +
+                        "    public void storeInBundle(Bundle bundle) {\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public void restoreFromBundle(Bundle bundle) {\n" +
+                        "    }\n\n";
+
+        Map<String, Method> methods = new HashMap<>();
+        findAllMethodsToOverride(DungeonScript.class, DungeonScript.class, methods);
+        methods.remove("storeInBundle");
+        methods.remove("restoreFromBundle");
+
+        return pckge
+                + imprt
+                + classHead
+                + implementLuaClassStuff
+                + overrideMethods(methods.values(), "getScript()")
+                + "}";
     }
 
     public static String generateSourceCodeMob(Class<?> inputClass) {

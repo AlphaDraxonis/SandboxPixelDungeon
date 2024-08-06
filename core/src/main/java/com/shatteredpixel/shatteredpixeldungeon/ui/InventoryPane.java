@@ -27,6 +27,8 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -581,13 +583,16 @@ public class InventoryPane extends Component {
 			}
 
 			if (selector == null && item.defaultAction() != null){
-				if (Dungeon.level.onExecuteItem(item, Dungeon.hero)) {
-					item.execute(Dungeon.hero);
-					if (item != null && item.usesTargeting) {
-						targetingSlot = this;
-						InventoryPane.useTargeting();
+				Dungeon.dungeonScript.executeItem(item, Dungeon.hero, new DungeonScript.Executer() {
+					@Override
+					protected void execute(Item item, Hero hero, String action) {
+						super.execute(item, hero, action);
+						if (item != null && item.usesTargeting) {
+							targetingSlot = InventoryPaneSlot.this;
+							InventoryPane.useTargeting();
+						}
 					}
-				}
+				});
 			} else {
 				onClick();
 			}

@@ -29,8 +29,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.watabou.idewindowactions.LuaScript;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -57,12 +58,16 @@ public class CustomObject extends LuaCodeHolder {
 	public static void loadScripts() {
 		LuaManager.callStaticInitializers();
 
-		if (globalVars == null) {
-			StringBuilder createGlobalsScript = new StringBuilder();
-			for (String s : globalVarsDefaults) {
-				if (!s.isEmpty()) createGlobalsScript.append(s).append(",");
+		Dungeon.dungeonScript.script = null;
+		if (Dungeon.dungeonScript.pathToScript != null) {
+			LuaScript ls = CustomDungeonSaves.readLuaFile(Dungeon.dungeonScript.pathToScript);
+			if (ls != null) {
+				Dungeon.dungeonScript.script = LuaManager.globals.load(ls.code).call();
+
+				if (globalVars == null && Dungeon.dungeonScript.script.istable()) {
+					globalVars = Dungeon.dungeonScript.script.get("vars");
+				}
 			}
-			globalVars = LuaManager.globals.load("return {"+ createGlobalsScript +"}").call();
 		}
 		LuaManager.globals.set("globals", globalVars);
 
@@ -142,13 +147,10 @@ public class CustomObject extends LuaCodeHolder {
 	public static int nextCustomObjectID = 1;
 	public static Map<Integer, CustomObject> customObjects = new HashMap<>();
 
-	public static List<String> globalVarsDefaults = new ArrayList<>(7);//not saved once game has started!
-
-
 	private static final String NODE = "lua_static";
 	private static final String CUSTOM_OBJECTS = "custom_objects";
 	private static final String GLOBAL_VARS = "global_vars";
-	private static final String GLOBAL_VARS_DEFAULTS = "global_vars_defaults";
+	private static final String DUNGEON_SCRIPT_PATH = "dungeon_script_path";
 
 	public static void restore(Bundle bundle) {
 
@@ -160,20 +162,18 @@ public class CustomObject extends LuaCodeHolder {
 
 		Bundle node = bundle.getBundle(NODE);
 
+		if (node.contains(DUNGEON_SCRIPT_PATH))
+			Dungeon.dungeonScript.pathToScript = node.getString(DUNGEON_SCRIPT_PATH);
+
 		for (Bundlable b : node.getCollection(CUSTOM_OBJECTS)) {
 			CustomObject clo = (CustomObject) b;
 			customObjects.put(clo.luaClass.getIdentifier(), clo);
 		}
 
-		globalVarsDefaults.clear();
-
-//		LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, GLOBAL_VARS);
-//		if (loaded != null && loaded.istable()) {
-//			globalVars = loaded.checktable();
-//		} else {
-//			String[] array = node.getStringArray(GLOBAL_VARS_DEFAULTS);
-//			if (array != null) globalVarsDefaults.addAll(Arrays.asList(array));
-//		}
+		LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, GLOBAL_VARS);
+		if (loaded != null && loaded.istable()) {
+			globalVars = loaded.checktable();
+		}
 	}
 
 	public static void store(Bundle bundle) {
@@ -181,10 +181,11 @@ public class CustomObject extends LuaCodeHolder {
 		node.put(CUSTOM_OBJECTS, customObjects.values());
 		bundle.put(NODE, node);
 
+		if (Dungeon.dungeonScript.pathToScript != null)
+			node.put(DUNGEON_SCRIPT_PATH, Dungeon.dungeonScript.pathToScript);
+
 		if (globalVars != null && globalVars.istable() && !CustomDungeon.isEditing()) {
 			LuaManager.storeVarInBundle(bundle, globalVars, GLOBAL_VARS);
-		} else {
-			bundle.put(GLOBAL_VARS_DEFAULTS, globalVarsDefaults.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
 		}
 	}
 
@@ -195,6 +196,8 @@ public class CustomObject extends LuaCodeHolder {
 	public static void reset() {
 		customObjects.clear();
 		nextCustomObjectID = 1;
+		Dungeon.dungeonScript.pathToScript = null;
+		Dungeon.dungeonScript.script = null;
 	}
 
 

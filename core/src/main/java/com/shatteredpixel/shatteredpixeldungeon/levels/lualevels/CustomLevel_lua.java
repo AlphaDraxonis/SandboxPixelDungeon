@@ -51,22 +51,6 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
 
 
     @Override
-    protected void updateMusic() {
-        LuaValue luaScript = levelScheme.luaScript.getScript();
-        if (luaScript != null && !luaScript.get("updateMusic").isnil()) {
-            try {
-                luaScript.get("updateMusic").call(CoerceJavaToLua.coerce(this), vars);
-                return;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.updateMusic();
-    }
-
-    public void super_updateMusic() {
-        super.updateMusic();
-    }
-
-    @Override
     public int getCoinDoorCost(int arg0) {
         LuaValue luaScript = levelScheme.luaScript.getScript();
         if (luaScript != null && !luaScript.get("getCoinDoorCost").isnil()) {
@@ -80,6 +64,22 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
 
     public int super_getCoinDoorCost(int arg0) {
         return super.getCoinDoorCost(arg0);
+    }
+
+    @Override
+    protected void updateMusic() {
+        LuaValue luaScript = levelScheme.luaScript.getScript();
+        if (luaScript != null && !luaScript.get("updateMusic").isnil()) {
+            try {
+                luaScript.get("updateMusic").call(CoerceJavaToLua.coerce(this), vars);
+                return;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.updateMusic();
+    }
+
+    public void super_updateMusic() {
+        super.updateMusic();
     }
 
     @Override
@@ -307,22 +307,6 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
     }
 
     @Override
-    public int mobCount() {
-        LuaValue luaScript = levelScheme.luaScript.getScript();
-        if (luaScript != null && !luaScript.get("mobCount").isnil()) {
-            try {
-                int ret = luaScript.get("mobCount").call(CoerceJavaToLua.coerce(this), vars).toint();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.mobCount();
-    }
-
-    public int super_mobCount() {
-        return super.mobCount();
-    }
-
-    @Override
     public int randomDestination(Char arg0) {
         LuaValue luaScript = levelScheme.luaScript.getScript();
         if (luaScript != null && !luaScript.get("randomDestination").isnil()) {
@@ -336,6 +320,22 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
 
     public int super_randomDestination(Char arg0) {
         return super.randomDestination(arg0);
+    }
+
+    @Override
+    public int mobCount() {
+        LuaValue luaScript = levelScheme.luaScript.getScript();
+        if (luaScript != null && !luaScript.get("mobCount").isnil()) {
+            try {
+                int ret = luaScript.get("mobCount").call(CoerceJavaToLua.coerce(this), vars).toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.mobCount();
+    }
+
+    public int super_mobCount() {
+        return super.mobCount();
     }
 
     @Override
@@ -400,22 +400,6 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
 
     public void super_occupyCell(Char arg0) {
         super.occupyCell(arg0);
-    }
-
-    @Override
-    public void onItemCollected(Item arg0) {
-        LuaValue luaScript = levelScheme.luaScript.getScript();
-        if (luaScript != null && !luaScript.get("onItemCollected").isnil()) {
-            try {
-                luaScript.get("onItemCollected").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
-                return;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.onItemCollected(arg0);
-    }
-
-    public void super_onItemCollected(Item arg0) {
-        super.onItemCollected(arg0);
     }
 
     @Override
@@ -883,19 +867,19 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
     }
 
     @Override
-    public int randomRespawnCell(Char arg0) {
+    public int randomRespawnCell(Char arg0, boolean arg1) {
         LuaValue luaScript = levelScheme.luaScript.getScript();
         if (luaScript != null && !luaScript.get("randomRespawnCell").isnil()) {
             try {
-                int ret = luaScript.get("randomRespawnCell").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
+                int ret = luaScript.get("randomRespawnCell").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
-        return super.randomRespawnCell(arg0);
+        return super.randomRespawnCell(arg0, arg1);
     }
 
-    public int super_randomRespawnCell(Char arg0) {
-        return super.randomRespawnCell(arg0);
+    public int super_randomRespawnCell(Char arg0, boolean arg1) {
+        return super.randomRespawnCell(arg0, arg1);
     }
 
     @Override
@@ -960,22 +944,6 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
 
     public int super_length() {
         return super.length();
-    }
-
-    @Override
-    public boolean onExecuteItem(Item arg0, Hero arg1, String arg2) {
-        LuaValue luaScript = levelScheme.luaScript.getScript();
-        if (luaScript != null && !luaScript.get("onExecuteItem").isnil()) {
-            try {
-                boolean ret = luaScript.get("onExecuteItem").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1), CoerceJavaToLua.coerce(arg2)}).arg1().toboolean();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.onExecuteItem(arg0, arg1, arg2);
-    }
-
-    public boolean super_onExecuteItem(Item arg0, Hero arg1, String arg2) {
-        return super.onExecuteItem(arg0, arg1, arg2);
     }
 
     @Override

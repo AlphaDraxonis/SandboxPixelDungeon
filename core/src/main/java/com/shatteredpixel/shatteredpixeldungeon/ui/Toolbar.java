@@ -25,10 +25,11 @@ import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.HoldFast;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClassGenerator;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -169,12 +170,15 @@ public class Toolbar extends Component {
 								});
 							} else {
 
-								if (Dungeon.level.onExecuteItem(item, Dungeon.hero)) {
-									item.execute(Dungeon.hero);
-									if (item.usesTargeting) {
-										QuickSlotButton.useTargeting(idx);
+								Dungeon.dungeonScript.executeItem(item, Dungeon.hero, new DungeonScript.Executer() {
+									@Override
+									protected void execute(Item item, Hero hero, String action) {
+										super.execute(item, hero, action);
+										if (item.usesTargeting) {
+											QuickSlotButton.useTargeting(idx);
+										}
 									}
-								}
+								});
 							}
 							super.onSelect(idx, alt);
 						}
@@ -281,7 +285,6 @@ public class Toolbar extends Component {
 		add(btnSearch = new Tool(44, 0, 20, 26) {
 			@Override
 			protected void onClick() {
-				LuaClassGenerator.enterClass();
 				if (Dungeon.hero != null && Dungeon.hero.ready) {
 					if (!examining && !GameScene.cancel()) {
 						GameScene.selectCell(informer);
@@ -455,9 +458,7 @@ public class Toolbar extends Component {
 									super.onSelect(idx, alt);
 									Item item = items.get(idx);
 									if (alt && item.defaultAction() != null) {
-										if (Dungeon.level.onExecuteItem(item, Dungeon.hero)) {
-											item.execute(Dungeon.hero);
-										}
+										Dungeon.dungeonScript.executeItem(item, Dungeon.hero, new DungeonScript.Executer());
 									} else {
 										InventoryPane.clearTargetingSlot();
 										Game.scene().addToFront(new WndUseItem(null, item));

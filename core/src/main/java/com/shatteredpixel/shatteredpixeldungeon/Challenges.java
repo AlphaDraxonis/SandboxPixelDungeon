@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
-import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 
 public class Challenges {
@@ -64,12 +63,8 @@ public class Challenges {
 	}
 
 	public static boolean isItemBlocked( Item item ){
-
-		if (Dungeon.isChallenged(NO_HERBALISM) && item instanceof Dewdrop){
-			return true;
-		}
-
-		return false;
+		//do not add blocked items here, this is just a delegating method!
+		return Dungeon.dungeonScript.isItemBlocked(item);
 
 	}
 

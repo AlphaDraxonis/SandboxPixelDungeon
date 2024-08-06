@@ -1913,6 +1913,9 @@ public class Hero extends Char {
 	
 	public void earnExp( int exp, Class source ) {
 
+		if (this == Dungeon.hero)
+			exp = Dungeon.dungeonScript.onEarnXP(exp, source);
+
 		//xp granted by ascension challenge is only for on-exp gain effects
 		if (source != AscensionChallenge.class) {
 			this.exp += exp;
@@ -1966,6 +1969,8 @@ public class Hero extends Char {
 				updateHT( true );
 				attackSkill++;
 				defenseSkill++;
+
+				Dungeon.dungeonScript.onLevelUp();
 
 			} else {
 				Buff.prolong(this, Bless.class, Bless.DURATION);

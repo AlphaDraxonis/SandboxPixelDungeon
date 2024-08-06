@@ -293,19 +293,19 @@ public class HeroMob_lua extends HeroMob implements LuaMob {
     }
 
     @Override
-    public synchronized LinkedHashSet buffs() {
+    public synchronized HashSet buffs(Class arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("buffs").isnil()) {
             try {
-                LinkedHashSet ret = (LinkedHashSet) luaScript.get("buffs").call(CoerceJavaToLua.coerce(this), vars).touserdata();
+                HashSet ret = (HashSet) luaScript.get("buffs").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
-        return super.buffs();
+        return super.buffs(arg0);
     }
 
-    public LinkedHashSet super_buffs() {
-        return super.buffs();
+    public HashSet super_buffs(Class arg0) {
+        return super.buffs(arg0);
     }
 
     @Override
@@ -533,22 +533,6 @@ public class HeroMob_lua extends HeroMob implements LuaMob {
     }
 
     @Override
-    protected int randomDestination() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("randomDestination").isnil()) {
-            try {
-                int ret = luaScript.get("randomDestination").call(CoerceJavaToLua.coerce(this), vars).toint();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.randomDestination();
-    }
-
-    public int super_randomDestination() {
-        return super.randomDestination();
-    }
-
-    @Override
     protected void tellDialog() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("tellDialog").isnil()) {
@@ -562,6 +546,22 @@ public class HeroMob_lua extends HeroMob implements LuaMob {
 
     public void super_tellDialog() {
         super.tellDialog();
+    }
+
+    @Override
+    protected int randomDestination() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("randomDestination").isnil()) {
+            try {
+                int ret = luaScript.get("randomDestination").call(CoerceJavaToLua.coerce(this), vars).toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.randomDestination();
+    }
+
+    public int super_randomDestination() {
+        return super.randomDestination();
     }
 
     @Override
@@ -613,22 +613,6 @@ public class HeroMob_lua extends HeroMob implements LuaMob {
     }
 
     @Override
-    public void restoreEnemy() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("restoreEnemy").isnil()) {
-            try {
-                luaScript.get("restoreEnemy").call(CoerceJavaToLua.coerce(this), vars);
-                return;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.restoreEnemy();
-    }
-
-    public void super_restoreEnemy() {
-        super.restoreEnemy();
-    }
-
-    @Override
     protected boolean getFurther(int arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("getFurther").isnil()) {
@@ -642,6 +626,22 @@ public class HeroMob_lua extends HeroMob implements LuaMob {
 
     public boolean super_getFurther(int arg0) {
         return super.getFurther(arg0);
+    }
+
+    @Override
+    public void restoreEnemy() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("restoreEnemy").isnil()) {
+            try {
+                luaScript.get("restoreEnemy").call(CoerceJavaToLua.coerce(this), vars);
+                return;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.restoreEnemy();
+    }
+
+    public void super_restoreEnemy() {
+        super.restoreEnemy();
     }
 
     @Override
@@ -677,22 +677,6 @@ public class HeroMob_lua extends HeroMob implements LuaMob {
     }
 
     @Override
-    public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("convertLootToRandomItemData").isnil()) {
-            try {
-                ItemsWithChanceDistrComp.RandomItemData ret = (ItemsWithChanceDistrComp.RandomItemData) luaScript.get("convertLootToRandomItemData").call(CoerceJavaToLua.coerce(this), vars).touserdata();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.convertLootToRandomItemData();
-    }
-
-    public ItemsWithChanceDistrComp.RandomItemData super_convertLootToRandomItemData() {
-        return super.convertLootToRandomItemData();
-    }
-
-    @Override
     public int attackSkill(Char arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("attackSkill").isnil()) {
@@ -706,6 +690,22 @@ public class HeroMob_lua extends HeroMob implements LuaMob {
 
     public int super_attackSkill(Char arg0) {
         return super.attackSkill(arg0);
+    }
+
+    @Override
+    public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("convertLootToRandomItemData").isnil()) {
+            try {
+                ItemsWithChanceDistrComp.RandomItemData ret = (ItemsWithChanceDistrComp.RandomItemData) luaScript.get("convertLootToRandomItemData").call(CoerceJavaToLua.coerce(this), vars).touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.convertLootToRandomItemData();
+    }
+
+    public ItemsWithChanceDistrComp.RandomItemData super_convertLootToRandomItemData() {
+        return super.convertLootToRandomItemData();
     }
 
     @Override
@@ -805,22 +805,6 @@ public class HeroMob_lua extends HeroMob implements LuaMob {
     }
 
     @Override
-    public String getCustomName() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("getCustomName").isnil()) {
-            try {
-                String ret = luaScript.get("getCustomName").call(CoerceJavaToLua.coerce(this), vars).tojstring();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.getCustomName();
-    }
-
-    public String super_getCustomName() {
-        return super.getCustomName();
-    }
-
-    @Override
     public void setPlayerAlignment(int arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("setPlayerAlignment").isnil()) {
@@ -850,6 +834,22 @@ public class HeroMob_lua extends HeroMob implements LuaMob {
 
     public boolean super_moveSprite(int arg0, int arg1) {
         return super.moveSprite(arg0, arg1);
+    }
+
+    @Override
+    public String getCustomName() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("getCustomName").isnil()) {
+            try {
+                String ret = luaScript.get("getCustomName").call(CoerceJavaToLua.coerce(this), vars).tojstring();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.getCustomName();
+    }
+
+    public String super_getCustomName() {
+        return super.getCustomName();
     }
 
     @Override
@@ -1077,22 +1077,6 @@ public class HeroMob_lua extends HeroMob implements LuaMob {
     }
 
     @Override
-    public void setCustomName(String arg0) {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("setCustomName").isnil()) {
-            try {
-                luaScript.get("setCustomName").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
-                return;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.setCustomName(arg0);
-    }
-
-    public void super_setCustomName(String arg0) {
-        super.setCustomName(arg0);
-    }
-
-    @Override
     public List createActualLoot() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("createActualLoot").isnil()) {
@@ -1106,6 +1090,22 @@ public class HeroMob_lua extends HeroMob implements LuaMob {
 
     public List super_createActualLoot() {
         return super.createActualLoot();
+    }
+
+    @Override
+    public void setCustomName(String arg0) {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("setCustomName").isnil()) {
+            try {
+                luaScript.get("setCustomName").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.setCustomName(arg0);
+    }
+
+    public void super_setCustomName(String arg0) {
+        super.setCustomName(arg0);
     }
 
     @Override

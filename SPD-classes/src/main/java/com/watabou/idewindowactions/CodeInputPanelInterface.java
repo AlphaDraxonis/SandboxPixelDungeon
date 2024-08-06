@@ -109,9 +109,10 @@ public interface CodeInputPanelInterface {
 		Game.platform.openURI("https://docs.google.com/document/d/1uXWzyO0wXJ6jDfKB3wrzVcFY4WvaCsX7oLtc5EkxDi0/?usp=sharing");
 	}
 
-	static String compileResult(CodeInputPanelInterface[] codeInputPanels) {//null means no errors
+	static String compileResult(CodeInputPanelInterface[] codeInputPanels) {//null as return means no errors
 		StringBuilder b = new StringBuilder();
 		for (CodeInputPanelInterface inputPanel : codeInputPanels) {
+			if (inputPanel == null) continue;
 			String msg = inputPanel.compile();
 			if (msg != null) {
 				if (b.length() > 0) b.append("\n\n");

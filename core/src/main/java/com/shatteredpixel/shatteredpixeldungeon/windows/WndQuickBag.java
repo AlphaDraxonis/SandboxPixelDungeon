@@ -23,7 +23,9 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
@@ -88,15 +90,18 @@ public class WndQuickBag extends Window {
 					}
 
 					hide();
-					if (Dungeon.level.onExecuteItem(item, Dungeon.hero)) {
-						item.execute(Dungeon.hero);
-						if (item.usesTargeting && bag != null) {
-							int idx = Dungeon.quickslot.getSlot(WndQuickBag.bag);
-							if (idx != -1){
-								QuickSlotButton.useTargeting(idx);
+					Dungeon.dungeonScript.executeItem(item, Dungeon.hero, new DungeonScript.Executer() {
+						@Override
+						protected void execute(Item item, Hero hero, String action) {
+							super.execute(item, hero, action);
+							if (item.usesTargeting && bag != null) {
+								int idx = Dungeon.quickslot.getSlot(WndQuickBag.bag);
+								if (idx != -1){
+									QuickSlotButton.useTargeting(idx);
+								}
 							}
 						}
-					}
+					});
 				}
 
 				@Override

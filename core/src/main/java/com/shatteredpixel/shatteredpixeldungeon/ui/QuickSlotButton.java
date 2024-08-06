@@ -24,11 +24,13 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -113,12 +115,15 @@ public class QuickSlotButton extends Button {
 						if (Dungeon.hero.belongings.contains(item) && !GameScene.cancel()) {
 							GameScene.centerNextWndOnInvPane();
 
-							if (Dungeon.level.onExecuteItem(item, Dungeon.hero)) {
-								item.execute(Dungeon.hero);
-								if (item.usesTargeting) {
-									useTargeting();
+							Dungeon.dungeonScript.executeItem(item, Dungeon.hero, new DungeonScript.Executer() {
+								@Override
+								protected void execute(Item item, Hero hero, String action) {
+									super.execute(item, hero, action);
+									if (item.usesTargeting) {
+										useTargeting();
+									}
 								}
-							}
+							});
 
 						}
 					}

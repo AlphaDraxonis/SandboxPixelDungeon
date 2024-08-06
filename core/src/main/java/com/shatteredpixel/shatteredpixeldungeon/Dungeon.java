@@ -40,6 +40,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript_lua;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
@@ -210,6 +212,8 @@ public class Dungeon {
 
 	public static CustomDungeon customDungeon;
 	public static String levelName;
+
+	public static DungeonScript dungeonScript = new DungeonScript_lua();
 
 	public static void init() {
 

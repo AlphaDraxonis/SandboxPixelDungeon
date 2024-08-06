@@ -23,6 +23,8 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -102,14 +104,15 @@ public class RightClickMenu extends Component {
 				protected void onClick() {
 					super.onClick();
 					if (item != null){
-						if (Dungeon.level.onExecuteItem(item, Dungeon.hero, options[finalI])) {
-							item.execute(Dungeon.hero, options[finalI]);
-
-							if (options[finalI].equals(item.defaultAction()) && item.usesTargeting){
-								InventoryPane.useTargeting();
+						Dungeon.dungeonScript.executeItem(item, Dungeon.hero, options[finalI], new DungeonScript.Executer() {
+							@Override
+							protected void execute(Item item, Hero hero, String action) {
+								super.execute(item, hero, action);
+								if (action.equals(item.defaultAction()) && item.usesTargeting){
+									InventoryPane.useTargeting();
+								}
 							}
-
-						}
+						});
 					}
 					onSelect(finalI);
 					RightClickMenu.this.destroy();

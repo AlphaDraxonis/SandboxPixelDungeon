@@ -234,6 +234,7 @@ public class LevelTab extends MultiWindowTabComp {
                 IDEWindow.showWindow(levelScheme.luaScript);
             }
         };
+        editScript.icon(Icons.NEWS.get());
         content.add(editScript);
 
         mainWindowComps = new Component[]{

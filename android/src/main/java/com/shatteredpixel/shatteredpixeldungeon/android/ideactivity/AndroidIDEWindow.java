@@ -42,6 +42,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.android.AndroidLauncher;
 import com.shatteredpixel.shatteredpixeldungeon.android.R;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.LuaMethodManager;
@@ -236,21 +237,25 @@ public class AndroidIDEWindow extends Activity {
 		};
 		compGroup.addView(inputDesc);
 
-		codeInputPanels[i++] = inputLocalVars = new AndroidVariablesPanel(this, "vars", Messages.get(IDEWindow.class, "vars_title")) {
+		codeInputPanels[i++] = inputLocalVars = new AndroidVariablesPanel(this, "vars", Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars_") + "_title")) {
 			{
-				desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, "vars_info")));
+				desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars_") + "_info")));
 				textInput.setHint("aNumber = 5,  item = new(\"PotionOfHealing\")");
 			}
 		};
 		compGroup.addView(inputLocalVars);
 
-		codeInputPanels[i++] = inputScriptVars = new AndroidVariablesPanel(this, "static", Messages.get(IDEWindow.class, "static_title")) {
-			{
-				desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, "static_info")));
-				textInput.setHint("aNumber = 5,  item = new(\"PotionOfHealing\")");
-			}
-		};
-		compGroup.addView(inputScriptVars);
+		if (clazz == DungeonScript.class) {
+			codeInputPanels[i++] = inputScriptVars = new AndroidVariablesPanel(this, "static", Messages.get(IDEWindow.class, "static_title")) {
+				{
+					desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, "static_info")));
+					textInput.setHint("aNumber = 5,  item = new(\"PotionOfHealing\")");
+				}
+			};
+			compGroup.addView(inputScriptVars);
+		} else {
+			codeInputPanels[i++] = inputScriptVars = null;
+		}
 
 
 		for (LuaMethodManager methodInfo : methods) {
@@ -289,6 +294,7 @@ public class AndroidIDEWindow extends Activity {
 		StringBuilder functions = new StringBuilder();
 
 		for (int i = 1; i < codeInputPanels.length; i++) {
+			if (codeInputPanels[i] == null) continue;
 			String code = codeInputPanels[i].convertToLuaCode();
 			if (code != null) {
 				functions.append(code);
@@ -406,6 +412,7 @@ public class AndroidIDEWindow extends Activity {
 
 		List<String> functions = LuaScript.allFunctionNames(cleanedCode);
 		for (CodeInputPanelInterface inputPanel : codeInputPanels) {
+			if (inputPanel == null) continue;
 			inputPanel.applyScript(force, currentScript, cleanedCode);
 			if (inputPanel instanceof AndroidMethodPanel) functions.remove(((AndroidMethodPanel) inputPanel).getMethodName());
 		}

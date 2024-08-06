@@ -28,10 +28,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.DefaultListItemWithRemoveBtn;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.NewInstanceButton;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.PopupMenu;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -57,8 +59,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabC
 
 public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
-	private Component outsideSp;
-	private Component outsideSpExtraBtn;
+	private MultiWindowTabComp.OutsideSpSwitchTabs outsideSp;
 
 	protected ScrollingListPane scrollingListPane;
 	protected RenderedTextBlock title;
@@ -74,72 +75,54 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 		scrollingListPane = new ScrollingListPane();
 		add(scrollingListPane);
 
-//		outsideSp = new MultiWindowTabComp.OutsideSpSwitchTabs() {
-//			@Override
-//			protected void createChildren(Object... params) {
-//				tabs = new TabControlButton[2];
-//				for (int j = 0; j < tabs.length; j++) {
-//					tabs[j] = new TabControlButton(j);
-//					add(tabs[j]);
-//				}
-//				tabs[0].text(getTabName(0));
-//				tabs[1].text(getTabName(1));
-//
-//				super.createChildren(params);
-//
-//				select(0);
-//			}
-//
-//			@Override
-//			public void select(int index) {
-//				super.select(index);
-//				if (outsideSp != null) LuaOverviewTab.this.select(index);
-//			}
-//
-//			@Override
-//			protected void layout() {
-//				float posY = y;
-//				if (outsideSpExtraBtn != null && outsideSpExtraBtn.isVisible()) {
-//					outsideSpExtraBtn.setRect(x, posY, width, BUTTON_HEIGHT);
-//					PixelScene.align(outsideSpExtraBtn);
-//					posY += outsideSpExtraBtn.height() + GAP;
-//				}
-//				float buttonWidth = width() / tabs.length;
-//				for (int i = 0; i < tabs.length; i++) {
-//					tabs[i].setRect(x + i * buttonWidth, posY, buttonWidth, ITEM_HEIGHT);
-//					PixelScene.align(tabs[i]);
-//				}
-//				height = posY - y + ITEM_HEIGHT;
-//			}
-//
-//			@Override
-//			public String getTabName(int index) {
-//				switch (index) {
-//					case 0: return Messages.get(LuaOverviewTab.class, "scripts_title");
-//					case 1: return Messages.get(LuaOverviewTab.class, "vars_title");
-//				}
-//				return "null";
-//			}
-//		};
-//		add(outsideSp);
+		outsideSp = new MultiWindowTabComp.OutsideSpSwitchTabs() {
+			@Override
+			protected void createChildren() {
+				tabs = new TabControlButton[2];
+				for (int j = 0; j < tabs.length; j++) {
+					tabs[j] = new TabControlButton(j);
+					add(tabs[j]);
+				}
+				tabs[0].text(getTabName(0));
+				tabs[1].text(getTabName(1));
+
+				super.createChildren();
+
+				select(0);
+			}
+
+			@Override
+			public void select(int index) {
+				super.select(index);
+				if (outsideSp != null) LuaOverviewTab.this.select(index);
+			}
+
+			@Override
+			protected void layout() {
+				float posY = y;
+				float buttonWidth = width() / tabs.length;
+				for (int i = 0; i < tabs.length; i++) {
+					tabs[i].setRect(x + i * buttonWidth, posY, buttonWidth, ScrollingListPane.ITEM_HEIGHT);
+					PixelScene.align(tabs[i]);
+				}
+				height = posY - y + ScrollingListPane.ITEM_HEIGHT;
+			}
+
+			@Override
+			public String getTabName(int index) {
+				switch (index) {
+					case 0: return Messages.get(LuaOverviewTab.class, "scripts_title");
+					case 1: return Messages.get(LuaOverviewTab.class, "dungeon_script_title");
+				}
+				return "null";
+			}
+		};
+		add(outsideSp);
 	}
 
 	private void select(int index) {
 		selectedTab = index;
-		title.setVisible(index == 0);
-		if (outsideSpExtraBtn != null) outsideSpExtraBtn.destroy();
-		if (index == 1) {
-			outsideSpExtraBtn = new RedButton("Add - (LuaOverviewTab line 132)") {
-				@Override
-				protected void onClick() {
-					CustomObject.globalVarsDefaults.add("");
-					VarItem varItem = new VarItem("", CustomObject.globalVarsDefaults.size() - 1);
-					scrollingListPane.addItem(varItem);
-					varItem.nameInput.gainFocus();
-				}
-			};
-			outsideSp.add(outsideSpExtraBtn);
-		}
+		title.text(outsideSp.getTabName(index));
 		layout();
 	}
 
@@ -190,14 +173,13 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 			}
 		} else {
 
-			int i = 0;
-			for (String s : CustomObject.globalVarsDefaults) {
-				scrollingListPane.addItemNoLayouting(new VarItem(s, i++));
-			}
-
-			//Pro global var ein item: textfield für name, whitetoast mit value, editbutton um edit dialog zu sehen und schließen compilet automatisch
-			//Speichere jeden wert als string einzeln und initialisiere ihn an geeigneter stelle
-			//Speicher die globals auch irgendwo
+			scrollingListPane.addItemNoLayouting(new RedButton(Messages.get(LuaOverviewTab.class, "open_dungeon_script")) {
+				@Override
+				protected void onClick() {
+					if (Dungeon.dungeonScript.pathToScript == null) Dungeon.dungeonScript.pathToScript = "";
+					IDEWindow.showWindow(Dungeon.dungeonScript);
+				}
+			});
 
 		}
 
@@ -296,6 +278,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
 	private static Image createIcon(LuaScript script) {
 		if (Level.class.isAssignableFrom(script.type)) return Icons.STAIRS.get();
+		if (DungeonScript.class.isAssignableFrom(script.type)) return Icons.NEWS.get();
 		return Reference.objectToImage(Reflection.newInstance(script.type));
 	}
 
@@ -341,7 +324,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 			delete = new IconButton(Icons.TRASH.get()) {
 				@Override
 				protected void onClick() {
-					CustomObject.globalVarsDefaults.remove(index);
+//					CustomObject.globalVarsDefaults.remove(index);
 					updateList();
 				}
 
@@ -443,8 +426,8 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
 			if (LuaManager.compile("return " + valueText) != null) valueText = "nil --[[    " + valueText + " ]]";
 
-			if (nameInput.getText().isEmpty() && valueInput.getText().isEmpty()) CustomObject.globalVarsDefaults.set(index, "");
-			else CustomObject.globalVarsDefaults.set(index, nameText + " = " + valueText);
+//			if (nameInput.getText().isEmpty() && valueInput.getText().isEmpty()) CustomObject.globalVarsDefaults.set(index, "");
+//			else CustomObject.globalVarsDefaults.set(index, nameText + " = " + valueText);
 
 			super.destroy();
 
