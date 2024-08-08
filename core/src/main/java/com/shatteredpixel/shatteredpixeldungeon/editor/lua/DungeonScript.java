@@ -27,10 +27,14 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import org.luaj.vm2.LuaValue;
+
+import java.util.List;
 
 public abstract class DungeonScript extends LuaCodeHolder {
 
@@ -80,6 +84,11 @@ public abstract class DungeonScript extends LuaCodeHolder {
 
 	@KeepProguard
 	public void onLevelUp() {
+	}
+
+
+	public List<? extends Mob> getMobRotation(int depth ) {
+		return Bestiary.actuallyGetMobRotation_ONLY_FOR_DUNGEON_SCRIPT(depth);
 	}
 
 	final LuaValue currentScript() {

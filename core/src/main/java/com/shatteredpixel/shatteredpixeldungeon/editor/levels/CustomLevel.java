@@ -356,7 +356,7 @@ public class CustomLevel extends Level {
     }
 
     @Override
-    public ArrayList<?> getMobRotation() {
+    public List<? extends Mob> getMobRotation() {
         return Bestiary.getMobRotation(mobRotation);
     }
 

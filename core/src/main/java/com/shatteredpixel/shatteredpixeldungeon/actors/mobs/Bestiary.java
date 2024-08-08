@@ -35,16 +35,25 @@ import java.util.*;
 
 public class Bestiary {
 	
-	public static ArrayList<Class<? extends Mob>> getMobRotation( int depth ){
+	public static List<? extends Mob> getMobRotation( int depth ){
+		return Dungeon.dungeonScript.getMobRotation(depth);
+	}
+
+	public static List<? extends Mob> actuallyGetMobRotation_ONLY_FOR_DUNGEON_SCRIPT(int depth ){
 		ArrayList<Class<? extends Mob>> mobs = standardMobRotation( depth );
 		addRareMobs(depth, mobs);
 		swapMobAlts(mobs);
 		Random.shuffle(mobs);
-		return mobs;
+
+		ArrayList<Mob> result = new ArrayList<>();
+		for (Class<? extends Mob> mobClass : mobs) {
+			result.add(Reflection.newInstance(mobClass));
+		}
+		return result;
 	}
 
 	//For custom levels
-	public static ArrayList<? extends Mob> getMobRotation(ItemsWithChanceDistrComp.RandomItemData mobRotation ){
+	public static List<? extends Mob> getMobRotation(ItemsWithChanceDistrComp.RandomItemData mobRotation ){
 		ArrayList<Mob> mobs = new ArrayList<>();
 		for (ItemsWithChanceDistrComp.ItemWithCount mob : mobRotation.distrSlots) {
 			for (int i = 0; i < mob.getCount(); i++) {
@@ -142,14 +151,13 @@ public class Bestiary {
 		return convertMobRotation(mobClasses);
 	}
 
-	public static Mob createMob(ArrayList<?> mobsToSpawn, Supplier<ArrayList<?>> createNewSpawningGroup) {
+	public static Mob createMob(List<? extends Mob> mobsToSpawn, Supplier<List<? extends Mob>> createNewSpawningGroup) {
 		if (mobsToSpawn == null || mobsToSpawn.isEmpty()) {
 			mobsToSpawn = createNewSpawningGroup.get();
 			if (mobsToSpawn.isEmpty()) return null;
 		}
 
-		Object spawning = mobsToSpawn.remove(0);
-		Mob m = (Mob) (spawning instanceof Mob ? spawning : Reflection.newInstance(((Class<?>) spawning)));
+		Mob m = mobsToSpawn.remove(0);
 		ChampionEnemy.rollForChampion(m);
 		if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
 		return m;
@@ -300,7 +308,7 @@ public class Bestiary {
 	}
 	
 	//has a chance to add a rarely spawned mobs to the rotation
-	public static void addRareMobs( int depth, ArrayList<Class<?extends Mob>> rotation ){
+	public static void addRareMobs( int depth, List<Class<?extends Mob>> rotation ){
 		
 		switch (depth){
 			
@@ -329,7 +337,7 @@ public class Bestiary {
 	}
 	
 	//switches out regular mobs for their alt versions when appropriate
-	private static void swapMobAlts(ArrayList<Class<?extends Mob>> rotation){
+	private static void swapMobAlts(List<Class<?extends Mob>> rotation){
 		float altChance = 1/50f * RatSkull.exoticChanceMultiplier();
 		for (int i = 0; i < rotation.size(); i++){
 			if (Random.Float() < altChance) {

@@ -90,6 +90,8 @@ public abstract class ChampionEnemy extends Buff {
 	public static final Class[] CLASSES = {Blazing.class, Projecting.class, AntiMagic.class, Giant.class, Blessed.class, Growing.class};
 
 	public static void rollForChampion(Mob m){
+		if (!m.buffs(ChampionEnemy.class).isEmpty()) return;
+
 		if (Dungeon.mobsToChampion <= 0) Dungeon.mobsToChampion = 8;
 
 		Dungeon.mobsToChampion--;

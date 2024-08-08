@@ -741,11 +741,10 @@ public abstract class Level implements Bundlable {
 		feeling = bundle.getEnum( FEELING, Feeling.class );
 
 		if (bundle.contains( "mobs_to_spawn" )) {
-			ArrayList<Class<? extends Mob>> tmp = new ArrayList<>();
+			mobsToSpawn.clear();
 			for (Class<? extends Mob> mob : bundle.getClassArray("mobs_to_spawn")) {
-				if (mob != null) tmp.add(mob);
+				if (mob != null) mobsToSpawn.add(Reflection.newInstance(mob));
 			}
-			mobsToSpawn = tmp;
 		}
 
 		if (bundle.contains( "respawner" )){
@@ -900,13 +899,13 @@ public abstract class Level implements Bundlable {
 	
 	abstract protected boolean build();
 	
-	private ArrayList<? extends Object> mobsToSpawn = new ArrayList<>();//contains either Mob or Class<? extends Mob>
+	private List<Mob> mobsToSpawn = new ArrayList<>();
 	
 	public Mob createMob() {
 		return Bestiary.createMob(mobsToSpawn, this::getMobRotation);
 	}
 
-	public ArrayList<?> getMobRotation() {//contains either Mob or Class<? extends Mob>
+	public List<? extends Mob> getMobRotation() {
 		return Bestiary.getMobRotation(Dungeon.getSimulatedDepth());
 	}
 

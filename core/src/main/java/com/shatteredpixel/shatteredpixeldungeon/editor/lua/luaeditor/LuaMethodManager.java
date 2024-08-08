@@ -143,6 +143,8 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(10020, DungeonScript.class.getMethod("onEarnXP", int.class, Class.class), "amount", "source");
 			addMethod(10021, DungeonScript.class.getMethod("onLevelUp"));
 
+			addMethod(10030, DungeonScript.class.getMethod("getMobRotation", int.class), "depth");
+
 
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
