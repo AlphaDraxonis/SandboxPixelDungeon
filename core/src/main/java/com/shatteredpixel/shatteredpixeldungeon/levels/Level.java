@@ -1580,6 +1580,10 @@ public abstract class Level implements Bundlable {
 		for (Blob b : blobs.values()){
 			b.onBuildFlagMaps(this);
 		}
+
+		for (Checkpoint cp : checkpoints.values()) {
+			passable[cp.pos] = false;
+		}
 		
 		int lastRow = length() - width();
 		for (int i=0; i < width(); i++) {
@@ -1593,10 +1597,6 @@ public abstract class Level implements Bundlable {
 			losBlocking[i] = solid[i] = true;
 			passable[i + width()-1] = avoid[i + width()-1] = false;
 			losBlocking[i + width()-1] = solid[i + width()-1] = true;
-		}
-
-		for (Checkpoint cp : checkpoints.values()) {
-			passable[cp.pos] = false;
 		}
 
 		for (int i=0; i < length(); i++) {

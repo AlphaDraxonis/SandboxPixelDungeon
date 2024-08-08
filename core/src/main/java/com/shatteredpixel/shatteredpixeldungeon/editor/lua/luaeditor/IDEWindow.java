@@ -189,7 +189,7 @@ public class IDEWindow extends Component {
 		};
 		add(inputDesc);
 
-		codeInputPanels[i++] = inputLocalVars = new VariablesPanel(Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars_") + "_title"), "vars") {
+		codeInputPanels[i++] = inputLocalVars = new VariablesPanel(Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars") + "_title"), "vars") {
 			@Override
 			protected void layoutParent() {
 				layoutParent.run();
@@ -197,7 +197,7 @@ public class IDEWindow extends Component {
 
 			@Override
 			protected String createDescription() {
-				return Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars_") + "_info");
+				return Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars") + "_info");
 			}
 
 			@Override

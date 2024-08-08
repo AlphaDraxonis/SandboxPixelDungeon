@@ -237,9 +237,9 @@ public class AndroidIDEWindow extends Activity {
 		};
 		compGroup.addView(inputDesc);
 
-		codeInputPanels[i++] = inputLocalVars = new AndroidVariablesPanel(this, "vars", Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars_") + "_title")) {
+		codeInputPanels[i++] = inputLocalVars = new AndroidVariablesPanel(this, "vars", Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars") + "_title")) {
 			{
-				desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars_") + "_info")));
+				desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars") + "_info")));
 				textInput.setHint("aNumber = 5,  item = new(\"PotionOfHealing\")");
 			}
 		};

@@ -1970,7 +1970,8 @@ public class Hero extends Char {
 				attackSkill++;
 				defenseSkill++;
 
-				Dungeon.dungeonScript.onLevelUp();
+				if (this == Dungeon.hero)
+					Dungeon.dungeonScript.onLevelUp();
 
 			} else {
 				Buff.prolong(this, Bless.class, Bless.DURATION);
