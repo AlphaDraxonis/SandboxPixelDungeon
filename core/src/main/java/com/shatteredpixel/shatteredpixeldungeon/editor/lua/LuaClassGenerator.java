@@ -37,9 +37,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public final class LuaClassGenerator {
 
@@ -423,6 +421,7 @@ public final class LuaClassGenerator {
         methods.remove("cellToPoint");
         methods.remove("pointToCell");
         methods.remove("appendNoTransWarning");
+        methods.remove("setLevelScheme");
 
         //CustomLevel
         methods.remove("updateTransitionCells");
@@ -445,10 +444,14 @@ public final class LuaClassGenerator {
                 + "}";
     }
 
+    @SuppressWarnings("NewApi")
     private static String overrideMethods(Collection<Method> methods, String accessScript) {
         StringBuilder overrideMethods = new StringBuilder();
 
-        for (Method m : methods) {
+        List<Method> list = new ArrayList(methods);
+        Collections.sort(list, Comparator.comparing(m -> m.getName()));
+
+        for (Method m : list) {
 
             Class<?> returnType = m.getReturnType();
             String returnTypeName = className(returnType);

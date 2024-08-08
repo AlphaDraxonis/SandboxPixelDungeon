@@ -231,7 +231,7 @@ public abstract class Level implements Bundlable {
 	private static final String INIT_FOR_PLAY_CALLED = "init_for_play_called";
 
 
-	public void setLevelScheme(LevelScheme levelScheme) {
+	public final void setLevelScheme(LevelScheme levelScheme) {
 		this.levelScheme = levelScheme;
 		name = levelScheme.getName();
 		initRegionColors();

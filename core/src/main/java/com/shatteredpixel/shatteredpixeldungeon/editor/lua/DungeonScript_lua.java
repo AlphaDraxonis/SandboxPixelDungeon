@@ -10,7 +10,10 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
+import java.util.List;
+
 public class DungeonScript_lua extends DungeonScript implements LuaClass {
+
 
     private LuaValue vars;
 
@@ -53,19 +56,19 @@ public class DungeonScript_lua extends DungeonScript implements LuaClass {
     }
 
     @Override
-    public int onEarnXP(int arg0, Class arg1) {
+    public List getMobRotation(int arg0) {
         LuaValue luaScript = getScript();
-        if (luaScript != null && !luaScript.get("onEarnXP").isnil()) {
+        if (luaScript != null && !luaScript.get("getMobRotation").isnil()) {
             try {
-                int ret = luaScript.get("onEarnXP").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0), CoerceJavaToLua.coerce(arg1)}).arg1().toint();
+                List ret = (List) luaScript.get("getMobRotation").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0)).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
-        return super.onEarnXP(arg0, arg1);
+        return super.getMobRotation(arg0);
     }
 
-    public int super_onEarnXP(int arg0, Class arg1) {
-        return super.onEarnXP(arg0, arg1);
+    public List super_getMobRotation(int arg0) {
+        return super.getMobRotation(arg0);
     }
 
     @Override
@@ -85,6 +88,22 @@ public class DungeonScript_lua extends DungeonScript implements LuaClass {
     }
 
     @Override
+    public int onEarnXP(int arg0, Class arg1) {
+        LuaValue luaScript = getScript();
+        if (luaScript != null && !luaScript.get("onEarnXP").isnil()) {
+            try {
+                int ret = luaScript.get("onEarnXP").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0), CoerceJavaToLua.coerce(arg1)}).arg1().toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.onEarnXP(arg0, arg1);
+    }
+
+    public int super_onEarnXP(int arg0, Class arg1) {
+        return super.onEarnXP(arg0, arg1);
+    }
+
+    @Override
     public boolean onItemCollected(Item arg0) {
         LuaValue luaScript = getScript();
         if (luaScript != null && !luaScript.get("onItemCollected").isnil()) {
@@ -96,8 +115,8 @@ public class DungeonScript_lua extends DungeonScript implements LuaClass {
         return super.onItemCollected(arg0);
     }
 
-    public void super_onItemCollected(Item arg0) {
-        super.onItemCollected(arg0);
+    public boolean super_onItemCollected(Item arg0) {
+        return super.onItemCollected(arg0);
     }
 
     @Override
