@@ -82,7 +82,7 @@ public class LuaManager {
 		if (Dungeon.hero != null) {
 			globals.set("hero", CoerceJavaToLua.coerce(Dungeon.hero));
 		} else {
-			globals.set("hero", ((LuaValue) null));
+			globals.set("hero", LuaValue.NIL);
 		}
 		globals.set("customDungeon", CoerceJavaToLua.coerce(Dungeon.customDungeon));
 		globals.set("level", CoerceJavaToLua.coerce(Dungeon.level));

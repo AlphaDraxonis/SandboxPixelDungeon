@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -130,7 +131,8 @@ public final class CustomTileLoader {
                     ownCustomTile.tileH = texture.getHeight() / 16;
                     ownCustomTile.offsetCenterX = (ownCustomTile.tileW - 1) / 2;
                     ownCustomTile.offsetCenterY = (ownCustomTile.tileH - 1) / 2;
-                    ownCustomTile.setTexture(texture);
+                    texture.dispose();
+                    ownCustomTile.texturePath = fileMap.get(value).file().getAbsolutePath();
                 } else if (property.startsWith("n")) ownCustomTile.name = value;
                 else if (property.startsWith("d")) ownCustomTile.desc = value;
                 else if (property.startsWith("t")) ownCustomTile.terrain = Integer.parseInt(value);//TODO also accept strings
@@ -165,8 +167,14 @@ public final class CustomTileLoader {
 
     public static class OwnCustomTile extends UserCustomTile {
 
-        private void setTexture(Pixmap texture) {
-            this.texture = texture;
+        private String texturePath;
+
+        @Override
+        public Object getTexture() {
+            if (texture == null && texturePath != null) {
+                return new Pixmap(FileUtils.getFileHandle(Files.FileType.Absolute, texturePath));
+            }
+            return super.getTexture();
         }
 
         @Override

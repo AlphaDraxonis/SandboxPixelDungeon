@@ -81,15 +81,6 @@ public abstract class RegularLevel extends Level {
 	protected Room roomExit;
 
 	@Override
-	public void create() {
-		for (Room r : levelScheme.roomsToSpawn) {
-			for (Item i : r.spawnItemsOnLevel)
-				addItemToSpawn(i);
-		}
-		super.create();
-	}
-
-	@Override
 	protected boolean build() {
 
 		ArrayList<Room> initRooms;

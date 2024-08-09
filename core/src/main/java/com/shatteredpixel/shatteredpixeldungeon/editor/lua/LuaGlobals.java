@@ -312,6 +312,12 @@ public class LuaGlobals extends Globals {
 				return LuaValue.valueOf(Random.Int(min.checkint(), max.checkint()));
 			}
 		});
+		randomUtils.set("float", new ZeroArgFunction() {//tzz document
+			@Override
+			public LuaValue call() {
+				return LuaValue.valueOf(Random.Float());
+			}
+		});
 		randomUtils.set("combatRoll", new TwoArgFunction() {
 			@Override
 			public LuaValue call(LuaValue min, LuaValue max) {

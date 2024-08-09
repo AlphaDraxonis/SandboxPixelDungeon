@@ -820,8 +820,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
             CustomDocumentPage ap = (CustomDocumentPage) a;
             CustomDocumentPage bp = (CustomDocumentPage) b;
             if (ap.type != bp.type) return false;
-            if ((ap.title == null ? "" : ap.title).equals(bp.title == null ? "" : bp.title)) return false;
-            if ((ap.text == null ? "" : ap.text).equals(bp.text == null ? "" : bp.text)) return false;
+            if (!(ap.title == null ? "" : ap.title).equals(bp.title == null ? "" : bp.title)) return false;
+            if (!(ap.text == null ? "" : ap.text).equals(bp.text == null ? "" : bp.text)) return false;
         }
         if (a instanceof TrinketCatalyst) {
             if (((TrinketCatalyst) a).numChoosableTrinkets != ((TrinketCatalyst) b).numChoosableTrinkets) return false;

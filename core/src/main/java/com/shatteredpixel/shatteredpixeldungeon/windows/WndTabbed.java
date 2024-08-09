@@ -178,14 +178,6 @@ public class WndTabbed extends Window {
 		{
 			hotArea.blockLevel = PointerArea.ALWAYS_BLOCK;
 		}
-
-		public Tab() {
-			this((Object[]) null);
-		}
-
-		public Tab(Object... params) {
-			super(params);
-		}
 		
 		@Override
 		protected void layout() {

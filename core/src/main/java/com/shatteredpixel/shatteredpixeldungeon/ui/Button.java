@@ -45,10 +45,6 @@ public class Button extends Component {
 	protected float pressTime;
 	protected boolean clickReady;
 
-	public Button(Object... params) {
-		super(params);
-	}
-
 	@Override
 	protected void createChildren() {
 		hotArea = new PointerArea( 0, 0, 0, 0 ) {

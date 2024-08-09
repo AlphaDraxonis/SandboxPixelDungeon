@@ -245,7 +245,7 @@ public class AndroidIDEWindow extends Activity {
 		};
 		compGroup.addView(inputLocalVars);
 
-		if (clazz == DungeonScript.class) {
+		if (clazz != DungeonScript.class) {
 			codeInputPanels[i++] = inputScriptVars = new AndroidVariablesPanel(this, "static", Messages.get(IDEWindow.class, "static_title")) {
 				{
 					desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, "static_info")));

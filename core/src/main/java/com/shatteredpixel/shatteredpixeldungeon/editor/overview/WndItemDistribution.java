@@ -129,15 +129,13 @@ public class WndItemDistribution extends Window {
 
         @Override
         protected void onClick() {
-            Window w = new WndEditItemDistribution(distribution, Messages.get(WndItemDistribution.class, "save")) {
+            EditorScene.show(new WndEditItemDistribution(distribution, Messages.get(WndItemDistribution.class, "save")) {
                 @Override
                 protected void doAfterPositive() {
                     updateUI();
                     layout2();
                 }
-            };
-            if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-            else Game.scene().addToFront(w);
+            });
         }
 
         public void updateUI() {
@@ -189,9 +187,13 @@ public class WndItemDistribution extends Window {
         }
 
         private void layout2() {
-            remove.setRect(x + width - 16, y + (height - 16) * 0.5f, 16, 16);
-            super.layout();
-            hotArea.width -= remove.width() + 2;
+            if (remove != null && remove.visible) {
+                remove.setRect(x + width - 16, y + (height - 16) * 0.5f, 16, 16);
+                super.layout();
+                hotArea.width -= remove.width() + 2;
+            } else {
+                super.layout();
+            }
         }
 
         @Override

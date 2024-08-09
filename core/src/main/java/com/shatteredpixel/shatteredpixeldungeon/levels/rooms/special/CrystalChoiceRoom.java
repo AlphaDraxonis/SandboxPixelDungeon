@@ -148,6 +148,8 @@ public class CrystalChoiceRoom extends SpecialRoom {
 
 		spawnItemsInRoom.clear();
 
+		entrance().set( Door.Type.LOCKED );
+
 	}
 
 	@Override
