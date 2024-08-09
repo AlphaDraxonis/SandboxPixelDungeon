@@ -895,7 +895,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (Dungeon.branch != 0) {
             return QuestLevels.getRegion(Dungeon.branch);
         }
-        return level.getRegionValue();
+        return level == null ? REGION_NONE : level.getRegionValue();
     }
 
     public static int getRegion(Class<? extends Level> level) {

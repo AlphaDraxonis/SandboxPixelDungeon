@@ -186,6 +186,7 @@ public class WndSelectDungeon extends Window {
         }
         listPane.nowLayout();
         listPane.scrollToCurrentView();
+        listPane.givePointerPriority();
         if (sort != null) sort.givePointerPriority();
     }
 

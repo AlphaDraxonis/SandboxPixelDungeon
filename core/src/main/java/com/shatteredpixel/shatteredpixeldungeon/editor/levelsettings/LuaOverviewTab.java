@@ -195,11 +195,13 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
 		public ScriptItem(LuaScript script) {
 			super(createIcon(script), script.pathFromRoot);
+			title.setHighlighting(false);
 
 			this.script = script;
 
 			description = PixelScene.renderTextBlock(script.desc, 6);
 			description.maxNumLines = 1;
+			description.setHighlighting(false);
 			add(description);
 
 			StringBuilder builder = new StringBuilder();

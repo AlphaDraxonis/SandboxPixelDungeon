@@ -56,7 +56,7 @@ import java.util.*;
 
 public class EditItemComp extends DefaultEditComp<Item> {
 
-    public static boolean showSpreadIfLoot, showOnlyCheckType;
+    public static boolean showSpreadIfLoot, showOnlyCheckType, hideLevelSpinner;
 
     private final Heap heap;
 
@@ -245,16 +245,26 @@ public class EditItemComp extends DefaultEditComp<Item> {
             }
             if (chargeSpinner != null) add(chargeSpinner);
 
-            if (LevelSpinner.availableForItem(item)) {
+            if (LevelSpinner.availableForItem(item) && !hideLevelSpinner) {
                 levelSpinner = new LevelSpinner(item) {
                     @Override
                     protected void onChange() {
+                        if (item instanceof MagesStaff) {
+                            Wand imbuedWand = ((MagesStaff) item).wand;
+                            if (imbuedWand != null) {
+                                int oldMax = imbuedWand.maxCharges;
+                                ((MagesStaff) item).updateWand(false);
+                                if (imbuedWand.curCharges == oldMax) imbuedWand.curCharges = imbuedWand.maxCharges;
+                            }
+                        }
+
                         updateObj();
                         if (chargeSpinner != null) chargeSpinner.adjustMaximum(item);
                     }
                 };
                 add(levelSpinner);
             }
+            hideLevelSpinner = false;
 
             if (item instanceof Potion || item instanceof Scroll || item instanceof Ring || item instanceof Wand || item instanceof Artifact
                     || (item instanceof Weapon && !(item instanceof MissileWeapon))
@@ -313,7 +323,19 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
                         ((MagesStaff) item).wand = (Wand) selectedItem;
+                        Wand imbuedWand = ((MagesStaff) item).wand;
+                        if (imbuedWand != null) {
+                            int oldMax = imbuedWand.maxCharges;
+                            ((MagesStaff) item).updateWand(false);
+                            if (imbuedWand.curCharges == oldMax) imbuedWand.curCharges = imbuedWand.maxCharges;
+                        }
                         updateObj();
+                    }
+
+                    @Override
+                    protected void onItemSlotClick() {
+                        hideLevelSpinner = true;
+                        super.onItemSlotClick();
                     }
                 };
                 magesStaffWand.setShowWhenNull(ItemSpriteSheet.WAND_HOLDER);
@@ -653,6 +675,10 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (itemItem != null) {
             ItemSlot slot = QuickSlotButton.containsItem(itemItem);
             if (slot != null) slot.item(itemItem);
+        }
+
+        if (magesStaffWand != null) {
+            magesStaffWand.updateItem();
         }
 
         super.updateObj();

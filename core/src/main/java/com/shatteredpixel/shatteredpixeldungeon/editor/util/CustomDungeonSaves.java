@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class CustomDungeonSaves {
 
@@ -344,7 +345,7 @@ public class CustomDungeonSaves {
 
         String rootDir = getAdditionalFilesDir().path() + "/";
         for (FileHandle f : files) {
-			fullFilePaths.add(f.path().replaceFirst(rootDir, ""));
+			fullFilePaths.add(f.path().replaceFirst(Pattern.quote(rootDir), ""));
 		}
         Collections.sort(fullFilePaths);
 
@@ -393,7 +394,7 @@ public class CustomDungeonSaves {
         if (files == null) return result;
 
         for (FileHandle file : files) {
-            LuaScript script = LuaScript.readFromFileContent(file.readString(), file.path().replaceFirst(getAdditionalFilesDir().path() + "/", ""));
+            LuaScript script = LuaScript.readFromFileContent(file.readString(), file.path().replaceFirst(Pattern.quote(getAdditionalFilesDir().path() + "/"), ""));
             if (script != null && (condition == null || condition.apply(script))) {
                 result.add(script);
             }
@@ -410,7 +411,7 @@ public class CustomDungeonSaves {
     public static LuaScript readLuaFile(String pathToScript) {
         FileHandle file = FileUtils.getFileHandle(getExternalFilePath(pathToScript));
         if (!file.exists() || file.isDirectory()) return null;
-        return LuaScript.readFromFileContent(file.readString(), file.path().replaceFirst(getAdditionalFilesDir().path() + "/", ""));
+        return LuaScript.readFromFileContent(file.readString(), file.path().replaceFirst(Pattern.quote(getAdditionalFilesDir().path() + "/"), ""));
     }
 
     public static String getExternalFilePath(String pathFromRoot) {

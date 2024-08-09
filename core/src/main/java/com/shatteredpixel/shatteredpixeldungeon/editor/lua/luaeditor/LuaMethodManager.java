@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -68,6 +69,10 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 
 		//Mob.class
 		try {
+
+			//thief
+			addMethod(87, Thief.class.getMethod("steal", Hero.class), "hero");
+
 			addMethod(1, Mob.class.getDeclaredMethod("attackSkill", Char.class), "target");//accuracy
 			addMethod(2, Mob.class.getMethod("defenseSkill", Char.class), "enemy");//evasion
 			addMethod(3, Mob.class.getMethod("defenseVerb"));//what to say if it evades an attack

@@ -1018,6 +1018,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
     public static void updateMobTexture(Mob mob) {
 
+        if (mob.sprite == null) return;
+
         if (mob instanceof Pylon) {
             Pylon pylon = (Pylon) mob;
             if (pylon.alwaysActive || mob.playerAlignment == Mob.NORMAL_ALIGNMENT && mob.alignment != Char.Alignment.NEUTRAL)
@@ -1032,10 +1034,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof HeroMob) {
-            if (mob.sprite != null) {
-                ((HeroSprite.HeroMobSprite) mob.sprite).updateHeroClass(((HeroMob) mob).hero());
-            }
-        }
+			((HeroSprite.HeroMobSprite) mob.sprite).updateHeroClass(((HeroMob) mob).hero());
+		}
 
         if (mob instanceof Mimic) {
             ((MimicSprite) mob.sprite).superHidden = ((Mimic) mob).superHidden;

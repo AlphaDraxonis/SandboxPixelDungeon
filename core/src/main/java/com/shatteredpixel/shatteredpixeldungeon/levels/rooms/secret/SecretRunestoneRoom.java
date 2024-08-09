@@ -71,7 +71,7 @@ public class SecretRunestoneRoom extends SecretRoom {
 		if (!itemsGenerated) generateItems(level);
 
 		for (Item i : spawnItemsInRoom) {
-			int terrain = i instanceof StoneOfEnchantment || i instanceof ScrollOfUpgrade ? Terrain.ENTRANCE_SP : Terrain.EMPTY;
+			int terrain = i instanceof StoneOfEnchantment || i instanceof ScrollOfUpgrade ? Terrain.EMPTY_SP : Terrain.EMPTY;
 			int pos;
 			int tries = 30;
 			do {
@@ -87,8 +87,8 @@ public class SecretRunestoneRoom extends SecretRoom {
 	@Override
 	public void generateItems(Level level) {
 		super.generateItems(level);
-		spawnItemsOnLevel.add(Generator.randomUsingDefaults(Generator.Category.STONE));
-		spawnItemsOnLevel.add(Generator.randomUsingDefaults(Generator.Category.STONE));
+		spawnItemsInRoom.add(Generator.randomUsingDefaults(Generator.Category.STONE));
+		spawnItemsInRoom.add(Generator.randomUsingDefaults(Generator.Category.STONE));
 		spawnItemsInRoom.add(new StoneOfEnchantment());
 	}
 

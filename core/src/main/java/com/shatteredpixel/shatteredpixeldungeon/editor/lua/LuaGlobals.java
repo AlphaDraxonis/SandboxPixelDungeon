@@ -909,8 +909,8 @@ public class LuaGlobals extends Globals {
 
 					if (defender == Dungeon.hero && !defender.isAlive()) {
 						if (magicAttack) Badges.validateDeathFromEnemyMagic();
-						Dungeon.fail( this );
-						GLog.n( Messages.get(this, "bolt_kill") );
+						Dungeon.fail( attacker );
+						GLog.n( Messages.get(attacker, "kill", attacker.name()) );
 					}
 					return LuaValue.TRUE;
 				} else {
@@ -929,7 +929,7 @@ public class LuaGlobals extends Globals {
 				LuaValue target = varargs.arg(3);
 				LuaValue ch = varargs.arg(4);
 				if (parent.isuserdata(Group.class) && sprite.isuserdata(Visual.class) && target.isint() && ch.isuserdata(Char.class)) {
-					callMethod((Group) parent.touserdata(), (Visual) sprite.touserdata(), target.toint(), (Char) ch.touserdata());
+					new Thread(() -> callMethod((Group) parent.touserdata(), (Visual) sprite.touserdata(), target.toint(), (Char) ch.touserdata())).start();
 				}
 				return LuaValue.NIL;
 			}

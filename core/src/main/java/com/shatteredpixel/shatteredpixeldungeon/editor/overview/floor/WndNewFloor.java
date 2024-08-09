@@ -126,14 +126,12 @@ public class WndNewFloor extends WndTabbed {
             });
 
             // Wait for 10 seconds for the level generation to complete
-            Boolean generated;
-            Exception exception;
+			Exception exception;
             try {
-                generated = generator.get(10, TimeUnit.SECONDS);
-                exception = null;
+				generator.get(10, TimeUnit.SECONDS);
+				exception = null;
             } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                generated = null;
-                Game.reportException(ex);
+				Game.reportException(ex);
                 ex.printStackTrace();
                 exception = ex;
             }

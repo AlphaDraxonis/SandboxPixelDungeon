@@ -117,7 +117,7 @@ public class ImpShopRoom extends ShopRoom {
 		if (bundle.contains("items")) {
 			itemsGenerated = true;
 			for (Bundlable item : bundle.getCollection("items"))
-				spawnItemsOnLevel.add((Item) item);
+				spawnItemsInRoom.add((Item) item);
 		}
 	}
 

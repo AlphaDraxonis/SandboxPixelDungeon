@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class ChangeRegion extends Component {
 
@@ -171,7 +172,7 @@ public class ChangeRegion extends Component {
                 if (files != null) {
                     String rootDir = CustomDungeonSaves.getAdditionalFilesDir().path() + "/";
                     for (FileHandle f : files) {
-                        String rawPath = f.path().replaceFirst(rootDir, "");
+                        String rawPath = f.path().replaceFirst(Pattern.quote(rootDir), "");
                         SmartTexture tx = TextureCache.get(TextureCache.EXTERNAL_ASSET_PREFIX + CustomDungeonSaves.getExternalFilePath(rawPath));
                         if (tx != null && tx.width == 256 && tx.height == 256) {
                             imgFiles.add(rawPath);
@@ -239,7 +240,7 @@ public class ChangeRegion extends Component {
                 if (files != null) {
                     String rootDir = CustomDungeonSaves.getAdditionalFilesDir().path() + "/";
                     for (FileHandle f : files) {
-                        String rawPath = f.path().replaceFirst(rootDir, "");
+                        String rawPath = f.path().replaceFirst(Pattern.quote(rootDir), "");
                         SmartTexture tx = TextureCache.get(TextureCache.EXTERNAL_ASSET_PREFIX + CustomDungeonSaves.getExternalFilePath(rawPath));
                         if (tx != null && tx.width == 32 && tx.height == 32) {
                             imgFiles.add(rawPath);
