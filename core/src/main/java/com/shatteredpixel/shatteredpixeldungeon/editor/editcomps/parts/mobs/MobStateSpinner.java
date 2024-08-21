@@ -18,7 +18,7 @@ public class MobStateSpinner extends StyledSpinner {
         addChangeListener(() -> ((States) getValue()).applyChange(mob));
     }
 
-    private enum States {
+    public enum States {
         SLEEPING,
         WANDERING,
         HUNTING,

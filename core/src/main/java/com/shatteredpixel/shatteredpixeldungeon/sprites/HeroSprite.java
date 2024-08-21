@@ -37,6 +37,8 @@ import com.watabou.utils.PointF;
 import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
 
+import java.util.LinkedHashMap;
+
 public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	
 	private static final int FRAME_WIDTH	= 12;
@@ -48,6 +50,14 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	
 	private Animation fly;
 	private Animation read;
+
+	@Override
+	public LinkedHashMap<String, Animation> getAnimations() {
+		LinkedHashMap<String, Animation> result = super.getAnimations();
+		result.put("fly", fly);
+		result.put("read", read);
+		return result;
+	}
 
 	public HeroSprite(Hero hero) {
 		super();
@@ -72,7 +82,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 
 			CharSprite anims = Reflection.newInstance(hero.internalSpriteClass);
 
-			if (anims instanceof StatueSprite) ((StatueSprite) anims).setArmor(hero.tier());
+			if (anims instanceof StatueSprite) StatueSprite.setArmor(anims, hero.tier());
 
 			texture(anims.texture);
 
@@ -227,6 +237,14 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 
 		private Animation fly, read;
 
+		@Override
+		public LinkedHashMap<String, Animation> getAnimations() {
+			LinkedHashMap<String, Animation> result = super.getAnimations();
+			result.put("fly", fly);
+			result.put("read", read);
+			return result;
+		}
+
 		public HeroMobSprite() {
 			//for reflection
 			texture(HeroClass.WARRIOR.spritesheet());
@@ -332,6 +350,11 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 		@Override
 		protected void playZapAnim(int cell) {
 			//do nothing
+		}
+
+		@Override
+		public boolean hasOwnZapAnimation() {
+			return true;
 		}
 
 	}

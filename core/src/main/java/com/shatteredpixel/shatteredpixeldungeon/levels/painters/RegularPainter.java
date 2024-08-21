@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Patch;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomRect;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.connection.ConnectionRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
@@ -162,7 +163,7 @@ public abstract class RegularPainter extends Painter {
 			Room.Door door = r.connected.get( n );
 			if (door == null) {
 				
-				Rect i = r.intersect( n );
+				RoomRect i = r.intersect( n );
 				ArrayList<Point> doorSpots = new ArrayList<>();
 				for (Point p : i.getPoints()){
 					if (r.canConnect(p) && n.canConnect(p))
@@ -305,10 +306,10 @@ public abstract class RegularPainter extends Painter {
 
 	protected boolean mergeRooms( Level l, Room r, Room n, Point start, int mergeTerrain){
 
-		Rect intersect = r.intersect( n );
+		RoomRect intersect = r.intersect( n );
 		if (intersect.left == intersect.right) {
 
-			Rect merge = new Rect();
+			RoomRect merge = new RoomRect();
 			merge.left = merge.right = intersect.left;
 			merge.top = merge.bottom = start != null ? start.y : intersect.center().y;
 
@@ -324,7 +325,7 @@ public abstract class RegularPainter extends Painter {
 			}
 
 			if (merge.height() >= 3) {
-				r.merge(l, n, new Rect(merge.left, merge.top + 1, merge.left+1, merge.bottom), mergeTerrain);
+				r.merge(l, n, new RoomRect(merge.left, merge.top + 1, merge.left+1, merge.bottom), mergeTerrain);
 				return true;
 			} else {
 				return false;
@@ -332,7 +333,7 @@ public abstract class RegularPainter extends Painter {
 
 		} else if (intersect.top == intersect.bottom) {
 
-			Rect merge = new Rect();
+			WatabouRect merge = new WatabouRect();
 			merge.left = merge.right = start != null ? start.x : intersect.center().x;
 			merge.top = merge.bottom = intersect.top;
 
@@ -348,7 +349,7 @@ public abstract class RegularPainter extends Painter {
 			}
 
 			if (merge.width() >= 3) {
-				r.merge(l, n, new Rect(merge.left + 1, merge.top, merge.right, merge.top+1), mergeTerrain);
+				r.merge(l, n, new RoomRect(merge.left + 1, merge.top, merge.right, merge.top+1), mergeTerrain);
 				return true;
 			} else {
 				return false;

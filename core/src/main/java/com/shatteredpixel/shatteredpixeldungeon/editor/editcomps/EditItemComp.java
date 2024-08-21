@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ReorderHeapComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeItemCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
@@ -19,7 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
@@ -49,6 +50,8 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -115,7 +118,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
     private void initComps(Item item) {
 
-        rename.visible = rename.active = true;
+        rename.setVisible(!(item instanceof CustomGameObjectClass) || ((CustomGameObjectClass) item).getInheritStats());
 
         if (heap != null) {
             reorderHeapComp = new ReorderHeapComp(item, heap);
@@ -216,7 +219,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 rollTrinkets = new ItemContainerWithLabel<Trinket>(cata.rolledTrinkets, this, label("roll_trinkets")) {
                     @Override
                     protected void showSelectWindow() {
-                        ItemSelector.showSelectWindow(this, ItemSelector.NullTypeSelector.DISABLED, Trinket.class, Items.bag, new HashSet<>(0));
+                        ItemSelector.showSelectWindow(this, ItemSelector.NullTypeSelector.DISABLED, Trinket.class, Items.bag(), new HashSet<>(0));
                     }
                 };
                 add(rollTrinkets);
@@ -417,7 +420,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
                     @Override
                     public Class<? extends Bag> preferredBag() {
-                        return Mobs.bag.getClass();
+                        return Mobs.bag().getClass();
                     }
                 };
                 add(summonMobs);
@@ -482,7 +485,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                         }
                     };
                     if (cell == -1) keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
-                    else keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilies.cellToString(cell)));
+                    else keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilities.cellToString(cell)));
                     add(keyCell);
                 } else keyCell = null;
 
@@ -498,7 +501,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     public void selectObject(Object object) {
                         super.selectObject(object);
                         if (object instanceof LevelScheme) {
-                            k.levelName = EditorUtilies.getCodeName((LevelScheme) object);
+                            k.levelName = EditorUtilities.getCodeName((LevelScheme) object);
                         }
                         if (keyCell != null) {
                             boolean canChangeKeyCell = Dungeon.level.name.equals(k.levelName);
@@ -568,7 +571,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     RandomItemDistrComp randomItemDistrComp = new RandomItemDistrComp((RandomItem<?>) item);
                     SimpleWindow w = new SimpleWindow((int) Math.ceil(width), (int) (PixelScene.uiCamera.height * 0.75));
                     w.initComponents(randomItemDistrComp.createTitle(), randomItemDistrComp, randomItemDistrComp.getOutsideSp(), 0f, 0.5f);
-                    w.offset(EditorUtilies.getParentWindow(EditItemComp.this).getOffset());
+                    w.offset(EditorUtilities.getParentWindow(EditItemComp.this).getOffset());
                     EditorScene.show(w);
                 }
             };
@@ -578,6 +581,27 @@ public class EditItemComp extends DefaultEditComp<Item> {
         rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
                 augmentationSpinner, curseBtn, permaCursed, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, docPageType, spreadIfLoot, exactItemInRecipe};
         linearComps = new Component[]{rollTrinkets, summonMobs, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
+
+        initializeCompsForCustomObjectClass();
+    }
+
+    @Override
+    protected void onInheritStatsClicked(boolean flag, boolean initializing) {
+        if (flag && !initializing) {
+            obj.copyStats((Item) UserContentManager.getLuaClass(((CustomGameObjectClass) obj).getIdentifier()));
+        }
+
+        for (Component c : rectComps) {
+            if (c != null) c.visible = c.active = !flag;
+        }
+        for (Component c : linearComps) {
+            if (c != null) c.visible = c.active = !flag;
+        }
+
+        if (rename != null) rename.setVisible(!flag);
+
+        ((CustomGameObjectClass) obj).setInheritStats(flag);
+//        if (viewScript != null) viewScript.visible = viewScript.active = true;
     }
 
     @Override
@@ -585,6 +609,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
         super.layout();
         layoutCompsInRectangles(rectComps);
         layoutCompsLinear(linearComps);
+
+        layoutCustomObjectEditor();
     }
 
     @Override
@@ -628,17 +654,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
     @Override
     protected void onRenameClicked() {
-        Window parent = EditorUtilies.getParentWindow(this);
-        SimpleWindow w = new SimpleWindow(parent.camera().width - 10, parent.camera().height - 10) {
-            @Override
-            public void hide() {
-                super.hide();
-                updateObj();
-            }
-        };
-        ChangeItemCustomizable cc = new ChangeItemCustomizable(EditItemComp.this);
-        w.initComponents(cc.createTitle(), cc, null, 0f, 0.5f);
-        EditorScene.show(w);
+        ChangeCustomizable.showAsWindow(this, w -> new ChangeItemCustomizable(w, this));
     }
 
     static String label(String key) {
@@ -684,7 +700,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
         super.updateObj();
     }
 
-    private void updateStates() {
+    @Override
+    protected void updateStates() {
+        super.updateStates();
         if (quantity != null)               quantity.setValue(obj.quantity());
         if (quickslotPos != null)           quickslotPos.setValue(obj.reservedQuickslot);
         if (curseBtn != null)               curseBtn.checked(obj.cursed);
@@ -711,7 +729,19 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (keyCell != null) {
             int cell = ((Key) obj).cell;
             if (cell == -1) keyCell.text(label("key_cell_any"));
-            else keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilies.cellToString(cell)));
+            else keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilities.cellToString(cell)));
+        }
+
+        if (bagItems != null) bagItems.setItemList(((Bag)obj).items);
+        if (rollTrinkets != null) rollTrinkets.setItemList(((TrinketCatalyst)obj).rolledTrinkets);
+        if (summonMobs != null) {
+            List<MobItem> asMobItems = new ArrayList<>();
+            if (((WandOfSummoning) obj).summonTemplate != null) {
+                for (Mob m : ((WandOfSummoning) obj).summonTemplate) {
+                    asMobItems.add(new MobItem(m));
+                }
+            }
+            summonMobs.setItemList(asMobItems);
         }
     }
 
@@ -735,7 +765,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 if (key.cell == -1)
                     keyCell.text(label("key_cell_any"));
                 else
-                    keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilies.cellToString(key.cell)));
+                    keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilities.cellToString(key.cell)));
 
                 EditorScene.reshowWindows();
             }

@@ -2,7 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindowTabbed;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -120,7 +120,7 @@ public class ReorderHeapComp extends Component {
 
     //need to make sure that item at index actually exists!
     private void swapItems(int direction) {
-        Window w = editCompWindowTabbed == null ? EditorUtilies.getParentWindow(this) : editCompWindowTabbed;
+        Window w = editCompWindowTabbed == null ? EditorUtilities.getParentWindow(this) : editCompWindowTabbed;
         if (w instanceof EditCompWindowTabbed) {
             Item other = heap.items.get(heap.items.indexOf(item) + direction);
 

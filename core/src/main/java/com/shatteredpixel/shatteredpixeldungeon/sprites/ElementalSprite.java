@@ -47,29 +47,34 @@ public abstract class ElementalSprite extends MobSprite {
 	public ElementalSprite() {
 		super();
 		
-		int c = texOffset();
-		
 		texture( Assets.Sprites.ELEMENTAL );
 		
-		TextureFilm frames = new TextureFilm( texture, 12, 14 );
-		
-		idle = new Animation( 10, true );
-		idle.frames( frames, c+0, c+1, c+2 );
-		
-		run = new Animation( 12, true );
-		run.frames( frames, c+0, c+1, c+3 );
-		
-		attack = new Animation( 15, false );
-		attack.frames( frames, c+4, c+5, c+6 );
-		
-		zap = attack.clone();
-		
-		die = new Animation( 15, false );
-		die.frames( frames, c+7, c+8, c+9, c+10, c+11, c+12, c+13, c+12 );
+		initAnimations();
 		
 		play( idle );
 	}
-	
+
+	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 12, 14 );
+
+		int c = texOffset();
+
+		idle = new Animation( 10, true );
+		idle.frames( frames, c+0, c+1, c+2 );
+
+		run = new Animation( 12, true );
+		run.frames( frames, c+0, c+1, c+3 );
+
+		attack = new Animation( 15, false );
+		attack.frames( frames, c+4, c+5, c+6 );
+
+		zap = attack.clone();
+
+		die = new Animation( 15, false );
+		die.frames( frames, c+7, c+8, c+9, c+10, c+11, c+12, c+13, c+12 );
+	}
+
 	@Override
 	public void link( Char ch ) {
 		super.link( ch );
@@ -107,6 +112,11 @@ public abstract class ElementalSprite extends MobSprite {
 	@Override
 	protected void playZapAnim(int cell) {
 		playZap(parent, this, cell, ch, boltType);
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 	
 	@Override

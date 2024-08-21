@@ -33,8 +33,16 @@ public class ShopkeeperSprite extends MobSprite {
 		super();
 		
 		texture( Assets.Sprites.KEEPER );
-		TextureFilm film = new TextureFilm( texture, 14, 14 );
+
+		initAnimations();
 		
+		idle();
+	}
+
+	@Override
+	public void initAnimations() {
+		TextureFilm film = new TextureFilm( texture, 14, 14 );
+
 		idle = new Animation( 10, true );
 		idle.frames( film, 1, 1, 1, 1, 1, 0, 0, 0, 0 );
 
@@ -45,10 +53,8 @@ public class ShopkeeperSprite extends MobSprite {
 
 		attack = new Animation( 20, false );
 		attack.frames( film, 1, 1, 0 );
-		
-		idle();
 	}
-	
+
 	@Override
 	public void onComplete( Animation anim ) {
 		super.onComplete( anim );

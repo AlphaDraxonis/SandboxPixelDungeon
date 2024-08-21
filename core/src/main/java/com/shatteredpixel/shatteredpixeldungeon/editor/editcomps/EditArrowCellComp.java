@@ -6,7 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ArrowCellItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerEnumModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerLikeButton;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
@@ -46,7 +46,7 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
             if (i != 4) {
                 int bit = 1 << (i - (i>4?1:0));
                 directions[i] = new StyledCheckBox(Messages.get(this, "direction_" + bit));
-                directions[i].icon(EditorUtilies.getArrowCellTexture(bit, true));
+                directions[i].icon(EditorUtilities.getArrowCellTexture(bit, true));
                 directions[i].checked((obj.directionsLeaving & bit) != 0);
                 directions[i].addChangeListener(val -> {
                     if (val) obj.directionsLeaving |= bit;
@@ -89,11 +89,29 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
     }
 
     @Override
+    protected void updateStates() {
+        super.updateStates();
+
+        for (int i = 0; i < directions.length; i++) {
+            if (directions[i] == null) continue;
+            if (i != 4) {
+                int bit = 1 << (i - (i>4?1:0));
+                directions[i].checked((obj.directionsLeaving & bit) != 0);
+            } else {
+                directions[i].checked(obj.allowsWaiting);
+            }
+        }
+
+        if (enterMode != null) enterMode.setValue(obj.enterMode);
+        if (visible != null) visible.checked(obj.visible);
+    }
+
+    @Override
     protected void layout() {
         super.layout();
 
         height += WndTitledMessage.GAP;
-        height = EditorUtilies.layoutStyledCompsInRectangles(WndTitledMessage.GAP, width,3, this, directions);
+        height = EditorUtilities.layoutStyledCompsInRectangles(WndTitledMessage.GAP, width,3, this, directions);
         height += WndTitledMessage.GAP;
 
         layoutCompsInRectangles(comps);
@@ -115,7 +133,7 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
     }
 
     @Override
-    protected void updateObj() {
+	public void updateObj() {
 
 //        for (int i = 0; i < ArrowCell.NUM_BLOCK_TYPES; i++) {
 //            final int bit = (int) Math.pow(2, i);

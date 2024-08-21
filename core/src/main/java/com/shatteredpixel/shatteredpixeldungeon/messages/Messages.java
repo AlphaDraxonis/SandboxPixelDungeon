@@ -212,6 +212,7 @@ public class Messages {
 	}
 
 	public static String MAIN_PACKAGE_NAME = "com.shatteredpixel.shatteredpixeldungeon.";
+	public static String WATABOU_PACKAGE_NAME = "com.watabou.";
 	public static final int PACKAGE_NAME_LENGTH = MAIN_PACKAGE_NAME.length();
 	public static String trimPackageName(String s) {
 		return s.replace(MAIN_PACKAGE_NAME, "");

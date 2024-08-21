@@ -39,6 +39,13 @@ public class BlacksmithSprite extends MobSprite {
 
         texture(Assets.Sprites.TROLL);
 
+        initAnimations();
+
+        play(idle);
+    }
+
+    @Override
+    public void initAnimations() {
         TextureFilm frames = new TextureFilm(texture, 13, 16);
 
         idle = new Animation(15, true);
@@ -52,8 +59,6 @@ public class BlacksmithSprite extends MobSprite {
 
         attack = new Animation(15, false);
         attack.frames(frames,  2, 3, 3);
-
-        play(idle);
     }
 
     @Override
@@ -81,7 +86,7 @@ public class BlacksmithSprite extends MobSprite {
 
         if (visible && emitter != null && anim == idle) {
             emitter.burst(Speck.factory(Speck.FORGE), 3);
-            float volume = CustomDungeon.isEditing() ? 0.01f : 0.2f / (Dungeon.level.distance(ch.pos, Dungeon.hero.pos)); //FIXME add setting to change/disable volume
+            float volume = CustomDungeon.isEditing() ? 0.01f : 0.2f / (Dungeon.level.distance(ch.pos, Dungeon.hero.pos));
             Sample.INSTANCE.play(Assets.Sounds.EVOKE, volume, 0.8f);
         }
     }

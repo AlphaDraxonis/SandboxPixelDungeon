@@ -41,7 +41,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-public class CrystalGuardian extends Mob{
+public class CrystalGuardian extends Mob {
 
 	{
 		spriteClass = CrystalGuardianSprite.class;
@@ -78,7 +78,7 @@ public class CrystalGuardian extends Mob{
 			}
 			if (HP == HT){
 				recovering = false;
-				if (sprite instanceof CrystalGuardianSprite) ((CrystalGuardianSprite) sprite).endCrumple();
+				if (sprite instanceof CrystalGuardianSprite) CrystalGuardianSprite.endCrumple(sprite);
 			}
 			spend(Actor.TICK);
 			return true;
@@ -142,7 +142,7 @@ public class CrystalGuardian extends Mob{
 
 			if (!recovering) {
 				recovering = true;
-				if (sprite != null) ((CrystalGuardianSprite) sprite).crumple();
+				if (sprite != null) CrystalGuardianSprite.crumple(sprite);
 			}
 		}
 		return super.isAlive();

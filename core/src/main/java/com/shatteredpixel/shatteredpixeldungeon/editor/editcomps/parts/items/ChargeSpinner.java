@@ -2,7 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -14,7 +14,7 @@ public class ChargeSpinner extends StyledSpinner {
 
     public ChargeSpinner(Wand wand) {
         super(new LevelSpinner.LevelSpinnerModel(wand.curCharges, wand.maxCharges),
-                Messages.get(ChargeSpinner.class, "label"), 9, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_RECHARGE));
+                Messages.get(ChargeSpinner.class, "label"), 9, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.SCROLL_RECHARGE));
         icon.scale.set(9f / icon.height());
         ((SpinnerIntegerModel) getModel()).setMinimum(0);
         ((SpinnerIntegerModel) getModel()).setAbsoluteMinimum(0);
@@ -26,7 +26,7 @@ public class ChargeSpinner extends StyledSpinner {
 
     public ChargeSpinner(Artifact artifact) {
         super(new LevelSpinner.LevelSpinnerModel(artifact.charge(), artifact.chargeCap()),
-                Messages.get(ChargeSpinner.class, "label"), 9, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_RECHARGE));
+                Messages.get(ChargeSpinner.class, "label"), 9, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.SCROLL_RECHARGE));
         icon.scale.set(9f / icon.height());
         ((SpinnerIntegerModel) getModel()).setMinimum(0);
         ((SpinnerIntegerModel) getModel()).setAbsoluteMinimum(0);

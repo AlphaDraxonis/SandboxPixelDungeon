@@ -11,7 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAn
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -22,6 +22,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.watabou.NotAllowedInLua;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Game;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+@NotAllowedInLua
 public class ChangeRegion extends Component {
 
     public static final String[] REGION_KEYS = {
@@ -190,7 +192,7 @@ public class ChangeRegion extends Component {
                 }
                 EditorScene.show(new WndOptions(
                         Messages.titleCase(Messages.get(ChangeRegion.class, "custom_tilesheet")),
-                        Messages.get(ChangeRegion.class, "custom_spritesheet_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()),
+                        Messages.get(ChangeRegion.class, "custom_tilesheet_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()),
                         options
                 ) {
                     {
@@ -347,11 +349,11 @@ public class ChangeRegion extends Component {
     @Override
     protected void layout() {
         height = 0;
-        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, region, water) + 2;
-        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, 24, 1, this, music);
+        height = EditorUtilities.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, region, water) + 2;
+        height = EditorUtilities.layoutStyledCompsInRectangles(2, width, 24, 1, this, music);
 
         height += 10;
-        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, customRegion, customWater);
+        height = EditorUtilities.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, customRegion, customWater);
     }
 
     public static Component createTitle() {

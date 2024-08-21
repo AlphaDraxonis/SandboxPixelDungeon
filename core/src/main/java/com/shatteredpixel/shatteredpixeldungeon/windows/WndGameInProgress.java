@@ -31,16 +31,14 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.StartScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 
 import java.util.Locale;
 
+@NotAllowedInLua
 public class WndGameInProgress extends Window {
 	
 	private static final int WIDTH    = 120;

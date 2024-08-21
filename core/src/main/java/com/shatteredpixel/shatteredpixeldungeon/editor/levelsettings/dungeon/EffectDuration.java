@@ -1,12 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.watabou.NotAllowedInLua;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@NotAllowedInLua
 public class EffectDuration implements Bundlable {
 
     public static float get(Class<?> effect) {

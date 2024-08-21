@@ -41,6 +41,13 @@ public class DM201Sprite extends MobSprite {
 
 		texture( Assets.Sprites.DM200 );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 21, 18 );
 
 		int c = 12;
@@ -58,8 +65,6 @@ public class DM201Sprite extends MobSprite {
 
 		die = new Animation( 8, false );
 		die.frames( frames, c+9, c+10, c+11 );
-
-		play( idle );
 	}
 
 	@Override
@@ -77,6 +82,11 @@ public class DM201Sprite extends MobSprite {
 	@Override
 	protected void playZapAnim(int cell) {
 		playZap(parent, this, cell, ch);
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {

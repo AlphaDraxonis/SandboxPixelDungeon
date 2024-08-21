@@ -25,8 +25,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomRect;
 import com.watabou.utils.Point;
-import com.watabou.utils.Rect;
 
 public class LibraryRingRoom extends StandardRoom {
 
@@ -47,7 +47,7 @@ public class LibraryRingRoom extends StandardRoom {
 
 	//cannot roll odd numbers if it is giant
 	@Override
-	public Rect resize(int w, int h) {
+	public RoomRect resize(int w, int h) {
 		super.resize(w, h);
 		if (sizeCat == SizeCategory.GIANT) {
 			if (width() % 2 == 1) right--;

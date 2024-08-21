@@ -29,8 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.Holiday;
 import com.watabou.noosa.TextureFilm;
 
 public class RatKingSprite extends MobSprite {
-
-	public boolean festive;
 	
 	public RatKingSprite() {
 		super();
@@ -39,7 +37,12 @@ public class RatKingSprite extends MobSprite {
 	}
 
 	public void resetAnims(){
+		initAnimations();
+		play( idle );
+	}
 
+	@Override
+	public void initAnimations() {
 		int c;
 		switch (Holiday.getCurrentHoliday()){
 			default:
@@ -73,11 +76,7 @@ public class RatKingSprite extends MobSprite {
 
 		die = new Animation( 10, false );
 		die.frames( frames, c+11, c+12, c+13, c+14 );
-
-		play( idle );
-
 	}
-
 
 	@Override
 	public void link(Char ch) {

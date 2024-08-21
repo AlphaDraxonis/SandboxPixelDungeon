@@ -31,20 +31,31 @@ public class RatSprite extends MobSprite {
 		
 		texture( Assets.Sprites.RAT );
 		
-		TextureFilm frames = new TextureFilm( texture, 16, 15 );
-		
-		idle = new Animation( 2, true );
-		idle.frames( frames, 0, 0, 0, 1 );
-		
-		run = new Animation( 10, true );
-		run.frames( frames, 6, 7, 8, 9, 10 );
-		
-		attack = new Animation( 15, false );
-		attack.frames( frames, 2, 3, 4, 5, 0 );
-		
-		die = new Animation( 10, false );
-		die.frames( frames, 11, 12, 13, 14 );
+		initAnimations();
 		
 		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 16, 15 );
+
+		int c = texOffset();
+
+		idle = new Animation( 2, true );
+		idle.frames( frames, c+0, c+0, c+0, c+1 );
+
+		run = new Animation( 10, true );
+		run.frames( frames, c+6, c+7, c+8, c+9, c+10 );
+
+		attack = new Animation( 15, false );
+		attack.frames( frames, c+2, c+3, c+4, c+5, c+0 );
+
+		die = new Animation( 10, false );
+		die.frames( frames, c+11, c+12, c+13, c+14 );
+	}
+
+	protected int texOffset() {
+		return 0;
 	}
 }

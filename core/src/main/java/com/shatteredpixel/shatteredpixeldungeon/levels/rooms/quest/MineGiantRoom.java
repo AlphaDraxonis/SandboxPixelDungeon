@@ -36,7 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.CaveRoom;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
+import com.watabou.utils.WatabouRect;
 
 import java.util.ArrayList;
 
@@ -120,7 +120,7 @@ public class MineGiantRoom extends CaveRoom {
 			}
 
 			Point center = center();
-			Rect centerArea = new Rect(center.x-2, center.y-2, center.x+3, center.y+3);
+			WatabouRect centerArea = new WatabouRect(center.x-2, center.y-2, center.x+3, center.y+3);
 			Painter.fillEllipse(level, centerArea, 0, Terrain.MINE_BOULDER);
 			Painter.fill(level, centerArea, 2, Terrain.EMPTY_DECO);
 

@@ -36,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -45,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
@@ -67,9 +67,9 @@ public class FindInBag implements Bundlable {
 	public FindInBag(Object source) {
 		this.source = source;
 
-		if (source instanceof LuaClass) {
-			type = Type.CUSTOM_OBJECT;
-			value = ((LuaClass) source).getIdentifier();
+		if (source instanceof CustomObjectClass) {
+			type = Type.USER_CONTENT;
+			value = ((CustomObjectClass) source).getIdentifier();
 		}
 
 		else if (source instanceof Integer) {
@@ -131,16 +131,21 @@ public class FindInBag implements Bundlable {
 			case CUSTOM_TILE:
 			case PARTICLE:
 				return (EditorItem<?>) Tiles.bag.findItem(this);
-			case CUSTOM_OBJECT:
-				return (EditorItem<?>) Mobs.bag.findItem(this);
+			case USER_CONTENT:
+				EditorItem<?> result;
+				for (GameObjectCategory<?> category : EditorInventory.getAllCategories()) {
+					result = (EditorItem<?>) category.getBag().findItem(FindInBag.this);
+					if (result != null) return result;
+				}
 			case REMOVER: return EditorItem.REMOVER_ITEM;
 			case CLASS:
+				if (value == null) return null;//was CustomMob in v1.2
 				Class<?> clazz = (Class<?>) value;
 				EditorItem<T> inBag;
-				if (Item.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Items.bag.findItem(this);
-				else if (Mob.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Mobs.bag.findItem(this);
-				else if (Trap.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Traps.bag.findItem(this);
-				else if (Plant.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Plants.bag.findItem(this);
+				if (Item.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Items.bag().findItem(this);
+				else if (Mob.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Mobs.bag().findItem(this);
+				else if (Trap.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Traps.bag().findItem(this);
+				else if (Plant.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Plants.bag().findItem(this);
 				else if (Blob.class.isAssignableFrom(clazz)) {
 					BlobItem realInBag = (BlobItem) Tiles.bag.findItem(this);//Blobs
 					realInBag.setObject((Class<? extends Blob>) clazz);
@@ -206,7 +211,7 @@ public class FindInBag implements Bundlable {
 		TILE,
 		CUSTOM_TILE,
 		PARTICLE,
-		CUSTOM_OBJECT,
+		USER_CONTENT,
 		REMOVER;
 
 		private void storeValueInBundle(Bundle bundle, Object value) {
@@ -215,7 +220,7 @@ public class FindInBag implements Bundlable {
 					break;
 				case TILE:
 				case PARTICLE:
-				case CUSTOM_OBJECT: bundle.put(VALUE, (int) value);
+				case USER_CONTENT: bundle.put(VALUE, (int) value);
 					break;
 				case CUSTOM_TILE: bundle.put(VALUE, (String) value);
 					break;
@@ -227,7 +232,7 @@ public class FindInBag implements Bundlable {
 				case CLASS: return bundle.getClass(VALUE);
 				case TILE:
 				case PARTICLE:
-				case CUSTOM_OBJECT: return bundle.getInt(VALUE);
+				case USER_CONTENT: return bundle.getInt(VALUE);
 				case CUSTOM_TILE: return bundle.getString(VALUE);
 			}
 			return null;

@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -8,9 +7,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AbstractCategoryScroller;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.CategoryScroller;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.CompactCategoryScroller;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
@@ -27,7 +28,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
@@ -46,6 +46,8 @@ import java.util.Map;
 //Subclass with all necessary Dungeon.hero nullchecks implemented
 public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
+    private static final boolean USE_COMPACT_UI = true;
+
     public static boolean chooseClass = false;
 
     private final int WIDTH = Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9));
@@ -60,7 +62,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
     protected WndBag.ItemSelectorInterface selector;
 
-    private CategoryScroller body;
+    private AbstractCategoryScroller<?> body;
 
 
     public WndEditorInv(EditorItemBag bag) {
@@ -84,7 +86,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         }
         curBag = bag;
 
-        offset(0, EditorUtilies.getMaxWindowOffsetYForVisibleToolbar() + (addTabs ? 0 : tabHeight() / 5));
+        offset(0, EditorUtilities.getMaxWindowOffsetYForVisibleToolbar() + (addTabs ? 0 : tabHeight() / 5));
         resize(WIDTH, HEIGHT - (addTabs ? tabHeight() : 0) - yOffset - tabHeight());
 
         body = createBody(bag);
@@ -93,7 +95,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         Integer select = lastSelected.get(bag);
         body.selectCategory(select == null ? 0 : select);
         Float scrollPos = lastScrollPos.get(bag);
-        body.list.scrollTo(0, scrollPos == null ? 0 : scrollPos);
+        body.sp.scrollTo(0, scrollPos == null ? 0 : scrollPos);
 
         if (addTabs) {
             int i = 1;
@@ -110,15 +112,15 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
     }
 
     protected List<Bag> getBags() {
-        if (selector == null) return EditorItemBag.getMainBags();
-        else {
-            List<Bag> result = selector.getBags();
-            return result == null ? EditorItemBag.getMainBags() : result;
-        }
+        List<Bag> result =
+                selector == null
+                        ? null
+                        : selector.getBags();
+        return result == null ? EditorInventory.getMainBags() : result;
     }
 
-    private CategoryScroller createBody(EditorItemBag bag) {
-        List<Bag> bags = EditorItemBag.getMainBags(bag);
+    private AbstractCategoryScroller<?> createBody(EditorItemBag bag) {
+        List<Bag> bags = EditorInventory.getMainBags(bag);
 
         CategoryScroller.Category[] cats = new CategoryScroller.Category[bags.size()];
 
@@ -157,25 +159,11 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                     if (b instanceof Tiles.ParticleBag) {
                         ret.add(new Tiles.AddParticleButton());
                     }
-                    if (b instanceof Mobs.CustomMobsBag && WndEditorInv.INSTANCE != null) {
-                        ret.add(new Mobs.AddCustomMobButton());
+                    if (b instanceof GameObjectCategory.CustomObjectBag && WndEditorInv.INSTANCE != null) {
+                        ret.add( ((GameObjectCategory.CustomObjectBag) b).createAddBtn() );
                     }
 
                     return ret;
-                }
-
-                @Override
-                protected ScrollingListPane.ListItem createListItem(Object object) {
-                    if (object instanceof EditorItem) {
-                        EditorItem e = (EditorItem) object;
-                        if (!Dungeon.quickslot.contains(e) && e instanceof TileItem) ((TileItem) e).randomizeTexture();
-                        return e.createListItem(WndEditorInv.this);
-                    } else if (object instanceof ScrollingListPane.ListItem) {
-                        return (ScrollingListPane.ListItem) object;
-                    } else {
-                        Item item = (Item) object;
-                        return new DefaultListItem(item, WndEditorInv.this, item.name(), new ItemSprite(item));
-                    }
                 }
 
                 @Override
@@ -190,8 +178,9 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
             };
             i++;
         }
-        return new CategoryScroller(cats);
-
+        return USE_COMPACT_UI ?
+                new CompactCategoryScroller(cats, this)
+                : new CategoryScroller(cats, this);
     }
 
     public static EditorItemBag lastBag() {
@@ -286,11 +275,11 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
     private static Image createIcon(Bag bag) {
         if (bag == Tiles.bag) return new TileSprite(Terrain.EMPTY);
-        if (bag == Mobs.bag) return new SkeletonSprite();
-        if (bag == Items.bag) {
+        if (bag == Mobs.bag()) return new SkeletonSprite();
+        if (bag == Items.bag()) {
             if (lastItemForImage == null) {
-                lastItemForImage = Reflection.newInstance(EditorInvCategory.getRandom(Items.values(), null));
-                lastItemForImage.image = Dungeon.customDungeon.getItemSpriteOnSheet(lastItemForImage);
+                lastItemForImage = Reflection.newInstance(GameObjectCategory.getRandom(Items.instance().values(), null));
+                lastItemForImage.image = CustomDungeon.getItemSpriteOnSheet(lastItemForImage);
                 if (lastItemForImage.image == ItemSpriteSheet.SCROLL_HOLDER) {
                     lastItemForImage.image = ItemSpriteSheet.SCROLLS + (int) (Math.random() * Scroll.runes.size())
                             + (lastItemForImage instanceof ExoticScroll ? 16 : 0);
@@ -303,21 +292,21 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
             }
             return new ItemSprite(lastItemForImage.image());
         }
-        if (bag == Traps.bag) {
+        if (bag == Traps.bag()) {
             if (lastTrapForImage == null) {
-                lastTrapForImage = Reflection.newInstance(EditorInvCategory.getRandom(Traps.values()));
+                lastTrapForImage = Reflection.newInstance(GameObjectCategory.getRandom(Traps.instance().values()));
                 lastTrapForImage.visible = true;
             }
             return lastTrapForImage.getSprite();
         }
-        if (bag == Plants.bag) {
+        if (bag == Plants.bag()) {
             if (lastPlantForImage == null)
-                lastPlantForImage = Reflection.newInstance(EditorInvCategory.getRandom(Plants.values()));
+                lastPlantForImage = Reflection.newInstance(GameObjectCategory.getRandom(Plants.instance().values()));
             return lastPlantForImage.getSprite();
         }
-        if (bag == Buffs.bag) {
+        if (bag == Buffs.bag()) {
             if (lastBuffForImage == null)
-                lastBuffForImage = Reflection.newInstance(EditorInvCategory.getRandom(Buffs.values()));
+                lastBuffForImage = Reflection.newInstance(GameObjectCategory.getRandom(Buffs.instance().values()));
             return new BuffIcon(lastBuffForImage, true);
         }
         Image img = new ItemSprite(ItemSpriteSheet.SOMETHING);
@@ -360,10 +349,10 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
     public static WndEditorInv getBag(WndBag.ItemSelectorInterface selector) {
         if (selector.preferredBag() != null) {
-            EditorItemBag bag = (EditorItemBag) EditorItemBag.getBag(selector.preferredBag());
+            EditorItemBag bag = (EditorItemBag) EditorInventory.getBag(selector.preferredBag());
             if (bag != null) return new WndEditorInv(bag, selector);
         }
-        return new WndEditorInv(EditorItemBag.getLastBag(selector.getBags()), selector);
+        return new WndEditorInv(EditorInventory.getLastBag(selector.getBags()), selector);
     }
 
 }

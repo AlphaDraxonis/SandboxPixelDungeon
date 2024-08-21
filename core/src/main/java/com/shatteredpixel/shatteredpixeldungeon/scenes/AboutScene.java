@@ -24,10 +24,12 @@ package com.shatteredpixel.shatteredpixeldungeon.scenes;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.*;
 import com.watabou.noosa.ui.Component;
 
+@NotAllowedInLua
 public class AboutScene extends PixelScene {
 
 	@Override

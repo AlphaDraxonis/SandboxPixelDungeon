@@ -35,28 +35,38 @@ public class WarlockSprite extends MobSprite {
 		
 		texture( Assets.Sprites.WARLOCK );
 		
-		TextureFilm frames = new TextureFilm( texture, 12, 15 );
-		
-		idle = new Animation( 2, true );
-		idle.frames( frames, 0, 0, 0, 1, 0, 0, 1, 1 );
-		
-		run = new Animation( 15, true );
-		run.frames( frames, 0, 2, 3, 4 );
-		
-		attack = new Animation( 12, false );
-		attack.frames( frames, 0, 5, 6 );
-		
-		zap = attack.clone();
-		
-		die = new Animation( 15, false );
-		die.frames( frames, 0, 7, 8, 8, 9, 10 );
+		initAnimations();
 		
 		play( idle );
 	}
 
 	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 12, 15 );
+
+		idle = new Animation( 2, true );
+		idle.frames( frames, 0, 0, 0, 1, 0, 0, 1, 1 );
+
+		run = new Animation( 15, true );
+		run.frames( frames, 0, 2, 3, 4 );
+
+		attack = new Animation( 12, false );
+		attack.frames( frames, 0, 5, 6 );
+
+		zap = attack.clone();
+
+		die = new Animation( 15, false );
+		die.frames( frames, 0, 7, 8, 8, 9, 10 );
+	}
+
+	@Override
 	protected void playZapAnim(int cell) {
 		playZap(parent, this, cell, ch);
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {

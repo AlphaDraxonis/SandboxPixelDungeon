@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -16,6 +17,7 @@ import com.watabou.noosa.ui.Component;
 import java.util.Collections;
 import java.util.LinkedList;
 
+@NotAllowedInLua
 public class ZonePrompt extends ToastWithButtons {
 
     private static Zone selectedZone;

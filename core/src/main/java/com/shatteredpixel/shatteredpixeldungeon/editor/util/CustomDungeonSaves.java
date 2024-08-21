@@ -3,17 +3,28 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomLayoutLevel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.ResourcePath;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.CustomGameObject;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaClassGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.idewindowactions.LuaScript;
@@ -24,6 +35,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.text.Normalizer;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -34,6 +46,7 @@ public class CustomDungeonSaves {
     public static final String EXPORT_FILE_EXTENSION = ".dun";//also used in AndroidManifest.xml!!!
     public static final String DUNGEON_FOLDER = ROOT_DIR + "custom_dungeons/";
 	public static final String TEMP_FOLDER = ROOT_DIR + "temp_";
+    static final String EXTRA_FILES = "files/";
     private static final String LEVEL_FOLDER = "levels/";
     private static final String DUNGEON_DATA = "data" + FILE_EXTENSION;
     private static final String DUNGEON_INFO = "info" + FILE_EXTENSION;
@@ -175,28 +188,34 @@ public class CustomDungeonSaves {
     }
 
     public static CustomLevel loadLevel(String name) throws IOException, RenameRequiredException {
-        return loadLevel(name, null);
+        return loadLevel(name, 0);
     }
 
-    public static CustomLevel loadLevel(String name, LuaCodeHolder luaScript) throws IOException, RenameRequiredException {
-        return loadLevel(name, true, luaScript);
+    public static CustomLevel loadLevel(String name, int luaScriptID) throws IOException, RenameRequiredException {
+        return loadLevel(name, true, luaScriptID);
     }
 
-    public static CustomLevel loadLevel(String name, boolean removeInvalidTransitions, LuaCodeHolder luaScript) throws IOException, RenameRequiredException {
+    public static CustomLevel loadLevel(String name, boolean removeInvalidTransitions, int luaScriptID) throws IOException, RenameRequiredException {
         FileHandle file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name));
-        if (!file.exists())//Still: it is important to rename old ones properly before or they might override other files
+
+        if (!file.exists()) {
             file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name.replace(' ', '_')));
-        else if (name.contains(" ") && file.exists() && curDirectory.contains("custom_dungeons"))
-            throw new RenameRequiredException(file, name);
-        Bundle bundle = FileUtils.bundleFromStream(file.read());
-        if (luaScript != null) {
-            String originalClass = bundle.getBundle(FLOOR).getString("__className");
-            originalClass = originalClass.substring(originalClass.lastIndexOf('.') + 1);
-            bundle.getBundle(FLOOR).put("__className", LuaLevel.getLuaLevelClassName(originalClass));
         }
+        else if (name.contains(" ") && file.exists() && curDirectory.contains("custom_dungeons")) {
+            throw new RenameRequiredException(file, name);
+        }
+
+        Bundle bundle = FileUtils.bundleFromStream(file.read());
+
+        if (luaScriptID != 0) {
+            String originalClass = bundle.getBundle(FLOOR).getString("__className");
+            bundle.getBundle(FLOOR).put("__className", LuaClassGenerator.luaUserContentClass(Reflection.forName(originalClass)).getName());
+            bundle.getBundle(FLOOR).put(CustomObjectClass.IDENTIFIER, luaScriptID);
+        }
+
         CustomLevel customLevel = (CustomLevel) bundle.get(FLOOR);
 
-        //checks if all transitions are still valid, can even remove transitions AFTER the game was started if necessary
+        //checks if all transitions are still valid, can even remove transitions AFTER the run was started if necessary
         if (removeInvalidTransitions) {
             for (LevelTransition t : new ArrayList<>(customLevel.transitions.values())) {
                 if (t.destBranch == 0 && !t.destLevel.equals(Level.SURFACE) && t.departCell != TransitionEditPart.NONE) {
@@ -208,9 +227,10 @@ public class CustomDungeonSaves {
                 }
             }
 
-            for (Mob templates : CustomObject.getAllCustomObjects(Mob.class)) {
-                ((LuaMob) templates).updateInheritStats(customLevel);
+            for (CustomGameObjectClass template : UserContentManager.getAllCustomObjects(CustomGameObjectClass.class)) {
+                template.updateInheritStats(customLevel);
             }
+            //look for all custom game objects on the map that don't have an associated custom object, and tzz ??
         }
 
         return customLevel;
@@ -223,18 +243,18 @@ public class CustomDungeonSaves {
         return file;
     }
 
-    public static CustomLevel loadLevelWithOgName(String name) throws IOException {
-        FileHandle file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name));
-        if (!file.exists())//Still: it is important to rename old ones properly before or they might override other files
-            file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name.replace(' ', '_')));
-        return (CustomLevel) FileUtils.bundleFromStream(file.read()).get(FLOOR);
-    }
-
-    public static void saveLevelWithOgName(Level level) throws IOException {
-        Bundle bundle = new Bundle();
-        bundle.put(FLOOR, level);
-        FileUtils.bundleToFile(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, level.name), bundle);
-    }
+//    public static CustomLevel loadLevelWithOgName(String name) throws IOException {
+//        FileHandle file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name));
+//        if (!file.exists())//Still: it is important to rename old ones properly before or they might override other files
+//            file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name.replace(' ', '_')));
+//        return (CustomLevel) FileUtils.bundleFromStream(file.read()).get(FLOOR);
+//    }
+//
+//    public static void saveLevelWithOgName(Level level) throws IOException {
+//        Bundle bundle = new Bundle();
+//        bundle.put(FLOOR, level);
+//        FileUtils.bundleToFile(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, level.name), bundle);
+//    }
 
     public static void saveLevel(Level level) throws IOException {
         Bundle bundle = new Bundle();
@@ -242,7 +262,12 @@ public class CustomDungeonSaves {
         Dungeon.level = level;
         bundle.put(FLOOR, level);
         Dungeon.level = before;
-        FileUtils.bundleToFile(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, level.name.replace(' ', '_')), bundle);
+        if (level instanceof RoomLayoutLevel) {
+            //tzz hstrrdfhg, keep in mind that the LevelScheme is never saved!
+        }
+        else {
+            FileUtils.bundleToFile(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, level.name.replace(' ', '_')), bundle);
+        }
     }
 
     public static boolean deleteLevelFile(String levelSchemeName) {
@@ -334,7 +359,7 @@ public class CustomDungeonSaves {
     }
 
     public static FileHandle getAdditionalFilesDir() {
-        return FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CustomTileLoader.EXTRA_FILES);
+        return FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + EXTRA_FILES);
     }
 
     public static List<String> findAllFilePaths(String... extensions) {
@@ -343,9 +368,9 @@ public class CustomDungeonSaves {
         Set<FileHandle> files = findAllFiles(extensions);
         if (files == null) return fullFilePaths;
 
-        String rootDir = getAdditionalFilesDir().path() + "/";
+        String rootDir = Pattern.quote(getAdditionalFilesDir().path() + "/");
         for (FileHandle f : files) {
-			fullFilePaths.add(f.path().replaceFirst(Pattern.quote(rootDir), ""));
+			fullFilePaths.add(f.path().replaceFirst(rootDir, ""));
 		}
         Collections.sort(fullFilePaths);
 
@@ -393,8 +418,9 @@ public class CustomDungeonSaves {
         Set<FileHandle> files = findAllFiles("lua");
         if (files == null) return result;
 
+        String rootDir = Pattern.quote(getAdditionalFilesDir().path() + "/");
         for (FileHandle file : files) {
-            LuaScript script = LuaScript.readFromFileContent(file.readString(), file.path().replaceFirst(Pattern.quote(getAdditionalFilesDir().path() + "/"), ""));
+            LuaScript script = LuaScript.readFromFileContent(file.readString(), file.path().replaceFirst(rootDir, ""));
             if (script != null && (condition == null || condition.apply(script))) {
                 result.add(script);
             }
@@ -411,15 +437,154 @@ public class CustomDungeonSaves {
     public static LuaScript readLuaFile(String pathToScript) {
         FileHandle file = FileUtils.getFileHandle(getExternalFilePath(pathToScript));
         if (!file.exists() || file.isDirectory()) return null;
-        return LuaScript.readFromFileContent(file.readString(), file.path().replaceFirst(Pattern.quote(getAdditionalFilesDir().path() + "/"), ""));
+        return LuaScript.readFromFileContent(file.readString(), pathToScript);
+    }
+
+    public static void loadAllCustomResourceFiles() {
+        UserContentManager.allResourcePaths.clear();
+
+        FileHandle localCustomObjectDir = FileUtils.getFileHandle(getCurrentCustomObjectsPath());
+        putResourceFilesInMap(localCustomObjectDir, UserContentManager.allResourcePaths, Pattern.quote(localCustomObjectDir.path() + "/"));
+
+    }
+
+    private static void putResourceFilesInMap(FileHandle file, Map<String, FileHandle> map, String quotedRootPath) {
+        if (file.isDirectory()) {
+            for (FileHandle f : file.list()) {
+                putResourceFilesInMap(f, map, quotedRootPath);
+            }
+        }
+        else if (!ResourcePath.isCustomObject(file.extension())) {
+            String path = file.path().replaceFirst(quotedRootPath, "");
+            map.put(path, file);
+        }
+    }
+
+    public static void loadAllCustomObjectsFromFiles() {
+
+        UserContentManager.allUserContents.clear();
+        String errors = null;
+
+        FileHandle localCustomObjectDir = FileUtils.getFileHandle(getCurrentCustomObjectsPath());
+        errors = readUserContentFile(localCustomObjectDir, null, Pattern.quote(localCustomObjectDir.path() + "/"));
+
+        for (CustomObject obj : new HashSet<>(UserContentManager.allUserContents.values())) {
+            obj.restoreIDs();
+        }
+
+        if (errors != null) DungeonScene.show(new WndError(errors));
+    }
+
+    private static String readUserContentFile(FileHandle file, String errors, String quotedRootPath) {
+        if (file.isDirectory()) {
+            for (FileHandle f : file.list()) {
+                errors = readUserContentFile(f, errors, quotedRootPath);
+            }
+        }
+        else if (ResourcePath.isCustomObject(file.extension())) {
+            try {
+                Bundle bundle = FileUtils.bundleFromStream(file.read());
+                CustomObject customObject = (CustomObject) bundle.get(CustomObject.BUNDLE_KEY);
+                customObject.saveDirPath = file.path().replaceFirst(quotedRootPath, "");
+                UserContentManager.allUserContents.put(customObject.getIdentifier(), customObject);
+            } catch (IOException e) {
+                if (errors == null) errors = "";
+                else errors += "\n";
+                errors += e.getMessage();
+            }
+        }
+        return errors;
+    }
+
+    public static void storeUserContent(Collection<CustomObject> customObjects) {
+        String errors = null;
+        for (CustomObject customObject : customObjects) {
+			try {
+				storeUserContent(customObject);
+			} catch (IOException e) {
+                if (errors == null) errors = "";
+                else errors += "\n";
+                errors += e.getMessage();
+			}
+		}
+        if (errors != null) {
+            DungeonScene.show(new WndError(errors));
+        }
+    }
+
+    public static void storeUserContent(CustomObject customObject) throws IOException {
+        if (customObject == null) return;
+
+        Bundle bundle = new Bundle();
+        bundle.put(CustomObject.BUNDLE_KEY, customObject);
+
+        String fileName = getCurrentCustomObjectsPath();
+
+        if (customObject.saveDirPath == null)  {
+            customObject.saveDirPath = customObject.defaultSaveDir();
+            customObject.saveDirPath += fileName(customObject);
+        }
+        fileName += customObject.saveDirPath;
+
+        FileUtils.bundleToFile(fileName, bundle);
+    }
+
+    public static void deleteUserContent(CustomObject customObject) {
+        if (customObject == null) return;
+
+        if (customObject instanceof CustomGameObject<?>) {
+            int ident = customObject.getIdentifier();
+
+            final Function<GameObject, GameObject. ModifyResult> whatToDo = obj -> {
+                if (obj instanceof CustomObjectClass && ((CustomObjectClass) obj).getIdentifier() == ident) {
+                    Bundle bundle = new Bundle();
+                    obj.storeInBundle(bundle);
+                    GameObject replacement = (GameObject) Reflection.newInstance(obj.getClass().getSuperclass());
+                    if (replacement != null) replacement.restoreFromBundle(bundle);
+                    return GameObject.ModifyResult.singeReplacement(replacement);
+                }
+                return GameObject.ModifyResult.noChange();
+            };
+
+            for (LevelScheme ls : Dungeon.customDungeon.levelSchemes()) {
+				try {
+					CustomDungeon.doOnEverything(ls, true, whatToDo, true, null, null);
+				} catch (IOException e) {
+					Game.reportException(e);
+				}
+			}
+            QuickSlotButton.doOnAll(whatToDo);
+        }
+        String fileName = getCurrentCustomObjectsPath() + customObject.saveDirPath;
+        FileUtils.deleteFile(fileName);
+
+        UserContentManager.allUserContents.remove(customObject.getIdentifier());
+
+        if (customObject instanceof CustomGameObject)
+            ((CustomGameObject<?>) customObject).inventoryCategory().updateCustomObjects();
+
+        customObject.reloadSprite();
+    }
+
+    public static String fileName(CustomObject customObject) {
+        return Normalizer.normalize(customObject.getName().trim(), Normalizer.Form.NFD).replaceAll("[^a-zA-Z0-9]", "")
+                + "_" + customObject.getIdentifier() + ".dat";
+    }
+
+    public static String getCurrentCustomObjectsPath() {
+        return curDirectory + EXTRA_FILES;
     }
 
     public static String getExternalFilePath(String pathFromRoot) {
-        return CustomDungeonSaves.curDirectory + CustomTileLoader.EXTRA_FILES + pathFromRoot;
+        return CustomDungeonSaves.curDirectory + EXTRA_FILES + pathFromRoot;
     }
 
     public static FileHandle getExternalFile(String pathFromRoot) {
         return FileUtils.getFileHandle(getExternalFilePath(pathFromRoot));
+    }
+
+    public static boolean isInRun() {
+        return curDirectory != null && curDirectory.equals(GamesInProgress.gameFolder(GamesInProgress.curSlot) + "/");
     }
 
     public static void copyLevelsForNewGame(String dungeonName, String dirDestination) throws IOException {
@@ -435,7 +600,14 @@ public class CustomDungeonSaves {
             }
 
             src = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(),
-                    DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + CustomTileLoader.EXTRA_FILES);
+                    DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + EXTRA_FILES);
+            if (src.exists()) {
+                FileHandle dest = FileUtils.getFileHandle(dirDestination.replace(' ', '_'));
+                src.copyTo(dest);
+            }
+
+            src = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(),
+                    DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + EXTRA_FILES);
             if (src.exists()) {
                 FileHandle dest = FileUtils.getFileHandle(dirDestination.replace(' ', '_'));
                 src.copyTo(dest);
@@ -447,15 +619,18 @@ public class CustomDungeonSaves {
     }
 
     public static void writeClearText(String fileName, String text) throws IOException {
+        writeClearText(FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), ROOT_DIR + fileName.replace(' ', '_')), text);
+    }
+
+    public static void writeClearText(FileHandle file, String text) throws IOException {
 
         if (!LuaManager.checkAccess("writeClearTextToFile")) return;
 
         try {
-            FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), ROOT_DIR + fileName.replace(' ', '_'));
             //write to a temp file, then move the files.
             // This helps prevent save corruption if writing is interrupted
             if (file.exists()) {
-                FileHandle temp = FileUtils.getFileHandle(fileName.replace(' ', '_') + ".tmp");
+                FileHandle temp = FileUtils.getFileHandle(file.name().replace(' ', '_') + file.hashCode() + ".tmp");
                 write(temp.write(false), text);
                 file.delete();
                 temp.moveTo(file);

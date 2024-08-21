@@ -41,6 +41,13 @@ public class PhantomPiranhaSprite extends MobSprite {
 
 		texture( Assets.Sprites.PIRANHA );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 12, 16 );
 
 		int c = 21;
@@ -56,8 +63,6 @@ public class PhantomPiranhaSprite extends MobSprite {
 
 		die = new MovieClip.Animation( 4, false );
 		die.frames( frames, c+12, c+13, c+14 );
-
-		play( idle );
 	}
 
 	@Override

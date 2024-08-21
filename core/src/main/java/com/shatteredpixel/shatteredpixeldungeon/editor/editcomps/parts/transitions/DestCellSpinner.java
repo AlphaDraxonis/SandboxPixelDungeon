@@ -2,7 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transiti
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class DestCellSpinner extends Spinner {
             if (val == NONE) return Messages.get(DestCellSpinner.class, "none");
             if (val == DEFAULT) return Messages.get(DestCellSpinner.class, "default");
             if (levelWidth <= 0) return "ERROR";
-            return EditorUtilies.cellToString(val, levelWidth);
+            return EditorUtilities.cellToString(val, levelWidth);
         }
     }
 }

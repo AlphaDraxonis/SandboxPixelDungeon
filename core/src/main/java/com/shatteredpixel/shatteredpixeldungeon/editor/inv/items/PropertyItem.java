@@ -3,7 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditPropertyComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
@@ -66,16 +66,16 @@ public class PropertyItem extends EditorItem<Char.Property> {
             case DEMONIC: return new RipperSprite();
             case INORGANIC: return new PylonSprite();
             case FIERY:
-                Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_LIQFLAME);
+                Image icon = EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_LIQFLAME);
                 icon.scale.set(ItemSpriteSheet.SIZE / Math.max(icon.width(), icon.height()));
                 return icon;
             case ICY:
-                icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_FROST);
+                icon = EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_FROST);
                 icon.scale.set(ItemSpriteSheet.SIZE / Math.max(icon.width(), icon.height()));
                 return icon;
             case ACIDIC: return new CausticSlimeSprite();
             case ELECTRIC:
-                icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_RECHARGE);
+                icon = EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.SCROLL_RECHARGE);
                 icon.scale.set(ItemSpriteSheet.SIZE / Math.max(icon.width(), icon.height()));
                 return icon;
             case PERMEABLE: return new GhostSprite();

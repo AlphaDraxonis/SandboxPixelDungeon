@@ -31,6 +31,13 @@ public class GnollSapperSprite extends MobSprite {
 
 		texture(Assets.Sprites.GNOLL_SAPPER );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 12, 15 );
 
 		idle = new Animation( 2, true );
@@ -46,8 +53,6 @@ public class GnollSapperSprite extends MobSprite {
 
 		die = new Animation( 12, false );
 		die.frames( frames, 8, 9, 10 );
-
-		play( idle );
 	}
 
 	@Override

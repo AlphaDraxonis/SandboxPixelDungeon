@@ -3,7 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.RoomItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -88,7 +88,7 @@ public abstract class ItemDistribution<T extends Item> implements Bundlable {
 
     @Override
     public void storeInBundle(Bundle bundle) {
-        bundle.put(LEVELS, levels.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
+        bundle.put(LEVELS, levels.toArray(EditorUtilities.EMPTY_STRING_ARRAY));
 //        if (distributedObjects != null)
 //            bundle.put(DISTRIBUTED_OBJECTS, distributedObjects.values());
 
@@ -148,7 +148,7 @@ public abstract class ItemDistribution<T extends Item> implements Bundlable {
 
         @Override
         public Class<? extends Bag> getPreferredBag() {
-            return com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items.bag.getClass();
+            return com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items.bag().getClass();
         }
 
         private static final String PRIZE_ITEM = "prize_item";
@@ -174,7 +174,7 @@ public abstract class ItemDistribution<T extends Item> implements Bundlable {
 
         @Override
         public Class<? extends Bag> getPreferredBag() {
-            return com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs.bag.getClass();
+            return com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs.bag().getClass();
         }
     }
 
@@ -186,7 +186,7 @@ public abstract class ItemDistribution<T extends Item> implements Bundlable {
 
         @Override
         public Class<? extends Bag> getPreferredBag() {
-            return com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Rooms.bag.getClass();
+            return com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Rooms.bag().getClass();
         }
     }
 }

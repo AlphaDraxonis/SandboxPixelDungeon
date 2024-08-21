@@ -10,21 +10,25 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipeList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.WndUserContent;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndChallenges;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
+@NotAllowedInLua
 public class DungeonTab extends MultiWindowTabComp {
 
     public DungeonTab() {
@@ -35,6 +39,7 @@ public class DungeonTab extends MultiWindowTabComp {
         StyledButton potionColors, scrollRunes, ringGems;
         StyledButton heroes, durationSettings, forceChallenges, customRecipes;
         StyledCheckBox view2d, seeLevelOnDeath, autoRevealSecrets;
+        StyledButton viewCustomObjects;
 
         potionColors = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_pot"), 8) {
             @Override
@@ -141,8 +146,17 @@ public class DungeonTab extends MultiWindowTabComp {
         autoRevealSecrets.addChangeListener(v -> Dungeon.customDungeon.notRevealSecrets = !v);
         content.add(autoRevealSecrets);
 
-        mainWindowComps = new Component[]{potionColors, scrollRunes, ringGems, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                heroes, durationSettings, forceChallenges, customRecipes, view2d, seeLevelOnDeath, autoRevealSecrets
+        viewCustomObjects = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "view_custom_objects"), PixelScene.landscape() ? 8 : 6){
+            @Override
+            protected void onClick() {
+                DungeonScene.show(new WndUserContent());
+            }
+        };
+//        viewCustomObjects.icon(new TileSprite(Terrain.ALCHEMY));
+        content.add(viewCustomObjects);
+
+        mainWindowComps = new Component[]{potionColors, scrollRunes, ringGems, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
+                heroes, durationSettings, forceChallenges, customRecipes, view2d, seeLevelOnDeath, autoRevealSecrets, viewCustomObjects
         };
     }
 

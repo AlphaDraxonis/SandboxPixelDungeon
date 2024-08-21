@@ -40,6 +40,13 @@ public class FungalSpinnerSprite extends MobSprite {
 
 		texture( Assets.Sprites.FUNGAL_SPINNER );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 16, 16 );
 
 		idle = new MovieClip.Animation( 10, true );
@@ -55,8 +62,6 @@ public class FungalSpinnerSprite extends MobSprite {
 
 		die = new MovieClip.Animation( 12, false );
 		die.frames( frames, 6, 7, 8, 9 );
-
-		play( idle );
 	}
 
 	@Override
@@ -74,6 +79,11 @@ public class FungalSpinnerSprite extends MobSprite {
 	@Override
 	protected void playZapAnim(int cell) {
 		playZap(parent, this, cell, ch);
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {

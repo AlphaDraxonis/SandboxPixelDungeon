@@ -36,7 +36,7 @@ public class RectF {
 		this( rect.left, rect.top, rect.right, rect.bottom );
 	}
 	
-	public RectF( Rect rect ) {
+	public RectF( WatabouRect rect ) {
 		this( rect.left, rect.top, rect.right, rect.bottom );
 	}
 	
@@ -67,7 +67,7 @@ public class RectF {
 		return this;
 	}
 	
-	public RectF set( Rect rect ) {
+	public RectF set( WatabouRect rect ) {
 		return set( rect.left, rect.top, rect.right, rect.bottom );
 	}
 	

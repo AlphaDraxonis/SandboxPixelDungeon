@@ -15,9 +15,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndZones;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
@@ -27,11 +29,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ZoneActi
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ToastWithButtons;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomLayoutLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -46,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.*;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.*;
@@ -53,9 +57,13 @@ import com.watabou.utils.*;
 import java.io.IOException;
 import java.util.*;
 
+@NotAllowedInLua
 public class EditorScene extends DungeonScene {
 
     public static boolean isEditing;
+
+    public static LevelScheme customLevelBeforeRoomLayout;
+    public static boolean isEditingRoomLayout;
 
 
     private static EditorScene scene;
@@ -101,8 +109,16 @@ public class EditorScene extends DungeonScene {
     private static PointF mainCameraPos;
 
     public static void open(CustomLevel customLevel) {
+        if (customLevel == null) {
+            SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
+            return;
+        }
         isEditing = true;
         displayZones = false;
+        isEditingRoomLayout = customLevel instanceof RoomLayoutLevel;
+        if (isEditingRoomLayout && !(EditorScene.customLevel instanceof RoomLayoutLevel)) {
+            customLevelBeforeRoomLayout = EditorScene.customLevel.levelScheme;
+        }
         if (customLevel != EditorScene.customLevel) {
             String oldLvlName;
             if (EditorScene.customLevel != null) {
@@ -115,11 +131,15 @@ public class EditorScene extends DungeonScene {
                 ZonePrompt.setSelectedZone(ZonePrompt.getFirstZoneAvailable(customLevel));
             }
             openDifferentLevel = true;
-            Items.updateKeys(oldLvlName, customLevel.name);
+            if (!isEditingRoomLayout) {
+                Items.updateKeys(oldLvlName, customLevel.name);
+            }
         }
         EditorScene.customLevel = customLevel;
         Dungeon.levelName = customLevel.name;
-        Dungeon.customDungeon.setLastEditedFloor(customLevel.name);
+        if (!isEditingRoomLayout) {
+            Dungeon.customDungeon.setLastEditedFloor(customLevel.name);
+        }
         PathFinder.setMapSize(customLevel.width(), customLevel.height());
         SandboxPixelDungeon.switchNoFade(EditorScene.class);
         firstTimeOpening = false;
@@ -146,7 +166,7 @@ public class EditorScene extends DungeonScene {
 
         for (Heap heap : Dungeon.level.heaps.valueList()) {
             for (Item item : heap.items) {
-                item.image = Dungeon.customDungeon.getItemSpriteOnSheet(item);
+                item.image = CustomDungeon.getItemSpriteOnSheet(item);
             }
         }
 
@@ -479,7 +499,7 @@ public class EditorScene extends DungeonScene {
         BitmapText text = scene.transitionIndicatorsMap.get(transition);
         if (text == null) return;
         text.text(Messages.get(LevelTransition.class, "to") + ": "
-                + (transition.destLevel == null && transition.destBranch == 0 ? "" : EditorUtilies.getDispayName(transition)));
+                + (transition.destLevel == null && transition.destBranch == 0 ? "" : EditorUtilities.getDispayName(transition)));
         text.hardlight(Window.TITLE_COLOR);
         text.scale.set(0.55f);
         text.measure();
@@ -509,7 +529,7 @@ public class EditorScene extends DungeonScene {
         Mob defMob = DefaultStatsCache.getDefaultObject(mob.getClass());
         if (defMob == null && MobSpriteItem.canChangeSprite(mob)) defMob = Reflection.newInstance(mob.getClass());
         if (MobSpriteItem.isSpriteChanged(mob, sprite)) {
-            sprite.realCharSprite = Reflection.newInstance(defMob.spriteClass);
+            sprite.realCharSprite = defMob.sprite();
             if (sprite.realCharSprite != null) {
                 sprite.realCharSprite.subSprite = true;
                 sprite.realCharSprite.scale.set(0.5f);

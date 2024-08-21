@@ -3,7 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -41,7 +41,7 @@ public class ExportDungeonWrapper implements Bundlable {
     @Override
     public void restoreFromBundle(Bundle bundle) {
 
-        EditorItemBag.callStaticInitializers();
+        EditorInventory.callStaticInitializers();
 
         dungeon = (CustomDungeon) bundle.get(DUNGEON);
         dungeonInfo = dungeon.createInfo();
@@ -100,7 +100,7 @@ public class ExportDungeonWrapper implements Bundlable {
         }
 
         FileHandle customTiles = FileUtils.getFileHandle(
-                CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_') + "/" + CustomTileLoader.EXTRA_FILES);
+                CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_') + "/" + CustomDungeonSaves.EXTRA_FILES);
         if (customTiles.exists() && customTiles.isDirectory() && customTiles.list().length > 0) {
             bundle.put(FILES, new AdditionalFileInfo(customTiles));
         }

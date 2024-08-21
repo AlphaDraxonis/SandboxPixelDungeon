@@ -124,11 +124,15 @@ public class WndTitledMessage extends Window {
             width = Math.max(width, WIDTH_MIN);
             titlebar.setRect(0, 0, width, 0);
 
+            int maxWidth = WIDTH_MAX;
+            text.maxWidth(maxWidth);
+            maxWidth = (int) Math.ceil(text.width());
+
             text.maxWidth((int) width);
 
             while (PixelScene.landscape()
-                    && text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
-                    && width < WIDTH_MAX){
+                    && text.bottom() < (PixelScene.MIN_HEIGHT_L - 10)
+                    && width < maxWidth){
                 width += 20;
                 titlebar.setRect(0, 0, width, 0);
                 sp.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );

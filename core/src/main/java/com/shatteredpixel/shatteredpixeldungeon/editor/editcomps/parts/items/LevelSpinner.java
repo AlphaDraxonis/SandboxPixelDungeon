@@ -3,7 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
@@ -15,7 +15,7 @@ public class LevelSpinner extends StyledSpinner {
 
     public LevelSpinner(Item item) {
         super(new LevelSpinnerModel(item.level(), item instanceof Artifact ? ((Artifact) item).levelCap() : item instanceof Trinket ? 3 : 100),
-                Messages.get(LevelSpinner.class, "label"), 9, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_UPGRADE));
+                Messages.get(LevelSpinner.class, "label"), 9, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.SCROLL_UPGRADE));
         icon.scale.set(9f / icon.height());
         SpinnerIntegerModel model = (SpinnerIntegerModel) getModel();
         if (item instanceof Artifact) {

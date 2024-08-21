@@ -9,14 +9,13 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
@@ -219,7 +218,7 @@ public class EditCompWindowTabbed extends WndTabbed {
 
     private void initComp(DefaultEditComp<?> comp) {
 
-        TabBody body = new TabBody(comp, comp.getObj());
+        TabBody body = new TabBody(comp);
         TabBtn tabBtn = new TabBtn(comp.getIcon(), comp.getObj());
         comps.put(comp.getObj(), new Wrapper(body, tabBtn));
         add(tabBtn);
@@ -233,7 +232,7 @@ public class EditCompWindowTabbed extends WndTabbed {
             h = Math.max(h, wrapper.body.getPreferredHeight() + 1);
         }
         float maxHeightNoOffset = PixelScene.uiCamera.height * 0.9f - tabHeight()-10;
-        int offset = EditorUtilies.getMaxWindowOffsetYForVisibleToolbar();
+        int offset = EditorUtilities.getMaxWindowOffsetYForVisibleToolbar();
         if (h > maxHeightNoOffset) {
             if (h > maxHeightNoOffset + offset) h = maxHeightNoOffset + offset;
             else offset = (int) Math.ceil(h - maxHeightNoOffset);
@@ -391,11 +390,8 @@ public class EditCompWindowTabbed extends WndTabbed {
         private Runnable layouter;
         private ScrollPane sp;
 
-        private final Object obj;
-
-        public TabBody(DefaultEditComp<?> content, Object obj) {
-            super(Icons.get(Icons.CLOSE));
-            this.obj = obj;
+        public TabBody(DefaultEditComp<?> content) {
+            super();
 
             add(content);
             this.content = content;

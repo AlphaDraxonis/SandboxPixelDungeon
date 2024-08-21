@@ -6,28 +6,35 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaMob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.noosa.Game;
+
+import java.io.IOException;
 
 public class EditCompWindow extends Window {
 
     private ScrollPane sp;
     protected final DefaultEditComp<?> content;
 
-    private MobActionPart.Modify mobModify;
+    private ActionPartModify actionPartModify;
 
     public EditCompWindow(Object object) {
         this(object, null);
@@ -45,8 +52,8 @@ public class EditCompWindow extends Window {
         if (content == null)
             throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
 
-        if (object instanceof MobItem && ((MobItem) object).getObject() instanceof LuaMob && ((LuaMob) ((MobItem) object).getObject()).isOriginal()) {
-            mobModify = new MobActionPart.Modify(((MobItem) object).getObject());
+        if (object instanceof EditorItem && ((EditorItem<?>) object).getObject() instanceof CustomObjectClass && ((CustomObjectClass) ((EditorItem<?>) object).getObject()).isOriginal()) {
+            actionPartModify = ActionPartModify.startNewModify(((EditorItem<?>) object).getObject());
         }
 
         content.advancedListPaneItem = advancedListPaneItem;
@@ -70,6 +77,8 @@ public class EditCompWindow extends Window {
         if (object instanceof Barrier) return new EditBarrierComp((Barrier) object);
         if (object instanceof ArrowCell) return new EditArrowCellComp((ArrowCell) object);
         if (object instanceof Checkpoint) return new EditCheckpointComp((Checkpoint) object);
+        if (object instanceof Room) return new EditRoomComp((Room) object);
+        if (object instanceof CustomObject) return ((CustomObject) object).createEditComp();
         return null;
     }
 
@@ -91,7 +100,7 @@ public class EditCompWindow extends Window {
     protected void onUpdate() {
         float ch = content.height();
         float maxHeightNoOffset = PixelScene.uiCamera.height * 0.8f - 10;
-        int offset = EditorUtilies.getMaxWindowOffsetYForVisibleToolbar();
+        int offset = EditorUtilities.getMaxWindowOffsetYForVisibleToolbar();
         if (ch > maxHeightNoOffset) {
             if (ch > maxHeightNoOffset + offset) ch = maxHeightNoOffset + offset;
             else offset = (int) Math.ceil(ch - maxHeightNoOffset);
@@ -116,16 +125,22 @@ public class EditCompWindow extends Window {
     public void hide() {
         super.hide();
 
-        if (content instanceof EditMobComp && content.getObj() instanceof LuaMob && ((LuaMob) content.getObj()).isOriginal()) {
+        if (content.getObj() instanceof CustomGameObjectClass && ((CustomGameObjectClass) content.getObj()).isOriginal()) {
 
             Undo.startAction();
 
-            mobModify.finish();
-            Undo.addActionPart(mobModify);
+            actionPartModify.finish();
+            Undo.addActionPart(actionPartModify);
 
-            ((LuaMob) content.getObj()).updateInheritStats(Dungeon.level);
+            ((CustomGameObjectClass) content.getObj()).updateInheritStats(Dungeon.level);
 
             Undo.endAction();
-        }
+
+			try {
+				CustomDungeonSaves.storeUserContent((CustomObject) UserContentManager.getUserContent(((CustomGameObjectClass) content.getObj()).getIdentifier(), null));
+			} catch (IOException e) {
+                Game.reportException(e);
+			}
+		}
     }
 }

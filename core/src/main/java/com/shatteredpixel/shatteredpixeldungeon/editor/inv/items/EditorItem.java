@@ -2,6 +2,10 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
@@ -10,26 +14,59 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRemoverComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.CompactCategoryScroller;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnchantmentLike;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.MobSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Function;
 import com.watabou.utils.Reflection;
 
-public abstract class EditorItem<T> extends Item {
+public abstract class EditorItem<T> extends Item implements CompactCategoryScroller.CategoryAction {
+
+    public static <T> EditorItem<T> wrapObject(T object) {
+        if (object instanceof Item) return (EditorItem<T>) new ItemItem(((Item) object));
+        if (object instanceof Mob) return (EditorItem<T>) new MobItem(((Mob) object));
+        if (object instanceof Trap) return (EditorItem<T>) new TrapItem(((Trap) object));
+        if (object instanceof Plant) return (EditorItem<T>) new PlantItem(((Plant) object));
+        if (object instanceof Integer) return (EditorItem<T>) new TileItem((Integer) object, -1);
+        if (object instanceof CustomObject) return (EditorItem<T>) new CustomObjectItem(((CustomObject) object));
+        if (object instanceof Class<?> && Blob.class.isAssignableFrom((Class<?>) object)) return (EditorItem<T>) new BlobItem((Class<? extends Blob>) object);
+        if (object instanceof Buff) return (EditorItem<T>) new BuffItem(((Buff) object));
+        if (object instanceof Barrier) return (EditorItem<T>) new BarrierItem(((Barrier) object));
+        if (object instanceof ArrowCell) return (EditorItem<T>) new ArrowCellItem(((ArrowCell) object));
+        if (object instanceof Checkpoint) return (EditorItem<T>) new CheckpointItem(((Checkpoint) object));
+        if (object instanceof CustomTilemap) return (EditorItem<T>) new CustomTileItem(((CustomTilemap) object), -1);
+        if (object instanceof EnchantmentLike) return (EditorItem<T>) new EnchantmentItem((EnchantmentLike) object);
+        if (object instanceof Class<?> && MobSprite.class.isAssignableFrom((Class<?>) object)) return (EditorItem<T>) new MobSpriteItem((Class<? extends MobSprite>) object);
+        if (object instanceof CustomParticle.ParticleProperty) return (EditorItem<T>) new ParticleItem(((CustomParticle.ParticleProperty) object));
+        if (object instanceof Char.Property) return (EditorItem<T>) new PropertyItem(((Char.Property) object));
+        if (object instanceof Room) return (EditorItem<T>) new RoomItem(((Room) object));
+        return null;
+//      throw new IllegalArgumentException("EditorItemClass is missing for object" + (object == null ? null : object.getClass()));
+    }
 
     protected T obj;
 
@@ -55,6 +92,10 @@ public abstract class EditorItem<T> extends Item {
 
     public abstract Image getSprite();
 
+    public Image getSprite(Runnable reloadSprite) {
+        return getSprite();
+    }
+
     @Override
     public abstract Item getCopy();
 
@@ -75,6 +116,23 @@ public abstract class EditorItem<T> extends Item {
                     | doOnSingleObject(((GameObject) obj), whatToDo, newValue -> obj = (T) newValue);
         }
         return super.doOnAllGameObjects(whatToDo);
+    }
+
+
+    @Override
+    public boolean supportsAction(Action action) {
+        return obj instanceof CustomObjectClass && action == Action.REMOVE && CustomDungeon.isEditing();
+    }
+
+    @Override
+    public void doAction(Action action) {
+        if (action == Action.REMOVE) {
+            if (obj instanceof CustomObjectClass) {
+                CustomDungeonSaves.deleteUserContent(
+                        UserContentManager.getUserContent(((CustomObjectClass) obj).getIdentifier(), null)
+                );
+            }
+        }
     }
 
 
@@ -226,11 +284,11 @@ public abstract class EditorItem<T> extends Item {
 
         public String displayText() {
             switch (this) {
-                case MOB: return Mobs.bag.name();
+                case MOB: return Mobs.bag().name();
                 case BLOB: return Messages.get(Tiles.BlobBag.class, "name");
-                case ITEM: return Items.bag.name();
-                case PLANT: return Plants.bag.name();
-                case TRAP: return Traps.bag.name();
+                case ITEM: return Items.bag().name();
+                case PLANT: return Plants.bag().name();
+                case TRAP: return Traps.bag().name();
                 case CHECKPOINT: return Messages.get(Checkpoint.class, "name");
                 case ARROW_CELL: return Messages.get(ArrowCell.class, "name");
                 case BARRIER: return Messages.get(Barrier.class, "name");
@@ -247,15 +305,15 @@ public abstract class EditorItem<T> extends Item {
                     Image icon = Icons.ETERNAL_FIRE.get();
                     icon.scale.set(2.28f);// 16/7 = 2.28
                     return icon;
-                case ITEM: return new ItemSprite((Item) Reflection.newInstance(EditorInvCategory.getRandom(Items.values())));
-                case PLANT: return ((Plant) Reflection.newInstance(EditorInvCategory.getRandom(Plants.values()))).getSprite();
+                case ITEM: return new ItemSprite((Item) Reflection.newInstance(GameObjectCategory.getRandom(Items.instance().values())));
+                case PLANT: return ((Plant) Reflection.newInstance(GameObjectCategory.getRandom(Plants.instance().values()))).getSprite();
                 case TRAP:
-                    Trap t = Reflection.newInstance(EditorInvCategory.getRandom(Traps.values()));
+                    Trap t = Reflection.newInstance(GameObjectCategory.getRandom(Traps.instance().values()));
                     t.visible = true;
                     return t.getSprite();
                 case CHECKPOINT: return new Checkpoint.CheckpointSprite(new Checkpoint());
-                case ARROW_CELL: return EditorUtilies.getArrowCellTexture(ArrowCell.ALL, true);
-                case BARRIER: return EditorUtilies.getBarrierTexture(1);
+                case ARROW_CELL: return EditorUtilities.getArrowCellTexture(ArrowCell.ALL, true);
+                case BARRIER: return EditorUtilities.getBarrierTexture(1);
                 case CUSTOM_TILE: return Icons.TALENT.get();
                 case PARTICLE: return Tiles.particleBag.getCategoryImage();
             }

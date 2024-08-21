@@ -784,6 +784,12 @@ public class ItemSpriteSheet {
 		assignItemRect(HALLS_PAGE,  10, 11);
 	}
 
+
+	public static int NO_IMAGE = xy(16,32);
+	static {
+		assignItemRect(NO_IMAGE,16, 16);
+	}
+
 	//for smaller 8x8 icons that often accompany an item sprite
 	public static class Icons {
 

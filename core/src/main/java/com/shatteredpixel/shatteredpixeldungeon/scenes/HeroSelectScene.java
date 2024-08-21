@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.watabou.NotAllowedInLua;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.*;
@@ -42,6 +43,7 @@ import com.watabou.utils.PointF;
 
 import java.util.ArrayList;
 
+@NotAllowedInLua
 public class HeroSelectScene extends PixelScene {
 
 	private Image background;

@@ -12,9 +12,11 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 
 import java.util.List;
 
+@NotAllowedInLua
 public class WndSelectMusic extends WndChooseOneInCategories {
 
     public enum TypeOfFirstCategory {

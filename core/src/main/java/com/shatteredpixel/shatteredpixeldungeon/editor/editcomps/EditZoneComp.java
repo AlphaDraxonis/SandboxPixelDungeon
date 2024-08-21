@@ -28,7 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndColorPicker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -87,7 +87,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         StyledCheckBox teleportTo = new StyledCheckBox(Messages.get(EditZoneComp.class, "teleport_to"));
         teleportTo.checked(zone.canTeleportTo);
         teleportTo.addChangeListener(v -> zone.canTeleportTo = v);
-        Image teleIcon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_TELEPORT);
+        Image teleIcon = EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.SCROLL_TELEPORT);
         teleIcon.scale.set(ItemSpriteSheet.SIZE / Math.max(teleIcon.width(), teleIcon.height()));
         teleportTo.icon(teleIcon);
 
@@ -144,7 +144,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         };
         mobRotation.multiline = true;
 
-        Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_LULLABY);
+        Image icon = EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.SCROLL_LULLABY);
         icon.scale.set(1.8f);
         String musicLabel = Messages.get(ChangeRegion.class, "music");
         StyledButton music = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, musicLabel) {
@@ -178,7 +178,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
             List<String> zones = new ArrayList<>(chasm.zones);
             if (!zones.isEmpty()) Collections.sort(zones, (a, b) -> a.compareTo(b));
             zones.add(0, null);
-            data = zones.toArray(EditorUtilies.EMPTY_STRING_ARRAY);
+            data = zones.toArray(EditorUtilities.EMPTY_STRING_ARRAY);
             if (zone.chasmDestZone != null) {
                 index++;
                 for (; index < data.length; index++) {
@@ -290,7 +290,8 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         }
         add(chasmDest);
 
-        rename.visible = delete.visible = true;
+        rename.setVisible(true);
+        delete.setVisible(true);
     }
 
     @Override
@@ -352,14 +353,14 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
                 if (positive && !text.isEmpty()) {
                     for (String floorN : Dungeon.level.levelScheme.zones) {
                         if (floorN.equals(text)) {
-                            EditorUtilies.showDuplicateNameWarning();
+                            EditorUtilities.showDuplicateNameWarning();
                             return;
                         }
                     }
                     if (!text.equals(obj.getName())) {
                         Dungeon.customDungeon.renameZone(obj, text);
                         WndZones.WndSelectZone.updateList();
-                        Window oldW = EditorUtilies.getParentWindow(rename);
+                        Window oldW = EditorUtilities.getParentWindow(rename);
                         if (oldW != null) {
                             oldW.hide();
                             EditorScene.show(new EditCompWindow(obj));
@@ -380,7 +381,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
             @Override
             protected void onSelect(int index) {
                 if (index == 0) {
-                    Window oldW = EditorUtilies.getParentWindow(delete);
+                    Window oldW = EditorUtilities.getParentWindow(delete);
                     if (oldW != null) {
                         oldW.hide();//important to hide before deletion
                     }

@@ -23,9 +23,11 @@ package com.watabou.glwrap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.BufferUtils;
+import com.watabou.NotAllowedInLua;
 
 import java.nio.IntBuffer;
 
+@NotAllowedInLua
 public class Shader {
 
 	public static final int VERTEX		= Gdx.gl.GL_VERTEX_SHADER;

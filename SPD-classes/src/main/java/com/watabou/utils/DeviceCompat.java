@@ -24,9 +24,11 @@ package com.watabou.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 
 //TODO migrate to platformSupport class
+@NotAllowedInLua
 public class DeviceCompat {
 	
 	public static boolean supportsFullScreen(){

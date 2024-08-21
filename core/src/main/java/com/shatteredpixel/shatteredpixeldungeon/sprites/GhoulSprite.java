@@ -23,16 +23,33 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.utils.RectF;
+
+import java.util.LinkedHashMap;
 
 public class GhoulSprite extends MobSprite {
 
 	private Animation crumple;
+
+	@Override
+	public LinkedHashMap<String, Animation> getAnimations() {
+		LinkedHashMap<String, Animation> result = super.getAnimations();
+		result.put("crumple", crumple);
+		return result;
+	}
 	
 	public GhoulSprite() {
 		super();
 		
 		texture( Assets.Sprites.GHOUL );
 		
+		initAnimations();
+		
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 12, 14 );
 
 		idle = new Animation( 2, true );
@@ -44,19 +61,29 @@ public class GhoulSprite extends MobSprite {
 		attack = new Animation( 12, false );
 		attack.frames( frames, 0, 8, 9 );
 
+		zap = attack.clone();
+
 		crumple = new Animation( 15, false);
 		crumple.frames( frames, 0, 10, 11, 12 );
 
 		die = new Animation( 15, false );
 		die.frames( frames, 0, 10, 11, 12, 13 );
-		
-		play( idle );
 	}
 
-	public void crumple(){
-		hideEmo();
-		remove(State.PARALYSED);
-		play(crumple);
+	public static void crumple(CharSprite sprite){
+		sprite.hideEmo();
+		sprite.remove(State.PARALYSED);
+
+		if (sprite instanceof GhoulSprite) {
+			sprite.play(((GhoulSprite) sprite).crumple);
+		} else {
+			Animation crumple = new Animation((int) (1f / sprite.die.delay), false);
+			crumple.frames = new RectF[sprite.die.frames.length-1];
+			for (int i = 0; i < crumple.frames.length; i++) {
+				crumple.frames[i] = sprite.die.frames[i];
+			}
+			sprite.play(crumple);
+		}
 	}
 
 	@Override

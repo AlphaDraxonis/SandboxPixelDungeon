@@ -203,6 +203,7 @@ public class MagicalFireRoom extends SpecialRoom {
 
 							//clears itself if there is frost/blizzard on or next to it
 							for (int k : PathFinder.NEIGHBOURS9) {
+								if (cell + k < 0 || cell+k >= cur.length) continue;
 								if (freeze != null && freeze.volume > 0 && freeze.cur[cell+k] > 0) {
 									freeze.clear(cell);
 									cur[cell] = 0;
@@ -225,10 +226,10 @@ public class MagicalFireRoom extends SpecialRoom {
 					}
 
 					if (cur[cell] > 0
-							|| cur[cell-1] > 0
-							|| cur[cell+1] > 0
-							|| cur[cell-Dungeon.level.width()] > 0
-							|| cur[cell+Dungeon.level.width()] > 0) {
+							|| cell - Dungeon.level.width() >= 0 &&
+							(cur[cell-1] > 0 || cur[cell-Dungeon.level.width()] > 0)
+							|| cell + Dungeon.level.width() <= cur.length &&
+							(cur[cell+1] > 0 || cur[cell+Dungeon.level.width()] > 0)) {
 
 						//spread fire to nearby flammable cells
 						if (Dungeon.level.isFlamable(cell) && (pureFire == null || pureFire.volume == 0 || pureFire.cur[cell] == 0)){

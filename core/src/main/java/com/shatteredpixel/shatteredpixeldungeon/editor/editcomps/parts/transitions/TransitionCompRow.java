@@ -9,7 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSe
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TileModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableCompWithAdd;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -33,7 +33,7 @@ public class TransitionCompRow extends FoldableCompWithAdd {
             title.text(Messages.get(TransitionCompRow.class, cell == CELL_DEFAULT_ENTRANCE ? "entrance" : "exit"));
         else
             title.text(Messages.get(TransitionCompRow.class, (TileItem.isEntranceTerrainCell(levelScheme.getLevel().map[cell]) ? "entrance" : "exit"))
-                    + EditorUtilies.appendCellToString(cell, levelScheme.getLevel()));
+                    + EditorUtilities.appendCellToString(cell, levelScheme.getLevel()));
 
         LevelTransition transition;
         if (cell < 0) {

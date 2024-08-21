@@ -26,7 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -264,7 +264,7 @@ public class WndBag extends WndTabbed {
         }
 
         // Items in the bag, except other containers (they have tags at the bottom)
-        for (Item item : container.items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
+        for (Item item : container.items.toArray(EditorUtilities.EMPTY_ITEM_ARRAY)) {
             if (!(item instanceof Bag)) {
                 placeItem(item);
             } else {

@@ -63,7 +63,7 @@ public class SewerPipeRoom extends StandardRoom {
 
 		Painter.fill( level, this, Terrain.WALL );
 
-		Rect c = getConnectionSpace();
+		WatabouRect c = getConnectionSpace();
 
 		if (connected.size() <= 2) {
 			for (Door door : connected.values()) {
@@ -172,10 +172,10 @@ public class SewerPipeRoom extends StandardRoom {
 
 	//returns the space which all doors must connect to (usually 1 cell, but can be more)
 	//Note that, like rooms, this space is inclusive to its right and bottom sides
-	protected Rect getConnectionSpace(){
+	protected WatabouRect getConnectionSpace(){
 		Point c = connected.size() <= 1 ? center() : getDoorCenter();
 
-		return new Rect(c.x, c.y, c.x, c.y);
+		return new WatabouRect(c.x, c.y, c.x, c.y);
 	}
 
 	@Override

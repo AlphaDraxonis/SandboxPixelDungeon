@@ -133,13 +133,7 @@ public abstract class YogFist extends Mob {
 		} else {
 
 			incrementRangedCooldown();
-			if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-				sprite.zap( enemy.pos );
-				return false;
-			} else {
-				zap();
-				return true;
-			}
+			return doRangedAttack();
 		}
 	}
 
@@ -179,8 +173,8 @@ public abstract class YogFist extends Mob {
 	}
 
 	@Override
-	public String description() {
-		if (customDesc != null) return super.description();
+	public String desc() {
+		if (customDesc != null) return super.desc();
 		return Messages.get(YogFist.class, "desc") + "\n\n" + Messages.get(this, "desc");
 	}
 

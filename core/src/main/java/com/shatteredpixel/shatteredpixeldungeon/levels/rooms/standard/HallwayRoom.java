@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomRect;
 import com.watabou.utils.*;
 
 public class HallwayRoom extends StandardRoom {
@@ -45,7 +46,7 @@ public class HallwayRoom extends StandardRoom {
 	}
 
 	@Override
-	public void merge(Level l, Room other, Rect merge, int mergeTerrain) {
+	public void merge(Level l, Room other, RoomRect merge, int mergeTerrain) {
 		super.merge(l, other, merge, mergeTerrain);
 		Painter.set(l, connected.get(other), Terrain.EMPTY_SP);
 	}
@@ -57,7 +58,7 @@ public class HallwayRoom extends StandardRoom {
 		Painter.fill( level, this, Terrain.WALL );
 		Painter.fill( level, this, 1 , Terrain.EMPTY );
 
-		Rect c = getConnectionSpace();
+		WatabouRect c = getConnectionSpace();
 
 		for (Door door : connected.values()) {
 
@@ -108,13 +109,13 @@ public class HallwayRoom extends StandardRoom {
 
 	//returns the space which all doors must connect to (usually 1 cell, but can be more)
 	//Note that, like rooms, this space is inclusive to its right and bottom sides
-	protected Rect getConnectionSpace(){
+	protected WatabouRect getConnectionSpace(){
 		Point c = center();
 
 		c.x = (int) GameMath.gate(left + 2, c.x, right - 2);
 		c.y = (int) GameMath.gate(top + 2, c.y, bottom - 2);
 
-		return new Rect(c.x-1, c.y-1, c.x+1, c.y+1);
+		return new WatabouRect(c.x-1, c.y-1, c.x+1, c.y+1);
 	}
 
 	//returns a point equidistant from all doors this room has

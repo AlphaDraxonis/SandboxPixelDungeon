@@ -39,6 +39,13 @@ public class SpawnerSprite extends MobSprite {
 		shadowHeight = 0.4f;
 		shadowWidth = 1f;
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 16, 16 );
 
 		idle = new Animation( 8, true );
@@ -50,8 +57,6 @@ public class SpawnerSprite extends MobSprite {
 		attack.frames( frames, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 );
 
 		die = idle.clone();
-
-		play( idle );
 	}
 
 	private float baseY = Float.NaN;

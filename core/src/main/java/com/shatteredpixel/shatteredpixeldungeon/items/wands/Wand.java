@@ -236,7 +236,8 @@ public abstract class Wand extends Item {
 		
 		return this;
 	}
-	
+
+	@Override
 	public void onHeroGainExp( float levelPercent, Hero hero ){
 		levelPercent *= Talent.itemIDSpeedFactor(hero, this);
 		if (!isIdentified() && availableUsesToID <= USES_TO_ID/2f) {

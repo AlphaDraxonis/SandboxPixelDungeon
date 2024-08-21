@@ -126,6 +126,9 @@ public class Ghoul extends Mob {
 			
 			if (!candidates.isEmpty()){
 				Ghoul child = new Ghoul();
+				child.spriteClass = spriteClass;
+				child.customDesc = customDesc;
+				child.customName = customName;
 				child.partnerID = this.id();
 				this.partnerID = child.id();
 				child.setPlayerAlignment(playerAlignment);
@@ -164,7 +167,7 @@ public class Ghoul extends Mob {
 				Actor.remove(this);
 				Dungeon.level.mobs.remove( this );
 				Buff.append(nearby, GhoulLifeLink.class).set(timesDowned*5, this);
-				((GhoulSprite)sprite).crumple();
+				GhoulSprite.crumple(sprite);
 				return;
 			}
 		}
@@ -325,7 +328,7 @@ public class Ghoul extends Mob {
 		public void fx(boolean on) {
 			if (on && !alwaysHidesFx && ghoul != null && ghoul.sprite == null){
 				GameScene.addSprite(ghoul);
-				((GhoulSprite)ghoul.sprite).crumple();
+				GhoulSprite.crumple(ghoul.sprite);
 			}
 		}
 

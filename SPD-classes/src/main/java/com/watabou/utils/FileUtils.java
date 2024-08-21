@@ -25,6 +25,7 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.watabou.NotAllowedInLua;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +33,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+@NotAllowedInLua
 public class FileUtils {
 	
 	// Helper methods for setting/using a default base path and file address mode

@@ -18,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -34,6 +35,7 @@ import java.util.*;
 
 import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon.DEFAULT_DUNGEON;
 
+@NotAllowedInLua
 public class WndSelectDungeon extends Window {
 
     private enum SortMode {
@@ -79,11 +81,11 @@ public class WndSelectDungeon extends Window {
                 Component[] comps = getItems();
                 for (int i = 0; i < comps.length; i++) {
                     if (comps[i] instanceof PlayAgain) {
-                        content.setSize(width, EditorUtilies.layoutCompsLinear(2, content, comps[i]) + 2);
+                        content.setSize(width, EditorUtilities.layoutCompsLinear(2, content, comps[i]) + 2);
                         comps[i] = null;
                     }
                 }
-                content.setSize(width, EditorUtilies.layoutStyledCompsInRectangles(2, width, content, comps));
+                content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(2, width, content, comps));
             }
         };
         add(listPane);
@@ -196,6 +198,7 @@ public class WndSelectDungeon extends Window {
     }
 
 
+    @NotAllowedInLua
     private class ListItem extends StyledButton {
 
         private final CustomDungeonSaves.Info info;
@@ -222,7 +225,7 @@ public class WndSelectDungeon extends Window {
                 if (timeDiff < 86_400_000L) {
                     if (timeDiff < 0) t = null;
                     else {
-                        t = EditorUtilies.convertTimeDifferenceToString(timeDiff);
+                        t = EditorUtilities.convertTimeDifferenceToString(timeDiff);
                     }
                 } else {
                     t = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault()).format(new Date(info.lastModified));
@@ -318,6 +321,7 @@ public class WndSelectDungeon extends Window {
             select(info.name);
         }
 
+        @NotAllowedInLua
         private class WndInfoDungeon extends Window {
 
             private static final int GAP = 6;
@@ -590,7 +594,7 @@ public class WndSelectDungeon extends Window {
             playAgain.align(RenderedTextBlock.RIGHT_ALIGN);
             add(playAgain);
 
-            separator = new ColorBlock(1, 1, 0xFF222222);
+            separator = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
             add(separator);
         }
 

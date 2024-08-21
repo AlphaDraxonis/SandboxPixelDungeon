@@ -13,7 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndEditFloorInOverview;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
 import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+@NotAllowedInLua
 public abstract class LevelListPane extends ScrollingListPane {
 
     @Override
@@ -102,7 +104,7 @@ public abstract class LevelListPane extends ScrollingListPane {
         layout(true);
 
         content.setSize(width, 0);
-        float pos = EditorUtilies.layoutStyledCompsInRectangles(2, width, content, getItems());
+        float pos = EditorUtilities.layoutStyledCompsInRectangles(2, width, content, getItems());
         content.setSize(width, pos);
     }
 
@@ -140,13 +142,13 @@ public abstract class LevelListPane extends ScrollingListPane {
                 region = ((QuestLevels) levelScheme).getRegion();
                 newForegroundImg = ((QuestLevels) levelScheme).createForegroundIcon();
             } else if (levelScheme == LevelScheme.NO_LEVEL_SCHEME) {
-                name = EditorUtilies.getDispayName(Level.NONE);
+                name = EditorUtilities.getDispayName(Level.NONE);
                 newForegroundImg = Icons.CLOSE.get();
             } else if (levelScheme == LevelScheme.SURFACE_LEVEL_SCHEME) {
-                name = EditorUtilies.getDispayName(Level.SURFACE);
+                name = EditorUtilities.getDispayName(Level.SURFACE);
                 newForegroundImg = BadgeBanner.image(Badges.Badge.HAPPY_END.image);
             } else if (levelScheme == LevelScheme.ANY_LEVEL_SCHEME) {
-                name = EditorUtilies.getDispayName(Level.ANY);
+                name = EditorUtilities.getDispayName(Level.ANY);
                 newForegroundImg = new ItemSprite();
             } else {
                 LevelScheme ls = (LevelScheme) levelScheme;

@@ -31,36 +31,39 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.LuaScript;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
-import org.luaj.vm2.*;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaUserdata;
+import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.lang.reflect.Modifier;
 
+@NotAllowedInLua
 public class LuaManager {
 
 	public static Image scriptSprite(LuaScript script) {
-		boolean abstrct = Modifier.isAbstract(script.type.getModifiers());
-		if (Mob.class.isAssignableFrom(script.type)) return abstrct ? new SkeletonSprite() : ((Mob) Reflection.newInstance(script.type)).sprite();
+		boolean isAbstract = Modifier.isAbstract(script.type.getModifiers());
+		if (Mob.class.isAssignableFrom(script.type)) return isAbstract ? new SkeletonSprite() : ((Mob) Reflection.newInstance(script.type)).sprite();
 		return new ItemSprite();
 	}
 
 	public static void callStaticInitializers() {
 	}
 
-	static final Globals globals = new LuaGlobals();
+	static final LuaGlobals globals = new LuaGlobals();
 
 	public static boolean areScriptsRunning() {
-		for (StackTraceElement[] stackTrace : Thread.getAllStackTraces().values()) {
-			for (StackTraceElement element : stackTrace) {
-				if (element.getClassName().contains("org.luaj.vm2")) {
-					return true;
-				}
+		for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+			if (element.getClassName().contains("org.luaj.vm2")) {
+				return true;
 			}
 		}
 		return false;
@@ -79,20 +82,16 @@ public class LuaManager {
 	}
 
 	public static void updateGlobalVars() {
-		if (Dungeon.hero != null) {
-			globals.set("hero", CoerceJavaToLua.coerce(Dungeon.hero));
-		} else {
-			globals.set("hero", LuaValue.NIL);
-		}
-		globals.set("customDungeon", CoerceJavaToLua.coerce(Dungeon.customDungeon));
-		globals.set("level", CoerceJavaToLua.coerce(Dungeon.level));
-		globals.set("depth", LuaValue.valueOf(Dungeon.depth));
-		globals.set("branch", LuaValue.valueOf(Dungeon.branch));
-		globals.set("version", LuaValue.valueOf(Game.version));
-		globals.set("versionCode", LuaValue.valueOf(Game.versionCode));
-		globals.set("seed", LuaValue.valueOf(Dungeon.seed));
+		globals.exposeGlobalObject("hero", Dungeon.hero);
+		globals.exposeGlobalObject("customDungeon", Dungeon.customDungeon);
+		globals.exposeGlobalObject("level", Dungeon.level);
+		globals.exposeGlobalObject("depth", Dungeon.depth);
+		globals.set("branch", Dungeon.branch);
+		globals.set("version", Game.version);
+		globals.set("versionCode", Game.versionCode);
+		globals.set("seed", Dungeon.seed);
 
-		if (Dungeon.levelName != null) globals.set("levelSeed", LuaValue.valueOf(Dungeon.seedCurLevel()));
+		if (Dungeon.levelName != null) globals.set("levelSeed", Dungeon.seedCurLevel());
 	}
 
 
@@ -101,8 +100,6 @@ public class LuaManager {
 			globals.load(code).call();
 			return null;
 		} catch (LuaError e) {
-//			"[string \"function die(this, vars, source)\n" +
-//					"return source-m-.hashcode(...\"]:2: unexpected symbol 46 (.)";
 			return e.getMessage();
 		}
 	}
@@ -248,6 +245,13 @@ public class LuaManager {
 				storeVarInBundle(bundle, luaTable.get(k), k.toString());
 			}
 		}
+	}
+
+
+	public static String maybeAddMainPackageName(String className) {
+		return className.startsWith(Messages.MAIN_PACKAGE_NAME) || className.startsWith(Messages.WATABOU_PACKAGE_NAME)
+				? className
+				: Messages.MAIN_PACKAGE_NAME + className;
 	}
 
 }

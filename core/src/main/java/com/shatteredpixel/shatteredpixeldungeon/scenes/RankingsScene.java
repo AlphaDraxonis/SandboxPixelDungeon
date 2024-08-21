@@ -33,12 +33,14 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndDailies;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndRanking;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Music;
 import com.watabou.utils.GameMath;
 
+@NotAllowedInLua
 public class RankingsScene extends PixelScene {
 	
 	private static final float ROW_HEIGHT_MAX	= 20;

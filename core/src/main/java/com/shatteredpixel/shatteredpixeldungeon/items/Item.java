@@ -52,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
@@ -412,7 +413,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 				&& Objects.equals(customImage, item.customImage)
 				&& Objects.equals(customName, item.customName)
 				&& Objects.equals(customDesc, item.customDesc)
-				&& onlyCheckTypeIfRecipe == onlyCheckTypeIfRecipe;
+				&& onlyCheckTypeIfRecipe == item.onlyCheckTypeIfRecipe;
 	}
 
 	protected void onDetach(){}
@@ -735,6 +736,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 		if ("".equals(customName)) customName = null;
 		if ("".equals(customDesc)) customDesc = null;
 
+		this.level = 0;
 		int level = bundle.getInt( LEVEL );
 		if (level > 0) {
 			upgrade( level );
@@ -763,6 +765,24 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
         bundle.put("ITEM",this);
         return (Item) bundle.get("ITEM");
     }
+
+	@Override
+	public void copyStats(GameObject template) {
+		if (template == null) return;
+		if (getClass() != template.getClass()) return;
+		Bundle bundle = new Bundle();
+		bundle.put("OBJ", template);
+		bundle.getBundle("OBJ").put(CustomGameObjectClass.INHERIT_STATS, true);
+
+//		int pos = this.pos;
+//		boolean replaceSprite = spriteClass != ((Mob) template).spriteClass;
+		restoreFromBundle(bundle.getBundle("OBJ"));
+//		this.pos = pos;
+
+//		if (replaceSprite && sprite != null) {
+//			EditorScene.replaceMobSprite(this, ((Mob) template).spriteClass);
+//		}
+	}
 
 	public int targetingPos( Hero user, int dst ){
 		return throwPos( user, dst );

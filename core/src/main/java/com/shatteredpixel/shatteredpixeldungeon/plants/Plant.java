@@ -33,7 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.Customizable;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.*;
@@ -61,7 +62,7 @@ public abstract class Plant extends GameObject implements Customizable, Copyable
     protected Class<? extends Plant.Seed> seedClass;
 
     @Override
-    public int sparseArrayKey() {
+    public final int sparseArrayKey() {
         return pos;
     }
 
@@ -155,6 +156,24 @@ public abstract class Plant extends GameObject implements Customizable, Copyable
         return (Plant) b.get("PLANT");
     }
 
+    @Override
+    public void copyStats(GameObject template) {
+        if (template == null) return;
+        if (getClass() != template.getClass()) return;
+        Bundle bundle = new Bundle();
+        bundle.put("OBJ", template);
+        bundle.getBundle("OBJ").put(CustomGameObjectClass.INHERIT_STATS, true);
+
+        int pos = this.pos;
+//        boolean replaceSprite = spriteClass != ((Mob) template).spriteClass;
+        restoreFromBundle(bundle.getBundle("OBJ"));
+        this.pos = pos;
+
+//        if (replaceSprite && sprite != null) {
+//            EditorScene.replaceMobSprite(this, ((Mob) template).spriteClass);
+//        }
+    }
+
     public String name() {
         String msg;
         return customName == null ? Messages.get(this, "name") : Messages.NO_TEXT_FOUND.equals(msg = Messages.get(customName)) ? customName : msg;
@@ -174,7 +193,7 @@ public abstract class Plant extends GameObject implements Customizable, Copyable
     }
 
     public Image getSprite() {
-        return EditorUtilies.getTerrainFeatureTexture(image + 7 * 16);
+        return EditorUtilities.getTerrainFeatureTexture(image + 7 * 16);
     }
 
     @Override

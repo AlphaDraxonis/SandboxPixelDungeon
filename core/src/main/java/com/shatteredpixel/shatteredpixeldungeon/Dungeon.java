@@ -39,9 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript_lua;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
@@ -50,7 +48,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipe;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -73,6 +71,8 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toolbar;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaClassGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
 import com.watabou.noosa.Game;
@@ -213,7 +213,7 @@ public class Dungeon {
 	public static CustomDungeon customDungeon;
 	public static String levelName;
 
-	public static DungeonScript dungeonScript = new DungeonScript_lua();
+	public static DungeonScript dungeonScript = Reflection.newInstance(LuaClassGenerator.luaUserContentClass(DungeonScript.class));
 
 	public static void init() {
 
@@ -333,8 +333,7 @@ public class Dungeon {
 		
 		Badges.reset();
 
-		CustomObject.loadScripts();
-
+		UserContentManager.loadScripts(true);
 		GamesInProgress.selectedClass.initHero( hero );
 	}
 
@@ -496,7 +495,7 @@ public class Dungeon {
 			LevelTransition t = pos == -1 ? level.getTransitionFromSurface() : level.getTransition(null);
 			if (t == null) {
 				Random.pushGenerator(Dungeon.seedCurLevel() + 5);
-				pos = EditorUtilies.getRandomCellGuaranteed(level, Dungeon.hero == null ? new Hero() : Dungeon.hero);
+				pos = EditorUtilities.getRandomCellGuaranteed(level, Dungeon.hero == null ? new Hero() : Dungeon.hero);
 				GameScene.errorMsg.add(Messages.get(Dungeon.class, "no_transitions_warning", level.name, Dungeon.customDungeon.getName()));
 				Random.popGenerator();
 			} else
@@ -944,7 +943,8 @@ public class Dungeon {
 
         CustomTileLoader.loadTiles(true);
 
-		CustomObject.loadScripts();
+		UserContentManager.loadUserContentFromFiles();
+		UserContentManager.loadScripts(true);
     }
 
     public static Level loadLevel(int save) throws IOException {

@@ -58,11 +58,11 @@ public class EbonyMimic extends Mimic {
 	}
 
 	@Override
-	public String description() {
+	public String desc() {
 		if (alignment == Alignment.NEUTRAL){
 			return Messages.get(this, "hidden_desc");
 		} else {
-			return super.description();
+			return super.desc();
 		}
 	}
 

@@ -22,13 +22,11 @@
 package com.watabou.glwrap;
 
 import com.badlogic.gdx.Gdx;
+import com.watabou.NotAllowedInLua;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
+import java.nio.*;
 
+@NotAllowedInLua
 public class Quad {
 
 	// 0---1

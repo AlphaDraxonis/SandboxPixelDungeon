@@ -31,6 +31,13 @@ public class TormentedSpiritSprite extends MobSprite {
 
 		texture( Assets.Sprites.WRAITH );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 14, 15 );
 
 		int c = 9;
@@ -46,8 +53,6 @@ public class TormentedSpiritSprite extends MobSprite {
 
 		die = new Animation( 8, false );
 		die.frames( frames, c+0, c+4, c+5, c+6, c+7 );
-
-		play( idle );
 	}
 
 	@Override

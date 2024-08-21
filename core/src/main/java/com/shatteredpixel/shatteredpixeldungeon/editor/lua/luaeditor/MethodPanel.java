@@ -25,12 +25,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.idewindowactions.LuaScript;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+@NotAllowedInLua
 public class MethodPanel extends CodeInputPanel {
 
 	private final Method method;

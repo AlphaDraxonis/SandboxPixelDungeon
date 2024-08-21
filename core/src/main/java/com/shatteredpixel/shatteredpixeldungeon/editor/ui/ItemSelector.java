@@ -1,21 +1,22 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
 import java.util.Collection;
@@ -151,7 +152,7 @@ public class ItemSelector extends Component {
             selectNullItem();
         } else {
             if (selectedItem != null)
-                selectedItem.image = Dungeon.customDungeon.getItemSpriteOnSheet(selectedItem);
+                selectedItem.image = CustomDungeon.getItemSpriteOnSheet(selectedItem);
             itemSlot.item(selectedItem);
         }
     }
@@ -182,7 +183,7 @@ public class ItemSelector extends Component {
     }
 
     public void change() {
-        showSelectWindow(selector, nullTypeSelector, itemClasses, Items.bag, new HashSet<>(0));
+        showSelectWindow(selector, nullTypeSelector, itemClasses, Items.bag(), new HashSet<>(0));
     }
 
     private static void addItem(ScrollingListPane sp, Item i, EditorInventoryWindow w,
@@ -240,13 +241,13 @@ public class ItemSelector extends Component {
             sp.setSize(WIDTH, (int) comps[comps.length - 1].bottom());
         }
 
-        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-        else Game.scene().addToFront(w);
+        DungeonScene.show(w);
+
         return w;
     }
 
 
-    public static class Win extends Window implements EditorInventoryWindow {
+    private static class Win extends Window implements EditorInventoryWindow {
 
         private final WndBag.ItemSelectorInterface selector;
 
@@ -268,7 +269,7 @@ public class ItemSelector extends Component {
         public AnyItemSelectorWnd(Class<? extends Item> itemClasses, boolean allowRandomItem) {
             this.itemClasses = itemClasses;
             this.allowRandomItem = allowRandomItem;
-            preferredBag = Items.bag.getClass();
+            preferredBag = Items.bag().getClass();
         }
 
         @Override
@@ -296,7 +297,7 @@ public class ItemSelector extends Component {
 
         @Override
         public List<Bag> getBags() {
-            return Collections.singletonList(EditorItemBag.getBag(preferredBag));
+            return Collections.singletonList(EditorInventory.getBag(preferredBag));
         }
     }
 }

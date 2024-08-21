@@ -59,8 +59,8 @@ public class GnollGuard extends Mob {
 
 	public void linkSapper( GnollSapper sapper){
 		this.sapperID = sapper.id();
-		if (sprite instanceof GnollGuardSprite){
-			((GnollGuardSprite) sprite).setupArmor();
+		if (sprite.extraCode instanceof GnollGuardSprite.EarthArmor) {
+			((GnollGuardSprite.EarthArmor) sprite.extraCode).setupArmor(sprite);
 		}
 	}
 
@@ -73,8 +73,8 @@ public class GnollGuard extends Mob {
 	public void loseSapper(){
 		if (sapperID != -1){
 			sapperID = -1;
-			if (sprite instanceof GnollGuardSprite){
-				((GnollGuardSprite) sprite).loseArmor();
+			if (sprite.extraCode instanceof GnollGuardSprite.EarthArmor){
+				((GnollGuardSprite.EarthArmor) sprite.extraCode).loseArmor();
 			}
 		}
 	}
@@ -134,11 +134,11 @@ public class GnollGuard extends Mob {
 		return customLootInfo;
 	}
 	@Override
-	public String description() {
+	public String desc() {
 		if (hasSapper()){
-			return super.description() + "\n\n" + Messages.get(this, "desc_armor");
+			return super.desc() + "\n\n" + Messages.get(this, "desc_armor");
 		} else {
-			return super.description();
+			return super.desc();
 		}
 	}
 

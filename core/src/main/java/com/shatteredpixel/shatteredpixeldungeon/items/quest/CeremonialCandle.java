@@ -30,7 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -170,7 +170,7 @@ public class CeremonialCandle extends Item {
 		if (allCandles){
 
 			for (Heap h : candleHeaps) {
-				for (Item i : h.items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
+				for (Item i : h.items.toArray(EditorUtilities.EMPTY_ITEM_ARRAY)) {
 					if (i instanceof CeremonialCandle) {
 						i.quantity(i.quantity() - 1);
 						if (i.quantity() == 0) h.remove(i);

@@ -327,14 +327,7 @@ public class WandOfWarding extends Wand {
 
 		@Override
 		protected boolean doAttack(Char enemy) {
-			boolean visible = fieldOfView[pos] || fieldOfView[enemy.pos];
-			if (visible) {
-				sprite.zap( enemy.pos );
-			} else {
-				zap();
-			}
-
-			return !visible;
+			return doRangedAttack(enemy.pos, fieldOfView[pos] || fieldOfView[enemy.pos]);
 		}
 
 		@Override
@@ -436,7 +429,7 @@ public class WandOfWarding extends Wand {
 		}
 
 		@Override
-		public String description() {
+		public String desc() {
 			return Messages.get(this, "desc_" + tier, 2+wandLevel, 8 + 4*wandLevel, tier );
 		}
 		

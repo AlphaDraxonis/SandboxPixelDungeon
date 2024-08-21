@@ -195,8 +195,8 @@ public class Thief extends Mob {
 	}
 
 	@Override
-	public String description() {
-		String desc = super.description();
+	public String desc() {
+		String desc = super.desc();
 
 		if (item != null) {
 			desc += Messages.get(this, "carries", item.name() );

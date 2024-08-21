@@ -26,11 +26,13 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
 
+@NotAllowedInLua
 public class SupporterScene extends PixelScene {
 
 	private static final int BTN_HEIGHT = 22;

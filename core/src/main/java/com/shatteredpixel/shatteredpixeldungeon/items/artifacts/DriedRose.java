@@ -93,8 +93,8 @@ public class DriedRose extends Artifact {
 	private GhostHero ghost = null;
 	private int ghostID = 0;
 	
-	private MeleeWeapon weapon = null;
-	private Armor armor = null;
+	protected MeleeWeapon weapon = null;
+	protected Armor armor = null;
 
 	public int droppedPetals = 0;
 
@@ -335,11 +335,11 @@ public class DriedRose extends Artifact {
 		return super.upgrade();
 	}
 	
-	public Weapon ghostWeapon(){
+	public final Weapon ghostWeapon(){
 		return weapon;
 	}
 	
-	public Armor ghostArmor(){
+	public final Armor ghostArmor(){
 		return armor;
 	}
 

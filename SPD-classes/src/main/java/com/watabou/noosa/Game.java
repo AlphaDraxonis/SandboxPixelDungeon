@@ -27,6 +27,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.glutils.GLVersion;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.watabou.NotAllowedInLua;
 import com.watabou.glscripts.Script;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Blending;
@@ -44,6 +45,7 @@ import com.watabou.utils.Reflection;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+@NotAllowedInLua
 public class Game implements ApplicationListener {
 
 	public static Game instance;

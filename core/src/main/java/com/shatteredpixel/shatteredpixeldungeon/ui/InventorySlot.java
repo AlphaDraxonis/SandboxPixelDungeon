@@ -122,6 +122,7 @@ public class InventorySlot extends ItemSlot {
 		Sample.INSTANCE.play( Assets.Sounds.CLICK, 0.7f, 0.7f, 1.2f );
 	}
 
+	@Override
 	protected void onPointerUp() {
 		bg.brightness( 1.0f );
 	}

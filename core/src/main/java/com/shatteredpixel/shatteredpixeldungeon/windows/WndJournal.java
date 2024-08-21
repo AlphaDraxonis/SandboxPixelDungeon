@@ -23,7 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.CustomDocumentPage;
@@ -368,7 +368,7 @@ public class WndJournal extends WndTabbed {
 					r.setPos(left, top);
 					left += r.width() + spacing;
 					if (!toAddThisRow.isEmpty()) {
-						ColorBlock spacer = new ColorBlock(1, 16, 0xFF222222);
+						ColorBlock spacer = new ColorBlock(1, 16, ColorBlock.SEPARATOR_COLOR);
 						spacer.y = top;
 						spacer.x = left - spacing / 2 - 0.5f;
 						PixelScene.align(spacer);
@@ -383,7 +383,7 @@ public class WndJournal extends WndTabbed {
 				}
 				
 				if (!toAdd.isEmpty() && toAdd.get(0) != null) {
-					ColorBlock spacer = new ColorBlock(width(), 1, 0xFF222222);
+					ColorBlock spacer = new ColorBlock(width(), 1, ColorBlock.SEPARATOR_COLOR);
 					spacer.y = top + 16;
 					spacer.x = 0;
 					content.add(spacer);
@@ -422,7 +422,7 @@ public class WndJournal extends WndTabbed {
 
 				for(Notes.Record rec : keys){
 					ScrollingListPane.ListItem item = new ScrollingListPane.ListItem( Icons.get(Icons.STAIRS),
-							EditorUtilies.getDispayName(rec.levelName()),
+							EditorUtilities.getDispayName(rec.levelName()),
 							Messages.titleCase(rec.desc()),0.7f);
 					if (Dungeon.levelName.equals(rec.levelName()) || Level.ANY.equals(rec.levelName())) item.hardlight(TITLE_COLOR);
 					list.addItem(item);

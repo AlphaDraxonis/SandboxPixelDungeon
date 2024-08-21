@@ -33,6 +33,13 @@ public class GuardSprite extends MobSprite {
 
 		texture( Assets.Sprites.GUARD );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 12, 16 );
 
 		idle = new Animation( 2, true );
@@ -46,8 +53,6 @@ public class GuardSprite extends MobSprite {
 
 		die = new MovieClip.Animation( 8, false );
 		die.frames( frames, 11, 12, 13, 14 );
-
-		play( idle );
 	}
 
 	@Override

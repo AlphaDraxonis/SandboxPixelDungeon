@@ -5,6 +5,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -50,12 +52,38 @@ public class EditRoomComp extends DefaultEditComp<Room> {
         add(spawnItemsOnLevel);
 
         comps = new Component[]{spawnItemsInRoom, spawnItemsOnLevel};
+
+        initializeCompsForCustomObjectClass();
+    }
+
+    @Override
+    protected void updateStates() {
+        super.updateStates();
+        if (spawnItemsOnLevel != null) spawnItemsOnLevel.setItemList(obj.spawnItemsOnLevel);
+    }
+
+    @Override
+    protected void onInheritStatsClicked(boolean flag, boolean initializing) {
+        if (flag && !initializing) {
+            obj.copyStats((Room) UserContentManager.getLuaClass(((CustomGameObjectClass) obj).getIdentifier()));
+        }
+
+        for (Component c : comps) {
+            if (c != null) c.setVisible(!flag);
+        }
+
+        if (rename != null) rename.setVisible(!flag);
+
+        ((CustomGameObjectClass) obj).setInheritStats(flag);
+//        if (viewScript != null) viewScript.visible = viewScript.active = true;
     }
 
     @Override
     protected void layout() {
         super.layout();
         layoutCompsLinear(comps);
+
+        layoutCustomObjectEditor();
     }
 
     @Override

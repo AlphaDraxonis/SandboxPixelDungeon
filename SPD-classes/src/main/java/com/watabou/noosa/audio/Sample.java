@@ -23,6 +23,7 @@ package com.watabou.noosa.audio;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
 
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+@NotAllowedInLua
 public enum Sample {
 
 	INSTANCE;

@@ -4,7 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditEnchantmentComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnchantmentLike;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Sacrificial;
@@ -65,14 +65,14 @@ public class EnchantmentItem extends EditorItem<EnchantmentLike> {
         }
         if (ench instanceof Kinetic) return new BuffIcon(BuffIndicator.WEAPON, true);
         if (ench instanceof Lucky) {
-            Image result = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.RING_WEALTH);
+            Image result = EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.RING_WEALTH);
             result.scale.set(ItemSpriteSheet.SIZE / Math.max(result.width, result.height));
             return result;
         }
         if (ench instanceof Projecting) return new ItemSprite(ItemSpriteSheet.SPEAR);
         if (ench instanceof Shocking) return new ItemSprite(ItemSpriteSheet.WAND_LIGHTNING);
         if (ench instanceof Vampiric) {
-            Image result = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_HEALING);
+            Image result = EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_HEALING);
             result.scale.set(ItemSpriteSheet.SIZE / Math.max(result.width, result.height));
             return result;
         }

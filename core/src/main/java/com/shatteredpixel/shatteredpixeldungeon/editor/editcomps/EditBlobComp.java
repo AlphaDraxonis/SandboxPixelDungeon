@@ -39,6 +39,13 @@ public class EditBlobComp extends DefaultEditComp<Class<? extends Blob>> {
     }
 
     @Override
+    protected void updateStates() {
+        super.updateStates();
+        if (volumeSpinner != null) volumeSpinner.setValue(Blob.volumeInInv.get(obj));
+        if (sacrificialFirePrize != null) sacrificialFirePrize.setSelectedItem(SacrificialFire.prizeInInventory);
+    }
+
+    @Override
     protected void layout() {
         super.layout();
         layoutCompsLinear(volumeSpinner, sacrificialFirePrize);

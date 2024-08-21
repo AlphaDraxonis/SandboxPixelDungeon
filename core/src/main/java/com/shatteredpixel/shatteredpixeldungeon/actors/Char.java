@@ -624,7 +624,8 @@ public abstract class Char extends Actor {
 
 	//look for calls on a casted object and remove the cast, this cast was made by a shattered update!
 	public void onZapComplete() {
-		zap();
+		if (!sprite.instantZapDamage()) //else zap was called in the beginning
+			zap();
 		next();
 	}
 
@@ -1181,7 +1182,7 @@ public abstract class Char extends Actor {
 	}
 
 	@Override
-	public int sparseArrayKey() {
+	public final int sparseArrayKey() {
 		return pos;
 	}
 

@@ -26,13 +26,8 @@ package com.watabou.idewindowactions;
 
 public abstract class AbstractLuaCodeHolder {
 
-	public Class<?> clazz;
-	public String pathToScript;
-
 	public AbstractLuaCodeHolder() {}
 
 	public AbstractLuaCodeHolder(LuaScript fromScript) {
-		clazz = fromScript.type;
-		pathToScript = fromScript.pathFromRoot;
 	}
 }

@@ -34,12 +34,12 @@ public abstract class BuffListContainer extends ItemContainerWithLabel<BuffItem>
 
             @Override
             public Class<? extends Bag> preferredBag() {
-                return Buffs.bag.getClass();
+                return Buffs.bag().getClass();
             }
 
             @Override
             public List<Bag> getBags() {
-                return Collections.singletonList(Buffs.bag);
+                return Collections.singletonList(Buffs.bag());
             }
 
             @Override

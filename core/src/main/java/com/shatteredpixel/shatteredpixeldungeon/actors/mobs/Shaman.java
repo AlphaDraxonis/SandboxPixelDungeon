@@ -108,13 +108,7 @@ public abstract class Shaman extends Mob {
 			
 		} else {
 			
-			if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-				sprite.zap( enemy.pos );
-				return false;
-			} else {
-				zap();
-				return true;
-			}
+			return doRangedAttack();
 		}
 	}
 	
@@ -151,9 +145,9 @@ public abstract class Shaman extends Mob {
 	protected abstract void debuff( Char enemy );
 
 	@Override
-	public String description() {
-		if (customDesc != null) return super.description();
-		return super.description() + "\n\n" + Messages.get(this, "spell_desc");
+	public String desc() {
+		if (customDesc != null) return super.desc();
+		return super.desc() + "\n\n" + Messages.get(this, "spell_desc");
 	}
 	
 	public static class RedShaman extends Shaman {

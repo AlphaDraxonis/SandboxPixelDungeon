@@ -25,8 +25,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomRect;
 import com.watabou.utils.Point;
-import com.watabou.utils.Rect;
 
 public class RingBridgeRoom extends RingTunnelRoom {
 
@@ -38,7 +38,7 @@ public class RingBridgeRoom extends RingTunnelRoom {
 
 		for (Room r : neigbours){
 			if (r instanceof BridgeRoom || r instanceof RingBridgeRoom || r instanceof WalkwayRoom){
-				Rect i = intersect(r);
+				RoomRect i = intersect(r);
 				if (i.width() != 0){
 					i.left++;
 					i.right--;

@@ -165,13 +165,7 @@ public abstract class Elemental extends Mob {
 			
 		} else {
 			
-			if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-				sprite.zap( enemy.pos );
-				return false;
-			} else {
-				zap();
-				return true;
-			}
+			return doRangedAttack();
 		}
 	}
 	
@@ -298,13 +292,7 @@ public abstract class Elemental extends Mob {
 			if (targetingPos != -1 && state == HUNTING){
 				//account for bolt hitting walls, in case position suddenly changed
 				targetingPos = new Ballistica( pos, targetingPos, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.STOP_BARRIER_PROJECTILES, null ).collisionPos;
-				if (sprite != null && (sprite.visible || Dungeon.level.heroFOV[targetingPos])) {
-					sprite.zap( targetingPos );
-					return false;
-				} else {
-					zap();
-					return true;
-				}
+				return doRangedAttack(targetingPos, sprite != null && (sprite.visible || Dungeon.level.heroFOV[targetingPos]));
 			} else {
 
 				if (state != HUNTING){
@@ -365,13 +353,7 @@ public abstract class Elemental extends Mob {
 
 			} else {
 
-				if (sprite != null && (sprite.visible || Dungeon.level.heroFOV[targetingPos])) {
-					sprite.zap( targetingPos );
-					return false;
-				} else {
-					zap();
-					return true;
-				}
+				return doRangedAttack(targetingPos, sprite != null && (sprite.visible || Dungeon.level.heroFOV[targetingPos]));
 
 			}
 		}
@@ -442,8 +424,8 @@ public abstract class Elemental extends Mob {
 		}
 
 		@Override
-		public String description() {
-			String desc = super.description();
+		public String desc() {
+			String desc = super.desc();
 
 			if (summonedALly){
 				desc += " " + Messages.get(this, "desc_ally");

@@ -24,9 +24,9 @@ public abstract class SpawnerMob extends Mob {
 
 
     @Override
-    public String description() {
-        if (customDesc != null) return super.description();
-        String desc = super.description();
+    public String desc() {
+        if (customDesc != null) return super.desc();
+        String desc = super.desc();
         int size = summonTemplate.size();
         if (size == 0)
             desc += "\n\n" + Messages.get(this, "summon_none", name());

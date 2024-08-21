@@ -2,8 +2,9 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv;
 
 import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -12,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toolbar;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
@@ -142,7 +144,13 @@ public class EToolbar extends Component {
             protected void onClick() {
                 try {
                     CustomDungeonSaves.saveLevel(EditorScene.getCustomLevel());
-                    EditorScene.show(new WndSwitchFloor());
+                    if (EditorScene.isEditingRoomLayout) {
+                        Dungeon.customDungeon.removeFloor(EditorScene.getCustomLevel().levelScheme);
+                        EditorScene.open((CustomLevel) EditorScene.customLevelBeforeRoomLayout.loadLevel());
+                    }
+                    else {
+                        EditorScene.show(new WndSwitchFloor());
+                    }
                 } catch (IOException e) {
                     SandboxPixelDungeon.reportException(e);
                 }
@@ -189,7 +197,7 @@ public class EToolbar extends Component {
             @Override
             protected void onClick() {
                 if (!EditorScene.cancel()) {
-                    EditorScene.show(new WndEditorInv(EditorItemBag.getLastBag(EditorItemBag.getMainBags())));
+                    EditorScene.show(new WndEditorInv(EditorInventory.getLastBag(EditorInventory.getMainBags())));
                 }
             }
 
@@ -445,6 +453,11 @@ public class EToolbar extends Component {
 
     public static void updateLayout() {
         if (instance != null) instance.layout();
+    }
+
+    public static void updateSlot(Object obj) {
+        ItemSlot slot = QuickSlotButton.containsObject(obj);
+        if (slot != null) slot.updateCurrentItem();
     }
 
 

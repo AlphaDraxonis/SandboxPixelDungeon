@@ -21,6 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextInput;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.*;
 
+@NotAllowedInLua
 public class WndNewFloor extends WndTabbed {
 
 

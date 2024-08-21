@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.*;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -42,6 +43,7 @@ import com.watabou.utils.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@NotAllowedInLua
 public class CellSelector extends ScrollArea {
 
 	public Listener listener = null;

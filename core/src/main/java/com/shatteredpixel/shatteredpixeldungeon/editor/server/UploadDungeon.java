@@ -10,7 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StringInputComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.DungeonPreview;
@@ -18,12 +18,14 @@ import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunicat
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 
 import java.util.List;
 
+@NotAllowedInLua
 public class UploadDungeon extends Component implements MultiWindowTabComp.BackPressImplemented {
 
     protected final SimpleWindow window;
@@ -151,7 +153,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         height = 0;
         if (info != null) info.maxWidth((int) width);
         if (legalInfo != null) legalInfo.maxWidth((int) width);
-        height = EditorUtilies.layoutCompsLinear(4, this, info, selectDungeon, description, userName, difficulty, legalInfo) + 1;
+        height = EditorUtilities.layoutCompsLinear(4, this, info, selectDungeon, description, userName, difficulty, legalInfo) + 1;
     }
 
     public Component createTitle() {
@@ -247,7 +249,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
 
     public static void showUploadWindow(ServerCommunication.UploadType type, String preselectDungeon) {
         if (type != ServerCommunication.UploadType.CHANGE) {
-            if (!EditorUtilies.shouldConnectToInternet(() -> forceShowWindow(type, preselectDungeon))) return;
+            if (!EditorUtilities.shouldConnectToInternet(() -> forceShowWindow(type, preselectDungeon))) return;
         }
         forceShowWindow(type, preselectDungeon);
     }

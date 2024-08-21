@@ -28,72 +28,64 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Visual;
-import com.watabou.noosa.particles.Emitter;
 
 public class GolemSprite extends MobSprite {
-
-	private Emitter teleParticles;
 	
 	public GolemSprite() {
 		super();
 		
 		texture( Assets.Sprites.GOLEM );
 		
-		TextureFilm frames = new TextureFilm( texture, 17, 19 );
-		
-		idle = new Animation( 4, true );
-		idle.frames( frames, 0, 1 );
-		
-		run = new Animation( 12, true );
-		run.frames( frames, 2, 3, 4, 5 );
-		
-		attack = new Animation( 10, false );
-		attack.frames( frames, 6, 7, 8 );
-
-		zap = attack.clone();
-		
-		die = new Animation( 15, false );
-		die.frames( frames, 9, 10, 11, 12, 13 );
+		initAnimations();
 		
 		play( idle );
 	}
 
 	@Override
-	public void link(Char ch) {
-		super.link(ch);
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 17, 19 );
 
-		teleParticles = emitter();
-		teleParticles.autoKill = false;
-		teleParticles.pour(ElmoParticle.FACTORY, 0.05f);
-		teleParticles.on = false;
+		idle = new Animation( 4, true );
+		idle.frames( frames, 0, 1 );
+
+		run = new Animation( 12, true );
+		run.frames( frames, 2, 3, 4, 5 );
+
+		attack = new Animation( 10, false );
+		attack.frames( frames, 6, 7, 8 );
+
+		zap = attack.clone();
+
+		die = new Animation( 15, false );
+		die.frames( frames, 9, 10, 11, 12, 13 );
 	}
 
-	@Override
-	public void update() {
-		super.update();
-		if (teleParticles != null){
-			teleParticles.pos( this );
-			teleParticles.visible = visible;
+	public static class TeleParticles extends CharSpriteExtraEmitter {
+
+		@Override
+		public void onLink(CharSprite sprite, Char ch) {
+			emitter = sprite.emitter();
+			emitter.autoKill = false;
+			emitter.pour(ElmoParticle.FACTORY, 0.05f);
+			emitter.on = false;
 		}
-	}
 
-	@Override
-	public void kill() {
-		super.kill();
-
-		if (teleParticles != null) {
-			teleParticles.on = false;
+		@Override
+		public void onUpdate(CharSprite sprite) {
+			if (emitter != null){
+				emitter.pos( sprite );
+				emitter.visible = sprite.visible;
+			}
 		}
-	}
 
-	public void teleParticles(boolean value){
-		if (teleParticles != null) teleParticles.on = value;
-	}
+		@Override
+		public void onPlayAnimation(CharSprite sprite, Animation anim) {
+			showParticles(false);
+		}
 
-	@Override
-	public synchronized void play(Animation anim, boolean force) {
-		if (teleParticles != null) teleParticles.on = false;
-		super.play(anim, force);
+		public void showParticles(boolean flag) {
+			if (emitter != null) emitter.on = flag;
+		}
 	}
 
 	@Override
@@ -104,6 +96,11 @@ public class GolemSprite extends MobSprite {
 	@Override
 	protected void playZapAnim(int cell) {
 		playZap(parent, this, cell, ch);
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {

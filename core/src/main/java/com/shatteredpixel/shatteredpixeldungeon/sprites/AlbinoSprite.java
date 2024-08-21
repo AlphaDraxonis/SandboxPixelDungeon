@@ -21,30 +21,24 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.watabou.noosa.TextureFilm;
+import com.watabou.utils.RectF;
 
-public class AlbinoSprite extends MobSprite {
+public class AlbinoSprite extends RatSprite {
 
-	public AlbinoSprite() {
-		super();
-		
-		texture( Assets.Sprites.RAT );
-		
-		TextureFilm frames = new TextureFilm( texture, 16, 15 );
-		
-		idle = new Animation( 2, true );
-		idle.frames( frames, 16, 16, 16, 17 );
-		
-		run = new Animation( 10, true );
-		run.frames( frames, 22, 23, 24, 25, 26 );
-		
-		attack = new Animation( 15, false );
-		attack.frames( frames, 18, 19, 20, 21 );
-		
-		die = new Animation( 10, false );
-		die.frames( frames, 27, 28, 29, 30 );
-		
-		play( idle );
+	@Override
+	public void initAnimations() {
+		super.initAnimations();
+		RectF[] frames = new RectF[attack.frames.length + 1];
+		int i = 0;
+		for (; i < attack.frames.length; i++) {
+			frames[i] = attack.frames[i];
+		}
+		frames[i] = idle.frames[0];//first frame
+		attack.frames = frames;
+	}
+
+	@Override
+	protected int texOffset() {
+		return 16;
 	}
 }

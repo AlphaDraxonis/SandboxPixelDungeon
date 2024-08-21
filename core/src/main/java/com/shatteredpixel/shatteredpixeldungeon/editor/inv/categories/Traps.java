@@ -1,123 +1,194 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.CustomTrap;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.WndNewCustomObject;
 import com.watabou.noosa.Image;
-import com.watabou.utils.Reflection;
 
-public enum Traps implements EditorInvCategory<Trap> {
+import java.util.Locale;
 
-    GAS,
-    WATER,
-    FIRE,
-    DART,
-    SPAWN,
-    TELEPORT,
-    EQUIPMENT;
+public final class Traps extends GameObjectCategory<Trap> {
 
-    private Class<?>[] classes;
+    private static Traps instance = new Traps();
 
-    @Override
-    public Class<?>[] classes() {
-        return classes;
+    private final Gas GAS = new Gas();
+    private final Water WATER = new Water();
+    private final Fire FIRE = new Fire();
+    private final Dart DART = new Dart();
+    private final Spawn SPAWN = new Spawn();
+    private final Teleport TELEPORT = new Teleport();
+    private final Equipment EQUIPMENT = new Equipment();
+
+    {
+        values = new TrapCategory[] {
+                GAS,
+                WATER,
+                FIRE,
+                DART,
+                SPAWN,
+                TELEPORT,
+                EQUIPMENT
+        };
     }
 
-    static {
+    private Traps() {
+        super(new EditorItemBag(){});
+        addItemsToBag();
+    }
 
-        GAS.classes = new Class[]{
-                ToxicTrap.class,
-                CorrosionTrap.class,
-                ConfusionTrap.class,
-                ParalyticTrap.class,
-                ShroudingTrap.class,
-                GrippingTrap.class,
-                FlashingTrap.class,
-                RockfallTrap.class,
-                GnollRockfallTrap.class,
-                OozeTrap.class,
-                UnstableTrap.class,
-                RandomItem.RandomTrap.class
-        };
-        WATER.classes = new Class[]{
-                ChillingTrap.class,
-                FrostTrap.class,
-                GeyserTrap.class,
-                ShockingTrap.class,
-                StormTrap.class
-        };
-        FIRE.classes = new Class[]{
-                BlazingTrap.class,
-                BurningTrap.class,
-                ExplosiveTrap.class
-        };
-        DART.classes = new Class[]{
-                WornDartTrap.class,
-                PoisonDartTrap.class,
-                DisintegrationTrap.class,
-                GrimTrap.class
-        };
-        SPAWN.classes = new Class[]{
-                FlockTrap.class,
-                AlarmTrap.class,
-                GuardianTrap.class,
-                RageTrap.class,
-                ActionTrap.class,
-                SummoningTrap.class,
-                DistortionTrap.class
-        };
-        TELEPORT.classes = new Class[]{
-                TeleportationTrap.class,
-                WarpingTrap.class,
-                GatewayTrap.class,
-                WarpwayTrap.class,
-                PitfallTrap.class
-        };
-        EQUIPMENT.classes = new Class[]{
-                WeakeningTrap.class,
-                CursingTrap.class,
-                DisarmingTrap.class,
-                LooseItemsTrap.class,
-                GoldDiggerTrap.class
-        };
+    public static Traps instance() {
+        return instance;
+    }
+
+    public static EditorItemBag bag() {
+        return instance().getBag();
     }
 
     @Override
-    public Image getSprite() {
-        Trap t;
-        switch (Traps.this) {
-            case GAS: t = new ToxicTrap(); break;
-            case WATER: t = new ChillingTrap(); break;
-            case FIRE: t = new BurningTrap(); break;
-            case DART: t = new PoisonDartTrap(); break;
-            case SPAWN: t = new SummoningTrap(); break;
-            case TELEPORT: t = new GatewayTrap(); break;
-            case EQUIPMENT: t = new DisarmingTrap(); break;
-            default: return new ItemSprite(ItemSpriteSheet.SOMETHING);
-        }
-        t.visible = true;
-        return t.getSprite();
+    public void updateCustomObjects() {
+        updateCustomObjects(Trap.class);
     }
 
-
-    public static final EditorItemBag bag = new EditorItemBag("name", 0) {};
-
-    static {
-        for (Traps traps : values()) {
-            bag.items.add(new TrapBag(traps));
+    public static void updateCustomTrap(CustomTrap customTrap) {
+        if (instance != null) {
+            instance.updateCustomObject(customTrap);
         }
     }
 
-    public static class TrapBag extends EditorInvCategoryBag {
-        public TrapBag(Traps traps) {
-            super(traps);
-            for (Class<?> t : traps.classes) {
-                Trap trap = (Trap) Reflection.newInstance(t);
-                trap.visible = true;
-                items.add(new TrapItem(trap));
+    @Override
+    public ScrollingListPane.ListButton createAddBtn() {
+        return new ScrollingListPane.ListButton() {
+            protected RedButton createButton() {
+                return new RedButton(Messages.get(Traps.class, "add_custom_obj")) {
+                    @Override
+                    protected void onClick() {
+                        DungeonScene.show(new WndNewCustomObject(CustomTrap.class));
+                    }
+                };
             }
+        };
+    }
+
+    private static abstract class TrapCategory extends GameObjectCategory.SubCategory<Trap> {
+
+        private final Trap sprite;
+
+        protected TrapCategory(Trap sprite, Class<?>[] classes) {
+            super(classes);
+            this.sprite = sprite;
+            sprite.visible = true;
+        }
+
+        @Override
+        public Image getSprite() {
+            return sprite.getSprite();
+        }
+
+        @Override
+        public String messageKey() {
+            return getClass().getSimpleName().toLowerCase(Locale.ENGLISH);
+        }
+    }
+
+    private static final class Gas extends TrapCategory {
+
+        private Gas() {
+            super(new ToxicTrap(), new Class[] {
+                    ToxicTrap.class,
+                    CorrosionTrap.class,
+                    ConfusionTrap.class,
+                    ParalyticTrap.class,
+                    ShroudingTrap.class,
+                    GrippingTrap.class,
+                    FlashingTrap.class,
+                    RockfallTrap.class,
+                    GnollRockfallTrap.class,
+                    OozeTrap.class,
+                    UnstableTrap.class,
+                    RandomItem.RandomTrap.class
+            });
+        }
+    }
+
+    private static final class Water extends TrapCategory {
+
+        private Water() {
+            super(new ChillingTrap(), new Class[] {
+                    ChillingTrap.class,
+                    FrostTrap.class,
+                    GeyserTrap.class,
+                    ShockingTrap.class,
+                    StormTrap.class
+            });
+        }
+    }
+
+    private static final class Fire extends TrapCategory {
+
+        private Fire() {
+            super(new BurningTrap(), new Class[] {
+                    BlazingTrap.class,
+                    BurningTrap.class,
+                    ExplosiveTrap.class
+            });
+        }
+    }
+
+    private static final class Dart extends TrapCategory {
+
+        private Dart() {
+            super(new PoisonDartTrap(), new Class[] {
+                    WornDartTrap.class,
+                    PoisonDartTrap.class,
+                    DisintegrationTrap.class,
+                    GrimTrap.class
+            });
+        }
+    }
+
+    private static final class Spawn extends TrapCategory {
+
+        private Spawn() {
+            super(new SummoningTrap(), new Class[] {
+                    FlockTrap.class,
+                    AlarmTrap.class,
+                    GuardianTrap.class,
+                    RageTrap.class,
+                    ActionTrap.class,
+                    SummoningTrap.class,
+                    DistortionTrap.class
+            });
+        }
+    }
+
+    private static final class Teleport extends TrapCategory {
+
+        private Teleport() {
+            super(new GatewayTrap(), new Class[] {
+                    TeleportationTrap.class,
+                    WarpingTrap.class,
+                    GatewayTrap.class,
+                    WarpwayTrap.class,
+                    PitfallTrap.class
+            });
+        }
+    }
+
+    private static final class Equipment extends TrapCategory {
+
+        private Equipment() {
+            super(new DisarmingTrap(), new Class[] {
+                    WeakeningTrap.class,
+                    CursingTrap.class,
+                    DisarmingTrap.class,
+                    LooseItemsTrap.class,
+                    GoldDiggerTrap.class
+            });
         }
     }
 

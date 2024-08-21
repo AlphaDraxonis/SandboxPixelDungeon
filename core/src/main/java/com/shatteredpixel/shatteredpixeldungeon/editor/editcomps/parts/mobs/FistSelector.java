@@ -55,8 +55,8 @@ public class FistSelector extends ItemSelectorList<MobItem> {
 
             @Override
             public List<Bag> getBags() {
-                return Collections.singletonList(Mobs.bag);
+                return Collections.singletonList(Mobs.bag());
             }
-        }, ItemSelector.NullTypeSelector.DISABLED, YogFist.class, Mobs.bag, new HashSet<>());
+        }, ItemSelector.NullTypeSelector.DISABLED, YogFist.class, Mobs.bag(), new HashSet<>());
     }
 }

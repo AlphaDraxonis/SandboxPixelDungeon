@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.*;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaClassGenerator;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ScrollArea;
 import com.watabou.noosa.audio.Music;
@@ -31,6 +32,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.PlatformSupport;
+import com.watabou.utils.Reflection;
 
 public class SandboxPixelDungeon extends Game {
 
@@ -54,6 +56,7 @@ public class SandboxPixelDungeon extends Game {
 		Music.getExternalAudioFile = CustomDungeonSaves::getExternalFile;
 		ScrollArea.checkIfGizmoIsInstanceofWindow = g -> g instanceof Window || g == null && DungeonScene.showingWindow();
 		PathFinder.getArrowCellAt = cell -> Dungeon.level.arrowCells.get(cell);
+		Reflection.makeToUserContentClass = LuaClassGenerator::luaUserContentClass;
 	}
 
 	public SandboxPixelDungeon( PlatformSupport platform ) {

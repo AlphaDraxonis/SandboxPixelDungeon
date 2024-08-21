@@ -1,13 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -56,7 +49,7 @@ public abstract class Reference {
     public Image createIcon() {
         Object iconValue = getValue() == null ? Reflection.newInstance(type) : getValue();
 
-        Image img = objectToImage(iconValue);
+        Image img = EditorUtilities.imageOf(iconValue, true);
         if (img != null) return img;
 
         if (Collection.class.isAssignableFrom(getType())) {
@@ -77,18 +70,6 @@ public abstract class Reference {
         }
 
         return new ItemSprite();
-    }
-
-    public static Image objectToImage(Object obj) {
-        if (obj instanceof Item) return Dungeon.customDungeon.getItemImage((Item) obj);
-        if (obj instanceof Mob) return ((Mob) obj).sprite();
-        if (obj instanceof Trap) return ((Trap) obj).getSprite();
-        if (obj instanceof Plant) return ((Plant) obj).getSprite();
-        if (obj instanceof Heap) return new ItemSprite((Heap) obj);
-        if (obj instanceof Barrier) return ((Barrier) obj).getSprite();
-        if (obj instanceof ArrowCell) return ((ArrowCell) obj).getSprite();
-        if (obj instanceof Image) return (Image) obj;
-        return null;
     }
 
 

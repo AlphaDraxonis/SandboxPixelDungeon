@@ -25,7 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.watabou.utils.Rect;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomRect;
 
 public class ChasmRoom extends PatchRoom {
 
@@ -70,7 +70,7 @@ public class ChasmRoom extends PatchRoom {
 	}
 
 	@Override
-	public void merge(Level l, Room other, Rect merge, int mergeTerrain) {
+	public void merge(Level l, Room other, RoomRect merge, int mergeTerrain) {
 		if (mergeTerrain == Terrain.EMPTY
 				&& (other instanceof ChasmRoom || other instanceof PlatformRoom)){
 			super.merge(l, other, merge, Terrain.CHASM);

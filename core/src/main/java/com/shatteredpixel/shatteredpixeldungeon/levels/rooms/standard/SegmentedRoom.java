@@ -26,7 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
+import com.watabou.utils.WatabouRect;
 
 public class SegmentedRoom extends StandardRoom {
 
@@ -56,10 +56,10 @@ public class SegmentedRoom extends StandardRoom {
 			Painter.set(level, door, Terrain.EMPTY);
 		}
 		
-		createWalls( level, new Rect(left+1, top+1, right-1, bottom-1));
+		createWalls( level, new WatabouRect(left+1, top+1, right-1, bottom-1));
 	}
 	
-	private void createWalls( Level level, Rect area ){
+	private void createWalls( Level level, WatabouRect area ){
 		if (Math.max(area.width()+1, area.height()+1) < 5
 				|| Math.min(area.width()+1, area.height()+1) < 3){
 			return;
@@ -83,8 +83,8 @@ public class SegmentedRoom extends StandardRoom {
 					Painter.set(level, splitX, spaceTop, Terrain.EMPTY);
 					Painter.set(level, splitX, spaceTop+1, Terrain.EMPTY);
 					
-					createWalls(level, new Rect(area.left, area.top, splitX-1, area.bottom));
-					createWalls(level, new Rect(splitX+1, area.top, area.right, area.bottom));
+					createWalls(level, new WatabouRect(area.left, area.top, splitX-1, area.bottom));
+					createWalls(level, new WatabouRect(splitX+1, area.top, area.right, area.bottom));
 				}
 				
 			} while (--tries > 0);
@@ -105,8 +105,8 @@ public class SegmentedRoom extends StandardRoom {
 					Painter.set(level, spaceLeft, splitY, Terrain.EMPTY);
 					Painter.set(level, spaceLeft+1, splitY, Terrain.EMPTY);
 					
-					createWalls(level, new Rect(area.left, area.top, area.right, splitY-1));
-					createWalls(level, new Rect(area.left, splitY+1, area.right, area.bottom));
+					createWalls(level, new WatabouRect(area.left, area.top, area.right, splitY-1));
+					createWalls(level, new WatabouRect(area.left, splitY+1, area.right, area.bottom));
 				}
 				
 			} while (--tries > 0);

@@ -27,10 +27,12 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.NotAllowedInLua;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+@NotAllowedInLua
 public class WndCustomizeTalents extends Window {
 
 //	So sehen talente aus:

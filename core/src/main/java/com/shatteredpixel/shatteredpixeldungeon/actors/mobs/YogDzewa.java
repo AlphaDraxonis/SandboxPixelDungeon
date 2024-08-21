@@ -29,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
@@ -482,7 +482,7 @@ public class YogDzewa extends Mob {
 				}
 			}
 			if (fist.pos == -1) {
-				fist.pos = EditorUtilies.getRandomCellGuaranteed(Dungeon.level, fist);
+				fist.pos = EditorUtilities.getRandomCellGuaranteed(Dungeon.level, fist);
 			}
 			fist.pos -= width;
 		}
@@ -625,8 +625,8 @@ public class YogDzewa extends Mob {
 	}
 
 	@Override
-	public String description() {
-		String desc = super.description();
+	public String desc() {
+		String desc = super.desc();
 
 		if (Statistics.spawnersAlive > 0){
 			desc += "\n\n" + Messages.get(this, "desc_spawners");

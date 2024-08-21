@@ -22,10 +22,15 @@
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Visual;
@@ -34,20 +39,29 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.PointF;
 
 public class DM100Sprite extends MobSprite {
+
+	private int zapPos;
 	
 	public DM100Sprite () {
 		super();
 		
 		texture( Assets.Sprites.DM100 );
 		
-		TextureFilm frames = new TextureFilm( texture, 16, 14 );
+		initAnimations();
 		
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 16, 14 );
+
 		idle = new Animation( 1, true );
 		idle.frames( frames, 0, 1 );
 
 		run = new Animation( 12, true );
 		run.frames( frames, 6, 7, 8, 9 );
-		
+
 		attack = new Animation( 12, false );
 		attack.frames( frames, 2, 3, 4, 0 );
 
@@ -56,23 +70,30 @@ public class DM100Sprite extends MobSprite {
 
 		die = new Animation( 12, false );
 		die.frames( frames, 10, 11, 12, 13, 14, 15 );
-		
-		play( idle );
 	}
 
 	@Override
 	public void zap(int cell) {
-
-		playZap(parent, this, cell, ch);
-
+		zapPos = cell;
+		//some logic was moved to superclass!
 		super.zap(cell);
-
 		flash();
 	}
 
 	@Override
 	protected void playZapAnim(int cell) {
-		//do nothing, already included in zap(cell)
+		DM100Sprite.playZap(parent, this, cell, ch);
+		//do nothing
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
+	}
+
+	@Override
+	public boolean instantZapDamage() {
+		return true;
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
@@ -94,18 +115,48 @@ public class DM100Sprite extends MobSprite {
 				ch.onZapComplete();
 			}
 		};
-		Group lightning = enemy == null ?
-				new Lightning(origin, cell, callback)
-				: new Lightning(origin, enemy.sprite.destinationCenter(), callback);
-		parent.add(lightning);
+		new Thread(() -> {
+			try {
+				Thread.sleep(15);
+			} catch (InterruptedException ex) {
+				Game.reportException(ex);
+			}
+			Group lightning = enemy == null ?
+					new Lightning(origin, cell, callback)
+					: new Lightning(origin, enemy.sprite.destinationCenter(), callback);
+			parent.add(lightning);
+		}).start();
 
 		Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
+	}
+
+	public static void playOnZapHitEffect(int zapPos) {
+		Char enemy = Actor.findChar(zapPos);
+		if (enemy != null) {
+			if (enemy.sprite.visible) {
+				enemy.sprite.centerEmitter().burst(SparkParticle.FACTORY, 3);
+				enemy.sprite.flash();
+			}
+			if (enemy == Dungeon.hero) {
+				PixelScene.shake(2, 0.3f);
+			}
+		}
 	}
 
 	@Override
 	public void die() {
 		emitter().burst( Speck.factory( Speck.WOOL ), 5 );
 		super.die();
+	}
+
+	@Override
+	public synchronized void play(Animation anim, boolean force) {
+		if (anim == zap) {
+			if (DM100.usesDM100ZapAnimation(this)) {
+				playOnZapHitEffect(zapPos);
+			}
+		}
+		super.play(anim, force);
 	}
 
 	@Override

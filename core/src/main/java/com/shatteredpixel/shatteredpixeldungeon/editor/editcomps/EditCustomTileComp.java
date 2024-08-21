@@ -64,6 +64,12 @@ public class EditCustomTileComp extends EditTileComp {
         comps = new Component[]{terrain, editSimpleCustomTile};
     }
 
+    @Override
+    protected void updateStates() {
+        super.updateStates();
+        if (terrain != null) terrain.setValue(customTile.terrain);
+    }
+
     public static Spinner createTerrainSpinner(int currentTerrain, String label, Function<Object, Image> getIcon){
         Object[] data = createTerrainDataForSpinner();
         int curIndex = 1;
@@ -167,7 +173,7 @@ public class EditCustomTileComp extends EditTileComp {
     }
 
     @Override
-    protected void updateObj() {
+	public void updateObj() {
         if (customTile instanceof CustomTileLoader.SimpleCustomTile) {
             ((CustomTileLoader.SimpleCustomTile) customTile).updateTexture();
             customTile.create();

@@ -157,9 +157,9 @@ public class RatKing extends NPC {
 	}
 	
 	@Override
-	public String description() {
+	public String desc() {
 		if (customDesc != null) {
-			return super.description();
+			return super.desc();
 		}
 		if (Dungeon.hero != null && Dungeon.hero.armorAbility instanceof Ratmogrify){
 			return Messages.get(this, "desc_crown");
@@ -168,7 +168,7 @@ public class RatKing extends NPC {
 		} else if (Holiday.getCurrentHoliday() == Holiday.WINTER_HOLIDAYS){
 			return Messages.get(this, "desc_winter");
 		} else {
-			return super.description();
+			return super.desc();
 		}
 	}
 }

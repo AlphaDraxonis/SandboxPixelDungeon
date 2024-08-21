@@ -23,10 +23,12 @@ package com.watabou.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 
 import java.util.HashMap;
 
+@NotAllowedInLua
 public class BitmapCache {
 
 	private static final String DEFAULT	= "__default";

@@ -40,24 +40,29 @@ public class TenguSprite extends MobSprite {
 		
 		texture( Assets.Sprites.TENGU );
 		
-		TextureFilm frames = new TextureFilm( texture, 14, 16 );
-		
-		idle = new Animation( 2, true );
-		idle.frames( frames, 0, 0, 0, 1 );
-		
-		run = new Animation( 15, false );
-		run.frames( frames, 2, 3, 4, 5, 0 );
-		
-		attack = new Animation( 15, false );
-		attack.frames( frames, 6, 7, 7, 0 );
-		
-		zap = attack.clone();
-		
-		die = new Animation( 8, false );
-		die.frames( frames, 8, 9, 10, 10, 10, 10, 10, 10 );
+		initAnimations();
 
 		isMoving = true;
 		play( run );
+	}
+
+	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 14, 16 );
+
+		idle = new Animation( 2, true );
+		idle.frames( frames, 0, 0, 0, 1 );
+
+		run = new Animation( 15, false );
+		run.frames( frames, 2, 3, 4, 5, 0 );
+
+		attack = new Animation( 15, false );
+		attack.frames( frames, 6, 7, 7, 0 );
+
+		zap = attack.clone();
+
+		die = new Animation( 8, false );
+		die.frames( frames, 8, 9, 10, 10, 10, 10, 10, 10 );
 	}
 
 	@Override
@@ -111,6 +116,11 @@ public class TenguSprite extends MobSprite {
 	@Override
 	protected void playZapAnim(int cell) {
 		playZap(parent, this, cell, ch);
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {

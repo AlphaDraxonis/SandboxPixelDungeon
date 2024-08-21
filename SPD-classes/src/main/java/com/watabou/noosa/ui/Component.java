@@ -30,7 +30,7 @@ public class Component extends Group {
 	protected float width;
 	protected float height;
 
-	public Component(Object... params) {
+	public Component() {
 		super();
 		createChildren();
 	}

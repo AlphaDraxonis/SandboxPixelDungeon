@@ -255,7 +255,7 @@ public class RipperDemon extends Mob {
 						if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[leapPos]){
 							GLog.w(Messages.get(RipperDemon.this, "leap"));
 							sprite.parent.addToBack(new TargetedCell(leapPos, 0xFF0000));
-							((RipperSprite)sprite).leapPrep( leapPos );
+							RipperSprite.leapPrep( sprite, leapPos );
 							Dungeon.hero.interrupt();
 						}
 						return true;

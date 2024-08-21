@@ -24,11 +24,13 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollTrickster;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.ParalyticDart;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Visual;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 
 public class GnollTricksterSprite extends MobSprite {
@@ -38,6 +40,13 @@ public class GnollTricksterSprite extends MobSprite {
 
 		texture( Assets.Sprites.GNOLL );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 12, 15 );
 
 		idle = new MovieClip.Animation( 2, true );
@@ -53,8 +62,6 @@ public class GnollTricksterSprite extends MobSprite {
 
 		die = new MovieClip.Animation( 12, false );
 		die.frames( frames, 29, 30, 31 );
-
-		play( idle );
 	}
 
 	@Override
@@ -78,12 +85,21 @@ public class GnollTricksterSprite extends MobSprite {
 		playZap(parent, this, cell, ch);
 	}
 
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
+	}
+
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
 		((MissileSprite) parent.recycle(MissileSprite.class)).
 				reset(sprite, cell, new ParalyticDart(), new Callback() {
 					@Override
 					public void call() {
-						ch.onAttackComplete();
+						if (ch instanceof GnollTrickster) ch.onAttackComplete();
+						else {
+							ch.onZapComplete();
+							Sample.INSTANCE.play(Assets.Sounds.HIT);
+						}
 					}
 				});
 	}

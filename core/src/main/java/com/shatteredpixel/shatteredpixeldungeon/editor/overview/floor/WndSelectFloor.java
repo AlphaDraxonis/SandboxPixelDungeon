@@ -4,11 +4,13 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.LevelListPane;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.NotAllowedInLua;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@NotAllowedInLua
 public abstract class WndSelectFloor extends Window {
 
     protected LevelListPane listPane;

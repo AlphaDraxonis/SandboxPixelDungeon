@@ -694,7 +694,12 @@ public class Hero extends Char {
 		spend( time );
 		next();
 	}
-	
+
+	@Override
+	public void onZapComplete() {
+		//do nothing, we already added callbacks to shooting animations
+	}
+
 	@Override
 	public boolean act() {
 		

@@ -106,6 +106,16 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
     }
 
     @Override
+    protected void updateStates() {
+        super.updateStates();
+        saves.setValue(obj.totalSaves);
+        heals.checked(obj.healingAvailable);
+        satiates.checked(obj.satiationAvailable);
+        debuffs.checked(obj.debuffCuringAvailable);
+        uncurses.checked(obj.uncursesAvailable);
+    }
+
+    @Override
     protected void layout() {
         super.layout();
         layoutCompsInRectangles(comps);
@@ -127,7 +137,7 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
     }
 
     @Override
-    protected void updateObj() {
+	public void updateObj() {
 
         if (checkpointItem != null) {
             ItemSlot slot = QuickSlotButton.containsItem(checkpointItem);

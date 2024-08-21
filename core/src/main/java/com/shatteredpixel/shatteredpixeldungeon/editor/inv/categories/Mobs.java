@@ -2,288 +2,258 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomObjectComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaMob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.CustomMob;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.WndNewCustomObject;
 import com.watabou.noosa.Image;
-import com.watabou.utils.Reflection;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
-public enum Mobs implements EditorInvCategory<Mob> {
+public final class Mobs extends GameObjectCategory<Mob> {
 
+    private static Mobs instance = new Mobs();
 
-    //Any changes in ordinal should also be made in MobSprites!!!
-    SEWER,
-    PRISON,
-    CAVES,
-    CITY,
-    HALLS,
-    SPECIAL,
-    NPC;
+           final Sewer   SEWER   = new Sewer();
+           final Prison  PRISON  = new Prison();
+           final Caves   CAVES   = new Caves();
+           final City    CITY    = new City();
+           final Halls   HALLS   = new Halls();
+           final Special SPECIAL = new Special();
+    public final NPC     NPC     = new NPC();
 
+    {
+        values = new MobCategory[] {
+                SEWER,
+                PRISON,
+                CAVES,
+                CITY,
+                HALLS,
+                SPECIAL,
+                NPC
+        };
+    }
 
-    @Override
-    public String getName() {
-        switch (this) {
-            case SEWER:  return Document.INTROS.pageTitle("Sewers");
-            case PRISON: return Document.INTROS.pageTitle("Prison");
-            case CAVES:  return Document.INTROS.pageTitle("Caves");
-            case CITY:   return Document.INTROS.pageTitle("City");
-            case HALLS:  return Document.INTROS.pageTitle("Halls");
-            default:     return Messages.get(this, name().toLowerCase(Locale.ENGLISH));
-        }
+    private Mobs() {
+        super(new EditorItemBag(){});
+        addItemsToBag();
+    }
+
+    public static Mobs instance() {
+        return instance;
+    }
+
+    public static EditorItemBag bag() {
+        return instance().getBag();
     }
 
     @Override
-    public Image getSprite() {
-        switch (this) {
-            case SEWER:   return new GnollSprite();
-            case PRISON:  return new SkeletonSprite();
-            case CAVES:   return new BatSprite();
-            case CITY:    return new MonkSprite();
-            case HALLS:   return new SuccubusSprite();
-            case NPC:     return new WandmakerSprite();
-            case SPECIAL: return new WraithSprite();
-            default:      return new ItemSprite(ItemSpriteSheet.SOMETHING);
-        }
+    public void updateCustomObjects() {
+        updateCustomObjects(Mob.class);
     }
 
-    private Class<?>[] classes;
+    public static void updateCustomMob(CustomMob customMob) {
+        if (instance != null) {
+            instance.updateCustomObject(customMob);
+        }
+    }
 
     @Override
-    public Class<?>[] classes() {
-        return classes;
-    }
-
-    static {
-
-        NPC.classes = new Class[] {
-                Ghost.class,
-                Wandmaker.class,
-                Blacksmith.class,
-                Imp.class,
-                Shopkeeper.class,
-                ImpShopkeeper.class,
-                RatKing.class,
-                Sheep.class,
-                WandOfRegrowth.Lotus.class
-        };
-
-        SPECIAL.classes = new Class[] {
-                Statue.class,
-                ArmoredStatue.class,
-                Piranha.class,
-                PhantomPiranha.class,
-                Wraith.class,
-                TormentedSpirit.class,
-                Bee.class,
-                Mimic.class,
-                GoldenMimic.class,
-                CrystalMimic.class,
-                EbonyMimic.class,
-                SentryRoom.Sentry.class,
-                HeroMob.class
-        };
-
-        SEWER.classes = new Class[] {
-                Rat.class,
-                Albino.class,
-                FetidRat.class,
-                Snake.class,
-                Gnoll.class,
-                GnollTrickster.class,
-                Crab.class,
-                GreatCrab.class,
-                Swarm.class,
-                Slime.class,
-                CausticSlime.class,
-                Goo.class
-        };
-
-        PRISON.classes = new Class[] {
-                Skeleton.class,
-                Thief.class,
-                Bandit.class,
-                DM100.class,
-                Necromancer.class,
-                SpectralNecromancer.class,
-                Guard.class,
-                RotLasher.class,
-                RotHeart.class,
-                Elemental.NewbornFireElemental.class,
-                Tengu.class
-        };
-
-        CAVES.classes = new Class[] {
-                Brute.class,
-                ArmoredBrute.class,
-                Shaman.RedShaman.class,
-                Shaman.BlueShaman.class,
-                Shaman.PurpleShaman.class,
-                Bat.class,
-                Spinner.class,
-                DM200.class,
-                DM201.class,
-                DM300.class,
-                Pylon.class,
-                GnollGuard.class,
-                GnollSapper.class,
-                GnollGeomancer.class,
-                FungalSpinner.class,
-                FungalSentry.class,
-                FungalCore.class,
-                CrystalGuardian.class,
-                CrystalWisp.class,
-                CrystalSpire.class
-        };
-
-        CITY.classes = new Class[] {
-                Ghoul.class,
-                Warlock.class,
-                Elemental.FireElemental.class,
-                Elemental.FrostElemental.class,
-                Elemental.ShockElemental.class,
-                Elemental.ChaosElemental.class,
-                Monk.class,
-                Senior.class,
-                Golem.class,
-                DwarfKing.class
-        };
-
-        HALLS.classes = new Class[] {
-                Succubus.class,
-                Eye.class,
-                Scorpio.class,
-                Acidic.class,
-                RipperDemon.class,
-                DemonSpawner.class,
-                YogDzewa.class,
-                YogDzewa.Larva.class,
-                YogFist.SoiledFist.class,
-                YogFist.BurningFist.class,
-                YogFist.RustedFist.class,
-                YogFist.RottingFist.class,
-                YogFist.DarkFist.class,
-                YogFist.BrightFist.class
-        };
-
-    }
-
-    public static Mob initMob(Class<? extends Mob> mobClass) {
-        Mob mob = Reflection.newInstance(mobClass);
-        if (mob instanceof WandOfRegrowth.Lotus) {
-            ((WandOfRegrowth.Lotus) mob).setLevel(7);
-        }
-        if (mob instanceof QuestNPC) {
-            ((QuestNPC<?>) mob).createNewQuest();
-        }
-        if (mob instanceof HeroMob) ((HeroMob) mob).setInternalHero(new HeroMob.InternalHero());
-        if (mob == null) throw new RuntimeException(mobClass.getName());
-        mob.pos = -1;
-        return mob;
-    }
-
-    public static final EditorItemBag bag = new EditorItemBag("name", 0){};
-
-    static {
-        for (Mobs m : values()) {
-            bag.items.add(new MobBag(m));
-        }
-        bag.items.add(customMobsBag = new CustomMobsBag());
-    }
-
-    public static class MobBag extends EditorInvCategoryBag {
-        public MobBag(Mobs mobs) {
-            super(mobs);
-            for (Class<?> m : mobs.classes) {
-                items.add(new MobItem(initMob((Class<? extends Mob>) m)));
+    public ScrollingListPane.ListButton createAddBtn() {
+        return new ScrollingListPane.ListButton() {
+            protected RedButton createButton() {
+                return new RedButton(Messages.get(Mobs.class, "add_custom_obj")) {
+                    @Override
+                    protected void onClick() {
+                        DungeonScene.show(new WndNewCustomObject(CustomMob.class));
+                    }
+                };
             }
-        }
+        };
     }
 
-    public static CustomMobsBag customMobsBag;
+    static abstract class MobCategory extends GameObjectCategory.SubCategory<Mob> {
 
-    public static class CustomMobsBag extends EditorItemBag {
-        public CustomMobsBag() {
-            super("name", -1);
+        private MobCategory(Class<?>[] classes) {
+            super(classes);
         }
 
         @Override
-        public Image getCategoryImage() {
-            return Icons.TALENT.get();
+        public String getName() {
+                 if (getClass().equals(Sewer.class))  return Document.INTROS.pageTitle("Sewers");
+            else if (getClass().equals(Prison.class)) return Document.INTROS.pageTitle("Prison");
+            else if (getClass().equals(Caves.class))  return Document.INTROS.pageTitle("Caves");
+            else if (getClass().equals(City.class))   return Document.INTROS.pageTitle("City");
+            else if (getClass().equals(Halls.class))  return Document.INTROS.pageTitle("Halls");
+            return Messages.get(Mobs.class, messageKey());
+        }
+
+        @Override
+        public Image getSprite() {
+                 if (getClass().equals(Sewer.class))    return new GnollSprite();
+            else if (getClass().equals(Prison.class))   return new SkeletonSprite();
+            else if (getClass().equals(Caves.class))    return new BatSprite();
+            else if (getClass().equals(City.class))     return new MonkSprite();
+            else if (getClass().equals(Halls.class))    return new SuccubusSprite();
+            else if (getClass().equals(Special.class))  return new WraithSprite();
+            else if (getClass().equals(NPC.class))      return new WandmakerSprite();
+            return new ItemSprite(ItemSpriteSheet.SOMETHING);
+        }
+
+        @Override
+        public String messageKey() {
+            return getClass().getSimpleName().toLowerCase(Locale.ENGLISH);
         }
     }
 
-    public static void updateCustomMobsInInv() {
-        //Need to keep the same reference for the Undo list
-        if (Undo.canUndo() || Undo.canRedo()) {
-            ArrayList<Item> newItems = new ArrayList<>();
-            oneMob:
-            for (Mob customMob : CustomObject.getAllCustomObjects(Mob.class)) {
-                int ident = ((LuaMob) customMob).getIdentifier();
-                for (Item i : customMobsBag.items) {
-                    MobItem mobItem = (MobItem) i;
-                    if (((LuaMob) mobItem.getObject()).getIdentifier() == ident) {
-                        newItems.add(mobItem);
-                        CustomObject.overrideOriginal((LuaMob) mobItem.getObject());
-                        continue oneMob;
-                    }
-                }
-                newItems.add(new MobItem(customMob));
-            }
-            customMobsBag.items = newItems;
-        } else {
-            customMobsBag.clear();
-            for (Mob customMob : CustomObject.getAllCustomObjects(Mob.class)) {
-                customMobsBag.items.add(new MobItem(customMob));
-            }
+    private static final class Sewer extends MobCategory {
+
+        private Sewer() {
+            super(new Class[] {
+                    Rat.class,
+                    Albino.class,
+                    FetidRat.class,
+                    Snake.class,
+                    Gnoll.class,
+                    GnollTrickster.class,
+                    Crab.class,
+                    GreatCrab.class,
+                    Swarm.class,
+                    Slime.class,
+                    CausticSlime.class,
+                    Goo.class
+            });
         }
-
     }
 
-    public static void deleteCustomMobFromOtherContainers(CustomObject toDelete, int identifier, boolean alwaysReplace) {
+    private static final class Prison extends MobCategory {
 
-//        for (Item bag : Mobs.bag.items){
-//            if (bag instanceof Bag) {
-//                for (Item mobItem : ((Bag) bag).items) {
-//                    if (mobItem instanceof MobItem) {
-//                        Mob m = ((MobItem) mobItem).getObject();
-//                        if (m instanceof DeleteCustomObjListener)
-//                            ((DeleteCustomObjListener) m).onDeleteCustomObj(toDelete, identifier, alwaysReplace);
-//                    }
-//                }
-//            } else if (bag instanceof MobItem) {
-//                Mob m = ((MobItem) bag).getObject();
-//                if (m instanceof DeleteCustomObjListener)
-//                    ((DeleteCustomObjListener) m).onDeleteCustomObj(toDelete, identifier, alwaysReplace);
-//            }
-//        }
+        private Prison() {
+            super(new Class[] {
+                    Skeleton.class,
+                    Thief.class,
+                    Bandit.class,
+                    DM100.class,
+                    Necromancer.class,
+                    SpectralNecromancer.class,
+                    Guard.class,
+                    RotLasher.class,
+                    RotHeart.class,
+                    Elemental.NewbornFireElemental.class,
+                    Tengu.class
+            });
+        }
     }
 
+    private static final class Caves extends MobCategory {
 
-    public static class AddCustomMobButton extends ScrollingListPane.ListButton {
-        protected RedButton createButton() {
-            return new RedButton(Messages.get(Mobs.class, "add_custom_mob")) {
-                @Override
-                protected void onClick() {
-                    EditorScene.show(new EditCustomObjectComp.WndNewCustomObject());
-                }
-            };
+        private Caves() {
+            super(new Class[] {
+                    Brute.class,
+                    ArmoredBrute.class,
+                    Shaman.RedShaman.class,
+                    Shaman.BlueShaman.class,
+                    Shaman.PurpleShaman.class,
+                    Bat.class,
+                    Spinner.class,
+                    DM200.class,
+                    DM201.class,
+                    DM300.class,
+                    Pylon.class,
+                    GnollGuard.class,
+                    GnollSapper.class,
+                    GnollGeomancer.class,
+                    FungalSpinner.class,
+                    FungalSentry.class,
+                    FungalCore.class,
+                    CrystalGuardian.class,
+                    CrystalWisp.class,
+                    CrystalSpire.class
+            });
+        }
+    }
+
+    private static final class City extends MobCategory {
+
+        private City() {
+            super(new Class[] {
+                    Ghoul.class,
+                    Warlock.class,
+                    Elemental.FireElemental.class,
+                    Elemental.FrostElemental.class,
+                    Elemental.ShockElemental.class,
+                    Elemental.ChaosElemental.class,
+                    Monk.class,
+                    Senior.class,
+                    Golem.class,
+                    DwarfKing.class
+            });
+        }
+    }
+
+    private static final class Halls extends MobCategory {
+
+        private Halls() {
+            super(new Class[] {
+                    Succubus.class,
+                    Eye.class,
+                    Scorpio.class,
+                    Acidic.class,
+                    RipperDemon.class,
+                    DemonSpawner.class,
+                    YogDzewa.class,
+                    YogDzewa.Larva.class,
+                    YogFist.SoiledFist.class,
+                    YogFist.BurningFist.class,
+                    YogFist.RustedFist.class,
+                    YogFist.RottingFist.class,
+                    YogFist.DarkFist.class,
+                    YogFist.BrightFist.class
+            });
+        }
+    }
+
+    private static final class Special extends MobCategory {
+
+        private Special() {
+            super(new Class[] {
+                    Statue.class,
+                    ArmoredStatue.class,
+                    Piranha.class,
+                    PhantomPiranha.class,
+                    Wraith.class,
+                    TormentedSpirit.class,
+                    Bee.class,
+                    Mimic.class,
+                    GoldenMimic.class,
+                    CrystalMimic.class,
+                    EbonyMimic.class,
+                    SentryRoom.Sentry.class,
+                    HeroMob.class
+            });
+        }
+    }
+
+    public static final class NPC extends MobCategory {
+
+        private NPC() {
+            super(new Class[] {
+                    Ghost.class,
+                    Wandmaker.class,
+                    Blacksmith.class,
+                    Imp.class,
+                    Shopkeeper.class,
+                    ImpShopkeeper.class,
+                    RatKing.class,
+                    Sheep.class,
+                    WandOfRegrowth.Lotus.class
+            });
         }
     }
 

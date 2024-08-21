@@ -25,9 +25,11 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.Game;
 
+@NotAllowedInLua
 public class ExitButton extends IconButton {
 
 	public ExitButton() {

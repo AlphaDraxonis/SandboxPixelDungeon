@@ -24,6 +24,8 @@ package com.watabou.noosa;
 import com.watabou.gltextures.TextureCache;
 
 public class ColorBlock extends Image implements Resizable {
+	
+	public static final int SEPARATOR_COLOR = 0xFF222222;
 
 	/**
 	 * When using ColorBlocks, make sure to know this:<br>

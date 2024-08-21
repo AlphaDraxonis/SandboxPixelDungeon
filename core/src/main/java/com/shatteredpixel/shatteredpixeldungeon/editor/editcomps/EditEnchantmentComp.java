@@ -21,7 +21,11 @@ public class EditEnchantmentComp extends DefaultEditComp<EnchantmentLike> {
     }
 
     private void initComps() {
-        comps = new Component[0];
+    }
+
+    @Override
+    protected void updateStates() {
+        super.updateStates();
     }
 
     @Override

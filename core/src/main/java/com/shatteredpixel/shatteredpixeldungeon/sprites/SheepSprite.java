@@ -32,11 +32,19 @@ public class SheepSprite extends MobSprite {
 		
 		texture( Assets.Sprites.SHEEP );
 		
-		TextureFilm frames = new TextureFilm( texture, 16, 15 );
+		initAnimations();
 		
+		play( idle );
+		curFrame = Random.Int( curAnim.frames.length );
+	}
+
+	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 16, 15 );
+
 		idle = new Animation( 8, true );
 		idle.frames( frames, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0 );
-		
+
 		run = idle.clone();
 
 		attack = new Animation( 15, false );
@@ -44,9 +52,6 @@ public class SheepSprite extends MobSprite {
 
 		die = new Animation( 20, false );
 		die.frames( frames, 0 );
-		
-		play( idle );
-		curFrame = Random.Int( curAnim.frames.length );
 	}
 
 	@Override

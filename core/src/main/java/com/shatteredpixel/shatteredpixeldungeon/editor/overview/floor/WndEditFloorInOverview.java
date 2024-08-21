@@ -15,7 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.Level
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.LevelListPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextInput;
@@ -33,6 +34,7 @@ import com.watabou.noosa.ui.Component;
 import java.io.IOException;
 import java.util.*;
 
+@NotAllowedInLua
 public class WndEditFloorInOverview extends WndTabbed {
 
 
@@ -227,7 +229,7 @@ public class WndEditFloorInOverview extends WndTabbed {
                 public void selectObject(Object object) {
                     super.selectObject(object);
                     if (object instanceof LevelScheme)
-                        levelScheme.setPassage(EditorUtilies.getCodeName((LevelScheme) object));
+                        levelScheme.setPassage(EditorUtilities.getCodeName((LevelScheme) object));
                 }
             };
             content.add(passage);
@@ -237,7 +239,7 @@ public class WndEditFloorInOverview extends WndTabbed {
                 public void selectObject(Object object) {
                     super.selectObject(object);
                     if (object instanceof LevelScheme)
-                        levelScheme.setChasm(EditorUtilies.getCodeName((LevelScheme) object), true);
+                        levelScheme.setChasm(EditorUtilities.getCodeName((LevelScheme) object), true);
                 }
 
                 @Override
@@ -258,7 +260,7 @@ public class WndEditFloorInOverview extends WndTabbed {
                 passage.selectObject(levelScheme.getPassage());
             if (levelScheme.getChasm() != null) chasm.selectObject(levelScheme.getChasm());
 
-            line = new ColorBlock(1, 1, 0xFF222222);
+            line = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
             content.add(line);
 
             delete = new RedButton(Messages.get(WndGameInProgress.class, "erase")) {

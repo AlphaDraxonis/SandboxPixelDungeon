@@ -5,7 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -33,18 +33,18 @@ public class RandomItemDistrComp extends ItemsWithChanceDistrComp {
         WndBag.ItemSelector selector = createSelector(onSelect);
         if (randomItem.getType() != Item.class)
             ItemSelector.showSelectWindow(selector, ItemSelector.NullTypeSelector.NOTHING, randomItem.getType(),
-                    Items.bag, new HashSet<>(0), false);
+                    Items.bag(), new HashSet<>(0), false);
         else EditorScene.selectItem(selector);
     }
 
     @Override
     protected WndBag.ItemSelector createSelector(Consumer<Item> onSelect) {
-        return createSelector((Class<? extends Item>) randomItem.getType(), false, Items.bag.getClass(), onSelect);
+        return createSelector((Class<? extends Item>) randomItem.getType(), false, Items.bag().getClass(), onSelect);
     }
 
     @Override
     protected void updateParent() {
-        Window w = EditorUtilies.getParentWindow(this);
+        Window w = EditorUtilities.getParentWindow(this);
         if (w instanceof SimpleWindow) ((SimpleWindow) w).layout();
     }
 }

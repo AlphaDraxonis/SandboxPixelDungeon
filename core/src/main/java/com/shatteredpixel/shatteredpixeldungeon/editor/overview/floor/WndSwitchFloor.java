@@ -17,11 +17,13 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 
 import java.io.IOException;
 
+@NotAllowedInLua
 public class WndSwitchFloor extends Window {
 
     private static final int MARGIN = 2;

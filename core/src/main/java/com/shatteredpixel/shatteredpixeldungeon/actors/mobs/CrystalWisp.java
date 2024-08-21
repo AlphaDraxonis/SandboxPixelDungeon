@@ -110,13 +110,7 @@ public class CrystalWisp extends Mob{
 
 		} else {
 
-			if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-				sprite.zap( enemy.pos );
-				return false;
-			} else {
-				zap();
-				return true;
-			}
+			return doRangedAttack();
 		}
 	}
 

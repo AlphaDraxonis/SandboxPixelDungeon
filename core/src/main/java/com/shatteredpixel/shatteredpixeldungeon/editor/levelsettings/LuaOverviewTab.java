@@ -26,25 +26,22 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.DefaultListItemWithRemoveBtn;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.NewInstanceButton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.PopupMenu;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptionsCondensed;
+import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.LuaScript;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
@@ -57,6 +54,7 @@ import java.util.List;
 
 import static com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp.GAP;
 
+@NotAllowedInLua
 public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
 	private MultiWindowTabComp.OutsideSpSwitchTabs outsideSp;
@@ -176,8 +174,8 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 			scrollingListPane.addItemNoLayouting(new RedButton(Messages.get(LuaOverviewTab.class, "open_dungeon_script")) {
 				@Override
 				protected void onClick() {
-					if (Dungeon.dungeonScript.pathToScript == null) Dungeon.dungeonScript.pathToScript = "";
-					IDEWindow.showWindow(Dungeon.dungeonScript);
+//					if (Dungeon.dungeonScript.pathToScript == null) Dungeon.dungeonScript.pathToScript = "";
+//					IDEWindow.showWindow(Dungeon.dungeonScript);
 				}
 			});
 
@@ -194,7 +192,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 		protected IconButton delete;
 
 		public ScriptItem(LuaScript script) {
-			super(createIcon(script), script.pathFromRoot);
+			super(createIcon(script), "pathFromRoot");
 			title.setHighlighting(false);
 
 			this.script = script;
@@ -205,12 +203,13 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 			add(description);
 
 			StringBuilder builder = new StringBuilder();
-			for (CustomObject obj : CustomObject.customObjects.values()) {
-				if (script.pathFromRoot.equals(obj.pathToScript)) builder.append(obj.name).append('\n');
-			}
-			for (LevelScheme ls : Dungeon.customDungeon.levelSchemes()) {
-				if (ls.luaScript != null && script.pathFromRoot.equals(ls.luaScript.pathToScript)) builder.append(ls.getName()).append('\n');
-			}
+			//tzz
+//			for (LuaUserContent obj : UserContentManager.customObjects.values()) {
+//				if (script.pathFromRoot.equals(obj.pathToScript)) builder.append(obj.name).append('\n');
+//			}
+//			for (LevelScheme ls : Dungeon.customDungeon.levelSchemes()) {
+//				if (ls.luaScript != null && script.pathFromRoot.equals(ls.luaScript.pathToScript)) builder.append(ls.getName()).append('\n');
+//			}
 			int l = builder.length();
 			if (l != 0) builder.delete(l - 1, l);
 			String usedIn = builder.toString();
@@ -218,22 +217,22 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 			delete = new IconButton(Icons.TRASH.get()) {
 				@Override
 				protected void onClick() {
-					EditorScene.show(new WndOptionsCondensed(Messages.get(LuaOverviewTab.class, "delete_confirm_title", script.pathFromRoot),
-							Messages.get(LuaOverviewTab.class, "delete_confirm_body", script.pathFromRoot)
+					EditorScene.show(new WndOptionsCondensed(Messages.get(LuaOverviewTab.class, "delete_confirm_title", "script.pathFromRoot"),
+							Messages.get(LuaOverviewTab.class, "delete_confirm_body", "script.pathFromRoot")
 									+ (usedIn.isEmpty() ? "" : Messages.get(LuaOverviewTab.class, "delete_confirm_used_in", usedIn)),
 							Messages.get(HeroSelectScene.class, "daily_yes"), Messages.get(HeroSelectScene.class, "daily_no")) {
 						@Override
 						protected void onSelect(int index) {
 							if (index == 0) {
-								if (CustomDungeonSaves.deleteScriptFile(script.pathFromRoot)) {
-									updateList();
-									if (Level.class.isAssignableFrom(script.type)) {
-										for (LevelScheme ls : Dungeon.customDungeon.levelSchemes()) {
-											if (ls.luaScript != null && script.pathFromRoot.equals(ls.luaScript.pathToScript))
-												ls.luaScript = null;
-										}
-									}
-								}
+//								if (CustomDungeonSaves.deleteScriptFile(script.pathFromRoot)) {
+//									updateList();
+//									if (Level.class.isAssignableFrom(script.type)) {
+//										for (LevelScheme ls : Dungeon.customDungeon.levelSchemes()) {
+//											if (ls.luaScript != null && script.pathFromRoot.equals(ls.luaScript.pathToScript))
+//												ls.luaScript = null;
+//										}
+//									}
+//								}
 							}
 						}
 					});
@@ -249,7 +248,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
 		@Override
 		protected void onClick() {
-			IDEWindow.showWindow(new LuaCodeHolder(script));
+//			IDEWindow.showWindow(new LuaCodeHolder(script));
 		}
 
 		@Override
@@ -281,7 +280,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 	private static Image createIcon(LuaScript script) {
 		if (Level.class.isAssignableFrom(script.type)) return Icons.STAIRS.get();
 		if (DungeonScript.class.isAssignableFrom(script.type)) return Icons.NEWS.get();
-		return Reference.objectToImage(Reflection.newInstance(script.type));
+		return EditorUtilities.imageOf(Reflection.newInstance(script.type), true);
 	}
 
 
@@ -300,7 +299,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
 			this.index = index;
 
-			line = new ColorBlock(1, 1, 0xFF222222);
+			line = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
 			add(line);
 
 			nameInput = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, 7, PixelScene.uiCamera.zoom) {

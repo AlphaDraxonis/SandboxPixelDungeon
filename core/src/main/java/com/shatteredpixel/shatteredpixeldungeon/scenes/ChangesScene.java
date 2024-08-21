@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
@@ -39,6 +40,7 @@ import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 
+@NotAllowedInLua
 public class ChangesScene extends PixelScene {
 	
 	public static int changesSelected = 0;

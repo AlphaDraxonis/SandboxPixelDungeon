@@ -29,8 +29,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Rect;
 import com.watabou.utils.Reflection;
+import com.watabou.utils.WatabouRect;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +50,7 @@ public class Blob extends Actor {
 	
 	public BlobEmitter emitter;
 
-	public Rect area = new Rect();
+	public WatabouRect area = new WatabouRect();
 	
 	public boolean alwaysVisible = false;
 

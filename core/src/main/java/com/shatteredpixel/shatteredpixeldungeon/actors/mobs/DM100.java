@@ -27,11 +27,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.DM100Sprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -90,11 +88,6 @@ public class DM100 extends DMMob {
 		return super.canAttack(enemy)
 				|| new Ballistica( pos, enemy.pos, Ballistica.REAL_MAGIC_BOLT, null).collisionPos == enemy.pos;
 	}
-
-	@Override
-	public void playZapAnim(int target) {
-		DM100Sprite.playZap(sprite.parent, sprite, target, this);
-	}
 	
 	//used so resistances can differentiate between melee and magical attacks
 	public static class LightningBolt{}
@@ -109,16 +102,7 @@ public class DM100 extends DMMob {
 			
 		} else {
 			
-			if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-				if (sprite instanceof DM100Sprite) {
-					zap();
-				}
-				sprite.zap( enemy.pos );
-				return false;
-			} else {
-				zap();
-				return true;
-			}
+			return doRangedAttack();
 		}
 	}
 
@@ -132,21 +116,14 @@ public class DM100 extends DMMob {
 			dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
 			enemy.damage( dmg, new LightningBolt() );
 
-			if (enemy.sprite.visible) {
-				enemy.sprite.centerEmitter().burst(SparkParticle.FACTORY, 3);
-				enemy.sprite.flash();
+			if (!sprite.hasOwnZapAnimation()) {//DM100Sprite calls this by itself
+				DM100Sprite.playOnZapHitEffect(enemy.pos);
 			}
 
-			if (enemy == Dungeon.hero) {
-
-				if (sprite instanceof DM100Sprite)
-					PixelScene.shake( 2, 0.3f );
-
-				if (!enemy.isAlive()) {
-					Badges.validateDeathFromEnemyMagic();
-					Dungeon.fail( this );
-					GLog.n( Messages.get(this, "zap_kill") );
-				}
+			if (enemy == Dungeon.hero && !enemy.isAlive()) {
+				Badges.validateDeathFromEnemyMagic();
+				Dungeon.fail(this);
+				GLog.n(Messages.get(this, "zap_kill"));
 			}
 		} else {
 			enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
@@ -154,12 +131,16 @@ public class DM100 extends DMMob {
 	}
 
 	@Override
-	public void onZapComplete() {
-		if (!(sprite instanceof DM100Sprite)) {
-			super.onZapComplete();
-			return;
+	public void playZapAnim(int target) {
+		if (sprite.hasOwnZapAnimation()) {
+			super.playZapAnim(target);
+		} else {
+			DM100Sprite.playZap(sprite.parent, sprite, target, this);
 		}
-		next();
+	}
+
+	public static boolean usesDM100ZapAnimation(CharSprite sprite) {
+		return sprite instanceof DM100Sprite || !sprite.hasOwnZapAnimation();
 	}
 
 }

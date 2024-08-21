@@ -23,7 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.trinkets;
 
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.Guidebook;
@@ -175,7 +175,7 @@ public class TrinketCatalyst extends Item {
 
 			initComponents(
 					new IconTitle(new ItemSprite(cata), Messages.titleCase(cata.name())),
-					new SingleItemRewardsBody(Messages.get(TrinketCatalyst.class, "window_text"), null, cata, cata.rolledTrinkets.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
+					new SingleItemRewardsBody(Messages.get(TrinketCatalyst.class, "window_text"), null, cata, cata.rolledTrinkets.toArray(EditorUtilities.EMPTY_ITEM_ARRAY)) {
 						@Override
 						protected void onSelectReward(Item reward) {
 							((AlchemyScene)Game.scene()).craftItem(null, reward);

@@ -74,6 +74,7 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.*;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.PointerEvent;
@@ -90,6 +91,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+@NotAllowedInLua
 public class GameScene extends DungeonScene {
 
 	static GameScene scene;

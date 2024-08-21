@@ -33,6 +33,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -40,6 +42,7 @@ import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.tweeners.Delayer;
 import com.watabou.utils.Random;
 
+@NotAllowedInLua
 public class AmuletScene extends PixelScene {
 	
 	private static final int WIDTH			= 120;
@@ -81,6 +84,8 @@ public class AmuletScene extends PixelScene {
 				Badges.saveGlobal();
 				btnExit.enable(false);
 				btnStay.enable(false);
+
+				UserContentManager.loadUserContentFromFiles();
 
 				if (!Dungeon.isLevelTesting()) {
 					AmuletScene.this.add(new Delayer(0.1f) {

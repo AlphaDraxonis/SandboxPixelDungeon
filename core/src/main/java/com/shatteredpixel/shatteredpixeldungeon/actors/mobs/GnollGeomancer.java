@@ -494,11 +494,11 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 	}
 
 	@Override
-	public String description() {
+	public String desc() {
 		if (state == SLEEPING){
 			return Messages.get(this, "desc_sleeping");
 		} else {
-			String desc = super.description();
+			String desc = super.desc();
 			if (buff(RockArmor.class) != null){
 				if (hasSapper()){
 					desc += "\n\n" + Messages.get(this, "desc_armor_sapper");

@@ -5,7 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
@@ -71,7 +71,7 @@ public class WndScrollOfDebug extends Window {
 
         Undo.startAction();
 
-        offset(0, EditorUtilies.getMaxWindowOffsetYForVisibleToolbar());
+        offset(0, EditorUtilities.getMaxWindowOffsetYForVisibleToolbar());
 
         referenceTable = new ReferenceTable();
         add(referenceTable);

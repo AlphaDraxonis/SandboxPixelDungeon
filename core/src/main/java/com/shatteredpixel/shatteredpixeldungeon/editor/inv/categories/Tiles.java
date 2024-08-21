@@ -91,7 +91,7 @@ public enum Tiles {
     //TODO Icon zeige in inv an, ob brennbar, oder Schlüssel?? -> muss über ListItem gemacht werden!
 
 
-    public static final EditorItemBag bag = new EditorItemBag("name", 0) {
+    public static final EditorItemBag bag = new EditorItemBag() {
         @Override
         public Item findItem(FindInBag src) {
 

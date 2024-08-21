@@ -65,7 +65,7 @@ public class CrystalMimic extends Mimic {
 	}
 
 	@Override
-	public String description() {
+	public String desc() {
 		if (alignment == Alignment.NEUTRAL && customDesc == null){
 			String desc = null;
 			if (items != null){
@@ -92,7 +92,7 @@ public class CrystalMimic extends Mimic {
 			}
 			return desc;
 		} else {
-			return super.description();
+			return super.desc();
 		}
 	}
 

@@ -1,7 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -24,7 +24,7 @@ public class IconTitleWithSubIcon extends IconTitle {
     public IconTitleWithSubIcon(Item item) {
         Image icon = CustomDungeon.getDungeon().getItemImage(item);
         icon(icon);
-        subIcon = EditorUtilies.createSubIcon(item);
+        subIcon = EditorUtilities.createSubIcon(item);
         if (subIcon != null) add(subIcon);
         label(Messages.titleCase(item.title()));
     }

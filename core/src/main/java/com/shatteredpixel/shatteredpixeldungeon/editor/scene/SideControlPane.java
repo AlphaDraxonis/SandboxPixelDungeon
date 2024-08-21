@@ -22,6 +22,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.*;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndScrollOfDebug;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -47,7 +48,7 @@ public class SideControlPane extends Component {
             buttons[0] = new StartBtn();
             buttons[1] = new PipetteBtn();
             buttons[2] = new FillBtn();
-            buttons[3] = new ToggleZoneViewBtn();
+            if (!EditorScene.isEditingRoomLayout) buttons[3] = new ToggleZoneViewBtn();
         } else {
             buttons = new SideControlButton[9];
             buttons[0] = new ExitBtn();
@@ -62,7 +63,8 @@ public class SideControlPane extends Component {
         }
 
         for (Component button : buttons) {
-            add(button);
+            if (button != null)
+                add(button);
         }
     }
 
@@ -81,9 +83,11 @@ public class SideControlPane extends Component {
 
         float posY = y;
         for (int i = 0; i < buttons.length; i++) {
-            buttons[i].setPos(x, posY);
-            PixelScene.align(buttons[i]);
-            posY = buttons[i].bottom();
+            if (buttons[i] != null && buttons[i].visible) {
+                buttons[i].setPos(x, posY);
+                PixelScene.align(buttons[i]);
+                posY = buttons[i].bottom();
+            }
         }
         width = WIDTH;
         height = posY - y;
@@ -256,6 +260,9 @@ public class SideControlPane extends Component {
         @Override
         protected void onClick() {
 //          GameScene.scene.destroy(); ???
+
+            UserContentManager.loadUserContentFromFiles();
+
             EditorScene.start();
             EditorScene.openDifferentLevel = false;
             WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());

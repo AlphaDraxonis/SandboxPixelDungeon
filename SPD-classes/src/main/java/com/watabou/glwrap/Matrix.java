@@ -21,6 +21,9 @@
 
 package com.watabou.glwrap;
 
+import com.watabou.NotAllowedInLua;
+
+@NotAllowedInLua
 public class Matrix {
 
 	public static final float G2RAD = 0.01745329251994329576923690768489f;

@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 
 import java.util.Objects;
 
@@ -40,6 +41,36 @@ public class SignActionPart {
         @Override
         public boolean hasContent() {
             return !SignActionPart.areEqual(newSign, oldSign);
+        }
+    }
+
+    public static final class Modify implements ActionPartModify {
+
+        private Sign before, after;
+
+        public Modify(Sign sign) {
+            before = sign.getCopy();
+            after = sign;
+        }
+
+        @Override
+        public void undo() {
+            Dungeon.level.signs.put(before.pos, before);
+        }
+
+        @Override
+        public void redo() {
+            Dungeon.level.signs.put(after.pos, after);
+        }
+
+        @Override
+        public boolean hasContent() {
+             return !SignActionPart.areEqual(before, after);
+        }
+
+        @Override
+        public void finish() {
+            after = after.getCopy();
         }
     }
 }

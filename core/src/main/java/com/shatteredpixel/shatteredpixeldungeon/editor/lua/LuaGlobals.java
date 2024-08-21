@@ -41,9 +41,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.WndCreator;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
@@ -62,6 +64,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.remains.RemainsItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Spell;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.SummonElemental;
@@ -90,24 +93,27 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Visual;
-import com.watabou.utils.Bundlable;
+import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import com.watabou.utils.SparseArray;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.*;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
+@NotAllowedInLua
 public class LuaGlobals extends Globals {
 
 	LuaGlobals() {
@@ -116,30 +122,59 @@ public class LuaGlobals extends Globals {
 		compiler = standardGlobals.compiler;
 		loader = standardGlobals.loader;
 
+		set("_VERSION", standardGlobals.get("_VERSION"));
+		set("tostring", standardGlobals.get("tostring"));
+		set("tonumber", standardGlobals.get("tonumber"));
+		set("type", standardGlobals.get("type"));
+		set("pairs", standardGlobals.get("pairs"));
+		set("next", standardGlobals.get("next"));
+		set("table", standardGlobals.get("table"));
+		set("rawlen", standardGlobals.get("rawlen"));
+		set("rawequal", standardGlobals.get("rawequal"));
+		set("assert", standardGlobals.get("assert"));
+		set("error", standardGlobals.get("error"));
+		set("math", standardGlobals.get("math"));
+
 		final LuaFunction newInstance = standardGlobals.get("luajava").get("newInstance").checkfunction();
 		set("new", new VarArgFunction() {
 
 			@Override
 			public Varargs invoke(Varargs varargs) {
 				LuaValue arg = varargs.arg1();
+				LuaValue luaResult;
 				if (arg.isstring()) {
-					if (arg.checkjstring().startsWith(Messages.MAIN_PACKAGE_NAME)) {
-						LuaValue result = newInstance.invoke(arg, varargs.subargs(2)).arg1();
-						if (result.isuserdata()) {
-							Object obj = result.checkuserdata();
-							if (obj instanceof Bundlable || obj instanceof CharSprite) return result;
-							else {
-								if (obj instanceof Gizmo) ((Gizmo) obj).destroy();
-								throw new IllegalArgumentException("Instancing class " + arg.checkjstring() + " is not permitted for security reasons!");
-							}
+					if (arg.checkjstring().startsWith(Messages.MAIN_PACKAGE_NAME)
+							|| arg.checkjstring().startsWith(Messages.WATABOU_PACKAGE_NAME)) {
+						luaResult = newInstance.invoke(arg, varargs.subargs(2)).arg1();
+					} else {
+						String fullName = searchFullyQualifiedName(arg.checkjstring());
+						if (fullName != null) {
+							luaResult = newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2)).arg1();
+						}
+						else {
+							fullName = Messages.MAIN_PACKAGE_NAME + arg.checkjstring();
+
+							if (Reflection.forName(fullName) == null)
+								throw new LuaError("Class not found: " + arg.checkstring());
+
+							luaResult = newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2)).arg1();
 						}
 					}
-					String fullName = searchFullyQualifiedName(arg.checkjstring());
-					if (fullName != null) {
-						return CoerceJavaToLua.coerce(Reflection.newInstance(Reflection.forName(fullName)));
-//						return newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2));
+
+					Object javaResult = luaResult.checkuserdata();
+
+					if (javaResult != null) {
+
+						if (!LuaRestrictionProxy.isRestricted(javaResult)) {
+							return LuaRestrictionProxy.wrapObject(javaResult);
+						}
+						else {
+							if (javaResult instanceof Gizmo) ((Gizmo) javaResult).destroy();
+							throw new IllegalArgumentException(
+									"Instancing class " + arg.checkjstring() + " is not permitted for security reasons!");
+						}
 					}
-					throw new LuaError("Class not found: " + arg.checkstring());
+
 				}
 				throw new LuaError("Illegal arguments: use new(String className)");
 			}
@@ -149,20 +184,21 @@ public class LuaGlobals extends Globals {
 
 			@Override
 			public Varargs invoke(Varargs varargs) {
-				LuaValue arg = varargs.arg1();
-				if (arg.isstring()) {
-					String s = arg.tojstring();
-					for (CustomObject obj : CustomObject.customObjects.values()) {
-						if (obj.name.equals(s)) return CoerceJavaToLua.coerce(obj.luaClass.newInstance());
-					}
-					throw new LuaError("No custom object with name \"" + s + "\" was found!");
-				}
-				else if (arg.isint()) {
-					LuaClass original = CustomObject.getLuaClass(arg.checkint());
-					if (original == null)
-						throw new LuaError("No custom object with id \"" + arg.checkint() + "\" was found!");
-					return CoerceJavaToLua.coerce(original.newInstance());
-				}
+				// tzz FIXME super important
+//				LuaValue arg = varargs.arg1();
+//				if (arg.isstring()) {
+//					String s = arg.tojstring();
+//					for (CustomObject obj : CustomObject.customObjects.values()) {
+//						if (obj.name.equals(s)) return CoerceJavaToLua.coerce(obj.luaClass.newInstance());
+//					}
+//					throw new LuaError("No custom object with name \"" + s + "\" was found!");
+//				}
+//				else if (arg.isint()) {
+//					LuaClass original = CustomObject.getLuaClass(arg.checkint());
+//					if (original == null)
+//						throw new LuaError("No custom object with id \"" + arg.checkint() + "\" was found!");
+//					return CoerceJavaToLua.coerce(original.newInstance());
+//				}
 				throw new LuaError("Illegal arguments: use newCus(String name) or newCus(int id)");
 			}
 		});
@@ -170,16 +206,36 @@ public class LuaGlobals extends Globals {
 		set("class", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue arg) {
+				Object javaResult = null;
 				if (arg.isstring()) {
-					if (arg.checkjstring().startsWith(Messages.MAIN_PACKAGE_NAME)) {
-						Class<?> result = Reflection.forName(arg.checkjstring());
-						if (result != null && Bundlable.class.isAssignableFrom(result)) {
-							return CoerceJavaToLua.coerce(result);
+					if (arg.checkjstring().startsWith(Messages.MAIN_PACKAGE_NAME)
+							|| arg.checkjstring().startsWith(Messages.WATABOU_PACKAGE_NAME)) {
+						javaResult = Reflection.forName(arg.checkjstring());
+					} else {
+						String fullName = searchFullyQualifiedName(arg.checkjstring());
+						if (fullName != null) javaResult = Reflection.forName(fullName);
+						else {
+							fullName = Messages.MAIN_PACKAGE_NAME + arg.checkjstring();
+							Class<?> c = Reflection.forName(fullName);
+
+							if (c == null)
+								throw new LuaError("Class not found: " + arg.checkstring());
+
+							javaResult = c;
 						}
 					}
-					String fullName = searchFullyQualifiedName(arg.checkjstring());
-					if (fullName != null) return CoerceJavaToLua.coerce(Reflection.forName(fullName));
-					throw new LuaError("Class not found: " + arg.checkstring());
+
+					if (javaResult != null) {
+
+						if (!LuaRestrictionProxy.isRestricted(javaResult)) {
+							return LuaRestrictionProxy.wrapObject(javaResult);
+						}
+						else {
+							throw new IllegalArgumentException(
+									"Instancing class " + arg.checkjstring() + " is not permitted for security reasons!");
+						}
+					}
+
 				}
 				throw new LuaError("Illegal arguments: use class(String className)");
 			}
@@ -194,7 +250,7 @@ public class LuaGlobals extends Globals {
 				LuaValue usePassable = varargs.arg(4);
 				if (from.isint() && to.isint() && params.isint() && (usePassable.isnil() || usePassable.isuserdata(Char.class))) {
 					Ballistica ballistica = new Ballistica(from.toint(), to.toint(), params.toint(), (Char) usePassable.touserdata());
-					return CoerceJavaToLua.coerce(ballistica);
+					return LuaRestrictionProxy.wrapObject(ballistica);
 				}
 				throw new LuaError("Illegal arguments: use ballistica(int from, int to, int params) or ballistica(int from, int to, int params, Char usePassableFromChar)");
 			}
@@ -202,24 +258,34 @@ public class LuaGlobals extends Globals {
 
 		set("tostring", standardGlobals.get("tostring"));
 
+		set("toPos", new ThreeArgFunction() {
+			@Override
+			public LuaValue call(LuaValue x, LuaValue y, LuaValue level) {
+				if (!x.isint() || !y.isint()) throw new LuaError("Illegal arguments: use toPos(int x, int y)");
+				Level l = level.isuserdata() ? (Level) level.touserdata(Level.class) : null;
+				if (l == null) l = Dungeon.level;
+				return LuaValue.valueOf(x.toint() - 1 + y.toint() * l.width());
+			}
+		});
+
 		LuaTable arrayUtils = new LuaTable();
 		arrayUtils.set("length", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue array) {
-				return LuaValue.valueOf(Array.getLength(CoerceLuaToJava.coerce(array, Object.class)));
+				return LuaValue.valueOf(Array.getLength(LuaRestrictionProxy.coerceLuaToJava(array)));
 			}
 		});
 		arrayUtils.set("set", new ThreeArgFunction() {
 			@Override
 			public LuaValue call(LuaValue array, LuaValue index, LuaValue value) {
-				Array.set(CoerceLuaToJava.coerce(array, Object.class), index.toint(), CoerceLuaToJava.coerce(value, Object.class));
+				Array.set(LuaRestrictionProxy.coerceLuaToJava(array), index.toint(), LuaRestrictionProxy.coerceLuaToJava(value));
 				return LuaValue.NIL;
 			}
 		});
 		arrayUtils.set("get", new TwoArgFunction() {
 			@Override
 			public LuaValue call(LuaValue array, LuaValue index) {
-				return CoerceJavaToLua.coerce(Array.get(CoerceLuaToJava.coerce(array, Object.class), index.toint()));
+				return LuaRestrictionProxy.wrapObject(Array.get(LuaRestrictionProxy.coerceLuaToJava(array), index.toint()));
 			}
 		});
 		arrayUtils.set("iterate", new TwoArgFunction() {
@@ -228,30 +294,30 @@ public class LuaGlobals extends Globals {
 
 				if (consumer.isnil()) throw new LuaError("Illegal arguments: consumer must not be null: use something like   function(obj) print(obj) end   as second parameter ");
 
-				Object java = CoerceLuaToJava.coerce(array, Object.class);
+				Object java = LuaRestrictionProxy.coerceLuaToJava(array);
 				LuaFunction function = consumer.checkfunction();
 				if (java instanceof SparseArray) {
 					for (Object obj : ((SparseArray<?>) java).values()) {
-						function.call(CoerceJavaToLua.coerce(obj));
+						function.call(LuaRestrictionProxy.wrapObject(obj));
 					}
 					return LuaValue.TRUE;
 				}
 				else if (java instanceof Map<?, ?>) {
 					for (Object obj : ((Map<?, ?>) java).values()) {
-						function.call(CoerceJavaToLua.coerce(obj));
+						function.call(LuaRestrictionProxy.wrapObject(obj));
 					}
 					return LuaValue.TRUE;
 				}
 				else if (java instanceof Iterable) {
 					for (Object obj : ((Iterable<?>) java)) {
-						function.call(CoerceJavaToLua.coerce(obj));
+						function.call(LuaRestrictionProxy.wrapObject(obj));
 					}
 					return LuaValue.TRUE;
 				}
 				else if (java.getClass().isArray()) {
 					int length = Array.getLength(java);
 					for (int i = 0; i < length; i++) {
-						function.call(CoerceJavaToLua.coerce(Array.get(java, i)));
+						function.call(LuaRestrictionProxy.wrapObject(Array.get(java, i)));
 					}
 				} else {
 					throw new LuaError("Illegal arguments: collection must be a java array or a SparseArray or implement Iterable or Map<?,?>");
@@ -332,18 +398,18 @@ public class LuaGlobals extends Globals {
 		randomUtils.set("element", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue collection) {
-				Object java = CoerceLuaToJava.coerce(collection, Object.class);
+				Object java = LuaRestrictionProxy.coerceLuaToJava(collection);
 				if (java instanceof SparseArray<?>) {
-					return CoerceJavaToLua.coerce(Random.element((((SparseArray<?>) java).valueList())));
+					return LuaRestrictionProxy.wrapObject(Random.element((((SparseArray<?>) java).valueList())));
 				}
 				else if (java instanceof Collection<?>) {
-					return CoerceJavaToLua.coerce(Random.element(((Collection<?>) java)));
+					return LuaRestrictionProxy.wrapObject(Random.element(((Collection<?>) java)));
 				}
 				else if (java instanceof Map<?, ?>) {
-					return CoerceJavaToLua.coerce(Random.element(((Map<?, ?>) java).values()));
+					return LuaRestrictionProxy.wrapObject(Random.element(((Map<?, ?>) java).values()));
 				}
 				else if (java.getClass().isArray()) {
-					return CoerceJavaToLua.coerce(Array.get(java, Random.Int(Array.getLength(java))));
+					return LuaRestrictionProxy.wrapObject(Array.get(java, Random.Int(Array.getLength(java))));
 				}
 				throw new LuaError("Illegal arguments: collection must be a java array or a SparseArray or implement Collection<?> or Map<?,?>");
 			}
@@ -558,7 +624,7 @@ public class LuaGlobals extends Globals {
 						public boolean itemSelectable(Item item) {
 							if ( !itemSelectable.isfunction()) return true;
 							try {
-								LuaValue result = itemSelectable.checkfunction().call(CoerceJavaToLua.coerce(item));
+								LuaValue result = itemSelectable.checkfunction().call(LuaRestrictionProxy.wrapObject(item));
 								return result.isboolean() && result == LuaValue.TRUE;
 							} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
 							return false;
@@ -567,7 +633,7 @@ public class LuaGlobals extends Globals {
 						@Override
 						public void onSelect(Item item) {
 							try {
-								onSelect.call(CoerceJavaToLua.coerce(item));
+								onSelect.call(LuaRestrictionProxy.wrapObject(item));
 							} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
 						}
 					});
@@ -580,7 +646,7 @@ public class LuaGlobals extends Globals {
 			@Override
 			public LuaValue call(LuaValue cell) {
 				if (!cell.isint()) throw new LuaError("Illegal arguments: use cellToString(int cell)");
-				return LuaValue.valueOf(EditorUtilies.cellToString(cell.checkint()));
+				return LuaValue.valueOf(EditorUtilities.cellToString(cell.checkint()));
 			}
 		});
 
@@ -603,8 +669,13 @@ public class LuaGlobals extends Globals {
 				if (mob.isuserdata() && pos.isint()) {
 					Object obj = mob.checkuserdata();
 					if (obj instanceof Mob) {
-						((Mob) obj).pos = pos.checkint();
-						Level.placeMob((Mob) obj);
+						Mob m = (Mob) obj;
+						if (Dungeon.level.mobs.contains(m)) {
+							ScrollOfTeleportation.appear(m, pos.checkint(), true);
+						} else {
+							m.pos = pos.checkint();
+							Level.placeMob(m);
+						}
 						return LuaValue.NIL;
 					}
 				}
@@ -624,11 +695,11 @@ public class LuaGlobals extends Globals {
 						if (duration.isnil() || !duration.isnumber() || !FlavourBuff.class.isAssignableFrom(buffClass)) {
 
 							if (Buff.class.isAssignableFrom(buffClass)) {
-								return CoerceJavaToLua.coerce(Buff.affect((Char) obj, ((Class<? extends Buff>) buffClass)));
+								return LuaRestrictionProxy.wrapObject(Buff.affect((Char) obj, ((Class<? extends Buff>) buffClass)));
 							}
 
 						} else {
-							return CoerceJavaToLua.coerce(Buff.affect((Char) obj, ((Class<? extends FlavourBuff>) buffClass), duration.tofloat()));
+							return LuaRestrictionProxy.wrapObject(Buff.affect((Char) obj, ((Class<? extends FlavourBuff>) buffClass), duration.tofloat()));
 						}
 
 					}
@@ -645,6 +716,7 @@ public class LuaGlobals extends Globals {
 					if (obj instanceof Item) {
 						if (!from.isint()) Dungeon.level.drop((Item) obj, pos.toint()).sprite.drop();
 						else Dungeon.level.drop((Item) obj, pos.toint()).sprite.drop(from.checkint());
+						return LuaValue.NIL;
 					}
 				}
 				throw new LuaError("Illegal arguments: use drop(Item item, int pos) or drop(Item item, int pos, int from)");
@@ -714,8 +786,12 @@ public class LuaGlobals extends Globals {
 					Class<?> clazz = Reflection.forName(className.checkjstring());
 					if (clazz == null) {
 						String className2 = searchFullyQualifiedNameForInstanceof(className.checkjstring());
-						if (className2 == null || (clazz = Reflection.forName(className2)) == null)
-							return LuaValue.valueOf("Class not found: " + className.checkstring());
+						if (className2 == null || (clazz = Reflection.forName(className2)) == null) {
+							className2 = Messages.MAIN_PACKAGE_NAME + className.checkjstring();
+							if ((clazz = Reflection.forName(className2)) == null) {
+								return LuaValue.valueOf("Class not found: " + className.checkstring());
+							}
+						}
 					}
 					return LuaValue.valueOf(clazz.isInstance(obj.checkuserdata()));
 				}
@@ -774,6 +850,28 @@ public class LuaGlobals extends Globals {
 				if (!energy.isint()) throw new LuaError("Illegal arguments: use setEnergy(int energy)");
 				Dungeon.energy = energy.checkint();
 				return LuaValue.valueOf(Dungeon.energy);
+			}
+		});
+
+		set("newCallback", new OneArgFunction() {
+			@Override
+			public LuaValue call(LuaValue function) {
+				if (function.isfunction()) {
+					return LuaRestrictionProxy.wrapObject(new Callback() {
+						@Override
+						public void call() {
+							function.call();
+						}
+					});
+				}
+				throw new LuaError("Illegal arguments: use newCallback( luaFunction )");
+			}
+		});
+
+		set("isEditing", new ZeroArgFunction() {
+			@Override
+			public LuaValue call() {
+				return LuaValue.valueOf(CustomDungeon.isEditing());
 			}
 		});
 
@@ -845,6 +943,46 @@ public class LuaGlobals extends Globals {
 
 		set("Ballistica", ballisticaConstants);
 
+		addStaticFinals(Terrain.class);
+		addStaticFinals(Ballistica.class);
+		addStaticFinals(FloatingText.class);
+		addStaticFinals(CharSprite.class);
+		addStaticFinals(ItemSpriteSheet.class);
+		addStaticFinals(Room.class);
+
+		addStaticFinals(CrystalGuardianSprite.class);
+		addStaticFinals(CrystalWispSprite.class);
+		addStaticFinals(DM100Sprite.class);
+		addStaticFinals(DM200Sprite.class);
+		addStaticFinals(DM201Sprite.class);
+		addStaticFinals(DM300Sprite.class);
+		addStaticFinals(ElementalSprite.Fire.class);
+		addStaticFinals(ElementalSprite.Frost.class);
+		addStaticFinals(ElementalSprite.Shock.class);
+		addStaticFinals(ElementalSprite.Chaos.class);
+		addStaticFinals(ElementalSprite.NewbornFire.class);
+		addStaticFinals(EyeSprite.class);
+		addStaticFinals(FistSprite.Bright.class);
+		addStaticFinals(FistSprite.Burning.class);
+		addStaticFinals(FistSprite.Soiled.class);
+		addStaticFinals(FistSprite.Rotting.class);
+		addStaticFinals(FistSprite.Rusted.class);
+		addStaticFinals(FistSprite.Dark.class);
+		addStaticFinals(FungalSentrySprite.class);
+		addStaticFinals(FungalSpinnerSprite.class);
+		addStaticFinals(GhoulSprite.class);
+		addStaticFinals(GolemSprite.class);
+		addStaticFinals(Goo.class);
+		addStaticFinals(MimicSprite.class);
+		addStaticFinals(RipperSprite.class);
+		addStaticFinals(ScorpioSprite.class);
+		addStaticFinals(ShamanSprite.Red.class);
+		addStaticFinals(ShamanSprite.Blue.class);
+		addStaticFinals(ShamanSprite.Purple.class);
+		addStaticFinals(SpinnerSprite.class);
+		addStaticFinals(StatueSprite.class);
+		addStaticFinals(TenguSprite.class);
+		addStaticFinals(WarlockSprite.class);
 
 		addEnum(Level.Feeling.class);
 		addEnum(Char.Alignment.class);
@@ -1169,17 +1307,21 @@ public class LuaGlobals extends Globals {
 			case "ArrowCell": return ArrowCell.class.getName();
 			case "Barrier": return Barrier.class.getName();
 			case "Ballistica": return Ballistica.class.getName();
+			case "LevelTransition": return LevelTransition.class.getName();
+			case "Set": return HashSet.class.getName();
+			case "List": return ArrayList.class.getName();
+			case "Map": return HashMap.class.getName();
 		}
 		if (simpleName.endsWith("$Seed")) {
 			return Messages.MAIN_PACKAGE_NAME + "plants." + simpleName;
 		}
 		String result = null;
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Items.values()));
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Mobs.values()));
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Plants.values()));
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Traps.values()));
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Buffs.values()));
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(MobSprites.values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Items.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Mobs.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Plants.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Traps.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Buffs.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(MobSprites.instance().values()));
 		return result;
 	}
 
@@ -1224,17 +1366,22 @@ public class LuaGlobals extends Globals {
 			case "DMMob": return DMMob.class.getName();
 			case "SpawnerMob": return SpawnerMob.class.getName();
 			case "ChampionEnemy": return ChampionEnemy.class.getName();
+			case "LevelTransition": return LevelTransition.class.getName();
+
+			case "Set": return Set.class.getName();
+			case "List": return List.class.getName();
+			case "Map": return Map.class.getName();
 		}
 		if (simpleName.endsWith("$Seed")) {
 			return Messages.MAIN_PACKAGE_NAME + "plants." + simpleName;
 		}
 		String result = null;
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Mobs.values()));
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Items.values()));
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Buffs.values()));
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Traps.values()));
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Plants.values()));
-		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(MobSprites.values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Mobs.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Items.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Buffs.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Traps.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Plants.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(MobSprites.instance().values()));
 		return result;
 	}
 
@@ -1243,6 +1390,13 @@ public class LuaGlobals extends Globals {
 			for (int j = 0; j < classes[i].length; j++) {
 				if (classes[i][j].getSimpleName().equals(simpleName)) return classes[i][j].getName();
 			}
+		}
+		return null;
+	}
+
+	private static String searchFullyQualifiedNameInArrays(String simpleName, Class<?>[] classes) {
+		for (int i = 0; i < classes.length; i++) {
+			if (classes[i].getSimpleName().equals(simpleName)) return classes[i].getName();
 		}
 		return null;
 	}
@@ -1261,17 +1415,67 @@ public class LuaGlobals extends Globals {
 
 		LuaTable values = new LuaTable();
 		for (Enum<?> e : enumClass.getEnumConstants()) {
-			values.set(e.name(), LuaValue.userdataOf(e));
+			values.set(e.name(), LuaRestrictionProxy.wrapObject(e));
 		}
 
-		Class<?> mostEnclosingClass = enumClass;
+		addConstantsTable(enumClass, values);
+	}
+
+	private static final int PUBLIC_STATIC_FINAL = Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL;
+	private static final int PROTECTED_STATIC_FINAL = Modifier.STATIC | Modifier.PROTECTED | Modifier.FINAL;
+	private static final int PUBLIC_STATIC = Modifier.STATIC | Modifier.PUBLIC;
+	private static final int PROTECTED_STATIC = Modifier.STATIC | Modifier.PROTECTED;
+	//adds methods and variables
+	private void addStaticFinals(Class<?> clazz) {
+		LuaTable values = new LuaTable();
+		try {
+			for (Field f : clazz.getDeclaredFields()) {
+				int mods = f.getModifiers();
+				if ((mods & PUBLIC_STATIC_FINAL) == PUBLIC_STATIC_FINAL
+						|| (mods & PROTECTED_STATIC_FINAL) == PROTECTED_STATIC_FINAL) {
+					values.set(f.getName(), LuaRestrictionProxy.wrapObject(f.get(null)));
+				}
+			}
+			for (Method m : clazz.getDeclaredMethods()) {
+				if (m.isAnnotationPresent(NotAllowedInLua.class)) continue;
+				int mods = m.getModifiers();
+				if ((mods & PUBLIC_STATIC) == PUBLIC_STATIC
+					|| (mods & PROTECTED_STATIC) == PROTECTED_STATIC) {
+					values.set(m.getName(), new VarArgFunction() {
+						@Override
+						public Varargs invoke(Varargs varargs) {
+							try {
+								return LuaRestrictionProxy.wrapObject(m.invoke(null, convertLuaToArgs(varargs)));
+							} catch (Exception e) {
+								throw new LuaError(e);
+							}
+						}
+					});
+				}
+			}
+		} catch (IllegalAccessException e) {
+			Game.reportException(e);
+		}
+
+		addConstantsTable(clazz, values);
+
+	}
+
+	private void addConstantsTable(Class<?> sourceClass, LuaTable values) {
+		Class<?> mostEnclosingClass = sourceClass;
 
 		do {
 			Class<?> enclosingClass = mostEnclosingClass.getEnclosingClass();
 
 			if (enclosingClass == null) break;
 
-			LuaTable enclosingTable = new LuaTable();
+			LuaTable enclosingTable;
+			LuaValue existingTable = get(enclosingClass.getSimpleName());
+			if (!existingTable.isnil() && existingTable.istable()) {
+				enclosingTable = existingTable.checktable();
+			} else {
+				enclosingTable = new LuaTable();
+			}
 			enclosingTable.set(mostEnclosingClass.getSimpleName(), values);
 
 			values = enclosingTable;
@@ -1279,6 +1483,14 @@ public class LuaGlobals extends Globals {
 		} while (true);
 
 		set(mostEnclosingClass.getSimpleName(), values);
+	}
+
+	private static Object[] convertLuaToArgs(Varargs args) {
+		Object[] result = new Object[args.narg()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = CoerceLuaToJava.coerce(args.arg(i+1), Object.class);
+		}
+		return result;
 	}
 
 //	private static LuaTable arrayToTable(Object array) {
@@ -1295,4 +1507,13 @@ public class LuaGlobals extends Globals {
 //		}
 //		return result;
 //	}
+
+
+	public void exposeGlobalObject(String name, Object object) {
+		set(name, LuaRestrictionProxy.wrapObject(object));
+	}
+
+
+
+
 }

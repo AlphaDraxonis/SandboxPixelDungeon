@@ -64,7 +64,7 @@ public class MirrorSprite extends MobSprite {
 
 			CharSprite anims = Reflection.newInstance(hero.internalSpriteClass);
 
-			if (anims instanceof StatueSprite) ((StatueSprite) anims).setArmor(hero.tier());
+			if (anims instanceof StatueSprite) StatueSprite.setArmor(anims, hero.tier());
 
 			texture(anims.texture);
 
@@ -74,9 +74,7 @@ public class MirrorSprite extends MobSprite {
 			attack = anims.attack.clone();
 
 			if (anims.zap != null) zap = anims.zap.clone();
-			else {
-				zap = attack.clone();
-			}
+			else zap = attack.clone();
 
 			anims.destroy();
 

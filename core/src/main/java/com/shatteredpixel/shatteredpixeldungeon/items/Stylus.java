@@ -83,7 +83,7 @@ public class Stylus extends Item {
 		return true;
 	}
 	
-	private void inscribe( Armor armor ) {
+	public void inscribe( Armor armor ) {
 
 		if (!armor.isIdentified() ){
 			GLog.w( Messages.get(this, "identify"));

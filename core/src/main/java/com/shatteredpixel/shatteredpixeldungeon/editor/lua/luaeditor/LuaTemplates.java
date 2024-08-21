@@ -31,12 +31,14 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesB
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.LuaScript;
 import com.watabou.utils.Consumer;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@NotAllowedInLua
 public class LuaTemplates {
 
 	private static final LuaScript KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK;
@@ -46,11 +48,11 @@ public class LuaTemplates {
 	private static final LuaScript[] TEMPLATES;
 
 	static {
-		KILL_HERO_ON_DIE = new LuaScript(Mob.class, "When this mob dies, the hero also dies.", "");
+		KILL_HERO_ON_DIE = new LuaScript(Mob.class, "When this mob dies, the hero also dies.");
 		KILL_HERO_ON_DIE.code = "vars = {} static = {} function die(this, vars, cause) hero:die(this);\nthis:super_die(cause); end" +
 				"\n\nreturn {vars = vars; static = static; die = die}";
 
-		SPAWN_MOB_ON_DIE = new LuaScript(Mob.class, "When this mob dies, a wraith (or another mob) is spawned in its place.", "");
+		SPAWN_MOB_ON_DIE = new LuaScript(Mob.class, "When this mob dies, a wraith (or another mob) is spawned in its place.");
 		SPAWN_MOB_ON_DIE.code = "vars = {} static = {} function die(this, vars, cause) this:super_die(cause);\n" +
 				"\n" +
 				"local mob = new(\"Wraith\");\n" +
@@ -63,7 +65,7 @@ public class LuaTemplates {
 				"end" +
 				"\n\nreturn {vars = vars; static = static; die = die}";
 
-		CRYSTAL_GUARDIAN_RECOVERY = new LuaScript(Mob.class, "Instead of dying of HP drops to 0, this mobs gains HP like a crystal guardian", "");
+		CRYSTAL_GUARDIAN_RECOVERY = new LuaScript(Mob.class, "Instead of dying of HP drops to 0, this mobs gains HP like a crystal guardian");
 		CRYSTAL_GUARDIAN_RECOVERY.code = "vars = {\n" +
 				"recovering = false, gainHpPerTurn = 1\n" +
 				"}\n" +
@@ -119,7 +121,7 @@ public class LuaTemplates {
 				"    vars = vars; static = static; defenseSkill = defenseSkill; surprisedBy = surprisedBy; act = act; isInvulnerable = isInvulnerable; isAlive = isAlive;\n" +
 				"}";
 
-		RANGED_ATTACK = new LuaScript(Mob.class, "Adds a ranged attack to (melee) mobs.\nSee Additional code to change the animation.", "");
+		RANGED_ATTACK = new LuaScript(Mob.class, "Adds a ranged attack to (melee) mobs.\nSee Additional code to change the animation.");
 		RANGED_ATTACK.code = "function canAttack(this, vars, enemy)\n" +
 				"return this:super_canAttack(enemy)\n" +
 				"or ballistica(this.pos, enemy.pos, Ballistica.REAL_MAGIC_BOLT, nil).collisionPos == enemy.pos;\n" +
@@ -162,7 +164,7 @@ public class LuaTemplates {
 				"}";
 
 
-		REPLACES_WALLS_WITH_EMBERS = new LuaScript(Level.class, "When first entering, 50% of all walls are replaced with embers.", "");
+		REPLACES_WALLS_WITH_EMBERS = new LuaScript(Level.class, "When first entering, 50% of all walls are replaced with embers.");
 		REPLACES_WALLS_WITH_EMBERS.code = "vars = {} static = {} function initForPlay(this, vars) this:super_initForPlay();\n" +
 				"\n" +
 				"-- btw, it is very important that you don't try accessing this using 'level', instead use 'this'\n" +

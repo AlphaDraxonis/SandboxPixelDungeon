@@ -25,9 +25,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.utils.PointF;
 
+@NotAllowedInLua
 public class InputHandler extends InputAdapter {
 
 	private InputMultiplexer multiplexer;

@@ -22,6 +22,7 @@
 package com.watabou.input;
 
 import com.badlogic.gdx.Input;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Cursor;
 import com.watabou.utils.PointF;
@@ -30,6 +31,7 @@ import com.watabou.utils.Signal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+@NotAllowedInLua
 public class PointerEvent {
 
 	public enum Type {

@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
@@ -13,6 +14,7 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.PointF;
 import com.watabou.utils.SparseArray;
 
+@NotAllowedInLua
 public class ZoneView extends Group {
 
     private static final TextureFilm textureFilm = new TextureFilm(Assets.Environment.ZONES, DungeonTilemap.SIZE, DungeonTilemap.SIZE);

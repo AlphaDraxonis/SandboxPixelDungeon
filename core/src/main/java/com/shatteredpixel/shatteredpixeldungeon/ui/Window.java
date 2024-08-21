@@ -28,11 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.NinePatch;
-import com.watabou.noosa.PointerArea;
+import com.watabou.noosa.*;
 import com.watabou.utils.Point;
 import com.watabou.utils.Signal;
 
@@ -133,6 +129,14 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 		camera.y += yOffset * camera.zoom;
 
 		shadow.boxRect( camera.x / camera.zoom, camera.y / camera.zoom, chrome.width(), chrome.height );
+	}
+
+	public int width() {
+		return width;
+	}
+
+	public int height() {
+		return height;
 	}
 
 	public Point getOffset(){

@@ -25,7 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeMobCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -58,7 +58,7 @@ public class WndInfoMob extends WndTitledMessage {
         private BuffIndicator buffs;
 
         public MobTitle(Mob mob, boolean includeHealthBar) {
-            name = PixelScene.renderTextBlock(createTitle(mob) + EditorUtilies.appendBoss(mob), 9);
+            name = PixelScene.renderTextBlock(createTitle(mob) + EditorUtilities.appendBoss(mob), 9);
             name.hardlight(TITLE_COLOR);
             add(name);
 

@@ -29,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.WndSelectMusic;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
@@ -42,7 +42,7 @@ public class BtnSelectBossMusic extends StyledButtonWithIconAndText {
         text.align(RenderedTextBlock.CENTER_ALIGN);
         text.setHighlighting(false);
 
-        icon(EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_LULLABY));
+        icon(EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.SCROLL_LULLABY));
         icon().scale.set(1.3f);
 
         updateLabel(music);
@@ -69,7 +69,7 @@ public class BtnSelectBossMusic extends StyledButtonWithIconAndText {
         updateLabel(music);
     }
 
-    protected void updateLabel(String music) {
+    public void updateLabel(String music) {
         text(Messages.get(ChangeRegion.class, "music") + "\n" + (music == null ? Messages.get(WndSelectMusic.class, "default_music") : WndSelectMusic.getDisplayName(music)));
     }
 }

@@ -43,13 +43,13 @@ import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.android.AndroidLauncher;
 import com.shatteredpixel.shatteredpixeldungeon.android.R;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.LuaMethodManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.LuaTemplates;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.NewInstanceButton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.rawresourcefiles.RawLuaScript;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.idewindowactions.LuaScript;
@@ -58,23 +58,21 @@ import java.util.List;
 
 public class AndroidIDEWindow extends Activity {
 
-	public static LuaCodeHolder luaCodeHolder;
-	public static LuaScript script;
+	public static RawLuaScript scriptPath;
+	public static Class<?> clazz;
 
 	private AndroidCodeInputPanel[] codeInputPanels;
 	private AndroidCodeInputPanel inputDesc, inputLocalVars, inputScriptVars;
 	private AndroidAdditionalCodePanel additionalCode;
 	private EditText pathInput;
 
-	private Class<?> clazz;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.android_ide_window);
-
-		clazz = luaCodeHolder.clazz;
 
 		Button btnCompile = findViewById(R.id.btn_compile);
 		Button btnMore = findViewById(R.id.btn_more);
@@ -97,14 +95,13 @@ public class AndroidIDEWindow extends Activity {
 				switch (which) {
 					case 0:
 						doInGameSelection(() -> IDEWindow.chooseClassName((clName, obj) -> {
-							goBackAfterInGameSelection("insertCode", NewInstanceButton.generateCodeForNewInstance(clName, obj));
+							goBackAfterInGameSelection(null, null, "insertCode", NewInstanceButton.generateCodeForNewInstance(clName, obj));
 							dialog.dismiss();
 						}));
 						break;
 					case 1:
 						doInGameSelection(() -> LuaTemplates.show(script -> {
-							selectedScriptFromSelectionDialog = script;
-							goBackAfterInGameSelection(script == null ? null : "force", "false");
+							goBackAfterInGameSelection(null, script, script == null ? null : "force", "false");
 							dialog.dismiss();
 						}, clazz));
 						break;
@@ -135,6 +132,7 @@ public class AndroidIDEWindow extends Activity {
 			pathInput.setWidth(((View) pathInput.getParent()).getWidth() - pathLabel.getWidth() - btnChange.getWidth() - dpToPx(this, 20));
 		});
 
+		//tzz show value of scriptPath
 		pathInput.setOnFocusChangeListener((v, hasFocus) -> {
 			if (!hasFocus && !pathInput.getText().toString().endsWith(".lua")) {
 				pathInput.getText().append(".lua");
@@ -156,37 +154,9 @@ public class AndroidIDEWindow extends Activity {
 			}
 
 			doInGameSelection(() -> IDEWindow.showSelectScriptWindow(clazz, script -> {
-				selectedScriptFromSelectionDialog = script;
-				goBackAfterInGameSelection(script == null ? null : "force", "true");
+				//TZZ tzz scriptPath!
+				goBackAfterInGameSelection(null, script, script == null ? null : "force", "true");
 			}));
-//			List<LuaScript> scripts = CustomDungeonSaves.findScripts(script -> {
-//				Class<?> luca = script.type;
-//				while (!luca.isAssignableFrom(clazz)) {
-//					luca = luca.getSuperclass();
-//				}
-//				return luca != GameObject.class && luca != Object.class;
-//			});
-//
-//			String[] options = new String[scripts.size()];
-//			int i = 0;
-//			for (LuaScript s : scripts) {
-//				options[i++] = s.pathFromRoot;
-//			}
-//
-//			if (options.length == 0) {
-//				showErrorWindow(Messages.get(IDEWindow.class, "no_scripts_available"));
-//				return;
-//			}
-//
-//			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//			builder.setTitle(Messages.get(IDEWindow.class, "choose_script_title"));//tzz bugged!!!
-//			builder.setMessage(Messages.get(IDEWindow.class, "choose_script_body", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()));
-//
-//			builder.setItems(options, (dialog, which) -> selectScript(scripts.get(which), true));
-//
-//			AlertDialog dialog = builder.create();
-//			dialog.setCancelable(true);
-//			dialog.show();
 		});
 
 
@@ -277,7 +247,7 @@ public class AndroidIDEWindow extends Activity {
 			}};
 		compGroup.addView(additionalCode);
 
-		selectScript(script, true);
+		selectScript(scriptPath, scriptPath == null ? null : scriptPath.loadScript(), true);
 
 		inputDesc.onExpand();
 		inputDesc.textInput.requestFocus();
@@ -286,7 +256,7 @@ public class AndroidIDEWindow extends Activity {
 	private String createFullScript() {
 		StringBuilder b = new StringBuilder();
 
-		if (script == null) script = new LuaScript(luaCodeHolder.clazz, null, luaCodeHolder.pathToScript);
+		LuaScript script = new LuaScript(clazz, null);
 
 		script.desc = inputDesc.convertToLuaCode().substring(2);//uncomment, removes --
 		b.append('\n');
@@ -307,7 +277,7 @@ public class AndroidIDEWindow extends Activity {
 
 		String cleanedFunctions = LuaScript.cleanLuaCode(fullFunctions);
 
-		b.append("return {\n    vars = vars; static = static; ");
+		b.append(LuaScript.SCRIPT_RETURN_START);
 		for (String functionName : LuaScript.allFunctionNames(cleanedFunctions)) {
 			b.append(functionName).append(" = ").append(functionName).append("; ");
 		}
@@ -344,7 +314,7 @@ public class AndroidIDEWindow extends Activity {
 			builder.setMessage(Messages.get(IDEWindow.class, "close_unsaved_body"));
 
 			builder.setPositiveButton(Messages.get(IDEWindow.class, "close_unsaved_close_and_lose"), (dialog, option) -> {
-				finish();
+				super.finish();
 			});
 
 			builder.setNegativeButton(Messages.get(IDEWindow.class, "close_unsaved_cancel"), (dialog, option) -> dialog.dismiss());
@@ -354,35 +324,38 @@ public class AndroidIDEWindow extends Activity {
 	}
 
 	private boolean save() {
-		luaCodeHolder.pathToScript = pathInput.getText().toString();
-		if (!luaCodeHolder.pathToScript.endsWith(".lua")) luaCodeHolder.pathToScript += ".lua";
-
-		FileHandle saveTo = CustomDungeonSaves.getAdditionalFilesDir().child(luaCodeHolder.pathToScript.replace(' ', '_'));
-		if (saveTo.exists()) {
-			if (script == null || !script.pathFromRoot.equals(luaCodeHolder.pathToScript)){
-				showErrorWindow(Messages.get(IDEWindow.class, "script_in_use_body"));
-				return false;
-			}
+		if (scriptPath == null) {
+			//tzz erst muss ein neues RawLuaScript erstellt werden: Pfad (muss mit .lua enden!) und Name eingeben, ID registrieren, File darf noch nicht existieren
+			//dann save()
+			return false;
 		}
 
-		if (script != null) {
-			for (LuaScript ls : CustomDungeonSaves.findScripts(null)) {
-				if (luaCodeHolder.pathToScript.equals(ls.pathFromRoot)) {
-					Class<?> luca = script.type;
-					while (!luca.isAssignableFrom(clazz)) {
-						luca = script.type.getSuperclass();
-					}
-					if (luca == GameObject.class || luca == Object.class) {
-						showErrorWindow(Messages.get(IDEWindow.class, "save_duplicate_name_error", luaCodeHolder.pathToScript));
-						return false;
-					}
-				}
-			}
-		}
+		FileHandle saveTo = scriptPath.getFileHandle();
 
-		String content = createFullScript();
+//		if (saveTo.exists()) {
+//			if (script == null || !script.pathFromRoot.equals(luaCodeHolder.pathToScript)){
+//				showErrorWindow(Messages.get(IDEWindow.class, "script_in_use_body"));
+//				return false;
+//			}
+//		}
+//
+//		if (script != null) {
+//			for (LuaScript ls : CustomDungeonSaves.findScripts(null)) {
+//				if (luaCodeHolder.pathToScript.equals(ls.pathFromRoot)) {
+//					Class<?> luca = script.type;
+//					while (!luca.isAssignableFrom(clazz)) {
+//						luca = script.type.getSuperclass();
+//					}
+//					if (luca == GameObject.class || luca == Object.class) {
+//						showErrorWindow(Messages.get(IDEWindow.class, "save_duplicate_name_error", luaCodeHolder.pathToScript));
+//						return false;
+//					}
+//				}
+//			}
+//		}
+
 		try {
-			CustomDungeonSaves.writeClearText(CustomDungeonSaves.getExternalFilePath(luaCodeHolder.pathToScript), content);
+			CustomDungeonSaves.writeClearText(saveTo, createFullScript());
 			return true;
 		} catch (Exception e) {
 			showErrorWindow(Messages.get(IDEWindow.class, "write_file_exception", e.getClass().getSimpleName(), e.getMessage()));
@@ -390,20 +363,19 @@ public class AndroidIDEWindow extends Activity {
 		}
 	}
 
-	public void selectScript(LuaScript script, boolean force) {
-		if (script != null) script.type = clazz;
-		if (force) this.script = script;
+	public void selectScript(RawLuaScript scriptPath, LuaScript script, boolean force) {
+		if (force) this.scriptPath = scriptPath;
 		String cleanedCode;
 		LuaScript currentScript;
 		if (force) {
 			if (script == null) {
-				currentScript = new LuaScript(Object.class, "", "");
+				currentScript = new LuaScript(Object.class, "");
 				currentScript.code = "";
 				cleanedCode = "";
 			} else {
 				currentScript = script;
 				cleanedCode = LuaScript.cleanLuaCode(script.code);
-				pathInput.setText(currentScript.pathFromRoot);
+				pathInput.setText("TODO tzz");
 			}
 		} else {
 			currentScript = script;
@@ -431,6 +403,7 @@ public class AndroidIDEWindow extends Activity {
 	}
 
 	private static LuaScript selectedScriptFromSelectionDialog;
+	private static RawLuaScript selectedScriptPathFromSelectionDialog;
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -449,8 +422,9 @@ public class AndroidIDEWindow extends Activity {
 			}
 		}
 		else if (intent.hasExtra("force")) {
-			selectScript(selectedScriptFromSelectionDialog, Boolean.parseBoolean(intent.getStringExtra("force")));
+			selectScript(selectedScriptPathFromSelectionDialog, selectedScriptFromSelectionDialog, Boolean.parseBoolean(intent.getStringExtra("force")));
 			selectedScriptFromSelectionDialog = null;
+			selectedScriptPathFromSelectionDialog = null;
 		}
 	}
 
@@ -462,7 +436,9 @@ public class AndroidIDEWindow extends Activity {
 		Gdx.app.postRunnable(whatToDo);
 	}
 
-	private void goBackAfterInGameSelection(String resultKey, String resultValue) {
+	private void goBackAfterInGameSelection(RawLuaScript scriptPath, LuaScript luaScript, String resultKey, String resultValue) {
+		selectedScriptPathFromSelectionDialog = scriptPath;
+		selectedScriptFromSelectionDialog = luaScript;
 		Intent backToIDEWindow = new Intent(AndroidLauncher.instance, AndroidIDEWindow.class);
 		backToIDEWindow.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		backToIDEWindow.putExtra(resultKey, resultValue);

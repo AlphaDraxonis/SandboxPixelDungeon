@@ -21,12 +21,14 @@
 
 package com.watabou.glscripts;
 
+import com.watabou.NotAllowedInLua;
 import com.watabou.glwrap.Program;
 import com.watabou.glwrap.Shader;
 import com.watabou.utils.Reflection;
 
 import java.util.HashMap;
 
+@NotAllowedInLua
 public class Script extends Program {
 
 	private static final HashMap<Class<? extends Script>,Script> all =

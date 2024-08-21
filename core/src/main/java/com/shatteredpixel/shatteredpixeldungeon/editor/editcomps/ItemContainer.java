@@ -1,10 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -27,7 +27,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
 
     protected final DefaultEditComp<?> editComp;
     protected final boolean reverseUiOrder;//if true, newly added items are added in the front in ui (index=0), but ALWAYS last in logic
-    protected final int minSlots, maxSlots;
+    protected /*final*/ int minSlots, maxSlots;
 
     public final Class<T> typeParameterClass;
     protected List<T> itemList;
@@ -78,6 +78,23 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         }
     }
 
+    public void setItemList(List<T> itemList) {
+        for (Slot s : slots) {
+            s.remove();
+            s.destroy();
+        }
+        slots.clear();
+
+        this.minSlots = Math.min(itemList.size(), minSlots);
+        this.maxSlots = Math.max(itemList.size(), maxSlots);
+
+        this.itemList = itemList;
+
+        for (Item i : itemList) {
+            addItemToUI(i, !reverseUiOrder);
+        }
+    }
+
     public final void addNewItem(T item) {
         int sizePrev = itemList.size();
         doAddItem((T) item);
@@ -89,12 +106,12 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
     }
 
     protected void addItemToUI(Item item, boolean last) {
-        item.image = Dungeon.customDungeon.getItemSpriteOnSheet(item);
+        item.image = CustomDungeon.getItemSpriteOnSheet(item);
         Slot slot = new Slot(item);
         if (last) slots.add(slot);
         else slots.add(0, slot);
         add(slot);
-        if (slots.size() >= maxSlots) addBtn.visible = addBtn.active = false;
+        if (slots.size() >= maxSlots) addBtn.setVisible(false);
         if (editComp != null) {
             editComp.layout();
             editComp.updateObj();
@@ -155,12 +172,12 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
 
     @Override
     public Class<? extends Bag> preferredBag() {
-        return Items.bag.getClass();
+        return Items.bag().getClass();
     }
 
     @Override
     public List<Bag> getBags() {
-        return Collections.singletonList(Items.bag);
+        return Collections.singletonList(Items.bag());
     }
 
     //IMPORTANT METHODS
@@ -224,6 +241,18 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         if (sp != null) ((ScrollPane) sp).givePointerPriority();
     }
 
+    protected void onItemSlotClick(Slot slot, Item item) {
+        showWndEditItemComp(slot, item);
+    }
+
+    protected void onItemSlotRightClick(Slot slot, Item item) {
+        removeSlot(slot);
+    }
+
+    protected boolean onItemSlotLongClick(Slot slot, Item item) {
+        return removeSlot(slot);
+    }
+
     protected void showWndEditItemComp(Slot slot, Item item) {
         EditorScene.show(new EditCompWindow(item, editComp == null ? null : editComp.advancedListPaneItem) {
             @Override
@@ -242,17 +271,17 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
 
         @Override
         protected void onClick() {
-            showWndEditItemComp(this, item);
+            onItemSlotClick(this, item);
         }
 
         @Override
         protected boolean onLongClick() {
-            return removeSlot(this);
+            return onItemSlotLongClick(this, item);
         }
 
         @Override
         protected void onRightClick() {
-            removeSlot(this);
+            onItemSlotRightClick(this, item);
         }
 
         @Override
@@ -271,10 +300,14 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
                 remove(sprite);
                 sprite.destroy();
             }
-            if (item instanceof EditorItem) sprite = ((EditorItem<?>) item).getSprite();
+            if (item instanceof EditorItem) sprite = ((EditorItem<?>) item).getSprite(() -> item(item));
             else sprite = new ItemSprite(item);
             if (sprite != null) addToBack(sprite);
             sendToBack(bg);
+        }
+
+        public void setBackgroundColor(int color) {
+            bg.color(color);
         }
 
 

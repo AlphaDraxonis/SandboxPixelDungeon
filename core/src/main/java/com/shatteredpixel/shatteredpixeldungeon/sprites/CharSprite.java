@@ -25,7 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.*;
@@ -50,6 +49,7 @@ import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
 import java.nio.Buffer;
+import java.util.LinkedHashMap;
 
 public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip.Listener {
 	
@@ -121,14 +121,36 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 
 	//used to prevent the actor associated with this sprite from acting until movement completes
 	public volatile boolean isMoving = false;
+
+	//sprite independent visuals of the mob
+	public CharSpriteExtraCode extraCode;
 	
 	public CharSprite() {
 		super();
 		listener = this;
 	}
+
+	//should at least initialize idle, run, attack, die
+	public void initAnimations() {
+	}
+
+	//returns all available animations with their name
+	public LinkedHashMap<String, Animation> getAnimations() {
+		LinkedHashMap<String, Animation> result = new LinkedHashMap<>();
+		result.put("idle", idle);
+		result.put("run", run);
+		result.put("attack", attack);
+		result.put("operate", operate);
+		result.put("zap", zap);
+		result.put("die", die);
+		return result;
+	}
 	
 	@Override
 	public void play(Animation anim) {
+
+		if (extraCode != null) extraCode.onPlayAnimation(this, anim);
+
 		//Shouldn't interrupt the dieing animation
 		if (curAnim == null || curAnim != die) {
 			super.play(anim);
@@ -137,6 +159,9 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	
 	//intended to be used for placing a character in the game world
 	public void link( Char ch ) {
+
+		extraCode = MobSprite.createExtraCodeForMob(ch);
+
 		linkVisuals( ch );
 		
 		this.ch = ch;
@@ -155,6 +180,8 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		}
 
 		ch.updateSpriteState();
+
+		if (extraCode != null) extraCode.onLink(this, ch);
 	}
 
 	@Override
@@ -275,22 +302,31 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	}
 	
 	public synchronized void zap( int cell, Callback callback ) {
+
 		animCallback = callback;
 		turnTo( ch.pos, cell );
-		if (zap != null) play( zap );
+		if (zap == null) zap = attack.clone();
+		play( zap );
 
-		playZapAnim( cell );
+		if (extraCode == null || !extraCode.playZapAnimation(this, cell))
+			playZapAnim(cell);
 	}
 
 	protected void playZapAnim(int cell) {
 		//if it implements its own zap, then do that, otherwise just look for the correct animation based on the char this sprite belongs to
-
-		if (ch instanceof DM100) DM100Sprite.playZap(parent, this, cell, ch);
-		else if (ch instanceof Eye) EyeSprite.playZap(parent, this, cell, ch);
-
-		else if (ch instanceof Mob) ((Mob) ch).playZapAnim(cell);
+		if (ch instanceof Mob) ((Mob) ch).playZapAnim(cell);
 
 		else ch.onZapComplete();
+	}
+
+	public boolean hasOwnZapAnimation() {
+		return false;
+	}
+
+	//if return true, then zap() will be called when the zap animation is started, not when it is finished
+	public boolean instantZapDamage() {
+		//if overridden to return true, also include its corresponding logic class here!
+		return !hasOwnZapAnimation() && (ch instanceof DM100);
 	}
 
 	protected static void playZap(Group parent, Visual sprite, int cell, Char ch, int boldType) {
@@ -346,6 +382,8 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		if (realCharSprite != null) {
 			realCharSprite.killAndErase();
 		}
+
+		if (extraCode != null) extraCode.onDie(this);
 	}
 	
 	public Emitter emitter() {
@@ -624,6 +662,8 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 				emo.visible = visible;
 			}
 		}
+
+		if (extraCode != null) extraCode.onUpdate(this);
 	}
 	
 	@Override
@@ -747,6 +787,8 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		if (realCharSprite != null){
 			realCharSprite.killAndErase();
 		}
+
+		if (extraCode != null) extraCode.onKill(this);
 	}
 
 	private float[] shadowMatrix = new float[16];
@@ -847,6 +889,8 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			}
 			
 		}
+
+		if (extraCode != null) extraCode.onComplete(this, anim);
 	}
 
 	private static class JumpTweener extends Tweener {

@@ -5,7 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
@@ -67,7 +67,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
     protected void layoutOwnContent() {
         content.setSize(width, 0);
-        content.setSize(width, EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, mainWindowComps));
+        content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(GAP, width, content, mainWindowComps));
     }
 
     public float preferredHeight(){

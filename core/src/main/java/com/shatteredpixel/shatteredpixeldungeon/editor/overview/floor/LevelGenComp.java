@@ -19,7 +19,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableCompWithAdd;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import java.util.List;
 
 import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.MARGIN;
 
+@NotAllowedInLua
 public class LevelGenComp extends WndNewFloor.OwnTab {
 
     private ScrollPane sp;
@@ -208,8 +210,8 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
                 for (int i = 0; i < challengeTitles.length; i++) {
                     height += 5;
-                    height = EditorUtilies.layoutCompsLinear(2, this, challengeTitles[i]) + 3;
-                    height = EditorUtilies.layoutStyledCompsInRectangles(
+                    height = EditorUtilities.layoutCompsLinear(2, this, challengeTitles[i]) + 3;
+                    height = EditorUtilities.layoutStyledCompsInRectangles(
                             2, width, Math.min(checkBoxes[i].length, PixelScene.landscape() ? 3 : 2), this, checkBoxes[i]);
                 }
 
@@ -252,7 +254,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
                 @Override
                 public Class<? extends Bag> preferredBag() {
-                    return Mobs.bag.getClass();
+                    return Mobs.bag().getClass();
                 }
 
                 @Override
@@ -317,7 +319,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
                 @Override
                 public Class<? extends Bag> preferredBag() {
-                    return Mobs.bag.getClass();
+                    return Mobs.bag().getClass();
                 }
 
                 @Override
@@ -365,7 +367,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
                 @Override
                 public Class<? extends Bag> preferredBag() {
-                    return Rooms.bag.getClass();
+                    return Rooms.bag().getClass();
                 }
 
                 @Override
@@ -423,9 +425,9 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
         content.setSize(width, title.bottom() + 4 * MARGIN);
 
-        content.setSize(width, EditorUtilies.layoutStyledCompsInRectangles(MARGIN * 2, width, 2, content, seed, feelingSpinner) + 2);
+        content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(MARGIN * 2, width, 2, content, seed, feelingSpinner) + 2);
 
-        content.setSize(width, EditorUtilies.layoutCompsLinear(MARGIN * 2, content, challengeSettings, sectionItems, sectionMobs, sectionRooms));
+        content.setSize(width, EditorUtilities.layoutCompsLinear(MARGIN * 2, content, challengeSettings, sectionItems, sectionMobs, sectionRooms));
 
         if (sp != null) {
             sp.setSize(width, height);

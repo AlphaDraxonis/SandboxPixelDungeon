@@ -22,11 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.builders;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.Point;
-import com.watabou.utils.PointF;
-import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
+import com.watabou.utils.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,8 +46,8 @@ public abstract class Builder {
 	}
 
 	//returns a rectangle representing the maximum amount of free space from a specific start point
-	protected static Rect findFreeSpace(Point start, ArrayList<Room> collision, int maxSize){
-		Rect space = new Rect(start.x-maxSize, start.y-maxSize, start.x+maxSize, start.y+maxSize);
+	protected static WatabouRect findFreeSpace(Point start, ArrayList<Room> collision, int maxSize){
+		WatabouRect space = new WatabouRect(start.x-maxSize, start.y-maxSize, start.x+maxSize, start.y+maxSize);
 
 		//shallow copy
 		ArrayList<Room> colliding = new ArrayList<>(collision);
@@ -204,7 +200,7 @@ public abstract class Builder {
 		}
 
 		//space checking
-		Rect space = findFreeSpace(start, collision, Math.max(next.maxWidth(), next.maxHeight()));
+		WatabouRect space = findFreeSpace(start, collision, Math.max(next.maxWidth(), next.maxHeight()));
 		if (!next.setSizeWithLimit(space.width()+1, space.height()+1)){
 			return -1;
 		}

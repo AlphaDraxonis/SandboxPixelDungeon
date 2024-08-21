@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.SparseArray;
@@ -145,6 +146,19 @@ public abstract class Actor extends GameObject implements Copyable<Actor> {
 		Actor a = (Actor) bundle.get("ACTOR");
 		a.id = -1;
 		return  a;
+	}
+
+	@Override
+	public void copyStats(GameObject template) {
+		if (template == null) return;
+		if (getClass() != template.getClass()) return;
+		Bundle bundle = new Bundle();
+		bundle.put("OBJ", template);
+		int id = this.id;
+		bundle.getBundle("OBJ").put(CustomGameObjectClass.INHERIT_STATS, true);
+
+		restoreFromBundle(bundle.getBundle("OBJ"));
+		this.id = id;
 	}
 
 	public int id() {

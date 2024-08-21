@@ -28,9 +28,18 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 
+import java.util.LinkedHashMap;
+
 public class PylonSprite extends MobSprite {
 
 	private Animation activeIdle;
+
+	@Override
+	public LinkedHashMap<String, Animation> getAnimations() {
+		LinkedHashMap<String, Animation> result = super.getAnimations();
+		result.put("activeIdle", activeIdle);
+		return result;
+	}
 
 	public PylonSprite() {
 		super();
@@ -40,6 +49,13 @@ public class PylonSprite extends MobSprite {
 
 		texture( Assets.Sprites.PYLON );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 10, 20 );
 
 		idle = new Animation( 1, false );
@@ -54,8 +70,6 @@ public class PylonSprite extends MobSprite {
 
 		die = new Animation( 1, false );
 		die.frames( frames, 2 );
-
-		play( idle );
 	}
 
 	@Override

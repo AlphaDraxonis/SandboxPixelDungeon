@@ -189,7 +189,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		super.updateSpriteState();
 
 		if (pumpedUp > 0){
-			((GooSprite)sprite).pumpUp( pumpedUp );
+			GooSprite.pumpUp( sprite, pumpedUp );
 		}
 	}
 
@@ -197,7 +197,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 	protected boolean doAttack( Char enemy ) {
 		if (pumpedUp == 1) {
 			pumpedUp++;
-			((GooSprite)sprite).pumpUp( pumpedUp );
+			GooSprite.pumpUp( sprite, pumpedUp );
 
 			spend( attackDelay() );
 
@@ -208,13 +208,14 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 			if (visible) {
 				if (pumpedUp >= 2) {
-					((GooSprite) sprite).pumpAttack();
+					GooSprite.pumpAttack(sprite);
 				} else {
 					sprite.attack(enemy.pos);
 				}
 			} else {
 				if (pumpedUp >= 2){
-					((GooSprite)sprite).triggerEmitters();
+					if (sprite.extraCode instanceof GooSprite.PumpUpEmitters)
+						((GooSprite.PumpUpEmitters) sprite.extraCode).triggerEmitters();
 				}
 				attack( enemy );
 				Invisibility.dispel(this);
@@ -234,7 +235,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 				spend( attackDelay() );
 			}
 
-			((GooSprite)sprite).pumpUp( pumpedUp );
+			GooSprite.pumpUp( sprite, pumpedUp );
 
 			if (Dungeon.level.heroFOV[pos]) {
 				sprite.showStatus( CharSprite.WARNING, Messages.get(this, "!!!") );

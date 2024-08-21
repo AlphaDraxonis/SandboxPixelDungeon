@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSettings;
+import com.watabou.NotAllowedInLua;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
@@ -55,11 +56,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@NotAllowedInLua
 public class TitleScene extends PixelScene {
 	
 	@Override
 	public void create() {
-		
+
+		Dungeon.customDungeon = null;
+
 		super.create();
 
 		Music.INSTANCE.playTracks(
@@ -68,35 +72,37 @@ public class TitleScene extends PixelScene {
 				false);
 
 		uiCamera.visible = false;
-		
+
 		int w = Camera.main.width;
 		int h = Camera.main.height;
-		
-		Archs archs = new Archs();
-		archs.setSize( w, h );
-		add( archs );
-		
-		Image title = BannerSprites.get( BannerSprites.Type.PIXEL_DUNGEON );
-		add( title );
 
-		float topRegion = Math.max(title.height - 6, h*0.45f);
+		Archs archs = new Archs();
+		archs.setSize(w, h);
+		add(archs);
+
+		Image title = BannerSprites.get(BannerSprites.Type.PIXEL_DUNGEON);
+		add(title);
+
+		float topRegion = Math.max(title.height - 6, h * 0.45f);
 
 		title.x = (w - title.width()) / 2f;
 		title.y = 2 + (topRegion - title.height()) / 2f;
 
 		align(title);
 
-        placeTorch(title.x + 9, title.y + 46);
-        placeTorch(title.x + title.width - 10, title.y + 46);
+		placeTorch(title.x + 9, title.y + 46);
+		placeTorch(title.x + title.width - 10, title.y + 46);
 
-		Image signs = new Image( BannerSprites.get( BannerSprites.Type.PIXEL_DUNGEON_SIGNS ) ) {
+		Image signs = new Image(BannerSprites.get(BannerSprites.Type.PIXEL_DUNGEON_SIGNS)) {
 			private float time = 0;
+
 			@Override
 			public void update() {
 				super.update();
-				am = Math.max(0f, (float)Math.sin( time += Game.elapsed ));
-				if (time >= 1.5f*Math.PI) time = 0;
+				am = Math.max(0f, (float) Math.sin(time += Game.elapsed));
+				if (time >= 1.5f * Math.PI) time = 0;
 			}
+
 			@Override
 			public void draw() {
 				Blending.setLightMode();
@@ -104,53 +110,53 @@ public class TitleScene extends PixelScene {
 				Blending.setNormalMode();
 			}
 		};
-		signs.x = title.x + (title.width() - signs.width())/2f;
+		signs.x = title.x + (title.width() - signs.width()) / 2f;
 		signs.y = title.y;
 		signs.color(Window.SILVER);
-		add( signs );
+		add(signs);
 
-        final Chrome.Type GREY_TR = Chrome.Type.GREY_BUTTON_TR;
+		final Chrome.Type GREY_TR = Chrome.Type.GREY_BUTTON_TR;
 
-        DiscordButton btnDiscord = new DiscordButton();
-        btnDiscord.setPos(5, 5);
-        btnDiscord.updateSize();
-        add(btnDiscord);
+		DiscordButton btnDiscord = new DiscordButton();
+		btnDiscord.setPos(5, 5);
+		btnDiscord.updateSize();
+		add(btnDiscord);
 
-        ReportBugButton btnBug = new ReportBugButton();
-        btnBug.setPos(5, h - 5 - 16);
-        add(btnBug);
+		ReportBugButton btnBug = new ReportBugButton();
+		btnBug.setPos(5, h - 5 - 16);
+		add(btnBug);
 
-        StyledButton btnPlay = new StyledButton(GREY_TR, Messages.get(this, "enter")) {
-            @Override
-            protected void onClick() {
-                FileUtils.resetDefaultFileType();
-                if (GamesInProgress.checkAll().size() == 0) {
-                    StartScene.showWndSelectDungeon(1);
-                } else {
-                    SandboxPixelDungeon.switchNoFade(StartScene.class);
-                }
-            }
-
-            @Override
-            protected boolean onLongClick() {
-                //making it easier to start runs quickly while debugging
-                if (DeviceCompat.isDebug()) {
-                    StartScene.showWndSelectDungeon(1);
-                    return true;
-                }
-                return super.onLongClick();
-            }
-        };
-        btnPlay.icon(Icons.get(Icons.ENTER));
-        add(btnPlay);
-
-        StyledButton btnSupport = new SupportButton(GREY_TR, "Dungeon Editor");
-        add(btnSupport);
-
-		StyledButton btnRankings = new StyledButton(GREY_TR,Messages.get(this, "rankings")){
+		StyledButton btnPlay = new StyledButton(GREY_TR, Messages.get(this, "enter")) {
 			@Override
 			protected void onClick() {
-				SandboxPixelDungeon.switchNoFade( RankingsScene.class );
+				FileUtils.resetDefaultFileType();
+				if (GamesInProgress.checkAll().size() == 0) {
+					StartScene.showWndSelectDungeon(1);
+				} else {
+					SandboxPixelDungeon.switchNoFade(StartScene.class);
+				}
+			}
+
+			@Override
+			protected boolean onLongClick() {
+				//making it easier to start runs quickly while debugging
+				if (DeviceCompat.isDebug()) {
+					StartScene.showWndSelectDungeon(1);
+					return true;
+				}
+				return super.onLongClick();
+			}
+		};
+		btnPlay.icon(Icons.get(Icons.ENTER));
+		add(btnPlay);
+
+		StyledButton btnSupport = new SupportButton(GREY_TR, "Dungeon Editor");
+		add(btnSupport);
+
+		StyledButton btnRankings = new StyledButton(GREY_TR, Messages.get(this, "rankings")) {
+			@Override
+			protected void onClick() {
+				SandboxPixelDungeon.switchNoFade(RankingsScene.class);
 			}
 		};
 		btnRankings.icon(Icons.get(Icons.RANKINGS));
@@ -166,7 +172,7 @@ public class TitleScene extends PixelScene {
 //		btnBadges.icon(Icons.get(Icons.BADGES));
 //		add(btnBadges);
 
-		StyledButton btnDiscover = new StyledButton(GREY_TR, Messages.get(this, "discover")){
+		StyledButton btnDiscover = new StyledButton(GREY_TR, Messages.get(this, "discover")) {
 			@Override
 			protected void onClick() {
 				Game.scene().addToFront(new ServerDungeonList.WndServerDungeonList());
@@ -186,53 +192,53 @@ public class TitleScene extends PixelScene {
 		StyledButton btnSettings = new SettingsButton(GREY_TR, Messages.get(this, "settings"));
 		add(btnSettings);
 
-		StyledButton btnAbout = new StyledButton(GREY_TR, Messages.get(this, "about")){
+		StyledButton btnAbout = new StyledButton(GREY_TR, Messages.get(this, "about")) {
 			@Override
 			protected void onClick() {
-				SandboxPixelDungeon.switchScene( AboutScene.class );
+				SandboxPixelDungeon.switchScene(AboutScene.class);
 			}
 		};
 		btnAbout.icon(Icons.get(Icons.SUPPORT_EMERALD));
 		add(btnAbout);
-		
+
 		final int BTN_HEIGHT = 20;
-		int GAP = (int)(h - topRegion - (landscape() ? 3 : 4)*BTN_HEIGHT)/3;
+		int GAP = (int) (h - topRegion - (landscape() ? 3 : 4) * BTN_HEIGHT) / 3;
 		GAP /= landscape() ? 3 : 5;
 		GAP = Math.max(GAP, 2);
 
 		if (landscape()) {
-			btnPlay.setRect(title.x-50, topRegion+GAP, ((title.width()+100)/2)-1, BTN_HEIGHT);
+			btnPlay.setRect(title.x - 50, topRegion + GAP, ((title.width() + 100) / 2) - 1, BTN_HEIGHT);
 			align(btnPlay);
-			btnSupport.setRect(btnPlay.right()+2, btnPlay.top(), btnPlay.width(), BTN_HEIGHT);
-			btnDiscover.setRect(btnPlay.left(), btnPlay.bottom()+ GAP, (btnPlay.width()*.67f)-1, BTN_HEIGHT);
-			btnRankings.setRect(btnDiscover.left(), btnDiscover.bottom()+GAP, btnDiscover.width(), BTN_HEIGHT);
-			btnNews.setRect(btnDiscover.right()+2, btnDiscover.top(), btnDiscover.width(), BTN_HEIGHT);
+			btnSupport.setRect(btnPlay.right() + 2, btnPlay.top(), btnPlay.width(), BTN_HEIGHT);
+			btnDiscover.setRect(btnPlay.left(), btnPlay.bottom() + GAP, (btnPlay.width() * .67f) - 1, BTN_HEIGHT);
+			btnRankings.setRect(btnDiscover.left(), btnDiscover.bottom() + GAP, btnDiscover.width(), BTN_HEIGHT);
+			btnNews.setRect(btnDiscover.right() + 2, btnDiscover.top(), btnDiscover.width(), BTN_HEIGHT);
 			btnChanges.setRect(btnNews.left(), btnNews.bottom() + GAP, btnDiscover.width(), BTN_HEIGHT);
-			btnSettings.setRect(btnNews.right()+2, btnNews.top(), btnDiscover.width(), BTN_HEIGHT);
+			btnSettings.setRect(btnNews.right() + 2, btnNews.top(), btnDiscover.width(), BTN_HEIGHT);
 			btnAbout.setRect(btnSettings.left(), btnSettings.bottom() + GAP, btnDiscover.width(), BTN_HEIGHT);
 		} else {
-			btnPlay.setRect(title.x, topRegion+GAP, title.width(), BTN_HEIGHT);
+			btnPlay.setRect(title.x, topRegion + GAP, title.width(), BTN_HEIGHT);
 			align(btnPlay);
-			btnSupport.setRect(btnPlay.left(), btnPlay.bottom()+ GAP, btnPlay.width(), BTN_HEIGHT);
-			btnDiscover.setRect(btnPlay.left(), btnSupport.bottom()+ GAP, (btnPlay.width()/2)-1, BTN_HEIGHT);
-			btnRankings.setRect(btnDiscover.right()+2, btnDiscover.top(), btnDiscover.width(), BTN_HEIGHT);
-			btnNews.setRect(btnDiscover.left(), btnDiscover.bottom()+ GAP, btnDiscover.width(), BTN_HEIGHT);
-			btnChanges.setRect(btnNews.right()+2, btnNews.top(), btnNews.width(), BTN_HEIGHT);
-			btnSettings.setRect(btnNews.left(), btnNews.bottom()+GAP, btnDiscover.width(), BTN_HEIGHT);
-			btnAbout.setRect(btnSettings.right()+2, btnSettings.top(), btnSettings.width(), BTN_HEIGHT);
+			btnSupport.setRect(btnPlay.left(), btnPlay.bottom() + GAP, btnPlay.width(), BTN_HEIGHT);
+			btnDiscover.setRect(btnPlay.left(), btnSupport.bottom() + GAP, (btnPlay.width() / 2) - 1, BTN_HEIGHT);
+			btnRankings.setRect(btnDiscover.right() + 2, btnDiscover.top(), btnDiscover.width(), BTN_HEIGHT);
+			btnNews.setRect(btnDiscover.left(), btnDiscover.bottom() + GAP, btnDiscover.width(), BTN_HEIGHT);
+			btnChanges.setRect(btnNews.right() + 2, btnNews.top(), btnNews.width(), BTN_HEIGHT);
+			btnSettings.setRect(btnNews.left(), btnNews.bottom() + GAP, btnDiscover.width(), BTN_HEIGHT);
+			btnAbout.setRect(btnSettings.right() + 2, btnSettings.top(), btnSettings.width(), BTN_HEIGHT);
 		}
 
-		BitmapText version = new BitmapText( "v" + Game.version, pixelFont);
+		BitmapText version = new BitmapText("v" + Game.version, pixelFont);
 		version.measure();
-		version.hardlight( 0x888888 );
+		version.hardlight(0x888888);
 		version.x = w - version.width() - 4;
 		version.y = h - version.height() - 2;
-		add( version );
+		add(version);
 
 		if (DeviceCompat.isDesktop()) {
 			ExitButton btnExit = new ExitButton();
-			btnExit.setPos( w - btnExit.width(), 0 );
-			add( btnExit );
+			btnExit.setPos(w - btnExit.width(), 0);
+			add(btnExit);
 		}
 
 		fadeIn();

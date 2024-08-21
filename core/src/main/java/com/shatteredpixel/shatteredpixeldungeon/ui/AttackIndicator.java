@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaCustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.Game;
@@ -145,7 +146,9 @@ public class AttackIndicator extends Tag {
 			sprite = null;
 		}
 
-		if (lastTarget instanceof HeroMob) sprite = lastTarget.sprite();
+		if (lastTarget instanceof LuaCustomObjectClass || lastTarget instanceof HeroMob) {
+			sprite = lastTarget.sprite();
+		}
 		else {
 			sprite = Reflection.newInstance(lastTarget.spriteClass);
 			if (sprite == null) sprite = lastTarget.sprite();

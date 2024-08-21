@@ -60,9 +60,9 @@ public class CityBossLevel extends Level {
 	private static int WIDTH = 15;
 	private static int HEIGHT = 48;
 
-	private static final Rect entry = new Rect(1, 37, 14, 48);
-	private static final Rect arena = new Rect(1, 25, 14, 38);
-	private static final Rect end = new Rect(0, 0, 15, 22);
+	private static final WatabouRect entry = new WatabouRect(1, 37, 14, 48);
+	private static final WatabouRect arena = new WatabouRect(1, 25, 14, 38);
+	private static final WatabouRect end = new WatabouRect(0, 0, 15, 22);
 
 	private static final int bottomDoor = 7 + (arena.bottom-1)*15;
 	private static final int topDoor = 7 + arena.top*15;

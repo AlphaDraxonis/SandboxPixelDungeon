@@ -111,7 +111,8 @@ abstract public class Weapon extends KindOfWeapon {
 
 		return damage;
 	}
-	
+
+	@Override
 	public void onHeroGainExp( float levelPercent, Hero hero ){
 		levelPercent *= Talent.itemIDSpeedFactor(hero, this);
 		if (!levelKnown() && isEquipped(hero) && availableUsesToID <= USES_TO_ID/2f) {

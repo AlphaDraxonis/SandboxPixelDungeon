@@ -25,7 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -56,12 +56,12 @@ public abstract class Key extends Item {
 
 	@Override
 	public String name() {
-		return super.name() + (cell == -1 ? "" : " (" + Messages.get(this, "cell_name", EditorUtilies.cellToStringNoBrackets(cell, Dungeon.level.width()))+")");
+		return super.name() + (cell == -1 ? "" : " (" + Messages.get(this, "cell_name", EditorUtilities.cellToStringNoBrackets(cell, Dungeon.level.width()))+")");
 	}
 
 	@Override
 	public String desc() {
-		return super.desc() + (cell == -1 ? "" : " \n\n" + Messages.get(this, "cell_desc", EditorUtilies.cellToStringNoBrackets(cell, Dungeon.level.width())));
+		return super.desc() + (cell == -1 ? "" : " \n\n" + Messages.get(this, "cell_desc", EditorUtilities.cellToStringNoBrackets(cell, Dungeon.level.width())));
 	}
 
 	@Override

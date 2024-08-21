@@ -31,7 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector.FieldLike;
@@ -90,8 +90,8 @@ public class WndStoreReference extends SimpleWindow {
 			@Override
 			protected void layout() {
 				height = 0;
-				height = EditorUtilies.layoutCompsLinear(2, this, nameInput) + 3;
-				height = EditorUtilies.layoutStyledCompsInRectangles(2, width,1, this, asValue, asAccessChain);
+				height = EditorUtilities.layoutCompsLinear(2, this, nameInput) + 3;
+				height = EditorUtilities.layoutStyledCompsInRectangles(2, width,1, this, asValue, asAccessChain);
 			}
 		};
 

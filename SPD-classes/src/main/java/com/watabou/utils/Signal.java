@@ -21,10 +21,11 @@
 
 package com.watabou.utils;
 
-import com.watabou.input.PointerEvent;
+import com.watabou.NotAllowedInLua;
 
 import java.util.LinkedList;
 
+@NotAllowedInLua
 public class Signal<T> {
 
 	private LinkedList<Listener<T>> listeners = new LinkedList<>();

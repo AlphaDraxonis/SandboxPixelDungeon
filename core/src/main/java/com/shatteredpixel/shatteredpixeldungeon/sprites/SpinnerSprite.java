@@ -40,23 +40,28 @@ public class SpinnerSprite extends MobSprite {
 
 		texture( Assets.Sprites.SPINNER );
 		
-		TextureFilm frames = new TextureFilm( texture, 16, 16 );
-		
-		idle = new Animation( 10, true );
-		idle.frames( frames, 0, 0, 0, 0, 0, 1, 0, 1 );
-		
-		run = new Animation( 15, true );
-		run.frames( frames, 0, 2, 0, 3 );
-		
-		attack = new Animation( 12, false );
-		attack.frames( frames, 0, 4, 5, 0 );
-		
-		zap = attack.clone();
-		
-		die = new Animation( 12, false );
-		die.frames( frames, 6, 7, 8, 9 );
+		initAnimations();
 		
 		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 16, 16 );
+
+		idle = new Animation( 10, true );
+		idle.frames( frames, 0, 0, 0, 0, 0, 1, 0, 1 );
+
+		run = new Animation( 15, true );
+		run.frames( frames, 0, 2, 0, 3 );
+
+		attack = new Animation( 12, false );
+		attack.frames( frames, 0, 4, 5, 0 );
+
+		zap = attack.clone();
+
+		die = new Animation( 12, false );
+		die.frames( frames, 6, 7, 8, 9 );
 	}
 
 	@Override
@@ -74,6 +79,11 @@ public class SpinnerSprite extends MobSprite {
 	@Override
 	protected void playZapAnim(int cell) {
 		playZap(parent, this, cell, ch);
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {

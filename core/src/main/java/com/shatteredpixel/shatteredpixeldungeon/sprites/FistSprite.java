@@ -26,11 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.CorrosionParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.*;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Group;
@@ -52,11 +48,18 @@ public abstract class FistSprite extends MobSprite {
 	public FistSprite() {
 		super();
 
-		int c = texOffset();
-
 		texture( Assets.Sprites.FISTS );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 24, 17 );
+
+		int c = texOffset();
 
 		idle = new Animation( 2, true );
 		idle.frames( frames, c+0, c+0, c+1 );
@@ -72,8 +75,6 @@ public abstract class FistSprite extends MobSprite {
 
 		die = new Animation( 10, false );
 		die.frames( frames, c+0, c+2, c+3, c+4 );
-
-		play( idle );
 	}
 
 	@Override
@@ -121,6 +122,11 @@ public abstract class FistSprite extends MobSprite {
 	@Override
 	protected void playZapAnim(int cell) {
 		playZap(parent, this, cell, ch, boltType);
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 
 	@Override
@@ -277,6 +283,11 @@ public abstract class FistSprite extends MobSprite {
 		@Override
 		protected void playZapAnim(int cell) {
 			playZap(parent, this, cell, ch);
+		}
+
+		@Override
+		public boolean hasOwnZapAnimation() {
+			return true;
 		}
 
 		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {

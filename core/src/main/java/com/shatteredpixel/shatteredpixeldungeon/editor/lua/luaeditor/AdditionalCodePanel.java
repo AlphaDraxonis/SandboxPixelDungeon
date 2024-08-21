@@ -1,10 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.LuaScript;
 
 import java.util.List;
 
+@NotAllowedInLua
 public class AdditionalCodePanel extends CodeInputPanel {
 
 	{

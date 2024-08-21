@@ -32,8 +32,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.*;
 
 import java.io.IOException;
@@ -42,6 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@NotAllowedInLua
 public class StartScene extends PixelScene {
 	
 	private static final int SLOT_WIDTH = 120;
@@ -341,6 +344,11 @@ public class StartScene extends PixelScene {
 				@Override
 				protected void select(String customDungeonName) {
 					try {
+						if (featuredDungeon != null && !customDungeonName.equals(featuredDungeon)) {
+							//a different dungeon was chosen, otherwise we come directly from main menu ui or everything is already loaded correcty
+							UserContentManager.loadUserContentFromFiles();
+						}
+
 						Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(customDungeonName);
 
 						GamesInProgress.selectedClass = selectClass;

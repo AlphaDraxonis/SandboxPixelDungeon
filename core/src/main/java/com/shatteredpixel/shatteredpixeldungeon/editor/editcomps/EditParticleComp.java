@@ -11,7 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -97,9 +97,25 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
         showOnlyOnEnter.addChangeListener(v -> particle.alwaysEmitting = !v);
         add(showOnlyOnEnter);
 
-        rename.visible = true;
+        rename.setVisible(true);
 
         updateObj();
+    }
+
+    @Override
+    protected void updateStates() {
+        super.updateStates();
+        if (type != null) {
+            Integer[] data = createTypeData();
+            type.setValue(findIndex(obj.type, data));
+        }
+        if (interval != null) interval.setValue(obj.interval);
+        if (removeOnEnter != null) removeOnEnter.checked(obj.removeOnEnter);
+        if (showOnlyOnEnter != null) showOnlyOnEnter.checked(!obj.alwaysEmitting);
+
+        //Should not be able to set quantity
+//        quantity = new StyledSpinner(new SpinnerIntegerModel(0, 100, particle.quantity),
+//                "QUANTITY", 9);
     }
 
     @Override
@@ -126,7 +142,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
     }
 
     @Override
-    protected void updateObj() {
+	public void updateObj() {
 
         if (emitter != null) {
             emitter.start(obj.createFactory(), obj.interval, obj.quantity);
@@ -153,7 +169,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
                     for (CustomParticle.ParticleProperty particle : Dungeon.customDungeon.particles.values()) {
                         if (text.equals(particle.name)) {
                             onRenameClicked();
-                            EditorUtilies.showDuplicateNameWarning();
+                            EditorUtilities.showDuplicateNameWarning();
                             return;
                         }
                     }
@@ -242,7 +258,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
             if (name != null) {
                 for (CustomParticle.ParticleProperty particle : Dungeon.customDungeon.particles.values()) {
                     if (name.equals(particle.name)) {
-                        EditorUtilies.showDuplicateNameWarning();
+                        EditorUtilities.showDuplicateNameWarning();
                         return;
                     }
                 }

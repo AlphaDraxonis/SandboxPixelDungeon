@@ -27,26 +27,53 @@ package com.watabou.idewindowactions;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LuaScript implements Comparable<LuaScript> {
 
+	//Wenn null in RawFileSelector: zeige outline von script
+	//click auf itemslot: öffnet editor
+	//click auf X: setzt null, aber löscht script nicht
+
+	//editor: (kann nur RawLuaScripts im ganzen Bearbeiten)
+	//oben: pfad des scripts, kann durch änderung des Textwertes verschoben werden, d.h. beim Speichern wird die ursprüngliche Datei gelöscht!
+	//Wenn man ein Script kopieren möchte, muss man RawLuaScript direkt kopieren, dann wird auch dessen zugehörige Datei kopiert
+	//
+	//Wie kann ein neues LuaScript erstellt werden?
+	//Der Editor wird mit gültigem Pfad geschlossen und der Pfad existiert nicht:
+	//	Wenn ursprünglicher Pfad null war, dann wird sofort eine neue Datei erstellt, die zur TargetClass passt (z.B. für Mob.class)
+	//  Falls nein, wird gefragt, ob die Ursprüngliche Datei überschrieben, die Pfadänderung ignoriert, oder abgebrochen werden soll
+	//Wie kann ein LuaScript gelöscht werden?
+	//  LuaScript Dateien gehören immer zu einem CustomObject. Wenn dieses gelöscht, besteht die Möglichkeit, die Datei ebenfalls zu löschen.
+	//  .lua ohne CustomObject werden aktuell nicht verwendet und können direkt über UnimportedFiles gelöscht werden.
+	//Wie kann ein LuaScript kopiert werden?
+	//	Dazu kopiert man das CustomObject, und bestätigt auf Nachfrage, auch die .lua Datei zu kopieren.
+
+	//Beim Bearbeiten:
+	//entweder: Neuerstellung eines LuaScript unter Pfadeingabe und Name → neues RawLuaScript; dann leeres LuaScript, das als Datei existiert, bearbeiten
+	//oder: Anhängen eines schon vorhandenen Scripts, das dann gemeinsam wirkend bearbeitet wird,
+	//erst beim SPEICHERN fällt die endgültige Entscheidung;
+	//Scripte können von einzelnen Objekten jederzeit entfernt oder bearbeitet werden.
+	//Oben wird Pfad und Name des Skripts angezeigt, dann ein Button zum Wechseln, dann ein Button um zu ändern
+
+	//Wenn RawLuaScript null ist und man speichern möchte → Aufforderung zur Eingabe von Pfad und Name
+
+	public static final String SCRIPT_RETURN_START = "return {\n    vars = vars; static = static; ";
+
 	public Class<?> type;
 	public String desc;
 	public String code;
 
-	public final String pathFromRoot;
+	private String path;
 
-	public LuaScript(Class<?> type, String desc, String pathFromRoot) {
+	public LuaScript(Class<?> type, String desc) {
 		this.type = type;
 		this.desc = desc;
-		this.pathFromRoot = pathFromRoot;
 	}
 
-	public static LuaScript readFromFileContent(String fileContent, String pathFromRoot) {
+	public static LuaScript readFromFileContent(String fileContent, String path) {
 		fileContent = fileContent.replace("\r", "");
 		String[] lines = fileContent.split("\n");
 
@@ -54,13 +81,13 @@ public class LuaScript implements Comparable<LuaScript> {
 
 		LuaScript luaScript = new LuaScript(
 				Reflection.forName(lines[0].substring(2)),
-				lines[1].replace((char) 29, '\n').substring(2),
-				pathFromRoot
+				lines[1].replace((char) 29, '\n').substring(2)
 		);
 		if (lines.length > 3) {
 			int index = lines[0].length() + lines[1].length() + 3;
 			luaScript.code = fileContent.substring(index);
 		}
+		luaScript.path = path;
 		return luaScript;
 	}
 
@@ -79,7 +106,23 @@ public class LuaScript implements Comparable<LuaScript> {
 
 	@Override
 	public int compareTo(LuaScript o) {
-		return pathFromRoot.compareTo(o.pathFromRoot);
+		return path.compareTo(o.path);
+	}
+
+	public LuaScript getCopy() {
+		LuaScript copy = new LuaScript(type, desc);
+		copy.path = path;
+		copy.code = code;
+		return copy;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	@Override
+	public String toString() {
+		return getPath();
 	}
 
 	//replaces comments and string values so the pattern matcher
@@ -129,45 +172,67 @@ public class LuaScript implements Comparable<LuaScript> {
 			int outputStartIndex = matcher.start();
 			int startIndex = matcher.end();
 
-			Matcher startMatcher = Pattern.compile("\\b(if|for|while|repeat|function)\\b", Pattern.DOTALL).matcher(cleanedCode.substring(startIndex));
-			Matcher endMatcher = Pattern.compile("\\bend\\b", Pattern.DOTALL).matcher(cleanedCode.substring(startIndex));
+			String cleanedCodeFromStartIndex = cleanedCode.substring(startIndex);
 
-			LinkedList<Integer> starts = new LinkedList<>();
-			LinkedList<Integer> ends = new LinkedList<>();
+			Matcher finalEndViaFunction = Pattern.compile("function\\s+([\\w_]+)\\s*\\(").matcher(cleanedCodeFromStartIndex);
+			Matcher finalEndViaReturnScript = Pattern.compile(Pattern.quote(LuaScript.SCRIPT_RETURN_START)).matcher(cleanedCodeFromStartIndex);
 
-			while (startMatcher.find()) {
-				starts.add(startMatcher.end());
+			int endIndex = cleanedCodeFromStartIndex.length() - 1;
+			if (finalEndViaFunction.find()) {
+				endIndex = finalEndViaFunction.start();
 			}
-			while (endMatcher.find()) {
-				ends.add(endMatcher.end());
+			if (finalEndViaReturnScript.find()) {
+				endIndex = Math.min(finalEndViaReturnScript.start(), endIndex);
 			}
-
-			if (starts.isEmpty() || ends.isEmpty()) {
-				return ends.isEmpty() ? null : originalCode.substring(outputStartIndex, ends.getFirst() + startIndex);
+			//keep in mind: endIndex is always EXCLUDED, so it must still be a whitespace!
+			while (endIndex > 0) {
+				char charAt = cleanedCodeFromStartIndex.charAt(endIndex-1);
+				if (Character.isWhitespace(charAt)) endIndex--;
+				else break;
 			}
-
-			int indexNextStart = starts.removeFirst();
-			int indexNextEnd = ends.removeFirst();
-
-			int nestedLevel = 0;//negative value mean we have left the function
-
-			while (true) {
-				if (indexNextStart < indexNextEnd) {
-					nestedLevel++;
-					indexNextStart = starts.isEmpty() ? Integer.MAX_VALUE : starts.removeFirst();
-				} else {
-					nestedLevel--;
-					if (nestedLevel < 0) {
-						return originalCode.substring(outputStartIndex, indexNextEnd + startIndex);
-					}
-					if (ends.isEmpty()) return originalCode.substring(outputStartIndex, indexNextEnd + startIndex);
-					indexNextEnd = ends.removeFirst();
-				}
-
-			}
-
+			return originalCode.substring(outputStartIndex, startIndex + endIndex);
 		}
 		return null;
+
+//			Matcher startMatcher = Pattern.compile("\\b(if|for|while|repeat|function)\\b", Pattern.DOTALL).matcher(cleanedCodeFromStartIndex);
+//			Matcher endMatcher = Pattern.compile("\\bend\\b", Pattern.DOTALL).matcher(cleanedCodeFromStartIndex);
+//
+//			LinkedList<Integer> starts = new LinkedList<>();
+//			LinkedList<Integer> ends = new LinkedList<>();
+//
+//			while (startMatcher.find()) {
+//				starts.add(startMatcher.end());
+//			}
+//			while (endMatcher.find()) {
+//				ends.add(endMatcher.end());
+//			}
+//
+//			if (starts.isEmpty() || ends.isEmpty()) {
+//				return ends.isEmpty() ? null : originalCode.substring(outputStartIndex, ends.getFirst() + startIndex);
+//			}
+//
+//			int indexNextStart = starts.removeFirst();
+//			int indexNextEnd = ends.removeFirst();
+//
+//			int nestedLevel = 0;//negative value mean we have left the function
+//
+//			while (true) {
+//				if (indexNextStart < indexNextEnd) {
+//					nestedLevel++;
+//					indexNextStart = starts.isEmpty() ? Integer.MAX_VALUE : starts.removeFirst();
+//				} else {
+//					nestedLevel--;
+//					if (nestedLevel < 0) {
+//						return originalCode.substring(outputStartIndex, indexNextEnd + startIndex);
+//					}
+//					if (ends.isEmpty()) return originalCode.substring(outputStartIndex, indexNextEnd + startIndex);
+//					indexNextEnd = ends.removeFirst();
+//				}
+//
+//			}
+//
+//		}
+//		return null;
 	}
 
 	private static String cutExtractedMethod(String fullMethod) {
@@ -231,11 +296,5 @@ public class LuaScript implements Comparable<LuaScript> {
 			s.append(c);
 		}
 		return s.toString();
-	}
-
-	public LuaScript getCopy() {
-		LuaScript copy = new LuaScript(type, desc, pathFromRoot);
-		copy.code = code;
-		return copy;
 	}
 }

@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHardNotification;
+import com.watabou.NotAllowedInLua;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.ControllerHandler;
 import com.watabou.noosa.Camera;
@@ -44,6 +45,7 @@ import com.watabou.utils.FileUtils;
 
 import java.util.Collections;
 
+@NotAllowedInLua
 public class WelcomeScene extends PixelScene {
 
 	private static final int LATEST_UPDATE = SandboxPixelDungeon.v2_4_0;

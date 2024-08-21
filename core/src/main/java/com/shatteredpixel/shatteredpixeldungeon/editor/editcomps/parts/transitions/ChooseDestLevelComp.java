@@ -5,7 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSelectFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseObjectComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class ChooseDestLevelComp extends ChooseObjectComp {
     @Override
     public void selectObject(Object object) {
         if (object == null) super.selectObject(LevelScheme.NO_LEVEL_SCHEME);
-        else super.selectObject(object instanceof String ? EditorUtilies.getDispayName((String) object) : object);
+        else super.selectObject(object instanceof String ? EditorUtilities.getDispayName((String) object) : object);
     }
 
     @Override

@@ -70,7 +70,7 @@ public class RageTrap extends Trap {
 		Sample.INSTANCE.play( Assets.Sounds.ALERT, 3 );
 	}
 
-	private boolean affectsChar(Char ch, int x, int y) {
+	protected boolean affectsChar(Char ch, int x, int y) {
 		int chX = ch.pos % Dungeon.level.width();
 		int chY = ch.pos / Dungeon.level.width();
 		return Math.abs(chX - x) + Math.abs(chY - y) <= radius;

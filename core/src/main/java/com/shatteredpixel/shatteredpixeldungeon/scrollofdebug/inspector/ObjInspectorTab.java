@@ -24,7 +24,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.SearchBar;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.ui.Component;
@@ -62,7 +62,7 @@ public abstract class ObjInspectorTab extends Component {
 	@Override
 	protected void layout() {
 		height = 0;
-		height = EditorUtilies.layoutCompsLinear(2, 16, this, comps);
+		height = EditorUtilities.layoutCompsLinear(2, 16, this, comps);
 	}
 
 	private void updateSearch(String searchTerm) {

@@ -21,10 +21,12 @@
 
 package com.watabou.gltextures;
 
+import com.watabou.NotAllowedInLua;
 import com.watabou.utils.RectF;
 
 import java.util.HashMap;
 
+@NotAllowedInLua
 public class Atlas {
 
 	public SmartTexture tx;

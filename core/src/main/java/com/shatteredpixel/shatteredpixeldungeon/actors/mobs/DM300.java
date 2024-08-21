@@ -158,8 +158,6 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 				hpSet = !CustomDungeon.isEditing();
 			}
 		}
-//		((DM300Sprite)sprite).updateChargeState(true);
-//		((DM300Sprite)sprite).charge();
 	}
 
 	@Override
@@ -216,13 +214,11 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 							lastAbility = GAS;
 							turnsSinceLastAbility = 0;
 
-							if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-								sprite.zap(enemy.pos);
-								return false;
-							} else {
-								ventGas(enemy);
+							if (doRangedAttack()) {
 								Sample.INSTANCE.play(Assets.Sounds.GAS);
 								return true;
+							} else {
+								return false;
 							}
 						//if we can't gas, then drop rocks
 						//unless enemy is already stunned, we don't want to stunlock them
@@ -230,8 +226,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 							lastAbility = ROCKS;
 							turnsSinceLastAbility = 0;
 							if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-								((DM300Sprite)sprite).slam(enemy.pos);
-								return false;
+								return DM300Sprite.slam(sprite, enemy.pos);
 							} else {
 								dropRocks(enemy);
 								Sample.INSTANCE.play(Assets.Sounds.ROCKS);
@@ -264,18 +259,15 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 						abilityCooldown = Random.NormalIntRange(MIN_COOLDOWN, MAX_COOLDOWN);
 
 						if (lastAbility == GAS) {
-							if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-								sprite.zap(enemy.pos);
-								return false;
-							} else {
-								ventGas(enemy);
+							if (doRangedAttack()) {
 								Sample.INSTANCE.play(Assets.Sounds.GAS);
 								return true;
+							} else {
+								return false;
 							}
 						} else {
 							if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-								((DM300Sprite)sprite).slam(enemy.pos);
-								return false;
+								return DM300Sprite.slam(sprite, enemy.pos);
 							} else {
 								dropRocks(enemy);
 								Sample.INSTANCE.play(Assets.Sounds.ROCKS);
@@ -537,8 +529,13 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		spend(Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 2f : 3f);
 		yell(Messages.get(this, "charging"));
 		sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
-		((DM300Sprite)sprite).updateChargeState(true);
-		((DM300Sprite)sprite).charge();
+
+		if (sprite.extraCode instanceof DM300Sprite.SuperchargeSparks)
+			((DM300Sprite.SuperchargeSparks) sprite.extraCode).updateChargeState(sprite, true);
+
+		if (sprite instanceof DM300Sprite)
+			((DM300Sprite)sprite).charge();
+
 		chargeAnnounced = false;
 
 	}
@@ -549,7 +546,8 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 
 	public void loseSupercharge(){
 		supercharged = false;
-		((DM300Sprite)sprite).updateChargeState(false);
+		if (sprite.extraCode instanceof DM300Sprite.SuperchargeSparks)
+			((DM300Sprite.SuperchargeSparks) sprite.extraCode).updateChargeState(sprite, false);
 
 		if (pylonsActivated < totalPylonsToActivate()){
 			yell(Messages.get(this, "charge_lost"));
@@ -657,7 +655,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 
 				Sample.INSTANCE.play( Assets.Sounds.ROCKS );
 
-				Rect gate = CavesBossLevel.gate;
+				WatabouRect gate = CavesBossLevel.gate;
 				for (int i : PathFinder.NEIGHBOURS9){
 					if (Dungeon.level.map[pos+i] == Terrain.WALL || Dungeon.level.map[pos+i] == Terrain.WALL_DECO){
 
@@ -704,8 +702,8 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 	}
 
 	@Override
-	public String description() {
-		String desc = super.description();
+	public String desc() {
+		String desc = super.desc();
 		if (supercharged) {
 			desc += "\n\n" + Messages.get(this, "desc_supercharged");
 		}

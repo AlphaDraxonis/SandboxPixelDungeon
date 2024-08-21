@@ -277,7 +277,7 @@ public class WandOfSummoning extends Wand {
 
 
 //	@Override
-//	public String description() {
+//	public String desc() {
 //		if (customDesc != null) return super.description();
 //		String desc = super.description();
 //		int size = summonTemplate.size();

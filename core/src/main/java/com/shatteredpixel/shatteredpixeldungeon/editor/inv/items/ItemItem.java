@@ -9,7 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ItemActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -50,7 +50,7 @@ public class ItemItem extends EditorItem<Item> {
 
     @Override
     public Image getSubIcon() {
-        return EditorUtilies.createSubIcon(getObject());
+        return EditorUtilities.createSubIcon(getObject());
     }
 
     @Override
@@ -133,7 +133,7 @@ public class ItemItem extends EditorItem<Item> {
 
         Item i = getObject().getCopy();
 
-        i.image = CustomDungeon.getDungeon().getItemSpriteOnSheet(i);
+        i.image = CustomDungeon.getItemSpriteOnSheet(i);
 
         Undo.addActionPart(place(i, cell));
 

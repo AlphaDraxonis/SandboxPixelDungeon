@@ -36,20 +36,42 @@ import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class GooSprite extends MobSprite {
 
     private Animation pump;
     private Animation pumpAttack;
 
+    @Override
+    public LinkedHashMap<String, Animation> getAnimations() {
+        LinkedHashMap<String, Animation> result = super.getAnimations();
+        result.put("pump", pump);
+        result.put("pumpAttack", pumpAttack);
+        return result;
+    }
+
     private Emitter spray;
-    private ArrayList<Emitter> pumpUpEmitters = new ArrayList<>();
 
     public GooSprite() {
         super();
 
         texture(Assets.Sprites.GOO);
 
+        initAnimations();
+
+        play(idle);
+
+        spray = centerEmitter();
+        if (spray != null) {
+            spray.autoKill = false;
+            spray.pour(GooParticle.FACTORY, 0.04f);
+            spray.on = false;
+        }
+    }
+
+    @Override
+    public void initAnimations() {
         TextureFilm frames = new TextureFilm(texture, 20, 14);
 
         idle = new Animation(10, true);
@@ -69,15 +91,6 @@ public class GooSprite extends MobSprite {
 
         die = new Animation(10, false);
         die.frames(frames, 5, 6, 7);
-
-        play(idle);
-
-        spray = centerEmitter();
-        if (spray != null) {
-            spray.autoKill = false;
-            spray.pour(GooParticle.FACTORY, 0.04f);
-            spray.on = false;
-        }
     }
 
     @Override
@@ -87,54 +100,19 @@ public class GooSprite extends MobSprite {
             spray(true);
     }
 
-    public void pumpUp(int warnDist) {
+    public static void pumpUp(CharSprite sprite, int warnDist) {
         if (warnDist == 0) {
-            clearEmitters();
+            if (sprite.extraCode instanceof PumpUpEmitters)
+                ((PumpUpEmitters) sprite.extraCode).clearEmitters();
         } else {
-            play(pump);
-            Sample.INSTANCE.play(Assets.Sounds.CHARGEUP, 1f, warnDist == 1 ? 0.8f : 1f);
-            if (ch.fieldOfView == null || ch.fieldOfView.length != Dungeon.level.length()) {
-                ch.fieldOfView = new boolean[Dungeon.level.length()];
-                Dungeon.level.updateFieldOfView(ch, ch.fieldOfView);
-            }
-            for (int i = 0; i < Dungeon.level.length(); i++) {
-                if (ch.fieldOfView != null && ch.fieldOfView[i]
-                        && Dungeon.level.distance(i, ch.pos) <= warnDist
-                        && new Ballistica(ch.pos, i, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID, null).collisionPos == i
-                        && new Ballistica(i, ch.pos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID, null).collisionPos == ch.pos) {
-                    Emitter e = CellEmitter.get(i);
-                    e.pour(GooParticle.FACTORY, 0.04f);
-                    pumpUpEmitters.add(e);
-                }
-            }
+            sprite.play(sprite instanceof GooSprite ? ((GooSprite) sprite).pump : sprite.attack);
+            if (sprite.extraCode instanceof PumpUpEmitters)
+                ((PumpUpEmitters) sprite.extraCode).show(sprite.ch, warnDist);
         }
     }
 
-    public void clearEmitters() {
-        for (Emitter e : pumpUpEmitters) {
-            e.on = false;
-        }
-        pumpUpEmitters.clear();
-    }
-
-    public void triggerEmitters() {
-        for (Emitter e : pumpUpEmitters) {
-            e.burst(ElmoParticle.FACTORY, 10);
-        }
-        Sample.INSTANCE.play(Assets.Sounds.BURNING);
-        pumpUpEmitters.clear();
-    }
-
-    public void pumpAttack() {
-        play(pumpAttack);
-    }
-
-    @Override
-    public void play(Animation anim) {
-        if (anim != pump && anim != pumpAttack) {
-            clearEmitters();
-        }
-        super.play(anim);
+    public static void pumpAttack(CharSprite sprite) {
+        sprite.play(sprite instanceof GooSprite ? ((GooSprite) sprite).pumpAttack : sprite.attack);
     }
 
     @Override
@@ -152,6 +130,73 @@ public class GooSprite extends MobSprite {
         if (spray != null) {
             spray.pos(center());
             spray.visible = visible;
+        }
+    }
+
+    public static class PumpUpEmitters implements CharSpriteExtraCode {
+
+        private ArrayList<Emitter> pumpUpEmitters = new ArrayList<>();
+
+        @Override
+        public void onLink(CharSprite sprite, Char ch) {
+        }
+
+        @Override
+        public void onUpdate(CharSprite sprite) {
+        }
+
+        @Override
+        public void onDie(CharSprite sprite) {
+        }
+
+        @Override
+        public void onKill(CharSprite sprite) {
+        }
+
+        @Override
+        public void onPlayAnimation(CharSprite sprite, Animation anim) {
+            if (sprite instanceof GooSprite) {
+                if (anim != ((GooSprite) sprite).pump && anim != ((GooSprite) sprite).pumpAttack) {
+                    clearEmitters();
+                }
+            } else {
+                if (anim != sprite.attack) {
+                    clearEmitters();
+                }
+            }
+        }
+
+        public void show(Char ch, int warnDist) {
+            Sample.INSTANCE.play(Assets.Sounds.CHARGEUP, 1f, warnDist == 1 ? 0.8f : 1f);
+            if (ch.fieldOfView == null || ch.fieldOfView.length != Dungeon.level.length()) {
+                ch.fieldOfView = new boolean[Dungeon.level.length()];
+                Dungeon.level.updateFieldOfView(ch, ch.fieldOfView);
+            }
+            for (int i = 0; i < Dungeon.level.length(); i++) {
+                if (ch.fieldOfView != null && ch.fieldOfView[i]
+                        && Dungeon.level.distance(i, ch.pos) <= warnDist
+                        && new Ballistica(ch.pos, i, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID, null).collisionPos == i
+                        && new Ballistica(i, ch.pos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID, null).collisionPos == ch.pos) {
+                    Emitter e = CellEmitter.get(i);
+                    e.pour(GooParticle.FACTORY, 0.04f);
+                    pumpUpEmitters.add(e);
+                }
+            }
+        }
+
+        public void clearEmitters() {
+            for (Emitter e : pumpUpEmitters) {
+                e.on = false;
+            }
+            pumpUpEmitters.clear();
+        }
+
+        public void triggerEmitters() {
+            for (Emitter e : pumpUpEmitters) {
+                e.burst(ElmoParticle.FACTORY, 10);
+            }
+            Sample.INSTANCE.play(Assets.Sounds.BURNING);
+            pumpUpEmitters.clear();
         }
     }
 
@@ -199,7 +244,8 @@ public class GooSprite extends MobSprite {
 
         if (anim == pumpAttack) {
 
-            triggerEmitters();
+            if (extraCode instanceof PumpUpEmitters)
+                ((PumpUpEmitters) extraCode).triggerEmitters();
 
             idle();
             ch.onAttackComplete();

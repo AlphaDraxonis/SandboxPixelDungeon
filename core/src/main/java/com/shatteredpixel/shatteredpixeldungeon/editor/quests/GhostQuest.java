@@ -6,7 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
@@ -182,7 +182,7 @@ public class GhostQuest extends Quest {
     public static void storeStatics(Bundle bundle) {
         Bundle node = new Bundle();
         node.put(COMPLETED_ONCE, completedOnce);
-        node.put(QUESTS_ACTIVE_LIST, questsActive.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
+        node.put(QUESTS_ACTIVE_LIST, questsActive.toArray(EditorUtilities.EMPTY_STRING_ARRAY));
         bundle.put(NODE, node);
     }
 

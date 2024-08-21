@@ -12,7 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -147,10 +147,10 @@ public class TileItem extends EditorItem {
                 }
             }
             if (customTile != null && customTile.name(x, y) != null) {
-                return customTile.name(x, y) + EditorUtilies.appendCellToString(cell);
+                return customTile.name(x, y) + EditorUtilities.appendCellToString(cell);
             }
         }
-        return Dungeon.level.tileName(terrainType) + EditorUtilies.appendCellToString(cell);
+        return Dungeon.level.tileName(terrainType) + EditorUtilities.appendCellToString(cell);
     }
 
 

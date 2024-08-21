@@ -31,6 +31,13 @@ public class EarthGuardianSprite extends MobSprite {
 
 		texture( Assets.Sprites.GUARDIAN );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 12, 15 );
 
 		idle = new Animation( 2, true );
@@ -44,8 +51,6 @@ public class EarthGuardianSprite extends MobSprite {
 
 		die = new Animation( 5, false );
 		die.frames( frames, 11, 12, 13, 14, 15, 15 );
-
-		play( idle );
 	}
 
 	@Override

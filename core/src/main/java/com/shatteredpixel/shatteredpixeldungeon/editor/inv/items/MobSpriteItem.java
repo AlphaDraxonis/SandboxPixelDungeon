@@ -7,7 +7,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobSpriteCo
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
@@ -32,7 +31,7 @@ public class MobSpriteItem extends EditorItem<Class<? extends CharSprite>> {
 
     public MobSpriteItem(Class<? extends CharSprite> sprite) {
         this.obj = sprite;
-        this.mob = (Mob) ((MobSpriteItem)MobSprites.bag.findItem(new FindInBag(FindInBag.Type.CLASS, sprite, null))).mob().getCopy();
+        this.mob = (Mob) ((MobSpriteItem)MobSprites.bag().findItem(new FindInBag(FindInBag.Type.CLASS, sprite, null))).mob().getCopy();
         this.mob.spriteClass = obj;
     }
 
@@ -75,19 +74,16 @@ public class MobSpriteItem extends EditorItem<Class<? extends CharSprite>> {
         Mob defMob = DefaultStatsCache.getDefaultObject(mob.getClass());
         if (defMob == null && MobSpriteItem.canChangeSprite(mob)) defMob = Reflection.newInstance(mob.getClass());
         return mobSprite != null && defMob != null && defMob.spriteClass != mob.spriteClass
-                && (mobSprite.getClass().getEnclosingClass() == null ||
-                mobSprite.getClass().getEnclosingClass() != defMob.spriteClass.getEnclosingClass()
+                && (mobSprite.getClass().getEnclosingClass() == null
+                || mobSprite.getClass().getEnclosingClass() != defMob.spriteClass.getEnclosingClass()
                 || mob.getClass().getEnclosingClass() != null);
     }
 
     public static boolean canChangeSprite(Mob mob) {
-        return canSpriteBeUsedForOthers(mob)
-                && !(mob instanceof Ghoul || mob instanceof Golem || mob instanceof Eye || mob instanceof DM300 || mob instanceof GnollGuard
-                || mob instanceof Goo || mob instanceof RipperDemon || mob instanceof SentryRoom.Sentry || mob instanceof CrystalGuardian || mob instanceof Pylon);
+        return canSpriteBeUsedForOthers(mob) && !(mob instanceof Pylon);
     }
 
     public static boolean canSpriteBeUsedForOthers(Mob mob) {
-        return !(mob instanceof Mimic || mob instanceof Statue || mob instanceof HeroMob || mob instanceof CrystalSpire
-                || mob instanceof SentryRoom.Sentry || mob instanceof GnollGeomancer);
+        return !(mob instanceof HeroMob || mob instanceof CrystalSpire || mob instanceof GnollGeomancer);
     }
 }

@@ -23,11 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.connection;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.Point;
-import com.watabou.utils.PointF;
-import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
+import com.watabou.utils.*;
 
 //tunnels along the rooms center, with straight lines
 public class TunnelRoom extends ConnectionRoom {
@@ -36,7 +32,7 @@ public class TunnelRoom extends ConnectionRoom {
 
 		int floor = level.tunnelTile();
 
-		Rect c = getConnectionSpace();
+		WatabouRect c = getConnectionSpace();
 
 		for (Door door : connected.values()) {
 
@@ -95,10 +91,10 @@ public class TunnelRoom extends ConnectionRoom {
 
 	//returns the space which all doors must connect to (usually 1 cell, but can be more)
 	//Note that, like rooms, this space is inclusive to its right and bottom sides
-	protected Rect getConnectionSpace(){
+	protected WatabouRect getConnectionSpace(){
 		Point c = getDoorCenter();
 
-		return new Rect(c.x, c.y, c.x, c.y);
+		return new WatabouRect(c.x, c.y, c.x, c.y);
 	}
 
 	//returns a point equidistant from all doors this room has

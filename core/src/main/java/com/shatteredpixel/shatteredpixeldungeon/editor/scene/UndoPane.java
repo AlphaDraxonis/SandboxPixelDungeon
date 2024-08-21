@@ -7,11 +7,13 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 
+@NotAllowedInLua
 public class UndoPane extends Component {
 
     private Image bg;

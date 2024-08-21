@@ -36,13 +36,14 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.Customizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PropertyItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
@@ -78,6 +79,10 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.CustomMob;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomMobClass;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuest;
 import com.watabou.noosa.Game;
@@ -283,7 +288,7 @@ public abstract class Mob extends Char implements Customizable {
 		if (customName != null) bundle.put(CUSTOM_NAME, customName);
 		if (customDesc != null) bundle.put(CUSTOM_DESC, customDesc);
 		dialogs.remove(null);
-		bundle.put(DIALOGS, dialogs.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
+		bundle.put(DIALOGS, dialogs.toArray(EditorUtilities.EMPTY_STRING_ARRAY));
 		bundle.put(NEXT_DIALOG, nextDialog);
 
         if (enemy != null) {
@@ -383,15 +388,40 @@ public abstract class Mob extends Char implements Customizable {
 		return mob;
 	}
 
+	@Override
+	public void copyStats(GameObject template) {
+		if (template == null) return;
+		if (getClass() != template.getClass()) return;
+		Bundle bundle = new Bundle();
+		bundle.put("OBJ", template);
+		bundle.getBundle("OBJ").put(CustomGameObjectClass.INHERIT_STATS, true);
+
+		int pos = this.pos;
+		boolean replaceSprite = spriteClass != ((Mob) template).spriteClass;
+		restoreFromBundle(bundle.getBundle("OBJ"));
+		this.pos = pos;
+
+		if (replaceSprite && sprite != null) {
+			EditorScene.replaceMobSprite(this, ((Mob) template).spriteClass);
+		}
+	}
+
 	//mobs need to remember their targets after every actor is added
 	public void restoreEnemy(){
 		if (enemyID != -1 && enemy == null) enemy = (Char)Actor.findById(enemyID);
 	}
 	
 	public CharSprite sprite() {
+		if (this instanceof CustomMobClass) {
+			CustomMob customMob = (CustomMob) UserContentManager.getUserContent(((CustomMobClass) this).getIdentifier(), CustomMob.class);
+			if (customMob.sprite != null) {
+				CharSprite result = customMob.sprite.getActualCustomCharSpriteOrNull();
+				if (result != null) return result;
+			}
+		}
 		return Reflection.newInstance(spriteClass);
 	}
-	
+
 	@Override
 	protected boolean act() {
 
@@ -696,10 +726,10 @@ public abstract class Mob extends Char implements Customizable {
 		if (!Barrier.canEnterCell(cell, this, isFlying() || buff(Amok.class) != null, true)){
 			return false;
 		}
-		if (Char.hasProp(this, Char.Property.LARGE) && !Dungeon.level.openSpace[cell]){
+		if (Char.hasProp(this, Property.LARGE) && !Dungeon.level.openSpace[cell]){
 			return false;
 		}
-		if (Char.hasProp(this, Char.Property.IMMOVABLE) && (!(this instanceof NPC) || this instanceof Ghost || this instanceof SentryRoom.Sentry)) {
+		if (Char.hasProp(this, Property.IMMOVABLE) && (!(this instanceof NPC) || this instanceof Ghost || this instanceof SentryRoom.Sentry)) {
 			return false;//also in Dungeon.java line 1078 (findPassable())
 		}
 
@@ -906,6 +936,25 @@ public abstract class Mob extends Char implements Customizable {
 			attack( enemy );
 			Invisibility.dispel(this);
 			spend( attackDelay() );
+			return true;
+		}
+	}
+
+	protected boolean doRangedAttack() {
+		return doRangedAttack( enemy.pos );
+	}
+
+	protected boolean doRangedAttack(int target) {
+		return doRangedAttack(target, sprite != null && (sprite.visible || enemy.sprite.visible));
+	}
+
+	protected boolean doRangedAttack(int target, boolean visibleFight) {
+		if (visibleFight) {
+			sprite.zap( target );
+			if (sprite.instantZapDamage()) zap();
+			return false;
+		} else {
+			zap();
 			return true;
 		}
 	}
@@ -1380,13 +1429,17 @@ public abstract class Mob extends Char implements Customizable {
 		return customName == null ? super.name() : Messages.NO_TEXT_FOUND.equals(msg = Messages.get(customName)) ? customName : msg;
 	}
 
-	public String description() {
+	//ensure no subclass can use String description(); it is now renamed to desc()
+	protected final void description() {}
+
+	@Override
+	public String desc() {
 		String msg;
 		return customDesc == null ? Messages.get(this, "desc") : Messages.NO_TEXT_FOUND.equals(msg = Messages.get(customDesc)) ? customDesc : msg;
 	}
 
 	public String info(){
-		StringBuilder desc = new StringBuilder(description());
+		StringBuilder desc = new StringBuilder(desc());
 
 		for (Buff b : buffs(ChampionEnemy.class)){
 			desc.append("\n\n_").append(Messages.titleCase(b.name())).append("_\n").append(b.desc());
@@ -1405,8 +1458,8 @@ public abstract class Mob extends Char implements Customizable {
         Mob defaultStats = DefaultStatsCache.getDefaultObject(getClass());
         if (defaultStats != null) {
 
-			HashSet<Char.Property> defProps = defaultStats.properties;
-			HashSet<Char.Property> props = properties;
+			HashSet<Property> defProps = defaultStats.properties;
+			HashSet<Property> props = properties;
 
             if (DefaultStatsCache.useStatsScale(this)) {
                 if (defaultStats.baseSpeed != baseSpeed || defaultStats.statsScale != statsScale
@@ -1810,7 +1863,7 @@ public abstract class Mob extends Char implements Customizable {
 		protected void looseEnemy(){
 			sprite.showLost();
 			state = WANDERING;
-			target = following ? Dungeon.hero.pos : ((Mob.Wandering)WANDERING).randomDestination();
+			target = following ? Dungeon.hero.pos : ((Wandering)WANDERING).randomDestination();
 		}
 	}
 

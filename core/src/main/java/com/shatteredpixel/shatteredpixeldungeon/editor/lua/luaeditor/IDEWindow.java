@@ -31,11 +31,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.PopupMenu;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -44,10 +45,16 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.LuaCustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.ResourcePath;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.CustomObjSelector;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.idewindowactions.LuaScript;
 import com.watabou.input.PointerEvent;
@@ -58,12 +65,15 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.BiConsumer;
 import com.watabou.utils.Consumer;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+@NotAllowedInLua
 public class IDEWindow extends Component {
 
-	private LuaScript script;
+	private String scriptPath;//initial value
+	private final LuaCustomObject customObject;
 
 	private CodeInputPanel[] codeInputPanels;
 	private CodeInputPanel inputDesc, inputLocalVars, inputScriptVars;
@@ -75,17 +85,18 @@ public class IDEWindow extends Component {
 	private Component outsideSp;
 
 	private final Class<?> clazz;
-	private final LuaCodeHolder luaCodeHolder;
 
 	private boolean unsavedChanges = false;
 
-	public IDEWindow(LuaCodeHolder luaCodeHolder, LuaScript script, Runnable layoutParent) {
-		this.luaCodeHolder = luaCodeHolder;
-		this.clazz = luaCodeHolder.clazz;
+	public IDEWindow(LuaCustomObject customObject, Class<?> clazz, Runnable layoutParent) {
+		this.customObject = customObject;
+		this.scriptPath = customObject.getLuaScriptPath();
+		this.clazz = clazz;
 
 		pathLabel = PixelScene.renderTextBlock(Messages.get(IDEWindow.class, "path"),9);
 		add(pathLabel);
 
+		//tzz Anzeige des Wertes 'scriptPath'; Button zur Erstellung einer neuen THEORETISCHEN Instanz von scriptPath, erst beim SPEICHERN wird dieser auch eine ID zugewiesen
 		pathInput = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, PixelScene.uiCamera.zoom) {
 			@Override
 			protected void looseFocus() {
@@ -108,9 +119,10 @@ public class IDEWindow extends Component {
 		changeScript = new IconButton(Icons.CHANGES.get()) {
 			@Override
 			protected void onClick() {
+				//Show loaded LuaScript value of all existing and applicable RawLuaScripts tzz
 				showSelectScriptWindow(clazz, script -> {
 					if (script != null) {
-						selectScript(script, true);
+						selectScript(script.getPath(), script, true);
 						unsavedChanges = true;
 					}
 				});
@@ -260,7 +272,7 @@ public class IDEWindow extends Component {
 			i++;
 		}
 
-		selectScript(script, true);
+		selectScript(scriptPath, scriptPath == null ? null : CustomObject.loadScriptFromFile(scriptPath), true);
 		inputDesc.textInput.gainFocus();
 
 		unsavedChanges = false;
@@ -279,7 +291,7 @@ public class IDEWindow extends Component {
 		pathLabel.setPos(x, y + (h - pathLabel.height()) * 0.5f);
 
 		height = Math.max(h, pathLabel.height()) + 3;
-		height = EditorUtilies.layoutCompsLinear(2, this, codeInputPanels);
+		height = EditorUtilities.layoutCompsLinear(2, this, codeInputPanels);
 	}
 
 	public Component getOutsideSp() {
@@ -289,7 +301,7 @@ public class IDEWindow extends Component {
 	private String createFullScript() {
 		StringBuilder b = new StringBuilder();
 
-		if (script == null) script = new LuaScript(luaCodeHolder.clazz, null, luaCodeHolder.pathToScript);
+		LuaScript script = new LuaScript(clazz, null);
 
 		script.desc = inputDesc.convertToLuaCode().substring(2);//uncomment, removes --
 		b.append('\n');
@@ -310,7 +322,7 @@ public class IDEWindow extends Component {
 
 		String cleanedFunctions = LuaScript.cleanLuaCode(fullFunctions);
 
-		b.append("return {\n    vars = vars; static = static; ");
+		b.append(LuaScript.SCRIPT_RETURN_START);
 		for (String functionName : LuaScript.allFunctionNames(cleanedFunctions)) {
 			b.append(functionName).append(" = ").append(functionName).append("; ");
 		}
@@ -328,61 +340,104 @@ public class IDEWindow extends Component {
 		} else {
 			RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(IDEWindow.class, "compile_no_error_title"), 9);
 			title.hardlight(Window.TITLE_COLOR);
-			EditorScene.show(new WndTitledMessage(title, Messages.get(IDEWindow.class, "compile_no_error_body")));
+			EditorScene.show(new WndTitledMessage(title, Messages.get(IDEWindow.class, "compile_no_error_body")) {{setHighlightingEnabled(false);}});
 		}
 	}
 
 	private boolean save() {
-		luaCodeHolder.pathToScript = pathInput.getText();
-		if (!luaCodeHolder.pathToScript.endsWith(".lua")) luaCodeHolder.pathToScript += ".lua";
 
-		FileHandle saveTo = CustomDungeonSaves.getAdditionalFilesDir().child(luaCodeHolder.pathToScript.replace(' ', '_'));
-		if (saveTo.exists()) {
-			if (script == null || !script.pathFromRoot.equals(luaCodeHolder.pathToScript)){
-				EditorScene.show(new WndError(Messages.get(IDEWindow.class, "script_in_use_body")));
+		String newPath;
+		if (pathInput.getText().isEmpty() || pathInput.getText().equals(".lua")) {
+			newPath = null;
+		} else {
+			//script could be stored where the original customObject is saved
+			String pathPrefix;
+//			pathPrefix = customObject.saveDirPath.substring(0, customObject.saveDirPath.length() - CustomDungeonSaves.fileName(customObject).length())
+//					+ "scripts/";
+			pathPrefix = "";
+
+
+			newPath = pathPrefix + pathInput.getText();
+
+			//make sure the path has the correct extension
+			if (!newPath.endsWith(".lua")) newPath += ".lua";
+
+			newPath = ResourcePath.removeSpacesInPath(newPath);
+		}
+
+		if (scriptPath == null) {
+			if (newPath == null) {
+				//TODO tzzz cannot create file: invalid name
 				return false;
 			}
-		}
 
-		if (script != null) {
-			for (LuaScript ls : CustomDungeonSaves.findScripts(null)) {
-				if (luaCodeHolder.pathToScript.equals(ls.pathFromRoot)) {
-					Class<?> luca = script.type;
-					while (!luca.isAssignableFrom(clazz)) {
-						luca = script.type.getSuperclass();
-					}
-					if (luca == GameObject.class || luca == Object.class) {
-						EditorScene.show(new WndError(Messages.get(IDEWindow.class, "save_duplicate_name_error", luaCodeHolder.pathToScript)) {{
-							setHighlightingEnabled(false);
-						}});
-						return false;
-					}
-				}
+			FileHandle saveTo = CustomObject.getResourceFile(newPath, false);
+			if (saveTo.exists()) {
+				//TODO tzzz cannot override!
+				return false;
 			}
-		}
 
-		String content = createFullScript();
-		try {
-			CustomDungeonSaves.writeClearText(CustomDungeonSaves.getExternalFilePath(luaCodeHolder.pathToScript), content);
-			unsavedChanges = false;
+			try {
+				CustomDungeonSaves.writeClearText(saveTo, createFullScript());
+				unsavedChanges = false;
+				customObject.setLuaScriptPath(newPath);
+			} catch (IOException e) {
+				EditorScene.show(new WndError(Messages.get(IDEWindow.class, "write_file_exception", e.getClass().getSimpleName(), e.getMessage())) {{
+					setHighlightingEnabled(false);}});
+				return false;
+			}
 			return true;
-		} catch (Exception e) {
-			EditorScene.show(new WndError(Messages.get(IDEWindow.class, "write_file_exception", e.getClass().getSimpleName(), e.getMessage())) {{
-				setHighlightingEnabled(false);}});
-			return false;
 		}
+
+		if (newPath != null && !newPath.equals(scriptPath)) {
+			//save location has changed!
+			//fragen, ob alter pfad gelöscht werden soll, warnung, dass alle anderen die denselben pfad verwenden neu konfiguriert werden müssen
+			return false;
+		} else {
+			FileHandle saveTo = CustomObject.getResourceFile(scriptPath, false);
+			try {
+				CustomDungeonSaves.writeClearText(saveTo, createFullScript());
+				unsavedChanges = false;
+				customObject.setLuaScriptPath(newPath);
+			} catch (IOException e) {
+				EditorScene.show(new WndError(Messages.get(IDEWindow.class, "write_file_exception", e.getClass().getSimpleName(), e.getMessage())) {{
+					setHighlightingEnabled(false);}});
+				return false;
+			}
+			return true;
+		}
+
+//		if (saveTo.exists()) {
+//			if (script == null || !script.pathFromRoot.equals(luaCodeHolder.pathToScript)){
+//				EditorScene.show(new WndError(Messages.get(IDEWindow.class, "script_in_use_body")));
+//				return false;
+//			}
+//		}
+
+//		if (script != null) {
+//			for (LuaScript ls : CustomDungeonSaves.findScripts(null)) {
+//				if (luaCodeHolder.pathToScript.equals(ls.pathFromRoot)) {
+//					Class<?> luca = script.type;
+//					while (!luca.isAssignableFrom(clazz)) {
+//						luca = script.type.getSuperclass();
+//					}
+//					if (luca == GameObject.class || luca == Object.class) {
+//						EditorScene.show(new WndError(Messages.get(IDEWindow.class, "save_duplicate_name_error", luaCodeHolder.pathToScript)) {{
+//							setHighlightingEnabled(false);
+//						}});
+//						return false;
+//					}
+//				}
+//			}
+//		}
 	}
 
-	public static SimpleWindow showWindow(LuaCodeHolder luaCodeHolder) {
-		return showWindow(luaCodeHolder, CustomDungeonSaves.readLuaFile(luaCodeHolder.pathToScript));
-	}
+	public static SimpleWindow showWindow(LuaCustomObject customObject, CustomObjSelector<String> customObjSelector, Class<?> clazz) {
 
-	public static SimpleWindow showWindow(LuaCodeHolder luaCodeHolder, LuaScript script) {
-
-		if (Game.platform.openNativeIDEWindow(luaCodeHolder, script)) return null;
+		if (Game.platform.openNativeIDEWindow(customObject, customObjSelector, clazz)) return null;
 
 		SimpleWindow w = new SimpleWindow((int) (PixelScene.uiCamera.width * 0.8f),  (int) (PixelScene.uiCamera.height * 0.9f)) {
-			IDEWindow ideWindow = new IDEWindow(luaCodeHolder, script, this::layout);
+			IDEWindow ideWindow = new IDEWindow(customObject, clazz, this::layout);
 			{
 				initComponents(null, ideWindow, ideWindow.getOutsideSp(), 0f, 0f, new ScrollPaneWithScrollbar(ideWindow));
 			}
@@ -400,6 +455,7 @@ public class IDEWindow extends Component {
 							protected void onSelect(int index) {
 								if (index == 0) {
 									superHide.run();
+									customObjSelector.setValue(customObject.getLuaScriptPath());
 								}
 							}
 						});
@@ -407,28 +463,28 @@ public class IDEWindow extends Component {
 					}
 				}
 				super.hide();
+				customObjSelector.setValue(customObject.getLuaScriptPath());
 			}
 		};
 
-		EditorScene.show(w);
+		DungeonScene.show(w);
 
 		return w;
 	}
 
-	public void selectScript(LuaScript script, boolean force) {
-		if (script != null) script.type = clazz;
-		if (force) this.script = script;
+	public void selectScript(String scriptPath, LuaScript script, boolean force) {
+		if (force) this.scriptPath = scriptPath;
 		String cleanedCode;
 		LuaScript currentScript;
 		if (force) {
 			if (script == null) {
-				currentScript = new LuaScript(Object.class, "", "");
+				currentScript = new LuaScript(Object.class, "");
 				currentScript.code = "";
 				cleanedCode = "";
 			} else {
 				currentScript = script;
 				cleanedCode = LuaScript.cleanLuaCode(script.code);
-				pathInput.setText(currentScript.pathFromRoot);
+				pathInput.setText(scriptPath);
 			}
 		} else {
 			currentScript = script;
@@ -591,7 +647,7 @@ public class IDEWindow extends Component {
 						protected void onClick() {
 							LuaTemplates.show(script -> {
 								if (script != null) {
-									selectScript(script, false);
+									selectScript(null, script, false);
 									OutsideSpMenuPopup.this.hideImmediately();
 								}
 							}, clazz);
@@ -630,7 +686,7 @@ public class IDEWindow extends Component {
 
 			@Override
 			public List<Bag> getBags() {
-				return Arrays.asList(Mobs.bag, Items.bag, Traps.bag, Plants.bag, Buffs.bag);
+				return Arrays.asList(Mobs.bag(), Items.bag(), Traps.bag(), Plants.bag(), Buffs.bag());
 			}
 
 			@Override
@@ -649,7 +705,7 @@ public class IDEWindow extends Component {
 					return;
 				}
 				Class<?> clazz = obj.getClass();
-				while (LuaClass.class.isAssignableFrom(clazz) || LuaLevel.class.isAssignableFrom(clazz)) clazz = clazz.getSuperclass();
+				while (CustomObjectClass.class.isAssignableFrom(clazz)) clazz = clazz.getSuperclass();
 				String clName = clazz.getSimpleName();
 				if (clName.equals("Barrier")) clName = clazz.getName();
 				if (obj instanceof Plant.Seed) clName = obj.getClass().getEnclosingClass().getSimpleName() + "$" + clName;
@@ -676,7 +732,7 @@ public class IDEWindow extends Component {
 		String[] descs = new String[options.length];
 		int i = 0;
 		for (LuaScript s : scripts) {
-			options[i] = s.pathFromRoot;
+			options[i] = s.toString();
 			descs[i++] = s.desc;
 		}
 

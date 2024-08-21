@@ -1,15 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bee;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobBasedOnDepth;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -17,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaCustomObjectClass;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Reflection;
 
@@ -57,8 +50,11 @@ public class DefaultStatsCache {
     public static <T extends Bundlable> T getDefaultObject(Class<T> clazz) {
         T ret = (T) cache.get(clazz);
         if (ret == null) {
+            if (LuaCustomObjectClass.class.isAssignableFrom(clazz)) {
+                return getDefaultObject((Class<T>) clazz.getSuperclass());
+            }
 
-            //Acthung Brute kann manche stats setzten, auch speed ändern!
+            //Achtung Brute kann manche stats setzten, auch speed ändern!
             if (Mob.class.isAssignableFrom(clazz) &&
                     //if you change this, also check out Dungeon.java line 1078 (findPassable())
                     (NPC.class.isAssignableFrom(clazz) && !SentryRoom.Sentry.class.isAssignableFrom(clazz) && !Ghost.class.isAssignableFrom(clazz)

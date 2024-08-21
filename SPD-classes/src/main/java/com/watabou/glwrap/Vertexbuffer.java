@@ -22,11 +22,13 @@
 package com.watabou.glwrap;
 
 import com.badlogic.gdx.Gdx;
+import com.watabou.NotAllowedInLua;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
+@NotAllowedInLua
 public class Vertexbuffer {
 
 	private int id;

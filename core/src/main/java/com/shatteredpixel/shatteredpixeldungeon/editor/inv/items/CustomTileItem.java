@@ -5,7 +5,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.DefaultListItemWithRemoveBtn;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
@@ -13,7 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.CustomTileActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.GooBossRoom;
@@ -57,7 +56,7 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
             return customTile.tileW + "x" + customTile.tileH + " GooNest " + (defaultName == null ? TileItem.getName(customTile.terrain, cell) : Messages.titleCase(defaultName));
         }
 
-        if (defaultName != null) return Messages.titleCase(defaultName) + EditorUtilies.appendCellToString(cell);
+        if (defaultName != null) return Messages.titleCase(defaultName) + EditorUtilities.appendCellToString(cell);
         return TileItem.getName(customTile.terrain, cell);
     }
 
@@ -77,54 +76,63 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
     }
 
     @Override
+    public boolean supportsAction(Action action) {
+        return action == Action.REMOVE && getObject() instanceof CustomTileLoader.SimpleCustomTile;
+    }
+
+    @Override
+    public void doAction(Action action) {
+        if (action == Action.REMOVE) {
+            CustomTileLoader.SimpleCustomTile del = (CustomTileLoader.SimpleCustomTile) getObject();
+
+            Undo.startAction();
+
+            ActionPartList actionPart = new ActionPartList() {
+                @Override
+                public void undo() {
+                    Dungeon.customDungeon.customTiles.add(del);
+                    Tiles.addCustomTile(del);
+                    super.undo();
+                    Dungeon.customDungeon.restoreToolbar();
+                }
+
+                @Override
+                public void redo() {
+                    Dungeon.customDungeon.customTiles.remove(del);
+                    Tiles.removeCustomTile(del);
+                    super.redo();
+                    EditorScene.revalidateCustomTiles();
+                    Dungeon.customDungeon.restoreToolbar();
+                }
+
+                @Override
+                public boolean hasContent() {
+                    return true;
+                }
+            };
+
+            for (CustomTilemap ct : Dungeon.level.customTiles.toArray(new CustomTilemap[0])) {
+                if (ct instanceof CustomTileLoader.SimpleCustomTile && ((CustomTileLoader.SimpleCustomTile) ct).identifier.equals(del.identifier)) {
+                    int cell = ct.tileX + ct.tileY * Dungeon.level.width();
+                    actionPart.addActionPart(new CustomTileActionPart.Remove(cell, Dungeon.level.map[cell], ct));
+                }
+            }
+
+            Undo.addActionPart(actionPart);
+
+            Undo.endAction();
+
+            actionPart.redo();
+        }
+    }
+
+    @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        if (getObject() instanceof CustomTileLoader.SimpleCustomTile) {
+        if (supportsAction(Action.REMOVE)) {
             return new DefaultListItemWithRemoveBtn(this, window, name(), getSprite()) {
                 @Override
                 protected void onRemove() {
-                    CustomTileLoader.SimpleCustomTile del = (CustomTileLoader.SimpleCustomTile) getObject();
-
-                    Undo.startAction();
-
-                    ActionPartList actionPart = new ActionPartList() {
-                        @Override
-                        public void undo() {
-                            Dungeon.customDungeon.customTiles.add(del);
-                            Tiles.addCustomTile(del);
-                            WndEditorInv.updateCurrentTab();
-                            super.undo();
-                            Dungeon.customDungeon.restoreToolbar();
-                        }
-
-                        @Override
-                        public void redo() {
-                            Dungeon.customDungeon.customTiles.remove(del);
-                            Tiles.removeCustomTile(del);
-                            WndEditorInv.updateCurrentTab();
-                            super.redo();
-                            EditorScene.revalidateCustomTiles();
-                            Dungeon.customDungeon.restoreToolbar();
-                        }
-
-                        @Override
-                        public boolean hasContent() {
-                            return true;
-                        }
-                    };
-
-                    for (CustomTilemap ct : Dungeon.level.customTiles.toArray(new CustomTilemap[0])) {
-                        if (ct instanceof CustomTileLoader.SimpleCustomTile && ((CustomTileLoader.SimpleCustomTile) ct).identifier.equals(del.identifier)) {
-                            int cell = ct.tileX + ct.tileY * Dungeon.level.width();
-                            actionPart.addActionPart(new CustomTileActionPart.Remove(cell, Dungeon.level.map[cell], ct));
-                        }
-                    }
-
-                    Undo.addActionPart(actionPart);
-
-                    Undo.endAction();
-
-                    actionPart.redo();
-
+                    CustomTileItem.this.doAction(Action.REMOVE);
                 }
             };
         }

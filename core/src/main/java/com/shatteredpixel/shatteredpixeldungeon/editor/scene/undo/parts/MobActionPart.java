@@ -102,12 +102,12 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
 
         @Override
         public void undo() {
-            EditMobComp.setToMakeEqual(realMob, before);
+            if (realMob != null) realMob.copyStats(before);
         }
 
         @Override
         public void redo() {
-            EditMobComp.setToMakeEqual(realMob, after);
+            if (realMob != null) realMob.copyStats(after);
         }
 
         @Override

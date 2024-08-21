@@ -22,6 +22,7 @@
 package com.watabou.noosa;
 
 import com.badlogic.gdx.Gdx;
+import com.watabou.NotAllowedInLua;
 import com.watabou.glscripts.Script;
 import com.watabou.glwrap.Attribute;
 import com.watabou.glwrap.Quad;
@@ -32,6 +33,7 @@ import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+@NotAllowedInLua
 public class NoosaScript extends Script {
 	
 	public Uniform uCamera;

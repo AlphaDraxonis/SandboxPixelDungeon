@@ -39,6 +39,13 @@ public class RotHeartSprite extends MobSprite {
 
 		texture( Assets.Sprites.ROT_HEART );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 16, 16 );
 
 		idle = new MovieClip.Animation( 1, true );
@@ -52,8 +59,6 @@ public class RotHeartSprite extends MobSprite {
 
 		die = new MovieClip.Animation( 8, false );
 		die.frames( frames, 1, 2, 3, 4, 5, 6, 7, 7, 7 );
-
-		play( idle );
 	}
 
 	@Override

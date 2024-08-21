@@ -15,7 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
@@ -230,9 +230,9 @@ public class WndEditStats extends MultiWindowTabComp {
 		add(restoreDefaults);
 
 		mainWindowComps = new Component[]{
-				statsScale == null ? viewDistance : statsScale, PixelScene.landscape() ? null : viewDistance, speed, attackSpeed, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+				statsScale == null ? viewDistance : statsScale, PixelScene.landscape() ? null : viewDistance, speed, attackSpeed, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
 				hp, attackSkill, defenseSkill,
-				armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+				armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
 				statsScale != null && PixelScene.landscape() ? viewDistance : null, tilesBeforeWakingUp, xp, maxLvl, loot, enchantmentLevel
 		};
 
@@ -304,7 +304,7 @@ public class WndEditStats extends MultiWindowTabComp {
 	@Override
 	protected void layoutOwnContent() {
 		super.layoutOwnContent();
-		content.setSize(width, EditorUtilies.layoutCompsLinear(GAP, content, enchantments, properties));
+		content.setSize(width, EditorUtilities.layoutCompsLinear(GAP, content, enchantments, properties));
 	}
 
 	private void addSpeedViewDistanceSpinner(Mob def, Mob current) {

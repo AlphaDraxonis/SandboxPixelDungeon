@@ -22,7 +22,9 @@
 package com.watabou.glwrap;
 
 import com.badlogic.gdx.Gdx;
+import com.watabou.NotAllowedInLua;
 
+@NotAllowedInLua
 public class Framebuffer {
 
 	public static final int COLOR	= Gdx.gl.GL_COLOR_ATTACHMENT0;

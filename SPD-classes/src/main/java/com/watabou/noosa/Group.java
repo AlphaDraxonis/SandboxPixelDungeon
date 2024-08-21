@@ -21,6 +21,7 @@
 
 package com.watabou.noosa;
 
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.PointerEvent;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -340,6 +341,7 @@ public class Group extends Gizmo {
 	}
 
 	//Important for scrollpane fix: add scrollpane last (first add the buttons to the sp, then the sp to the window)
+	@NotAllowedInLua
 	public void redirectPointerEvent(PointerEvent event) {
 		if (members == null) return;
 		for (Object gizmo : members.toArray()) {
@@ -347,6 +349,7 @@ public class Group extends Gizmo {
 		}
 	}
 
+	@NotAllowedInLua
 	public void cancelClick() {
 		if (members == null) return;
 		for (Object gizmo : members.toArray()) {

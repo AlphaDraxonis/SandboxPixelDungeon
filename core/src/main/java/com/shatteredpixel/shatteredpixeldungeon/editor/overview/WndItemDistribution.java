@@ -6,7 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.ItemDistribution;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -18,12 +18,14 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@NotAllowedInLua
 public class WndItemDistribution extends Window {
 
     private ScrollingListPane distributions;
@@ -154,7 +156,7 @@ public class WndItemDistribution extends Window {
                 if (distribution instanceof ItemDistribution.Items) {
                     Item i = ((ItemDistribution.Items) distribution).getObjectsToDistribute().get(0);
                     icon = CustomDungeon.getDungeon().getItemImage(i);
-                    subIcon = EditorUtilies.createSubIcon(i);
+                    subIcon = EditorUtilities.createSubIcon(i);
                     if (i.level() != 0) {
                         lvlLabel.text(Messages.format(ItemSlot.TXT_LEVEL, i.level()));
                         lvlLabel.measure();

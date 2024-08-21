@@ -6,7 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
@@ -14,10 +14,12 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.ui.Component;
 
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab.GAP;
 
+@NotAllowedInLua
 public class ZoneMobSettings extends Component {
 
     private final Component outsideSp;
@@ -34,7 +36,7 @@ public class ZoneMobSettings extends Component {
         changeMobRotation = new MobSettings.ChangeMobRotation(z.getMobRotationVar()) {
             @Override
             protected void updateParent() {
-                Window w = EditorUtilies.getParentWindow(this);
+                Window w = EditorUtilities.getParentWindow(this);
                 if (w instanceof SimpleWindow) ((SimpleWindow) w).layout();
             }
         };
@@ -122,7 +124,7 @@ public class ZoneMobSettings extends Component {
     @Override
     protected void layout() {
         height = 6;
-        height = EditorUtilies.layoutStyledCompsInRectangles(GAP, width, this, spawningEnabled, respawnTime) + GAP * 3;
+        height = EditorUtilities.layoutStyledCompsInRectangles(GAP, width, this, spawningEnabled, respawnTime) + GAP * 3;
         changeMobRotation.setRect(x, y + height, width, -1);
         height = changeMobRotation.bottom() - y;
     }

@@ -23,7 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.armor;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.RandomCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.RandomGlyph;
 import com.watabou.utils.Bundle;
@@ -90,7 +90,7 @@ public class GlyphArmor extends Armor {
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		bundle.put( LEVEL, trueLevel() );
-		bundle.put( GLYPHS, glyphs.keySet().toArray(EditorUtilies.EMPTY_CLASS_ARRAY) );
+		bundle.put( GLYPHS, glyphs.keySet().toArray(EditorUtilities.EMPTY_CLASS_ARRAY) );
 	}
 
 	public void addGlyph(Glyph glyph) {

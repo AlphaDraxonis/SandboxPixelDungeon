@@ -240,8 +240,8 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 	}
 
 	@Override
-	public String description() {
-		if (customDesc != null) return super.description();
+	public String desc() {
+		if (customDesc != null) return super.desc();
 		return Messages.get(this, "desc", weapon == null ? "___" : weapon().name());
 	}
 

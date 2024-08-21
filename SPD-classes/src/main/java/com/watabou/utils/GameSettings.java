@@ -23,8 +23,10 @@ package com.watabou.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 
+@NotAllowedInLua
 public class GameSettings {
 	
 	public static final String DEFAULT_PREFS_FILE = "settings.xml";

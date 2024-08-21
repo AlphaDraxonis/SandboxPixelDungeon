@@ -42,15 +42,27 @@ public class ParticleItem extends EditorItem<CustomParticle.ParticleProperty> {
     }
 
     @Override
+    public boolean supportsAction(Action action) {
+        return action == Action.REMOVE;
+    }
+
+    @Override
+    public void doAction(Action action) {
+        if (action == Action.REMOVE) {
+            CustomParticle.deleteParticle(getObject().particleID());
+            WndEditorInv.updateCurrentTab();
+
+            ItemSlot slot = QuickSlotButton.containsItem(ParticleItem.this);
+            if (slot != null) slot.item(null);
+        }
+    }
+
+    @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
         return new DefaultListItemWithRemoveBtn(this, window, name(), getSprite()) {
             @Override
             protected void onRemove() {
-                CustomParticle.deleteParticle(getObject().particleID());
-                WndEditorInv.updateCurrentTab();
-
-                ItemSlot slot = QuickSlotButton.containsItem(ParticleItem.this);
-                if (slot != null) slot.item(null);
+                ParticleItem.this.doAction(Action.REMOVE);
             }
         };
     }

@@ -10,15 +10,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaLevel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
@@ -26,13 +23,20 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomLayoutLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.LuaLevelScript;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaClassGenerator;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaLevel;
+import com.watabou.NotAllowedInLua;
 import com.watabou.utils.Random;
 import com.watabou.utils.*;
 
 import java.io.IOException;
 import java.util.*;
 
+@NotAllowedInLua
 public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSchemeLike {
 
     public static final LevelScheme SURFACE_LEVEL_SCHEME = new LevelScheme();//Placeholder for selecting levels
@@ -44,9 +48,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     }
 
     public static void initSpecialLevelSchemeNames() {
-        SURFACE_LEVEL_SCHEME.name = EditorUtilies.getDispayName(Level.SURFACE);
-        NO_LEVEL_SCHEME.name = EditorUtilies.getDispayName(Level.NONE);
-        ANY_LEVEL_SCHEME.name = EditorUtilies.getDispayName(Level.ANY);
+        SURFACE_LEVEL_SCHEME.name = EditorUtilities.getDispayName(Level.SURFACE);
+        NO_LEVEL_SCHEME.name = EditorUtilities.getDispayName(Level.NONE);
+        ANY_LEVEL_SCHEME.name = EditorUtilities.getDispayName(Level.ANY);
     }
 
 
@@ -100,7 +104,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             affectedByNoScrolls = true, rollForChampionIfChampionChallenge = true;
 
 
-    public LuaCodeHolder luaScript;
+    public int luaScriptID;
 
 
     public LevelScheme() {
@@ -122,11 +126,39 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         entranceCells = new ArrayList<>(3);
     }
 
-    public void initNewLevelScheme(String name, Class<? extends Level> levelTemplate) {
-        this.name = name;
+    public LevelScheme(RoomLayoutLevel roomLayout) {
+        this.name = roomLayout.name = NO_LEVEL_SCHEME.getName();
+        this.level = roomLayout;
+        roomLayout.levelScheme = this;
+
+        type = RoomLayoutLevel.class;
+
+        zones = new HashSet<>(3);
+
+        mobsToSpawn = new ArrayList<>(4);
+        roomsToSpawn = new ArrayList<>(4);
+        itemsToSpawn = new ArrayList<>(4);
+        prizeItemsToSpawn = new ArrayList<>(4);
+
         exitCells = new ArrayList<>(3);
         entranceCells = new ArrayList<>(3);
+
+        Dungeon.customDungeon.addFloor(this);
+        shopPriceMultiplier = Dungeon.getSimulatedDepth(this) / 5 + 1;
+    }
+
+    public void initNewLevelScheme(String name, Class<? extends Level> levelTemplate) {
+        this.name = name;
+
         zones = new HashSet<>(3);
+
+        mobsToSpawn = new ArrayList<>(4);
+        roomsToSpawn = new ArrayList<>(4);
+        itemsToSpawn = new ArrayList<>(4);
+        prizeItemsToSpawn = new ArrayList<>(4);
+
+        exitCells = new ArrayList<>(3);
+        entranceCells = new ArrayList<>(3);
 
         if (depth == 6 || depth == 11 || depth == 16) roomsToSpawn.add(new ShopRoom());
 
@@ -140,6 +172,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     //These setters are ONLY for NewFloorComp
     public void setType(Class<? extends Level> type) {
         if (type.getSimpleName().endsWith("_lua")) type = (Class<? extends Level>) type.getSuperclass();
+        if (CustomLevel.class.isAssignableFrom(type)) type = CustomLevel.class;
         this.type = type;
         if (type != CustomLevel.class) region = getRegion(type);
     }
@@ -425,8 +458,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         this.level = level;
         setType(level.getClass());
         level.setLevelScheme(this);
-
-        if (luaScript != null) luaScript.loadScript();
     }
 
     public void setFeeling(Level.Feeling feeling) {
@@ -441,22 +472,24 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         int oldHeroPos = Dungeon.hero.pos;
         Dungeon.hero.pos = -1;
 
-        if (luaScript != null) {
-            if (luaScript.getScript() == null) luaScript.loadScript();
-            if (luaScript.getScript() == null) luaScript = null;
-        }
+//        if (luaScript != null) {
+//            if (luaScript.getScript() == null) luaScript.loadScript(null);
+//            if (luaScript.getScript() == null) luaScript = null;
+//        }
 
         if (type != CustomLevel.class) {
             Random.pushGenerator(seed);
-            level = luaScript == null ? Reflection.newInstance(type)
-                    : (Level) Reflection.newInstance(LuaLevel.getLuaLevelClass(type));
+            level = luaScriptID == 0 ? Reflection.newInstance(type)
+                    : (Level) Reflection.newInstance(LuaClassGenerator.luaUserContentClass(type));
             level.setLevelScheme(this);
 
-            if (luaScript != null) {
-                if (luaScript.getScript().get("vars").istable()) {
-                    ((LuaLevel) level).setVars(LuaManager.deepCopyLuaValue(luaScript.getScript().get("vars")).checktable());
-                }
-            }
+            if (luaScriptID != 0) ((LuaLevel) level).setIdentifier(luaScriptID);
+
+//            if (luaScriptID != 0) {
+//                if (luaScript.getScript().get("vars").istable()) {
+//                    ((LuaLevel) level).setVars(LuaManager.deepCopyLuaValue(luaScript.getScript().get("vars")).checktable());
+//                }
+//            }
 
             Dungeon.level = level;
             Dungeon.levelName = name;
@@ -467,7 +500,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             Random.popGenerator();
         } else {
             try {
-                level = CustomDungeonSaves.loadLevel(name, luaScript);//make sure the levels are different objects
+                //make sure the levels are different objects
+                level = CustomDungeonSaves.loadLevel(name, luaScriptID);
             } catch (IOException e) {
                 SandboxPixelDungeon.reportException(e);
             } catch (CustomDungeonSaves.RenameRequiredException e) {
@@ -475,11 +509,13 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             }
             level.setLevelScheme(this);
 
-            if (luaScript != null) {
-                if (luaScript.getScript().get("vars").istable()) {
-                    ((LuaLevel) level).setVars(LuaManager.deepCopyLuaValue(luaScript.getScript().get("vars")).checktable());
-                }
-            }
+            if (luaScriptID != 0) ((LuaLevel) level).setIdentifier(luaScriptID);
+
+//            if (luaScript != null) {
+//                if (luaScript.getScript().get("vars").istable()) {
+//                    ((LuaLevel) level).setVars(LuaManager.deepCopyLuaValue(luaScript.getScript().get("vars")).checktable());
+//                }
+//            }
 
             Dungeon.level = level;
             Dungeon.levelName = name;
@@ -551,7 +587,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         Random.pushGenerator(seed);
 
 		try {
-			CustomDungeon.doOnEverything(this, true, GameObject::initRandoms, false, l -> false, () -> {});
+			CustomDungeon.doOnEverything(this, true, GameObject::initRandoms, false, null, null);
 		} catch (IOException e) {
 			//should already be loaded
 		}
@@ -665,10 +701,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String REDUCE_VIEW_DISTANCE_IF_DARKNESS = "reduce_view_distance_if_darkness";
     private static final String AFFECTED_BY_NO_SCROLLS = "affected_by_no_scrolls";
     private static final String ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE = "roll_for_champion_if_champion_challenge";
-    private static final String LUA_SCRIPT = "lua_script";
 
     private static final String LEVEL_COLORING = "level_coloring";
     private static final String LEVEL_COLORING_ALPHA = "level_coloring_alpha";
+
+    private static final String SCRIPT_ID = "script_id";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -700,6 +737,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(LEVEL_COLORING, new int[] {floorColor, wallColor, waterColor});
         bundle.put(LEVEL_COLORING_ALPHA, new float[] {floorAlpha, wallAlpha, waterAlpha});
 
+        bundle.put(SCRIPT_ID, luaScriptID);
+
         int[] entrances = new int[entranceCells.size()];
         int i = 0;
         for (int cell : entranceCells) {
@@ -714,7 +753,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             i++;
         }
         bundle.put(EXIT_CELLS, exits);
-        bundle.put(ZONES, zones.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
+        bundle.put(ZONES, zones.toArray(EditorUtilities.EMPTY_STRING_ARRAY));
 
         bundle.put(MOBS_TO_SPAWN, mobsToSpawn);
         bundle.put(ITEMS_TO_SPAWN, itemsToSpawn);
@@ -733,8 +772,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (musicFile != null) bundle.put(MUSIC_FILE, musicFile);
 
         if (builder != null) bundle.put(BUILDER, builder);
-
-        if (luaScript != null && !luaScript.pathToScript.isEmpty()) bundle.put(LUA_SCRIPT, luaScript);
     }
 
     @Override
@@ -832,7 +869,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             else hungerSpeed = bundle.getFloat(HUNGER_SPEED);
         }
 
-        luaScript = (LuaCodeHolder) bundle.get(LUA_SCRIPT);
+        if (bundle.contains("lua_script")) {
+            LuaLevelScript lco = UserContentManager.createNewCustomObject(LuaLevelScript.class, "", getType().getName());
+            lco.setLuaScriptPath(bundle.getBundle("lua_script").getString("path_to_script"));
+            luaScriptID = lco.getIdentifier();
+        }
+        else luaScriptID = bundle.getInt(SCRIPT_ID);
     }
 
     public Point getSizeIfUnloaded() {
@@ -856,7 +898,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public Level loadLevel(boolean removeInvalidTransitions) {
         if (type == CustomLevel.class) {
             try {
-                level = CustomDungeonSaves.loadLevel(name, removeInvalidTransitions, null);
+                level = CustomDungeonSaves.loadLevel(name, removeInvalidTransitions, 0);
                 level.setLevelScheme(this);
 
                 if (((CustomLevel) level).dataTransferToLevelScheme != null) {
@@ -885,7 +927,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     public void unloadLevel() {
         level = null;
-        if (luaScript != null) luaScript.unloadScript();
     }
 
 

@@ -1,24 +1,44 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StringInputComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Function;
 
 public class ChangeCustomizable<T extends Customizable> extends Component {
 
+    private final SimpleWindow window;
     protected StringInputComp name, desc;
 
     protected final T obj;
 
-    public ChangeCustomizable(DefaultEditComp<T> editComp) {
+    public static <T extends Customizable> void showAsWindow(DefaultEditComp<T> editComp, Function<SimpleWindow, ChangeCustomizable<T>> createContent) {
+        Window parent = EditorUtilities.getParentWindow(editComp);
+        SimpleWindow window = new SimpleWindow(parent.camera().width - 10, 0) {
+            @Override
+            public void hide() {
+                super.hide();
+                editComp.updateObj();
+            }
+        };
+        window.offset(0, EditorUtilities.getMaxWindowOffsetYForVisibleToolbar());
+        ChangeCustomizable<T> cc = createContent.apply(window);
+        window.initComponents(cc.createTitle(), cc, null, 0f, 0.5f);
+        cc.updateLayout();
+        EditorScene.show(window);
+    }
+
+    public ChangeCustomizable(SimpleWindow window, DefaultEditComp<T> editComp) {
         this.obj = editComp.getObj();
+        this.window = window;
 
         name = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "name_label"), null, 100, false,
                 obj.getCustomName() == null ? Messages.getFullMessageKey(obj.getClass(), "name") : obj.getCustomName()) {
@@ -47,14 +67,13 @@ public class ChangeCustomizable<T extends Customizable> extends Component {
     }
 
     protected void updateLayout() {
-        Window w = EditorUtilies.getParentWindow(this);
-        if (w instanceof SimpleWindow) ((SimpleWindow) w).layout();
+        window.resize(window.width(), ((int) Math.min(PixelScene.uiCamera.height * 0.85f, Math.ceil(window.preferredHeight()))));
     }
 
     @Override
     protected void layout() {
         height = 0;
-        height = EditorUtilies.layoutCompsLinear(2, this, name, desc);
+        height = EditorUtilities.layoutCompsLinear(2, this, name, desc);
     }
 
     public Component createTitle() {

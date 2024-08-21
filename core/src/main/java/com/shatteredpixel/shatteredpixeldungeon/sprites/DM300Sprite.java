@@ -32,39 +32,91 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Callback;
+
+import java.util.LinkedHashMap;
 
 public class DM300Sprite extends MobSprite {
 
 	private Animation charge;
 	private Animation slam;
 
-	private Emitter superchargeSparks;
-	
+	@Override
+	public LinkedHashMap<String, Animation> getAnimations() {
+		LinkedHashMap<String, Animation> result = super.getAnimations();
+		result.put("charge", charge);
+		result.put("slam", slam);
+		return result;
+	}
+
 	public DM300Sprite() {
 		super();
 		
 		texture( Assets.Sprites.DM300 );
-		
-		updateChargeState(false);
+
+		setSuperchargedTexture(false);
 	}
 
-	public void updateChargeState( boolean enraged ){
-		if (superchargeSparks != null) superchargeSparks.on = enraged;
+	public static class SuperchargeSparks extends CharSpriteExtraEmitter {
 
-		int c = enraged ? 10 : 0;
+		@Override
+		public void onLink(CharSprite sprite, Char ch) {
+			emitter = sprite.emitter();
+			emitter.autoKill = false;
+			emitter.pour(SparkParticle.STATIC, 0.05f);
+			emitter.on = false;
 
-		TextureFilm frames = new TextureFilm( texture, 25, 22 );
+			if (ch instanceof DM300){
+				updateChargeState(sprite, ((DM300) ch).isSupercharged());
+			}
+		}
 
-		idle = new Animation( enraged ? 15 : 10, true );
-		idle.frames( frames, c+0, c+1 );
+		@Override
+		public void onUpdate(CharSprite sprite) {
+			if (emitter != null){
+				emitter.visible = sprite.visible;
+			}
+		}
 
-		run = new Animation( enraged ? 15 : 10, true );
-		run.frames( frames, c+0, c+2 );
+		public void updateChargeState( CharSprite sprite, boolean enraged ){
+			if (emitter != null) emitter.on = enraged;
 
-		attack = new Animation( 15, false );
-		attack.frames( frames, c+3, c+4, c+5 );
+			//can only change texture if we are the actual
+			if (sprite instanceof DM300Sprite) {
+				((DM300Sprite) sprite).setSuperchargedTexture(enraged);
+			}
+		}
+
+	}
+
+	protected void setSuperchargedTexture( boolean enraged ) {
+		this.enraged = enraged;
+
+		initAnimations();
+
+		if (curAnim != charge) play(idle);
+	}
+
+	private boolean enraged;
+
+	public boolean enraged() {
+		return enraged;
+	}
+
+	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm(texture, 25, 22);
+
+		int c = enraged() ? 10 : 0;
+
+		idle = new Animation(enraged() ? 15 : 10, true);
+		idle.frames(frames, c + 0, c + 1);
+
+		run = new Animation(enraged() ? 15 : 10, true);
+		run.frames(frames, c + 0, c + 2);
+
+		attack = new Animation(15, false);
+		attack.frames(frames, c + 3, c + 4, c + 5);
 
 		//unaffected by enrage state
 
@@ -80,13 +132,16 @@ public class DM300Sprite extends MobSprite {
 			die = new Animation(20, false);
 			die.frames(frames, 0, 10, 0, 10, 0, 10, 0, 10, 0, 10, 0, 10, 0, 10, 0, 10, 0, 10, 0, 10);
 		}
-
-		if (curAnim != charge) play(idle);
 	}
 
 	@Override
 	protected void playZapAnim(int cell) {
 		playZap(parent, this, cell, ch);
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
@@ -107,11 +162,19 @@ public class DM300Sprite extends MobSprite {
 		play( charge );
 	}
 
-	public void slam( int cell ){
-		turnTo( ch.pos , cell );
+	public void slam(){
 		play( slam );
+	}
+
+	public static boolean slam(CharSprite sprite, int cell) {
+		sprite.turnTo( sprite.ch.pos , cell );
+
+		if (sprite instanceof DM300Sprite) ((DM300Sprite) sprite).slam();
+
 		Sample.INSTANCE.play( Assets.Sounds.ROCKS );
 		PixelScene.shake( 3, 0.7f );
+
+		return !(sprite instanceof DM300Sprite);
 	}
 
 	@Override
@@ -138,45 +201,6 @@ public class DM300Sprite extends MobSprite {
 	public void place(int cell) {
 		if (parent != null) parent.bringToFront(this);
 		super.place(cell);
-	}
-
-	@Override
-	public void link(Char ch) {
-		super.link(ch);
-
-		superchargeSparks = emitter();
-		superchargeSparks.autoKill = false;
-		superchargeSparks.pour(SparkParticle.STATIC, 0.05f);
-		superchargeSparks.on = false;
-
-		if (ch instanceof DM300 && ((DM300) ch).isSupercharged()){
-			updateChargeState(true);
-		}
-	}
-
-	@Override
-	public void update() {
-		super.update();
-
-		if (superchargeSparks != null){
-			superchargeSparks.visible = visible;
-		}
-	}
-
-	@Override
-	public void die() {
-		super.die();
-		if (superchargeSparks != null){
-			superchargeSparks.on = false;
-		}
-	}
-
-	@Override
-	public void kill() {
-		super.kill();
-		if (superchargeSparks != null){
-			superchargeSparks.killAndErase();
-		}
 	}
 
 	@Override

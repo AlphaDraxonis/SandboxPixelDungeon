@@ -31,7 +31,9 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.NotAllowedInLua;
 
+@NotAllowedInLua
 public class WndSupportPrompt extends Window {
 
 	protected static final int WIDTH_P    = 120;

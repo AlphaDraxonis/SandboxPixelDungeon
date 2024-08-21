@@ -27,7 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
+import com.watabou.utils.WatabouRect;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,8 +62,8 @@ public abstract class StandardBridgeRoom extends StandardRoom {
 	}
 
 	//keep these so that subclasses can use them in their methods
-	protected Rect spaceRect;
-	protected Rect bridgeRect;
+	protected WatabouRect spaceRect;
+	protected WatabouRect bridgeRect;
 
 	@Override
 	public void paint(Level level) {
@@ -119,10 +119,10 @@ public abstract class StandardBridgeRoom extends StandardRoom {
 				}
 			}
 
-			spaceRect = new Rect(spaceStart+1, top+1, spaceEnd, bottom);
+			spaceRect = new WatabouRect(spaceStart+1, top+1, spaceEnd, bottom);
 
 			int bridgeY = Random.NormalIntRange(spaceRect.top+1, spaceRect.bottom-2);
-			bridgeRect = new Rect(spaceRect.left, bridgeY, spaceRect.right, bridgeY+1);
+			bridgeRect = new WatabouRect(spaceRect.left, bridgeY, spaceRect.right, bridgeY+1);
 
 		} else {
 
@@ -161,10 +161,10 @@ public abstract class StandardBridgeRoom extends StandardRoom {
 				}
 			}
 
-			spaceRect = new Rect(left+1, spaceStart+1, right, spaceEnd);
+			spaceRect = new WatabouRect(left+1, spaceStart+1, right, spaceEnd);
 
 			int bridgeX = Random.NormalIntRange(spaceRect.left+1, spaceRect.right-2);
-			bridgeRect = new Rect(bridgeX, spaceRect.top, bridgeX+1, spaceRect.bottom);
+			bridgeRect = new WatabouRect(bridgeX, spaceRect.top, bridgeX+1, spaceRect.bottom);
 
 		}
 

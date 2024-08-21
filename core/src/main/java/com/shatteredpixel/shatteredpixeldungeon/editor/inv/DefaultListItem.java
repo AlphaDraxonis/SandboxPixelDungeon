@@ -6,7 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
@@ -27,7 +27,7 @@ public class DefaultListItem extends AdvancedListPaneItem {
 
     public DefaultListItem(Item item, EditorInventoryWindow window, String title, Image image) {
         super(image,
-                (item instanceof EditorItem) ? ((EditorItem<?>) item).getSubIcon() : EditorUtilies.createSubIcon(item),
+                (item instanceof EditorItem) ? ((EditorItem<?>) item).getSubIcon() : EditorUtilities.createSubIcon(item),
                 Messages.titleCase(title));
         this.item = item;
         this.window = window;
@@ -94,7 +94,7 @@ public class DefaultListItem extends AdvancedListPaneItem {
         label.text(Messages.titleCase(item.name()));
 
         if (item instanceof EditorItem) {
-            updateImage(((EditorItem<?>) item).getSprite());
+            updateImage(((EditorItem<?>) item).getSprite(this::onUpdate));
         }
 
         QuickSlotButton.refresh();

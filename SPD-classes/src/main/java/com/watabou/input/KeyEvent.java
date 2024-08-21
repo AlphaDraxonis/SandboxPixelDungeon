@@ -21,11 +21,13 @@
 
 package com.watabou.input;
 
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Signal;
 
 import java.util.ArrayList;
 
+@NotAllowedInLua
 public class KeyEvent {
 	
 	public int code;

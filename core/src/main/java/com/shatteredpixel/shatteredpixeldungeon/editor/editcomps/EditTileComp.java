@@ -29,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -251,7 +251,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             if (suggestion == null) suggestion = levelScheme.getDefaultBelow();
         }
         if (transition.destLevel != null) suggestion = transition.destLevel;
-        return new TransitionEditPart(transition, EditorUtilies.getLevelScheme(suggestion), terrainType == -12345 ? null : !TileItem.isEntranceTerrainCell(terrainType),
+        return new TransitionEditPart(transition, EditorUtilities.getLevelScheme(suggestion), terrainType == -12345 ? null : !TileItem.isEntranceTerrainCell(terrainType),
                 levelScheme.getDepth()) {
             @Override
             protected void deleteTransition(LevelTransition transition) {
@@ -268,7 +268,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 transitionEdit, addTransition, editSignText, wellWaterSpinner, volumeSpinner, sacrificialFirePrize, coinDoorCost
         );
         if (customParticles != null && !customParticles.isEmpty()) {
-            layoutCompsLinear(customParticles.toArray(EditorUtilies.EMPTY_COMP_ARRAY));
+            layoutCompsLinear(customParticles.toArray(EditorUtilities.EMPTY_COMP_ARRAY));
         }
     }
 
@@ -355,11 +355,11 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
         //TODO make own statistic page
         if (obj.terrainType() == Terrain.LOCKED_DOOR || obj.terrainType() == Terrain.SECRET_LOCKED_DOOR)
-            desc = EditorUtilies.addIronKeyDescription(desc, level);
+            desc = EditorUtilities.addIronKeyDescription(desc, level);
         else if (obj.terrainType() == Terrain.CRYSTAL_DOOR || obj.terrainType() == Terrain.SECRET_CRYSTAL_DOOR)
-            desc = EditorUtilies.addCrystalKeyDescription(desc, level);
-        else if (obj.terrainType() == Terrain.LOCKED_EXIT) desc = EditorUtilies.addSkeletonKeyDescription(desc, level);
-        else if (obj.terrainType() == Terrain.COIN_DOOR) desc = EditorUtilies.addCoinDoorDescription(desc, level);
+            desc = EditorUtilities.addCrystalKeyDescription(desc, level);
+        else if (obj.terrainType() == Terrain.LOCKED_EXIT) desc = EditorUtilities.addSkeletonKeyDescription(desc, level);
+        else if (obj.terrainType() == Terrain.COIN_DOOR) desc = EditorUtilities.addCoinDoorDescription(desc, level);
 
         if (obj.cell() >= 0) {
             for (Blob blob : Dungeon.level.blobs.values()) {

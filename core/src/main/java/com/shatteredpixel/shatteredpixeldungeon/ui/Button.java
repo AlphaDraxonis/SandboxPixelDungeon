@@ -23,7 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.watabou.input.*;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -105,9 +105,14 @@ public class Button extends Component {
 						text += " _(" + KeyBindings.getKeyName(key) + ")_";
 					}
 					hoverTip = new Tooltip(Button.this, text, 80);
-					Button.this.parent.addToFront(hoverTip);
-					Window parentWindow = EditorUtilies.getParentWindow(this);
-					hoverTip.camera = parentWindow == null ? camera() : parentWindow.camera;
+					Window parentWindow = EditorUtilities.getParentWindow(this);
+					if (parentWindow != null) {
+						parentWindow.addToFront(hoverTip);
+						hoverTip.camera = parentWindow.camera;
+					} else {
+						Button.this.add(hoverTip);
+						hoverTip.camera = camera();
+					}
 					alignTooltip(hoverTip);
 				}
 			}

@@ -25,13 +25,11 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -44,16 +42,17 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EmptyRoom;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSpriteExtraEmitter;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.EyeSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MobSprite;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
+import com.watabou.noosa.Group;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
+
+import java.util.LinkedHashMap;
 
 public class SentryRoom extends SpecialRoom {
 
@@ -168,7 +167,7 @@ public class SentryRoom extends SpecialRoom {
 		Sentry sentry = new Sentry();
 		sentry.pos = level.pointToCell(sentryPos);
 		sentry.room = new EmptyRoom();
-		sentry.room.set((Rect)this);
+		sentry.room.set(this);
 		sentry.range = sentryRange;
 		sentry.setInitialChargeDelay(Math.max(1, dangerDist / 3f + 0.1f));
 		level.mobs.add( sentry );
@@ -251,6 +250,8 @@ public class SentryRoom extends SpecialRoom {
 		public EmptyRoom room;
 		public int range = 5;//only room OR range is used
 
+		private boolean charging;
+
 		@Override
 		protected boolean act() {
 			if (fieldOfView == null || fieldOfView.length != Dungeon.level.length()){
@@ -270,7 +271,8 @@ public class SentryRoom extends SpecialRoom {
 
 					if (curChargeDelay > 0.001f){ //helps prevent rounding errors
 						if (curChargeDelay == initialChargeDelay) {
-							((SentrySprite) sprite).charge();
+							charging = true;
+							SentrySprite.charge(sprite, Dungeon.hero.pos);
 						}
 						curChargeDelay -= Dungeon.hero.cooldown();
 						//pity mechanic so mistaps don't get people instakilled
@@ -282,7 +284,9 @@ public class SentryRoom extends SpecialRoom {
 					if (curChargeDelay <= .001f){
 						curChargeDelay = 1f;
 						sprite.zap(Dungeon.hero.pos);
-						((SentrySprite) sprite).charge();
+						if (sprite.instantZapDamage()) zap();
+						charging = true;
+						SentrySprite.charge(sprite, Dungeon.hero.pos);
 					}
 
 					spend(Dungeon.hero.cooldown());
@@ -290,6 +294,7 @@ public class SentryRoom extends SpecialRoom {
 
 				} else {
 					curChargeDelay = initialChargeDelay;
+					charging = false;
 					sprite.idle();
 				}
 
@@ -301,7 +306,18 @@ public class SentryRoom extends SpecialRoom {
 		}
 
 		@Override
+		public void playZapAnim(int target) {
+			SentrySprite.playZap(sprite.parent, sprite, target, this);
+		}
+
+		@Override
 		public void onZapComplete(){
+			if (!sprite.instantZapDamage()) //else zap was called in the beginning
+				zap();
+		}
+
+		@Override
+		public void zap() {
 			if (hit(this, Dungeon.hero, true)) {
 				Dungeon.hero.damage((int) (Char.combatRoll(2 + Dungeon.depth / 2, 4 + Dungeon.depth) * statsScale), new Eye.DeathGaze());
 				if (!Dungeon.hero.isAlive()) {
@@ -361,8 +377,8 @@ public class SentryRoom extends SpecialRoom {
 		}
 
 		@Override
-		public String description() {
-			return super.description() + (CustomDungeon.isEditing() ? Messages.get(this, "desc_add") : "");
+		public String desc() {
+			return super.desc() + (CustomDungeon.isEditing() ? Messages.get(this, "desc_add") : "");
 		}
 
 		private static final String INITIAL_DELAY = "initial_delay";
@@ -392,7 +408,13 @@ public class SentryRoom extends SpecialRoom {
 	public static class SentrySprite extends MobSprite {
 
 		private Animation charging;
-		private Emitter chargeParticles;
+
+		@Override
+		public LinkedHashMap<String, Animation> getAnimations() {
+			LinkedHashMap<String, Animation> result = super.getAnimations();
+			result.put("charging", charging);
+			return result;
+		}
 
 		public SentrySprite(){
 			texture( Assets.Sprites.RED_SENTRY );
@@ -401,66 +423,72 @@ public class SentryRoom extends SpecialRoom {
 			idle.frames(texture.uvRect(0, 0, 8, 15));
 
 			run = idle.clone();
-			attack = idle.clone();
+			run.delay = 1f / 5;
+
+			attack = run.clone();
 			charging = idle.clone();
 			die = idle.clone();
-			zap = idle.clone();
+			zap = attack.clone();
 
 			play( idle );
 		}
 
 		@Override
-		public void zap( int pos ) {
-			idle();
-			flash();
-			emitter().burst(MagicMissile.WardParticle.UP, 2);
-			if (Actor.findChar(pos) != null){
-				parent.add(new Beam.DeathRay(center(), Actor.findChar(pos).sprite.center()));
-			} else {
-				parent.add(new Beam.DeathRay(center(), DungeonTilemap.raisedTileCenterToWorld(pos)));
-			}
-			ch.onZapComplete();
+		public boolean hasOwnZapAnimation() {
+			return true;
+		}
+
+		@Override
+		protected void playZapAnim(int cell) {
+			playZap(parent, this, cell, ch);
+		}
+
+		public static void playZap(Group parent, CharSprite sprite, int cell, Char ch) {
+			sprite.idle();
+			sprite.flash();
+			sprite.emitter().burst(MagicMissile.WardParticle.UP, 2);
+			EyeSprite.playZap(parent, sprite, cell, ch);
 		}
 
 		@Override
 		public void link(Char ch) {
 			super.link(ch);
 
-			chargeParticles = centerEmitter();
-			chargeParticles.autoKill = false;
-			chargeParticles.pour(MagicMissile.MagicParticle.ATTRACTING, 0.05f);
-			chargeParticles.on = false;
-
-			if (((Sentry)ch).curChargeDelay != ((Sentry) ch).initialChargeDelay){
+			if (ch instanceof Sentry && ((Sentry)ch).curChargeDelay != ((Sentry) ch).initialChargeDelay){
 				play(charging);
 			}
 		}
 
-		@Override
-		public void die() {
-			super.die();
-			if (chargeParticles != null){
-				chargeParticles.on = false;
+		public static void charge( CharSprite sprite, int pos ){
+			EyeSprite.charge(sprite, pos, sprite instanceof SentrySprite ? ((SentrySprite) sprite).charging : null);
+		}
+
+		public static class ChargeParticles extends CharSpriteExtraEmitter {
+
+			private Char ch;
+			@Override
+			public void onLink(CharSprite sprite, Char ch) {
+				this.ch = ch;
+				emitter = sprite.centerEmitter();
+				emitter.autoKill = false;
+				emitter.pour(MagicMissile.MagicParticle.ATTRACTING, 0.05f);
+				emitter.on = false;
 			}
-		}
 
-		@Override
-		public void kill() {
-			super.kill();
-			if (chargeParticles != null){
-				chargeParticles.killAndErase();
+			@Override
+			public void onUpdate(CharSprite sprite) {
+				if (emitter != null){
+					emitter.pos( sprite.center() );
+					emitter.visible = sprite.visible;
+				}
 			}
-		}
 
-		public void charge(){
-			play(charging);
-			if (visible) Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
-		}
-
-		@Override
-		public void play(Animation anim) {
-			if (chargeParticles != null) chargeParticles.on = anim == charging;
-			super.play(anim);
+			@Override
+			public void onPlayAnimation(CharSprite sprite, Animation anim) {
+				if (ch instanceof Sentry) {
+					emitter.on = ((Sentry) ch).charging;
+				}
+			}
 		}
 
 		private float baseY = Float.NaN;
@@ -479,13 +507,9 @@ public class SentryRoom extends SpecialRoom {
 		@Override
 		public void update() {
 			super.update();
-			if (chargeParticles != null){
-				chargeParticles.pos( center() );
-				chargeParticles.visible = visible;
-			}
 
 			if (!paused){
-				if (Float.isNaN(baseY)) baseY = y;
+				if (Float.isNaN(baseY) || Math.abs(baseY - y) > 2) baseY = y;
 				y = baseY + (float) Math.sin(Game.timeTotal);
 				shadowOffset = 0.25f - 0.8f*(float) Math.sin(Game.timeTotal);
 			}

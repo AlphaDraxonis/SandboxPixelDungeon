@@ -15,6 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@NotAllowedInLua
 public class WndEditItemDistribution<T extends Item> extends Window {
 
     private static final int GAP = 1;

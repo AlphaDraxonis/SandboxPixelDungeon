@@ -3,8 +3,9 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customiz
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -19,8 +20,8 @@ public class ChangeItemCustomizable extends ChangeCustomizable<Item> {
 
     private ItemSelector customSprite;
 
-    public ChangeItemCustomizable(EditItemComp editItemComp) {
-        super(editItemComp);
+    public ChangeItemCustomizable(SimpleWindow window, EditItemComp editItemComp) {
+        super(window, editItemComp);
 
         customSprite = new ItemSelector(Messages.get(this, "sprite", Messages.get(obj.getClass(), "name")), Item.class, obj, ItemSelector.NullTypeSelector.NOTHING) {
 
@@ -78,6 +79,6 @@ public class ChangeItemCustomizable extends ChangeCustomizable<Item> {
     @Override
     protected void layout() {
         height = 0;
-        height = EditorUtilies.layoutCompsLinear(2, this, customSprite, name, desc) + 2;
+        height = EditorUtilities.layoutCompsLinear(2, this, customSprite, name, desc) + 2;
     }
 }

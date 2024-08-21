@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.watabou.NotAllowedInLua;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.ControllerHandler;
@@ -52,6 +53,7 @@ import com.watabou.noosa.ui.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 
+@NotAllowedInLua
 public class AlchemyScene extends PixelScene {
 
 	//max of 3 inputs, and 3 potential recipe outputs

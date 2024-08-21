@@ -27,11 +27,12 @@ package com.shatteredpixel.shatteredpixeldungeon.editor;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaRestrictionProxy;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -39,7 +40,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import org.luaj.vm2.*;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.util.Locale;
 
@@ -64,7 +64,7 @@ public final class WndCreator {
 	private static Image parseIcon(LuaValue icon) {
 		int intvalue;
 		if (icon.isuserdata()) {
-			return Reference.objectToImage(icon.touserdata());
+			return EditorUtilities.imageOf(icon.touserdata(), true);
 		}
 		if (icon.isint()) {
 			return (intvalue = icon.checkint()) >= 0 && intvalue < 512 ? new ItemSprite(intvalue) : null;
@@ -188,7 +188,7 @@ public final class WndCreator {
 							protected void onSelectReward(Item reward) {
 								if (onSelectReward != null) {
 									try {
-										onSelectReward.call(CoerceJavaToLua.coerce(reward));
+										onSelectReward.call(LuaRestrictionProxy.wrapObject(reward));
 									} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
 								}
 							}

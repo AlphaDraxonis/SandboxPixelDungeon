@@ -12,14 +12,13 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSwitchFloor;
@@ -30,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.CustomDocumentPage;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
@@ -48,20 +47,24 @@ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomLayoutLevel;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Function;
 import com.watabou.utils.Random;
+import org.luaj.vm2.LuaValue;
 
 import java.io.IOException;
 import java.util.*;
 
+@NotAllowedInLua
 public class CustomDungeon implements Bundlable {
 
     public boolean damageImmune, seeSecrets, permaMindVision, permaInvis, permaKey, extraSpeed;
@@ -100,11 +103,14 @@ public class CustomDungeon implements Bundlable {
     public int nextParticleID = 1;
     public Map<Integer, CustomParticle.ParticleProperty> particles;
 
+    public String dungeonScriptPath;
+    private LuaValue dungeonVars;//global vars
+
     public List<CustomDocumentPage> foundPages;
 
     public CustomDungeon(String name) {
 
-        CustomObject.reset();
+//        CustomObject.reset();//ttzz tzz tzz TODO prepare for new dungeon!
 
         this.name = name;
         ratKingLevels = new HashSet<>();
@@ -195,12 +201,26 @@ public class CustomDungeon implements Bundlable {
         return new ItemSprite(getItemSpriteOnSheet(item), item.glowing());
     }
 
-    public int getItemSpriteOnSheet(Item item) {
+    public static int getItemSpriteOnSheet(Item item) {
         if (Dungeon.isLevelTesting()) {
             if (item instanceof Scroll || item instanceof Potion || item instanceof Ring)
                 item.reset();//we want to use the color from the handler
             return item.image();
         }
+        if (Dungeon.customDungeon == null) {
+            if (item instanceof Scroll) {
+                return ItemSpriteSheet.SCROLL_HOLDER;
+            } else if (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew)) {
+                return ItemSpriteSheet.POTION_HOLDER;
+            } else if (item instanceof Ring) {
+                return ItemSpriteSheet.RING_HOLDER;
+            }
+            return item.image();
+        }
+        return Dungeon.customDungeon.getPrivateItemSpriteOnSheet(item);
+    }
+
+    private final int getPrivateItemSpriteOnSheet(Item item) {
         int code = -1;
         Class<? extends Item> c = item.getClass();
         if (item instanceof Scroll) {
@@ -499,7 +519,7 @@ public class CustomDungeon implements Bundlable {
 
     public void restoreToolbar() {
         int slotBefore = lastSelectedToolbarSlot;
-        EditorItemBag.callStaticInitializers();
+        EditorInventory.callStaticInitializers();
         for (int i = 0; i < toolbarItems.length; i++) {
             if (toolbarItems[i] != null) {
                 Object obj = toolbarItems[i];
@@ -530,6 +550,8 @@ public class CustomDungeon implements Bundlable {
     private static final String BLOCKED_RECIPES = "blocked_recipes";
     private static final String BLOCKED_RECIPE_RESULTS = "blocked_recipe_results";
     private static final String PARTICLES = "particles";
+    private static final String DUNGEON_SCRIPT_PATH = "dungeon_script_path";
+    private static final String DUNGEON_VARS = "dungeon_vars";
 
     private static final String RUNE_LABELS = "rune_labels";
     private static final String RUNE_CLASSES = "rune_classes";
@@ -580,11 +602,18 @@ public class CustomDungeon implements Bundlable {
         }
         bundle.put(BLOCKED_RECIPES, intArray);
 
-        bundle.put(BLOCKED_RECIPE_RESULTS, blockedRecipeResults.toArray(EditorUtilies.EMPTY_CLASS_ARRAY));
+        bundle.put(BLOCKED_RECIPE_RESULTS, blockedRecipeResults.toArray(EditorUtilities.EMPTY_CLASS_ARRAY));
 
         bundle.put(PARTICLES, particles.values());
 
-        CustomObject.store(bundle);
+
+        if (dungeonScriptPath != null)
+            bundle.put(DUNGEON_SCRIPT_PATH, dungeonScriptPath);
+
+        if (dungeonVars != null && dungeonVars.istable() && !CustomDungeon.isEditing()) {
+            LuaManager.storeVarInBundle(bundle, dungeonVars, DUNGEON_VARS);
+        }
+
 
         if (scrollRuneLabels != null) {
             String[] labels = new String[scrollRuneLabels.size()];
@@ -630,8 +659,10 @@ public class CustomDungeon implements Bundlable {
         }
         int i = 0;
         for (LevelScheme levelScheme : floors.values()) {
-            bundle.put(LEVEL_SCHEME + "_" + i, levelScheme);
-            i++;
+            if (levelScheme.getType() != RoomLayoutLevel.class) {
+                bundle.put(LEVEL_SCHEME + "_" + i, levelScheme);
+                i++;
+            }
         }
 
         bundle.put(LAST_SELECTED_TOOLBAR_SLOT, lastSelectedToolbarSlot);
@@ -718,7 +749,17 @@ public class CustomDungeon implements Bundlable {
         }
         updateNextParticleID();
 
-        CustomObject.restore(bundle);
+        if (bundle.contains(DUNGEON_SCRIPT_PATH))
+			dungeonScriptPath = bundle.getString(DUNGEON_SCRIPT_PATH);
+
+        LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, DUNGEON_VARS);
+        if (loaded != null && loaded.istable()) {
+            dungeonVars = loaded.checktable();
+        } else {
+            dungeonVars = null;
+        }
+
+        UserContentManager.restorePre_v_1_3(bundle);
 
         if (bundle.contains(RUNE_LABELS)) {
             scrollRuneLabels = new LinkedHashMap<>();
@@ -750,6 +791,8 @@ public class CustomDungeon implements Bundlable {
             for (Bundlable b : bundle.getCollection(FOUND_PAGES))
                 foundPages.add((CustomDocumentPage) b);
         }
+
+        UserContentManager.loadUserContentFromFiles();
 
         int i = 0;
         while (bundle.contains(LEVEL_SCHEME + "_" + i)) {
@@ -801,9 +844,7 @@ public class CustomDungeon implements Bundlable {
 
         GameObject.doOnAllGameObjectsList(levelScheme.itemsToSpawn, whatToDo);
         GameObject.doOnAllGameObjectsList(levelScheme.mobsToSpawn, whatToDo);
-
-        for (Room r : levelScheme.roomsToSpawn)
-            r.doOnAllGameObjects(whatToDo);
+        GameObject.doOnAllGameObjectsList(levelScheme.roomsToSpawn, whatToDo);
 
         if (!loadLevel) return;
 
@@ -816,7 +857,7 @@ public class CustomDungeon implements Bundlable {
 
             boolean saveNeeded = false;
 
-            if (extraTasksCL.apply(level)) saveNeeded = true;
+            if (extraTasksCL != null && extraTasksCL.apply(level)) saveNeeded = true;
 
             if (GameObject.doOnAllGameObjectsSparseArray(level.heaps, whatToDo)) saveNeeded = true;
             for (Heap h : level.heaps.valueList()) {
@@ -868,7 +909,7 @@ public class CustomDungeon implements Bundlable {
                 EditorScene.updateHeapImagesAndSubIcons();
             }
         } else {
-            ifNoCL.run();
+            if (ifNoCL != null) ifNoCL.run();
         }
 
     }
@@ -1165,7 +1206,7 @@ public class CustomDungeon implements Bundlable {
 				}
 
 				return true;
-			}, () -> {});
+			}, null);
 
             lastEditedFloor = newName;
             CustomDungeonSaves.saveDungeon(this);
@@ -1321,51 +1362,51 @@ public class CustomDungeon implements Bundlable {
 
     }
 
-    public void deleteCustomObj(CustomObject toDelete, int identifier, boolean alwaysReplace) {
-
-        if (!LuaManager.checkAccess("deleteCustomObj")) return;
-
-        try {
-
-            Function<GameObject, GameObject.ModifyResult> whatToDo = obj -> obj.onDeleteCustomObj(toDelete, identifier, alwaysReplace);
-
-            for (LevelScheme ls : floors.values()) {
-
-                doOnEverything(ls, true, whatToDo, true,
-                        level -> {
-                            return false;
-
-                        }, () -> {
-                        });
-            }
-
-            for (ItemDistribution<? extends Bundlable> distr : itemDistributions) {
-                GameObject.doOnAllGameObjectsList(distr.getObjectsToDistribute(), whatToDo);
-            }
-
-            for (HeroSettings.HeroStartItemsData si : startItems) {
-                si.doOnAllGameObjects(whatToDo);
-            }
-
-            for (CustomRecipe recipe : recipes) {
-                recipe.doOnAllGameObjects(whatToDo);
-            }
-
-            if (EditorScene.getCustomLevel() != null) {
-                Undo.reset();//TODO maybe not best solution to reset all
-            }
-
-            EditorScene.updateDepthIcon();
-
-            EditorScene.updatePathfinder();
-
-            CustomDungeonSaves.saveDungeon(this);
-
-        } catch (IOException e) {
-            SandboxPixelDungeon.reportException(e);
-        }
-
-    }
+//    public void deleteCustomObj(CustomObject toDelete, int identifier, boolean alwaysReplace) {
+//
+//        if (!LuaManager.checkAccess("deleteCustomObj")) return;
+//
+//        try {
+//
+//            Function<GameObject, GameObject.ModifyResult> whatToDo = obj -> obj.onDeleteUserContent(toDelete, identifier, alwaysReplace);
+//
+//            for (LevelScheme ls : floors.values()) {
+//
+//                doOnEverything(ls, true, whatToDo, true,
+//                        level -> {
+//                            return false;
+//
+//                        }, () -> {
+//                        });
+//            }
+//
+//            for (ItemDistribution<? extends Bundlable> distr : itemDistributions) {
+//                GameObject.doOnAllGameObjectsList(distr.getObjectsToDistribute(), whatToDo);
+//            }
+//
+//            for (HeroSettings.HeroStartItemsData si : startItems) {
+//                si.doOnAllGameObjects(whatToDo);
+//            }
+//
+//            for (CustomRecipe recipe : recipes) {
+//                recipe.doOnAllGameObjects(whatToDo);
+//            }
+//
+//            if (EditorScene.getCustomLevel() != null) {
+//                Undo.reset();//TODO maybe not best solution to reset all
+//            }
+//
+//            EditorScene.updateDepthIcon();
+//
+//            EditorScene.updatePathfinder();
+//
+//            CustomDungeonSaves.saveDungeon(this);
+//
+//        } catch (IOException e) {
+//            SandboxPixelDungeon.reportException(e);
+//        }
+//
+//    }
 
 
     @Override

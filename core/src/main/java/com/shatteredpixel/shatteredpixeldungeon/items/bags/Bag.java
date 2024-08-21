@@ -27,7 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuickBag;
@@ -108,7 +108,7 @@ public class Bag extends Item implements Iterable<Item> {
 	}
 
 	public void grabItems( Bag container ){
-		for (Item item : container.items.toArray( EditorUtilies.EMPTY_ITEM_ARRAY )) {
+		for (Item item : container.items.toArray( EditorUtilities.EMPTY_ITEM_ARRAY )) {
 			if (canHold( item ) && this != item) {
 				int slot = Dungeon.quickslot.getSlot(item);
 				item.detachAll(container);
@@ -137,7 +137,7 @@ public class Bag extends Item implements Iterable<Item> {
 	}
 
 	public void resurrect() {
-		for (Item item : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)){
+		for (Item item : items.toArray(EditorUtilities.EMPTY_ITEM_ARRAY)){
 			if (!item.unique) items.remove(item);
 		}
 	}

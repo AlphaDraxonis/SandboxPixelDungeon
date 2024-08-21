@@ -4,11 +4,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PropertyItem;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.ui.Component;
 
 public class EditPropertyComp extends DefaultEditComp<Char.Property> {
-
-    private Component[] comps;
 
     public EditPropertyComp(Char.Property property) {
         super(property);
@@ -21,13 +18,13 @@ public class EditPropertyComp extends DefaultEditComp<Char.Property> {
     }
 
     private void initComps() {
-        comps = new Component[0];
+//        linearComps = new Component[0];
     }
 
     @Override
     protected void layout() {
         super.layout();
-        layoutCompsLinear(comps);
+//        layoutCompsLinear(linearComps);
     }
 
     @Override

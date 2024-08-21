@@ -25,14 +25,12 @@
 package com.shatteredpixel.shatteredpixeldungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Function;
-import com.watabou.utils.IntFunction;
-import com.watabou.utils.SparseArray;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
+import com.watabou.utils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +44,24 @@ public abstract class GameObject implements Bundlable {
 
 	public int sparseArrayKey() {
 		return 0;
+	}
+
+	public String name() {
+		return null;
+	}
+
+	public String desc() {
+		return null;
+	}
+
+	public void copyStats(GameObject template) {
+		if (template == null) return;
+		if (getClass() != template.getClass()) return;
+		Bundle bundle = new Bundle();
+		bundle.put("OBJ", template);
+		bundle.getBundle("OBJ").put(CustomGameObjectClass.INHERIT_STATS, true);
+
+		restoreFromBundle(bundle.getBundle("OBJ"));
 	}
 
 	/**
@@ -76,8 +92,9 @@ public abstract class GameObject implements Bundlable {
 	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
 	}
 
-	public <T extends Bundlable> ModifyResult onDeleteCustomObj(CustomObject toDelete, int identifier, boolean alwaysReplace) {
-		return ModifyResult.singeReplacement(CustomObject.returnReplacementOnDeleteCustomObj(this, identifier, alwaysReplace));
+	public <T extends Bundlable> ModifyResult onDeleteUserContent(CustomObject toDelete, int identifier, boolean alwaysReplace) {
+//		return ModifyResult.singeReplacement(CustomObject.returnReplacementOnDeleteCustomObj(this, identifier, alwaysReplace)); //tzz tzz wictig
+		return ModifyResult.noChange();
 	}
 
 	public ModifyResult initRandoms() {
@@ -149,16 +166,18 @@ public abstract class GameObject implements Bundlable {
 		}
 	}
 
+	private static final GameObject[] EMPTY_GAME_OBJECT_ARRAY = new GameObject[0];
+
 	public static <T extends GameObject> boolean doOnAllGameObjectsList(List<T> list, Function<GameObject, ModifyResult> whatToDo) {
 		if (list == null) return false;
 		boolean changedSth = false;
 		int index = 0;
-		for (GameObject obj : list.toArray(new GameObject[0])) {
+		for (GameObject obj : list.toArray(EMPTY_GAME_OBJECT_ARRAY)) {
 
 			ModifyResult result = whatToDo.apply(obj);
 
 			if (ModifyResult.isNoChange(result)) {
-				if (obj.doOnAllGameObjects(whatToDo)) changedSth = true;
+				if (obj != null && obj.doOnAllGameObjects(whatToDo)) changedSth = true;
 				index++;
 			}
 
@@ -185,12 +204,12 @@ public abstract class GameObject implements Bundlable {
 	public static <T extends GameObject> boolean doOnAllGameObjectsSet(Set<T> set, Function<GameObject, ModifyResult> whatToDo) {
 		if (set == null) return false;
 		boolean changedSth = false;
-		for (GameObject obj : set.toArray(new GameObject[0])) {
+		for (GameObject obj : set.toArray(EMPTY_GAME_OBJECT_ARRAY)) {
 
 			ModifyResult result = whatToDo.apply(obj);
 
 			if (ModifyResult.isNoChange(result)) {
-				if (obj.doOnAllGameObjects(whatToDo)) changedSth = true;
+				if (obj != null && obj.doOnAllGameObjects(whatToDo)) changedSth = true;
 			}
 
 			else if (ModifyResult.isRemovingFully(result)) {
@@ -222,7 +241,7 @@ public abstract class GameObject implements Bundlable {
 			ModifyResult result = whatToDo.apply(obj);
 
 			if (ModifyResult.isNoChange(result)) {
-				if (obj.doOnAllGameObjects(whatToDo)) changedSth = true;
+				if (obj != null && obj.doOnAllGameObjects(whatToDo)) changedSth = true;
 			}
 
 			else if (ModifyResult.isRemovingFully(result)) {
@@ -249,12 +268,11 @@ public abstract class GameObject implements Bundlable {
 		boolean changedSth = false;
 		for (K key : map.keySet()) {
 			GameObject obj = map.get(key);
-			if (obj == null) continue;
 
 			ModifyResult result = whatToDo.apply(obj);
 
 			if (ModifyResult.isNoChange(result)) {
-				if (obj.doOnAllGameObjects(whatToDo)) changedSth = true;
+				if (obj != null && obj.doOnAllGameObjects(whatToDo)) changedSth = true;
 			}
 
 			else if (ModifyResult.isRemovingFully(result)) {
@@ -285,7 +303,7 @@ public abstract class GameObject implements Bundlable {
 			ModifyResult result = whatToDo.apply(obj);
 
 			if (ModifyResult.isNoChange(result)) {
-				if (obj.doOnAllGameObjects(whatToDo)) changedSth = true;
+				if (obj != null && obj.doOnAllGameObjects(whatToDo)) changedSth = true;
 				list.add(obj);
 			}
 
@@ -307,7 +325,7 @@ public abstract class GameObject implements Bundlable {
 		return list.toArray(array);
 	}
 
-	public static class ModifyResult {
+	public static final class ModifyResult {
 
 		public GameObject[] newValues;
 

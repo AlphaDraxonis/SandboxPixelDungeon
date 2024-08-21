@@ -22,13 +22,16 @@
 package com.watabou.gltextures;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.watabou.NotAllowedInLua;
 import com.watabou.glwrap.Texture;
 import com.watabou.noosa.Game;
 import com.watabou.utils.FileUtils;
 
 import java.util.HashMap;
 
+@NotAllowedInLua
 public class TextureCache {
 
 	public static final String EXTERNAL_ASSET_PREFIX = "external/";
@@ -177,10 +180,14 @@ public class TextureCache {
 				} else {
 					return new Pixmap(Gdx.files.internal(s));
 				}
+
+			} else if (src instanceof FileHandle) {
+
+				return new Pixmap((FileHandle) src);
 				
 			} else if (src instanceof Pixmap) {
-				
-				return (Pixmap)src;
+
+				return (Pixmap) src;
 				
 			} else {
 				

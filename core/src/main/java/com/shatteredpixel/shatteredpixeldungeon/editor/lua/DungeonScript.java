@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.annotations.KeepProguard;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import org.luaj.vm2.LuaValue;
@@ -37,10 +38,6 @@ import org.luaj.vm2.LuaValue;
 import java.util.List;
 
 public abstract class DungeonScript extends LuaCodeHolder {
-
-	{
-		clazz = DungeonScript.class;
-	}
 
 	//***************
 	//**** ITEMS ****

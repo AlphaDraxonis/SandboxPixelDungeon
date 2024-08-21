@@ -22,6 +22,7 @@
 package com.watabou.input;
 
 import com.badlogic.gdx.Input;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.Locale;
 
 //FIXME at lot of the logic here, in WndKeyBindings, and SPDAction is fairly messy
 // should see about doing some refactoring to clean this up
+@NotAllowedInLua
 public class KeyBindings {
 
 	//for keyboard keys

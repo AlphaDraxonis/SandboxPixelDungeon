@@ -25,8 +25,8 @@ import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Quad;
 import com.watabou.glwrap.Vertexbuffer;
-import com.watabou.utils.Rect;
 import com.watabou.utils.RectF;
+import com.watabou.utils.WatabouRect;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
@@ -49,9 +49,9 @@ public class Tilemap extends Visual {
 	protected FloatBuffer quads;
 	protected Vertexbuffer buffer;
 
-	private volatile Rect updated;
+	private volatile WatabouRect updated;
 	private boolean fullUpdate;
-	private Rect updating;
+	private WatabouRect updating;
 	private int topLeftUpdating;
 	private int bottomRightUpdating;
 
@@ -68,7 +68,7 @@ public class Tilemap extends Visual {
 
 		vertices = new float[16];
 
-		updated = new Rect();
+		updated = new WatabouRect();
 	}
 
 	public void map( int[] data, int cols ) {
@@ -115,7 +115,7 @@ public class Tilemap extends Visual {
 	}
 
 	private synchronized void moveToUpdating(){
-		updating = new Rect(updated);
+		updating = new WatabouRect(updated);
 		updated.setEmpty();
 	}
 

@@ -31,6 +31,13 @@ public class CrabSprite extends MobSprite {
 
 		texture( Assets.Sprites.CRAB );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 16, 16 );
 
 		idle = new Animation( 5, true );
@@ -44,8 +51,6 @@ public class CrabSprite extends MobSprite {
 
 		die = new Animation( 12, false );
 		die.frames( frames, 10, 11, 12, 13 );
-
-		play( idle );
 	}
 
 	@Override

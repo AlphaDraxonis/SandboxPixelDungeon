@@ -37,6 +37,15 @@ public class FungalSentrySprite extends MobSprite {
 
 		texture( Assets.Sprites.FUNGAL_SENTRY );
 
+		initAnimations();
+
+		play( idle );
+
+	}
+
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 18, 18 );
 
 		idle = new Animation( 0, true );
@@ -52,9 +61,6 @@ public class FungalSentrySprite extends MobSprite {
 
 		die = new Animation( 12, false );
 		die.frames( frames, 0 );
-
-		play( idle );
-
 	}
 
 	@Override
@@ -83,6 +89,11 @@ public class FungalSentrySprite extends MobSprite {
 	@Override
 	protected void playZapAnim(int cell) {
 		playZap(parent, this, cell, ch);
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {

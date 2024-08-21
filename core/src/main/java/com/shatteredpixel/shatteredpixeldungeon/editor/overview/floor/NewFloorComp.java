@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.TextInput;
@@ -20,6 +21,7 @@ import com.watabou.noosa.TextInput;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.BUTTON_HEIGHT;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.MARGIN;
 
+@NotAllowedInLua
 public class NewFloorComp extends WndNewFloor.OwnTab {
 
     protected TextInput textBox;

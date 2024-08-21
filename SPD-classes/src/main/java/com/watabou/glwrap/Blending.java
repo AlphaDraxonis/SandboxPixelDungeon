@@ -22,7 +22,9 @@
 package com.watabou.glwrap;
 
 import com.badlogic.gdx.Gdx;
+import com.watabou.NotAllowedInLua;
 
+@NotAllowedInLua
 public class Blending {
 	
 	public static void useDefault(){

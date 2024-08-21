@@ -139,11 +139,11 @@ public enum SelectObjectOption {
 	public static List<Bag> getMatchingBagsForNewObject(Class<?> type) {
 		List<EditorItemBag> result = new ArrayList<>(7);
 		if (type == int.class || type == Integer.class || type == CustomTilemap.class || type == Object.class) result.add(Tiles.bag);
-		if (Char.class.isAssignableFrom(type) && type != Hero.class || type.isAssignableFrom(Char.class)) result.add(Mobs.bag);
-		if (Item.class.isAssignableFrom(type) || type.isAssignableFrom(Item.class)) result.add(Items.bag);
-		if (Trap.class.isAssignableFrom(type) || type.isAssignableFrom(Trap.class)) result.add(Traps.bag);
-		if (Plant.class.isAssignableFrom(type) || type.isAssignableFrom(Plant.class)) result.add(Plants.bag);
-		if (Buff.class.isAssignableFrom(type) || type.isAssignableFrom(Buff.class)) result.add(Buffs.bag);
+		if (Char.class.isAssignableFrom(type) && type != Hero.class || type.isAssignableFrom(Char.class)) result.add(Mobs.bag());
+		if (Item.class.isAssignableFrom(type) || type.isAssignableFrom(Item.class)) result.add(Items.bag());
+		if (Trap.class.isAssignableFrom(type) || type.isAssignableFrom(Trap.class)) result.add(Traps.bag());
+		if (Plant.class.isAssignableFrom(type) || type.isAssignableFrom(Plant.class)) result.add(Plants.bag());
+		if (Buff.class.isAssignableFrom(type) || type.isAssignableFrom(Buff.class)) result.add(Buffs.bag());
 		else result = null;//can't create new object
 		return result == null ? null : Collections.unmodifiableList(result);
 	}

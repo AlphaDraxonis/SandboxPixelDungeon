@@ -26,7 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
+import com.watabou.utils.WatabouRect;
 
 //FIXME some copypasta from segmented room with changed constants in here, might want to externalize
 public class SegmentedLibraryRoom extends StandardRoom {
@@ -48,10 +48,10 @@ public class SegmentedLibraryRoom extends StandardRoom {
 			Painter.drawInside(level, this, door, 2, Terrain.EMPTY_SP);
 		}
 
-		createWalls( level, new Rect(left+2, top+2, right-2, bottom-2));
+		createWalls( level, new WatabouRect(left+2, top+2, right-2, bottom-2));
 	}
 
-	private void createWalls( Level level, Rect area ){
+	private void createWalls( Level level, WatabouRect area ){
 		if (Math.max(area.width()+1, area.height()+1) < 4
 				|| Math.min(area.width()+1, area.height()+1) < 3){
 			return;
@@ -75,8 +75,8 @@ public class SegmentedLibraryRoom extends StandardRoom {
 					Painter.set(level, splitX, spaceTop, Terrain.EMPTY_SP);
 					//Painter.set(level, splitX, spaceTop+1, Terrain.EMPTY);
 
-					createWalls(level, new Rect(area.left, area.top, splitX-1, area.bottom));
-					createWalls(level, new Rect(splitX+1, area.top, area.right, area.bottom));
+					createWalls(level, new WatabouRect(area.left, area.top, splitX-1, area.bottom));
+					createWalls(level, new WatabouRect(splitX+1, area.top, area.right, area.bottom));
 				}
 
 			} while (--tries > 0);
@@ -97,8 +97,8 @@ public class SegmentedLibraryRoom extends StandardRoom {
 					Painter.set(level, spaceLeft, splitY, Terrain.EMPTY_SP);
 					//Painter.set(level, spaceLeft+1, splitY, Terrain.EMPTY);
 
-					createWalls(level, new Rect(area.left, area.top, area.right, splitY-1));
-					createWalls(level, new Rect(area.left, splitY+1, area.right, area.bottom));
+					createWalls(level, new WatabouRect(area.left, area.top, area.right, splitY-1));
+					createWalls(level, new WatabouRect(area.left, splitY+1, area.right, area.bottom));
 				}
 
 			} while (--tries > 0);

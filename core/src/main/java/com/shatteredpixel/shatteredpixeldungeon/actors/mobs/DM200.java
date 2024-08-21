@@ -176,26 +176,14 @@ public class DM200 extends DMMob {
 				int oldPos = pos;
 
 				if (distance(enemy) >= 1 && Random.Int(100/distance(enemy)) == 0 && canVent(target)){
-					if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-						sprite.zap( enemy.pos );
-						return false;
-					} else {
-						zap();
-						return true;
-					}
+					return doRangedAttack();
 
 				} else if (getCloser( target )) {
 					spend( 1 / speed() );
 					return moveSprite( oldPos,  pos );
 
 				} else if (canVent(target)) {
-					if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-						sprite.zap( enemy.pos );
-						return false;
-					} else {
-						zap();
-						return true;
-					}
+					return doRangedAttack();
 
 				} else {
 					spend( TICK );

@@ -31,6 +31,13 @@ public class RotLasherSprite extends MobSprite {
 
 		texture( Assets.Sprites.ROT_LASH );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 12, 16 );
 
 		idle = new Animation( 0, true );
@@ -44,8 +51,6 @@ public class RotLasherSprite extends MobSprite {
 
 		die = new Animation( 12, false );
 		die.frames( frames, 3, 4, 5, 6 );
-
-		play( idle );
 	}
 
 	@Override

@@ -21,9 +21,12 @@
 
 package com.watabou.input;
 
+import com.watabou.NotAllowedInLua;
+
 import java.util.ArrayList;
 
 //This is similar to an enum, but we don't use that because subclasses should be able to add actions
+@NotAllowedInLua
 public class GameAction {
 
 	private static final ArrayList<GameAction> ALL_ACTIONS = new ArrayList<>();

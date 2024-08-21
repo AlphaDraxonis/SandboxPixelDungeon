@@ -30,7 +30,7 @@ public class EditMobSpriteComp extends DefaultEditComp<Class<? extends CharSprit
     @Override
     protected String createDescription() {
         if (mob == null) return "";
-        return mob.description();
+        return mob.desc();
     }
 
     @Override

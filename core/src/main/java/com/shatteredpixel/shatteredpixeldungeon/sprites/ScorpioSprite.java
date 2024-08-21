@@ -36,26 +36,31 @@ public class ScorpioSprite extends MobSprite {
 		super();
 		
 		texture( Assets.Sprites.SCORPIO );
-		
-		TextureFilm frames = new TextureFilm( texture, 17, 17 );
-		
-		idle = new Animation( 12, true );
-		idle.frames( frames, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 2, 1, 2 );
-		
-		run = new Animation( 8, true );
-		run.frames( frames, 5, 5, 6, 6 );
-		
-		attack = new Animation( 15, false );
-		attack.frames( frames, 0, 3, 4 );
-		
-		zap = attack.clone();
-		
-		die = new Animation( 12, false );
-		die.frames( frames, 0, 7, 8, 9, 10 );
-		
+
+		initAnimations();
+
 		play( idle );
 	}
-	
+
+	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 17, 17 );
+
+		idle = new Animation( 12, true );
+		idle.frames( frames, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 2, 1, 2 );
+
+		run = new Animation( 8, true );
+		run.frames( frames, 5, 5, 6, 6 );
+
+		attack = new Animation( 15, false );
+		attack.frames( frames, 0, 3, 4 );
+
+		zap = attack.clone();
+
+		die = new Animation( 12, false );
+		die.frames( frames, 0, 7, 8, 9, 10 );
+	}
+
 	@Override
 	public int blood() {
 		return 0xFF44FF22;
@@ -87,6 +92,11 @@ public class ScorpioSprite extends MobSprite {
 	@Override
 	protected void playZapAnim(int cell) {
 		playZap(parent, this, cell, ch);
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {

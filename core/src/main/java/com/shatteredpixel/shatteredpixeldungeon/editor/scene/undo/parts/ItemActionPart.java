@@ -2,7 +2,9 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 
@@ -109,43 +111,39 @@ public /*sealed*/ abstract class ItemActionPart implements ActionPart {
     }
 
     //Same problem, so should instead just always use Heap modify, though that would be difficult...
-//    public static final class Modify implements ActionPartModify {
-//
-//        private final Item before;
-//        private Item after;
-//        private final int cell;
-//
-//        public Modify(Item item, int cell) {
-//            before = (Item) item.getCopy();
-//            after = item;
-//            this.cell = cell;
-//        }
-//
-//        @Override
-//        public void undo() {
-//            remove(after, cell);
-//            place((Item) before.getCopy(), cell);
-//            System.err.println("B4c: "+before.quantity());
-//            System.err.println("AFTERc: "+after.quantity());
-//        }
-//
-//        @Override
-//        public void redo() {
-//            remove(before, cell);
-//            place((Item) after.getCopy(), cell);
-//            System.err.println("B4: "+before.quantity());
-//            System.err.println("AFTER: "+after.quantity());
-//
-//        }
-//
-//        @Override
-//        public boolean hasContent() {
-//            return !EditItemComp.areEqual(before, after);
-//        }
-//
-//        @Override
-//        public void finish() {
-//            after = (Item) after.getCopy();
-//        }
-//    }
+
+    /**
+     * WARNING!! This is only for the Inventory!!!
+     */
+    public static final class Modify implements ActionPartModify {
+
+        private final Item realItem;
+        private final Item before;
+        private Item after;
+
+        public Modify(Item item) {
+            before = item.getCopy();
+            realItem = item;
+        }
+
+        @Override
+        public void undo() {
+            if (realItem != null) realItem.copyStats(before);
+        }
+
+        @Override
+        public void redo() {
+            if (realItem != null) realItem.copyStats(after);
+        }
+
+        @Override
+        public boolean hasContent() {
+            return !EditItemComp.areEqual(before, after);
+        }
+
+        @Override
+        public void finish() {
+            after = realItem.getCopy();
+        }
+    }
 }

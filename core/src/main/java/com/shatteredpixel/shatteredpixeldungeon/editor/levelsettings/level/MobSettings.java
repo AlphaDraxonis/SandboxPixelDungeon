@@ -19,7 +19,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Image;
@@ -46,6 +47,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndE
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab.BUTTON_HEIGHT;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab.GAP;
 
+@NotAllowedInLua
 public class MobSettings extends Component implements LevelTab.BackPressImplemented {
 
     private final Component outsideSp;
@@ -349,17 +351,17 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
 
             height += GAP;
 
-            height = EditorUtilies.layoutCompsLinear(GAP, BUTTON_HEIGHT, this, disableSpawning);
+            height = EditorUtilities.layoutCompsLinear(GAP, BUTTON_HEIGHT, this, disableSpawning);
             height += GAP;
 
-            height = EditorUtilies.layoutStyledCompsInRectangles(GAP, width, this, respawnTime, moblimit, openMobCycle);
+            height = EditorUtilities.layoutStyledCompsInRectangles(GAP, width, this, respawnTime, moblimit, openMobCycle);
             height += GAP * 3;
 
-            height = EditorUtilies.layoutCompsLinear(GAP, BUTTON_HEIGHT, this, boss, bossMusic);
+            height = EditorUtilities.layoutCompsLinear(GAP, BUTTON_HEIGHT, this, boss, bossMusic);
         }
 
         private void selectBoss(Consumer<Mob> callBack) {
-            Window w = EditorUtilies.getParentWindow(this);
+            Window w = EditorUtilities.getParentWindow(this);
             w.active = false;
             if (w instanceof WndTabbed) ((WndTabbed) w).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
             Game.scene().remove(w);
@@ -411,7 +413,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
 
     private static String getUpdatedLabelForBossChooser(Mob boss) {
         return "_"+Messages.get(WndSelectLevelType.class, "type_boss") + ":_"
-                + (boss == null ? "" : (PixelScene.landscape() ? " " + Messages.titleCase(boss.name()) : "") + EditorUtilies.appendCellToString(boss.pos));
+                + (boss == null ? "" : (PixelScene.landscape() ? " " + Messages.titleCase(boss.name()) : "") + EditorUtilities.appendCellToString(boss.pos));
     }
 
 
@@ -421,7 +423,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
         private static final Set<Class<? extends Mob>> NOT_AVAILABLE = new HashSet<>();
 
         {
-            for (Class<?> m : Mobs.NPC.classes()) {
+            for (Class<?> m : Mobs.instance().NPC.getClasses()) {
                 NOT_AVAILABLE.add((Class<? extends Mob>) m);
             }
         }
@@ -433,7 +435,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
 
         @Override
         protected WndBag.ItemSelector createSelector(com.watabou.utils.Consumer<Item> onSelect) {
-            return createSelector(MobItem.class, false, Mobs.bag.getClass(), onSelect);
+            return createSelector(MobItem.class, false, Mobs.bag().getClass(), onSelect);
         }
 
         @Override
@@ -492,7 +494,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
         private final Mob mob;
 
         public MobCatalogItem(Mob mob) {
-            super(createSprite(mob), null, EditorUtilies.formatTitle(mob.name(), mob.pos));
+            super(createSprite(mob), null, EditorUtilities.formatTitle(mob.name(), mob.pos));
             this.mob = mob;
         }
 

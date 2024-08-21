@@ -1,6 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
@@ -83,7 +83,7 @@ public class ArrowCell implements Bundlable, Copyable<ArrowCell>, PathFinder.Arr
     }
 
     public Image getSprite() {
-        return EditorUtilies.getArrowCellTexture(this);
+        return EditorUtilities.getArrowCellTexture(this);
     }
 
     public String name() {

@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.GameAction;
 import com.watabou.input.PointerEvent;
 import com.watabou.input.ScrollEvent;
@@ -17,6 +18,7 @@ import com.watabou.noosa.Camera;
 import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
 
+@NotAllowedInLua
 public class EditorCellSelector extends CellSelector {
 
     public EditorCellSelector(DungeonTilemap map) {

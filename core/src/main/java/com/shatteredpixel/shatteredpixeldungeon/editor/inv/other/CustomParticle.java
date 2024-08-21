@@ -257,10 +257,17 @@ public class CustomParticle extends Blob {
 
     public static class ParticleEmitter extends BlobEmitter {
 
+        private static final int MAX_NUMBER_OF_PARTICLES_PER_SECOND = 8000;
+        private static final float AVERAGE_LIFESPAN = 1.5f;
+        private static final float MAX_NUMBER_OF_PARTICLES_PER_SECOND__TIMES__AVERAGE_LIFESPAN
+                = MAX_NUMBER_OF_PARTICLES_PER_SECOND * AVERAGE_LIFESPAN;
+
         private CellEmitter[] emitters;
         private Visual[] visualsOnTop;
 
         private CustomParticle particle;
+
+        private float originalInterval;
 
         public ParticleEmitter(CustomParticle particle) {
             super(particle);
@@ -273,6 +280,7 @@ public class CustomParticle extends Blob {
             this.factory = factory;
             this.interval = interval;
             this.quantity = quantity;
+            originalInterval = interval;
             super.start(factory, interval, quantity);
         }
 
@@ -388,6 +396,9 @@ public class CustomParticle extends Blob {
                 visualsOnTop = new Visual[Dungeon.level.length()];
             }
 
+            int cellsWithEmitter = particle.volume / CELL_ACTIVE;//not perfect, but good enough since 99% of emitting cells are CELL_ACTIVE
+            if (cellsWithEmitter > 0)
+                interval = Math.max( cellsWithEmitter / MAX_NUMBER_OF_PARTICLES_PER_SECOND__TIMES__AVERAGE_LIFESPAN, originalInterval);
             for (int i = particle.area.left; i < particle.area.right; i++) {
                 for (int j = particle.area.top; j < particle.area.bottom; j++) {
                     updateCell(i + j*Dungeon.level.width());
@@ -667,7 +678,7 @@ public class CustomParticle extends Blob {
         }
     }
 
-    private interface VisualAsParticle {
+    public interface VisualAsParticle {
          void setPos(int pos);
          void setValueOnKill(int valueOnKill);
          void setParticle(CustomParticle particle);

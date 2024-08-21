@@ -34,12 +34,19 @@ import com.watabou.noosa.particles.Emitter;
 public class NecromancerSprite extends MobSprite {
 	
 	protected Animation charging;
-	protected Emitter summoningParticles;
 	
 	public NecromancerSprite(){
 		super();
 		
 		texture( Assets.Sprites.NECRO );
+
+		initAnimations();
+		
+		idle();
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm film = new TextureFilm( texture, 16, 16 );
 
 		int c = texOffset();
@@ -60,92 +67,91 @@ public class NecromancerSprite extends MobSprite {
 		die.frames( film, c+9, c+10, c+11, c+12 );
 
 		attack = zap.clone();
-		
-		idle();
 	}
 
 	protected int texOffset() {
 		return 0;
 	}
 
-	@Override
-	public void link(Char ch) {
-		super.link(ch);
-		if (ch instanceof Necromancer && ((Necromancer) ch).summoning){
-			zap(((Necromancer) ch).summoningPos);
-		}
-	}
+	/**
+	 * Only works if char is a Necromancer!
+	 */
+	public static class SummoningParticle implements CharSpriteExtraCode {
 
-	@Override
-	public void update() {
-		super.update();
-		if (summoningParticles != null && ch instanceof Necromancer && ((Necromancer) ch).summoningPos != -1){
-			summoningParticles.visible = Dungeon.level.heroFOV[((Necromancer) ch).summoningPos];
-		}
-	}
+		protected Emitter summoningParticles;
 
-	@Override
-	public void die() {
-		super.die();
-		if (summoningParticles != null){
-			summoningParticles.on = false;
-			summoningParticles = null;
-		}
-	}
-
-	@Override
-	public void kill() {
-		super.kill();
-		if (summoningParticles != null){
-			summoningParticles.on = false;
-			summoningParticles = null;
-		}
-	}
-
-	public void cancelSummoning(){
-		if (summoningParticles != null){
-			summoningParticles.on = false;
-			summoningParticles = null;
-		}
-	}
-
-	public void finishSummoning(){
-		if (summoningParticles != null) {
-			if (summoningParticles.visible) {
-				playSummoningSound();
-				summoningParticles.burst(Speck.factory(Speck.RATTLE), 5);
-			} else {
-				summoningParticles.on = false;
+		@Override
+		public void onLink(CharSprite sprite, Char ch) {
+			if (ch instanceof Necromancer && ((Necromancer) ch).summoning){
+				sprite.zap(((Necromancer) ch).summoningPos);
 			}
-			summoningParticles = null;
 		}
-		idle();
-	}
 
-	protected void playSummoningSound() {
-		Sample.INSTANCE.play(Assets.Sounds.BONES);
+		@Override
+		public void onUpdate(CharSprite sprite) {
+			if (summoningParticles != null && sprite.ch instanceof Necromancer && ((Necromancer) sprite.ch).summoningPos != -1){
+				summoningParticles.visible = Dungeon.level.heroFOV[((Necromancer) sprite.ch).summoningPos];
+			}
+		}
+
+		@Override
+		public void onDie(CharSprite sprite) {
+			shutDownSummoningParticles();
+		}
+
+		@Override
+		public void onKill(CharSprite sprite) {
+			shutDownSummoningParticles();
+		}
+
+		public void cancelSummoning() {
+			shutDownSummoningParticles();
+		}
+
+		private void shutDownSummoningParticles() {
+			if (summoningParticles != null){
+				summoningParticles.on = false;
+				summoningParticles = null;
+			}
+		}
+
+		public void finishSummoning(CharSprite sprite){
+			if (summoningParticles != null) {
+				if (summoningParticles.visible) {
+					playSummoningSound();
+					summoningParticles.burst(Speck.factory(Speck.RATTLE), 5);
+				} else {
+					summoningParticles.on = false;
+				}
+				summoningParticles = null;
+			}
+			sprite.idle();
+		}
+
+		protected void playSummoningSound() {
+			Sample.INSTANCE.play(Assets.Sounds.BONES);
+		}
+
+		protected void emitSummoningParticles() {
+			summoningParticles.pour(Speck.factory(Speck.RATTLE), 0.2f);
+		}
+
+		@Override
+		public boolean playZapAnimation(CharSprite sprite, int cell) {
+			if (sprite.ch instanceof Necromancer && ((Necromancer) sprite.ch).summoning){
+				shutDownSummoningParticles();
+				summoningParticles = CellEmitter.get(((Necromancer) sprite.ch).summoningPos);
+				emitSummoningParticles();
+				summoningParticles.visible = Dungeon.level.heroFOV[((Necromancer) sprite.ch).summoningPos];
+				if (sprite.visible || summoningParticles.visible ) Sample.INSTANCE.play( Assets.Sounds.CHARGEUP, 1f, 0.8f );
+				return true;
+			}
+			return false;
+		}
 	}
 
 	public void charge(){
 		play(charging);
-	}
-
-	@Override
-	protected void playZapAnim(int cell) {
-		if (ch instanceof Necromancer && ((Necromancer) ch).summoning){
-			if (summoningParticles != null){
-				summoningParticles.on = false;
-			}
-			summoningParticles = CellEmitter.get(((Necromancer) ch).summoningPos);
-			emitSummoningParticles();
-			summoningParticles.visible = Dungeon.level.heroFOV[((Necromancer) ch).summoningPos];
-			if (visible || summoningParticles.visible ) Sample.INSTANCE.play( Assets.Sounds.CHARGEUP, 1f, 0.8f );
-		}
-		else super.playZapAnim(cell);
-	}
-
-	protected void emitSummoningParticles() {
-		summoningParticles.pour(Speck.factory(Speck.RATTLE), 0.2f);
 	}
 
 	@Override

@@ -27,7 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -241,9 +241,9 @@ public enum Rankings {
 		//save the hero and belongings
 		ArrayList<Item> allItems = (ArrayList<Item>) belongings.backpack.items.clone();
 		//remove items that won't show up in the rankings screen
-		for (Item item : belongings.backpack.items.toArray( EditorUtilies.EMPTY_ITEM_ARRAY)) {
+		for (Item item : belongings.backpack.items.toArray( EditorUtilities.EMPTY_ITEM_ARRAY)) {
 			if (item instanceof Bag){
-				for (Item bagItem : ((Bag) item).items.toArray( EditorUtilies.EMPTY_ITEM_ARRAY)){
+				for (Item bagItem : ((Bag) item).items.toArray( EditorUtilities.EMPTY_ITEM_ARRAY)){
 					if (Dungeon.quickslot.contains(bagItem)
 							&& !Dungeon.quickslot.contains(item)){
 						belongings.backpack.items.add(bagItem);

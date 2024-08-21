@@ -90,7 +90,7 @@ public abstract class PlatformSupport {
 		return null;
 	}
 
-	public boolean openNativeIDEWindow(Object luaCodeHolder, Object luaScript) {
+	public boolean openNativeIDEWindow(Object customObject, Object rawFileSelector, Class<?> clazz) {
 		return false;
 	}
 

@@ -4,7 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.Image;
@@ -85,7 +85,7 @@ public class Barrier implements Bundlable, Copyable<Barrier> {
     }
 
     public Image getSprite() {
-        return EditorUtilies.getBarrierTexture(visible ? 1 : 0);
+        return EditorUtilities.getBarrierTexture(visible ? 1 : 0);
     }
 
     public String name() {

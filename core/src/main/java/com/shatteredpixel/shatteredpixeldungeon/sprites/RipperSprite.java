@@ -26,11 +26,22 @@ import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
+import java.util.LinkedHashMap;
+
 public class RipperSprite extends MobSprite {
 
 	private Animation stab;
 	private Animation prep;
 	private Animation leap;
+
+	@Override
+	public LinkedHashMap<String, Animation> getAnimations() {
+		LinkedHashMap<String, Animation> result = super.getAnimations();
+		result.put("stab", stab);
+		result.put("prep", prep);
+		result.put("leap", leap);
+		return result;
+	}
 
 	private boolean alt = Random.Int(2) == 0;
 
@@ -39,6 +50,13 @@ public class RipperSprite extends MobSprite {
 
 		texture( Assets.Sprites.RIPPER );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 15, 14 );
 
 		idle = new Animation( 4, true );
@@ -61,13 +79,16 @@ public class RipperSprite extends MobSprite {
 
 		die = new Animation( 15, false );
 		die.frames( frames, 1, 13, 14, 15, 16 );
-
-		play( idle );
 	}
 
-	public void leapPrep( int cell ){
-		turnTo( ch.pos, cell );
-		play( prep );
+	public static void leapPrep(CharSprite sprite, int cell ){
+		sprite.turnTo( sprite.ch.pos, cell );
+
+		if (sprite instanceof RipperSprite) {
+			sprite.play(((RipperSprite) sprite).prep);
+		} else {
+			sprite.idle();
+		}
 	}
 
 	@Override

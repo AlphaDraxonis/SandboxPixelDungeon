@@ -70,7 +70,7 @@ public abstract class InventoryStone extends Runestone {
 		Invisibility.dispel();
 	}
 
-	private String inventoryTitle(){
+	protected String inventoryTitle(){
 		return Messages.get(this, "inv_title");
 	}
 

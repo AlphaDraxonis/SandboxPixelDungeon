@@ -3,22 +3,11 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
-import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.CavesLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.CityLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.DeadEndLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.HallsBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.HallsLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 
+@NotAllowedInLua
 public abstract class WndSelectLevelType extends WndChooseOneInCategories {
 
     public WndSelectLevelType(boolean flag) {

@@ -180,17 +180,9 @@ public class Spinner extends Mob {
 		
 	}
 
+	//previously called 'shootWeb()'
 	@Override
-	public void onZapComplete() {
-		shootWeb();
-	}
-
-	@Override
-	public void playZapAnim(int target) {
-		SpinnerSprite.playZap(sprite.parent, sprite, target, this);
-	}
-
-	public void shootWeb(){
+	public void zap() {
 		int webPos = webPos();
 		if (webPos != -1){
 			int i;
@@ -199,22 +191,26 @@ public class Spinner extends Mob {
 					break;
 				}
 			}
-			
+
 			//spread to the tile hero was moving towards and the two adjacent ones
 			int leftPos = enemy.pos + PathFinder.CIRCLE8[left(i)];
 			int rightPos = enemy.pos + PathFinder.CIRCLE8[right(i)];
-			
+
 			if (Dungeon.level.isPassable(leftPos)) applyWebToCell(leftPos);
 			if (Dungeon.level.isPassable(webPos))  applyWebToCell(webPos);
 			if (Dungeon.level.isPassable(rightPos))applyWebToCell(rightPos);
-			
+
 			webCoolDown = maxWebCoolDown;
 
 			if (Dungeon.level.heroFOV[enemy.pos]){
 				Dungeon.hero.interrupt();
 			}
 		}
-		next();
+	}
+
+	@Override
+	public void playZapAnim(int target) {
+		SpinnerSprite.playZap(sprite.parent, sprite, target, this);
 	}
 
 	protected void applyWebToCell(int cell){
@@ -243,13 +239,12 @@ public class Spinner extends Mob {
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (enemyInFOV && webCoolDown <= 0 && lastEnemyPos != -1){
 				if (webPos() != -1){
-					if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-						sprite.zap( webPos() );
+					if (doRangedAttack( webPos() )) {
+						next();
+						return true;
+					} else {
 						shotWebVisually = true;
 						return false;
-					} else {
-						shootWeb();
-						return true;
 					}
 				}
 			}
@@ -270,13 +265,12 @@ public class Spinner extends Mob {
 
 			if (enemyInFOV && webCoolDown <= 0 && lastEnemyPos != -1){
 				if (webPos() != -1){
-					if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-						sprite.zap( webPos() );
+					if (doRangedAttack( webPos() )) {
+						next();
+						return true;
+					} else {
 						shotWebVisually = true;
 						return false;
-					} else {
-						shootWeb();
-						return true;
 					}
 				}
 			}

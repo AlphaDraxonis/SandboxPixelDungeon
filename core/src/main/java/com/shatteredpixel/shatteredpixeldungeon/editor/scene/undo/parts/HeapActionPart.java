@@ -33,7 +33,7 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
     protected static void place(Heap heap) {
         Dungeon.level.heaps.put(heap.pos, heap);
         Item i = heap.peek();
-        i.image = CustomDungeon.getDungeon().getItemSpriteOnSheet(i);
+        i.image = CustomDungeon.getItemSpriteOnSheet(i);
         EditorScene.add(heap);
     }
 

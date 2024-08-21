@@ -29,11 +29,13 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Group;
 
 import java.text.NumberFormat;
 import java.util.Locale;
 
+@NotAllowedInLua
 public class WndScoreBreakdown extends Window {
 
 	private static final int WIDTH			= 115;

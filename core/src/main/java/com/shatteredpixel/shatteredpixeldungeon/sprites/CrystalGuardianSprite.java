@@ -27,15 +27,31 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalGuardian;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.TextureFilm;
 
+import java.util.LinkedHashMap;
+
 public abstract class CrystalGuardianSprite extends MobSprite {
 
 	private Animation crumple;
+
+	@Override
+	public LinkedHashMap<String, Animation> getAnimations() {
+		LinkedHashMap<String, Animation> result = super.getAnimations();
+		result.put("crumple", crumple);
+		return result;
+	}
 
 	public CrystalGuardianSprite() {
 		super();
 
 		texture( Assets.Sprites.CRYSTAL_GUARDIAN );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 12, 15 );
 
 		int c = texOffset();
@@ -56,17 +72,22 @@ public abstract class CrystalGuardianSprite extends MobSprite {
 
 		//this is temporary, as ideally the sprite itself should be scaled to 15x19 or so
 		scale.set(1.25f);
-
-		play( idle );
 	}
 
-	public void crumple(){
-		play(crumple);
+	public static void crumple(CharSprite sprite) {
+		if (sprite instanceof CrystalGuardianSprite) {
+			sprite.play(((CrystalGuardianSprite) sprite).crumple);
+		} else {
+			sprite.play(sprite.die.clone());
+		}
 	}
 
-	public void endCrumple(){
-		if (curAnim == crumple){
-			idle();
+	public static void endCrumple(CharSprite sprite) {
+		if (sprite instanceof CrystalGuardianSprite) {
+			if (((CrystalGuardianSprite) sprite).curAnim == ((CrystalGuardianSprite) sprite).crumple) sprite.idle();
+			sprite.play(((CrystalGuardianSprite) sprite).crumple);
+		} else {
+			sprite.idle();
 		}
 	}
 
@@ -74,7 +95,7 @@ public abstract class CrystalGuardianSprite extends MobSprite {
 	public void link(Char ch) {
 		super.link(ch);
 		if (ch instanceof CrystalGuardian && ((CrystalGuardian) ch).recovering()){
-			crumple();
+			crumple(this);
 		}
 	}
 

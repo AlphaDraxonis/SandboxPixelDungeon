@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSwitchFloor;
@@ -15,6 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StatusPane;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Game;
@@ -23,6 +25,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 
 //from ui.MenuPane
+@NotAllowedInLua
 public class MenuPane extends Component {
 
     private Image bg;
@@ -72,7 +75,13 @@ public class MenuPane extends Component {
 
             @Override
             protected void onClick() {
-                EditorScene.show(new WndSwitchFloor());
+                if (EditorScene.isEditingRoomLayout) {
+                    Dungeon.customDungeon.removeFloor(EditorScene.getCustomLevel().levelScheme);
+                    EditorScene.open((CustomLevel) EditorScene.customLevelBeforeRoomLayout.loadLevel());
+                }
+                else {
+                    EditorScene.show(new WndSwitchFloor());
+                }
             }
         };
         add(depthButton);

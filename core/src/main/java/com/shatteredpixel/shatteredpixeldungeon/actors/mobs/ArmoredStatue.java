@@ -144,7 +144,7 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	@Override
 	public CharSprite sprite() {
 		CharSprite sprite = super.sprite();
-		((StatueSprite)sprite).setArmor(armor == null ? 0 : armor.tier);
+		StatueSprite.setArmor(sprite, armor == null ? 0 : armor.tier);
 		return sprite;
 	}
 
@@ -176,8 +176,8 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	}
 
 	@Override
-	public String description() {
-		if (customDesc != null || armor == null && Dungeon.hero != null) return super.description();
+	public String desc() {
+		if (customDesc != null || armor == null && Dungeon.hero != null) return super.desc();
 		return Messages.get(this, "desc", weapon == null ? "___" : weapon().name(), armor == null ? "___" : armor().name());
 	}
 

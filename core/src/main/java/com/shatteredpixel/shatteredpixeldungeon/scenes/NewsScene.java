@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.services.news.NewsArticle;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -39,6 +40,7 @@ import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 
+@NotAllowedInLua
 public class NewsScene extends PixelScene {
 
 	boolean displayingNoArticles = false;

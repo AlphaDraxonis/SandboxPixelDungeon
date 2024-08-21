@@ -36,7 +36,7 @@ public class FoldableComp extends Component {
     @Override
     protected void createChildren() {
 
-        line = new ColorBlock(1, 1, 0xFF222222);
+        line = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
         add(line);
 
         title = PixelScene.renderTextBlock(titleFontSize());
@@ -99,19 +99,12 @@ public class FoldableComp extends Component {
         float posY = y;
 
         float posX = width - 2;
-        float titleWidth = posX;
-
-        if (fold.visible || expand.visible) titleWidth -= BUTTON_HEIGHT + BUTTON_GAP;
+        float titleWidth = posX - requiredWidthForControlButtons();
 
         title.maxWidth((int) titleWidth);
         float titleHeight = Math.max(BUTTON_HEIGHT, title.height());
 
-        //insert part for add/remove buttons here
-
-        if (fold.visible)
-            fold.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - fold.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
-        else if (expand.visible)
-            expand.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - expand.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        layoutControlButtons(posX, posY, titleHeight);
 
         title.setPos(x, (titleHeight - title.height()) * 0.5f + posY + 1);
 
@@ -126,6 +119,26 @@ public class FoldableComp extends Component {
         line.size(width, 1);
         line.x = x;
         line.y = y + height;
+
+    }
+
+    protected float requiredWidthForControlButtons() {
+        float w = 0;
+        if (fold.visible) w += BUTTON_HEIGHT + BUTTON_GAP;
+        if (expand.visible) w += BUTTON_HEIGHT + BUTTON_GAP;
+        return w;
+    }
+
+    //posX is from right to left
+    protected float layoutControlButtons(float posX, float posY, float titleHeight) {
+        if (fold != null && fold.visible) {
+            fold.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - fold.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        }
+        if (expand != null && expand.visible) {
+            expand.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - expand.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        }
+
+        return posX;
 
     }
 

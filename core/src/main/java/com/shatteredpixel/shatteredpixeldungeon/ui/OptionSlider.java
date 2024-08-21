@@ -76,7 +76,7 @@ public abstract class OptionSlider extends Component {
 
         sliderTicks = new ColorBlock[Math.min((maxVal - minVal) + 1, maxNumSliderTicks)];
         for (int i = 0; i < sliderTicks.length; i++) {
-            add(sliderTicks[i] = new ColorBlock(1, 9, 0xFF222222));
+            add(sliderTicks[i] = new ColorBlock(1, 9, ColorBlock.SEPARATOR_COLOR));
         }
         add(sliderNode);
     }
@@ -108,7 +108,7 @@ public abstract class OptionSlider extends Component {
         add(this.minTxt = PixelScene.renderTextBlock(6));
         add(this.maxTxt = PixelScene.renderTextBlock(6));
 
-        add(sliderBG = new ColorBlock(1, 1, 0xFF222222));
+        add(sliderBG = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR));
         sliderNode = Chrome.get(Chrome.Type.RED_BUTTON);
         sliderNode.size(4, 7);
 

@@ -7,19 +7,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.EbonyMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.DefaultListItemWithRemoveBtn;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
-import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
@@ -39,27 +32,11 @@ public class MobItem extends EditorItem<Mob> {
     }
 
     @Override
-    public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        if (!(getObject() instanceof LuaClass)) return super.createListItem(window);
-        return new DefaultListItemWithRemoveBtn(this, window, name(), getSprite()) {
-            @Override
-            protected void onRemove() {
-                CustomObject.deleteCustomObject(((LuaClass) getObject()).getIdentifier());
-                Mobs.customMobsBag.items.remove(MobItem.this);//tzz more flexible!
-                WndEditorInv.updateCurrentTab();
-
-                ItemSlot slot = QuickSlotButton.containsItem(MobItem.this);
-                if (slot != null) slot.item(null);
-            }
-        };
-    }
-
-    @Override
     public String name() {
         Mob mob = getObject();
 
-        if (mob instanceof LuaClass) {
-            return CustomObject.getName(((LuaClass) mob).getIdentifier());
+        if (mob instanceof CustomObjectClass) {
+            return UserContentManager.getName(((CustomObjectClass) mob).getIdentifier());
         }
 
         if (MobSpriteItem.canChangeSprite(mob)) {

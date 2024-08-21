@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.DungeonTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -178,7 +179,7 @@ public class CustomRecipeList extends Component {
 
             add(spinnerImage = Icons.ENERGY.get());
 
-            line = new ColorBlock(1, 1, 0xFF222222);
+            line = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
             add(line);
         }
 
@@ -281,12 +282,12 @@ public class CustomRecipeList extends Component {
 
                     @Override
                     public Class<? extends Bag> preferredBag() {
-                        return Items.bag.getClass();
+                        return Items.bag().getClass();
                     }
 
                     @Override
                     public List<Bag> getBags() {
-                        return Collections.singletonList(Items.bag);
+                        return Collections.singletonList(Items.bag());
                     }
 
                     @Override
@@ -315,7 +316,7 @@ public class CustomRecipeList extends Component {
             @Override
             public void item(Item item) {
                 if (item != null)
-                    item.image = Dungeon.customDungeon.getItemSpriteOnSheet(item);
+                    item.image = CustomDungeon.getItemSpriteOnSheet(item);
                 super.item(item);
 
                 sprite.visible = sprite.active = item != null;

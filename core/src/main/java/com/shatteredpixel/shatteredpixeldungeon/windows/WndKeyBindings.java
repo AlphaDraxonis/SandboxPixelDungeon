@@ -30,11 +30,8 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.watabou.input.ControllerHandler;
-import com.watabou.input.GameAction;
-import com.watabou.input.KeyBindings;
-import com.watabou.input.KeyEvent;
-import com.watabou.input.PointerEvent;
+import com.watabou.NotAllowedInLua;
+import com.watabou.input.*;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.PointF;
@@ -42,6 +39,7 @@ import com.watabou.utils.PointF;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+@NotAllowedInLua
 public class WndKeyBindings extends Window {
 
 	private static final int WIDTH = 135;
@@ -70,7 +68,7 @@ public class WndKeyBindings extends Window {
 		ttlAction.setPos( COL1_CENTER - ttlAction.width()/2, (BTN_HEIGHT - ttlAction.height())/2);
 		add(ttlAction);
 
-		ColorBlock ttlSep1 = new ColorBlock(1, BTN_HEIGHT, 0xFF222222);
+		ColorBlock ttlSep1 = new ColorBlock(1, BTN_HEIGHT, ColorBlock.SEPARATOR_COLOR);
 		ttlSep1.x = 0.4f*WIDTH - 1;
 		add(ttlSep1);
 
@@ -80,7 +78,7 @@ public class WndKeyBindings extends Window {
 		ttlKey1.setPos(COL2_CENTER - ttlKey1.width()/2, (BTN_HEIGHT - ttlKey1.height())/2);
 		add(ttlKey1);
 
-		ColorBlock ttlSep2 = new ColorBlock(1, BTN_HEIGHT, 0xFF222222);
+		ColorBlock ttlSep2 = new ColorBlock(1, BTN_HEIGHT, ColorBlock.SEPARATOR_COLOR);
 		ttlSep2.x = 0.6f*WIDTH - 1;
 		add(ttlSep2);
 
@@ -90,7 +88,7 @@ public class WndKeyBindings extends Window {
 		ttlKey2.setPos(COL3_CENTER - ttlKey2.width()/2, (BTN_HEIGHT - ttlKey2.height())/2);
 		add(ttlKey2);
 
-		ColorBlock ttlSep3 = new ColorBlock(1, BTN_HEIGHT, 0xFF222222);
+		ColorBlock ttlSep3 = new ColorBlock(1, BTN_HEIGHT, ColorBlock.SEPARATOR_COLOR);
 		ttlSep3.x = 0.8f*WIDTH - 1;
 		add(ttlSep3);
 
@@ -100,7 +98,7 @@ public class WndKeyBindings extends Window {
 		ttlKey3.setPos(COL4_CENTER - ttlKey2.width()/2, (BTN_HEIGHT - ttlKey2.height())/2);
 		add(ttlKey3);
 
-		ColorBlock ttlSep4 = new ColorBlock(WIDTH, 1, 0xFF222222);
+		ColorBlock ttlSep4 = new ColorBlock(WIDTH, 1, ColorBlock.SEPARATOR_COLOR);
 		ttlSep4.y = BTN_HEIGHT;
 		add(ttlSep4);
 
@@ -129,7 +127,7 @@ public class WndKeyBindings extends Window {
 			bindingsList.add(controllerInfo);
 			y = (int)controllerInfo.bottom()+3;
 
-			ColorBlock sep = new ColorBlock(WIDTH, 1, 0xFF222222);
+			ColorBlock sep = new ColorBlock(WIDTH, 1, ColorBlock.SEPARATOR_COLOR);
 			sep.y = y;
 			bindingsList.add(sep);
 		}
@@ -281,16 +279,16 @@ public class WndKeyBindings extends Window {
 			if (key3 == 0) key3Name.hardlight(UNBOUND);
 			add(key3Name);
 
-			sep1 = new ColorBlock(1, 1, 0xFF222222);
+			sep1 = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
 			add(sep1);
 
-			sep2 = new ColorBlock(1, 1, 0xFF222222);
+			sep2 = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
 			add(sep2);
 
-			sep3 = new ColorBlock(1, 1, 0xFF222222);
+			sep3 = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
 			add(sep3);
 
-			sep4 = new ColorBlock(1, 1, 0xFF222222);
+			sep4 = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
 			add(sep4);
 		}
 

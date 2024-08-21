@@ -7,7 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCleansing.Cleanse;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -15,8 +15,10 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.ui.Component;
 
+@NotAllowedInLua
 public class DurationSettings extends Component {
 
     private final Component outsideSp;
@@ -156,7 +158,7 @@ public class DurationSettings extends Component {
             info.setPos(x, y + 1);
             if (elements != null) {
                 wrapper.setSize(width, 0);
-                wrapper.setRect(x, info.bottom() + 4, width, EditorUtilies.layoutStyledCompsInRectangles(2, width, wrapper, elements));
+                wrapper.setRect(x, info.bottom() + 4, width, EditorUtilities.layoutStyledCompsInRectangles(2, width, wrapper, elements));
                 height = wrapper.bottom() + 1;
             } else height = info.bottom() + 1;
         }
@@ -236,9 +238,9 @@ public class DurationSettings extends Component {
                     Messages.titleCase(Messages.get(Foresight.class, "name")), 8, new BuffIcon(new Foresight(), true));
             foresight.addChangeListener(() -> ed.put(Foresight.class, (Integer) foresight.getValue()));
 
-            elements = new Component[]{haste, invisibility, levitation, mindVision, blobImmunity, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                    cleanse, stamina, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                    fireImbue, frostImbue, toxicImbue, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+            elements = new Component[]{haste, invisibility, levitation, mindVision, blobImmunity, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
+                    cleanse, stamina, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
+                    fireImbue, frostImbue, toxicImbue, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
                     magicImmune, foresight};//if layout changes: also change restoreDefaults()!!!!
         }
 

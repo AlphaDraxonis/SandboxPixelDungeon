@@ -34,6 +34,14 @@ public class FungalCoreSprite extends MobSprite {
 
 		texture( Assets.Sprites.FUNGAL_CORE );
 
+		initAnimations();
+
+		play( idle );
+
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 27, 27 );
 
 		idle = new Animation( 0, true );
@@ -49,9 +57,6 @@ public class FungalCoreSprite extends MobSprite {
 
 		die = new Animation( 12, false );
 		die.frames( frames, 0 );
-
-		play( idle );
-
 	}
 
 	boolean wasVisible = false;

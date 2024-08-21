@@ -24,8 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomRect;
 import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
 
 public class CellBlockRoom extends StandardRoom {
 
@@ -40,7 +40,7 @@ public class CellBlockRoom extends StandardRoom {
 		Painter.fill( level, this, 1, Terrain.EMPTY );
 		Painter.fill( level, this, 3, Terrain.WALL );
 
-		Rect internal = new EmptyRoom();
+		RoomRect internal = new EmptyRoom();
 		internal.set(left+3, top+3, right-3, bottom-3);
 
 		int rows = (internal.width() - 1)/3;

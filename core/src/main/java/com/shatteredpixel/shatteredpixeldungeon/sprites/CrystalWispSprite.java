@@ -40,11 +40,18 @@ public abstract class CrystalWispSprite extends MobSprite {
 	public CrystalWispSprite() {
 		super();
 
-		int c = texOffset();
-
 		texture( Assets.Sprites.CRYSTAL_WISP );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 12, 14 );
+
+		int c = texOffset();
 
 		idle = new Animation( 1, true );
 		idle.frames( frames, c+0 );
@@ -59,8 +66,6 @@ public abstract class CrystalWispSprite extends MobSprite {
 
 		die = new Animation( 15, false );
 		die.frames( frames, c+6, c+7, c+8, c+9, c+10, c+11, c+12, c+11 );
-
-		play( idle );
 	}
 
 	@Override
@@ -72,6 +77,11 @@ public abstract class CrystalWispSprite extends MobSprite {
 				playZap(parent, CrystalWispSprite.this, cell, ch);
 			}
 		});
+	}
+
+	@Override
+	public boolean hasOwnZapAnimation() {
+		return true;
 	}
 
 	public static void playZap(Group parent, CharSprite sprite, int cell, Char ch) {

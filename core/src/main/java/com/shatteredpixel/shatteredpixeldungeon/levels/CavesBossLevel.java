@@ -29,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -86,9 +86,9 @@ public class CavesBossLevel extends Level {
 	private static int WIDTH = 33;
 	private static int HEIGHT = 42;
 
-	public static Rect diggableArea = new Rect(2, 11, 31, 40);
-	public static Rect mainArena = new Rect(5, 14, 28, 37);
-	public static Rect gate = new Rect(14, 13, 19, 14);
+	public static WatabouRect diggableArea = new WatabouRect(2, 11, 31, 40);
+	public static WatabouRect mainArena = new WatabouRect(5, 14, 28, 37);
+	public static WatabouRect gate = new WatabouRect(14, 13, 19, 14);
 	public static int[] pylonPositions = new int[]{ 4 + 13*WIDTH, 28 + 13*WIDTH, 4 + 37*WIDTH, 28 + 37*WIDTH };
 
 	private ArenaVisuals customArenaVisuals;
@@ -808,18 +808,18 @@ public class CavesBossLevel extends Level {
 						} else if (Dungeon.level.map[i] == Terrain.EMPTY_SP || Dungeon.level.map[i] == Terrain.EXIT) {
 							if (i / tileW == 0) data[i] = 7;
 							else {
-								int neighbours = EditorUtilies.stitchNeighbours(i, Terrain.EMPTY_SP, Dungeon.level)
-										| EditorUtilies.stitchNeighbours(i, Terrain.EXIT, Dungeon.level);
-								if ((neighbours & EditorUtilies.BOTTOM) == 0) {
-									if ((neighbours & EditorUtilies.RIGHT) != 0) data[i] = 9;
-									else if ((neighbours & EditorUtilies.LEFT) != 0) data[i] = 11;
+								int neighbours = EditorUtilities.stitchNeighbours(i, Terrain.EMPTY_SP, Dungeon.level)
+										| EditorUtilities.stitchNeighbours(i, Terrain.EXIT, Dungeon.level);
+								if ((neighbours & EditorUtilities.BOTTOM) == 0) {
+									if ((neighbours & EditorUtilities.RIGHT) != 0) data[i] = 9;
+									else if ((neighbours & EditorUtilities.LEFT) != 0) data[i] = 11;
 									else data[i] = 26;
-								} else if ((neighbours & EditorUtilies.LEFT) == 0) {
-									if ((neighbours & EditorUtilies.RIGHT) == 0) data[i] = 18;
+								} else if ((neighbours & EditorUtilities.LEFT) == 0) {
+									if ((neighbours & EditorUtilities.RIGHT) == 0) data[i] = 18;
 									else data[i] = 1;
-								} else if ((neighbours & EditorUtilies.RIGHT) == 0) {
+								} else if ((neighbours & EditorUtilities.RIGHT) == 0) {
 									data[i] = 3;
-								} else if ((neighbours & EditorUtilies.BOTTOM_RIGHT) == 0 && (neighbours & EditorUtilies.BOTTOM_LEFT) == 0) {
+								} else if ((neighbours & EditorUtilities.BOTTOM_RIGHT) == 0 && (neighbours & EditorUtilities.BOTTOM_LEFT) == 0) {
 									data[i] = 10;
 								} else data[i] = 2;
 							}

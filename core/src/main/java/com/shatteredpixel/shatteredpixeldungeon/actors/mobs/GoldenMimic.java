@@ -58,7 +58,7 @@ public class GoldenMimic extends Mimic {
 	}
 
 	@Override
-	public String description() {
+	public String desc() {
 		if (alignment == Alignment.NEUTRAL && customDesc == null){
 			if (MimicTooth.stealthyMimics() || superHidden){
 				return Messages.get(Heap.class, "locked_chest_desc");
@@ -66,7 +66,7 @@ public class GoldenMimic extends Mimic {
 				return Messages.get(Heap.class, "locked_chest_desc") + "\n\n" + Messages.get(this, "hidden_hint");
 			}
 		} else {
-			return super.description();
+			return super.desc();
 		}
 	}
 

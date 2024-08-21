@@ -22,9 +22,11 @@
 package com.watabou.utils;
 
 import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 
 //wrapper for libGDX reflection
+@NotAllowedInLua
 public class Reflection {
 	
 	public static boolean isMemberClass( Class cls ){
@@ -48,13 +50,46 @@ public class Reflection {
 	public static <T> T newInstanceUnhandled( Class<T> cls ) throws Exception {
 		return ClassReflection.newInstance(cls);
 	}
-	
+
+	public static Function<Class<?>, Class<?>> makeToUserContentClass;
+
 	public static Class forName( String name ){
 
 		name = name.replace("alphadraxonis.sandboxpixeldungeon", "shatteredpixel.shatteredpixeldungeon");
 //		name = name.replace("shatteredpixel.shatteredpixeldungeon","alphadraxonis.sandboxpixeldungeon");
 
 		name = name.replace("gases.PermaGas", "other.PermaGas");
+
+		int indexByteBuddy = name.indexOf("$ByteBuddy$");
+		if (indexByteBuddy != -1) {
+			name = name.substring(0, indexByteBuddy);
+			return makeToUserContentClass.apply(forName(name));
+		}
+
+		if (name.endsWith("_lua")) {
+			name = name.substring(0, name.length() - 4);
+			name = name.replace(".luamobs.", ".");
+			if (name.endsWith("Elemental")) {
+				name = name.replace(".actors.mobs.", ".actors.mobs.Elemental$");
+			} else if (name.endsWith("Fist")) {
+				name = name.replace(".actors.mobs.", ".actors.mobs.YogFist$");
+			} else if (name.endsWith("Shaman")) {
+				name = name.replace(".actors.mobs.", ".actors.mobs.Shaman$");
+			}
+			else if (name.endsWith("Sentry")) {
+				name = "com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom$Sentry";
+			} else if (name.endsWith("Lotus")) {
+					name = "com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth$Lotus";
+			} else if (name.endsWith("Larva")) {
+				name = "com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa$Larva";
+			}
+			Class<?> result = makeToUserContentClass.apply(forName(name));
+			if (result == null) {
+				name = name.replace(".actors.mobs.", ".actors.mobs.npcs.");
+				result = makeToUserContentClass.apply(forName(name));
+			}
+			return result;
+		}
 
 		try {
 			return ClassReflection.forName( name );

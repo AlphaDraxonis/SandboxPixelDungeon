@@ -4,8 +4,8 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.GameObjectCategory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -25,7 +25,6 @@ import java.util.*;
 
 public final class CustomTileLoader {
 
-    static final String EXTRA_FILES = "files/";
     private static final String DESC_FILE_EXTENSION = ".dat";
 
     public static String dungeonNameOfLastLoadedTiles;
@@ -35,10 +34,9 @@ public final class CustomTileLoader {
 
     public static void loadTiles(boolean forceLoad) {
 
-        EditorItemBag.callStaticInitializers();
+        EditorInventory.callStaticInitializers();
         Tiles.updateParticlesInInv();
-        Mobs.updateCustomMobsInInv();
-        Mobs.deleteCustomMobFromOtherContainers(null, -1, false);
+        EditorInventory.doWidthAllCategories(GameObjectCategory::updateCustomObjects);
 
         if (!forceLoad && Dungeon.customDungeon.getName().equals(dungeonNameOfLastLoadedTiles)) return;
         dungeonNameOfLastLoadedTiles = Dungeon.customDungeon.getName();
@@ -141,7 +139,8 @@ public final class CustomTileLoader {
                 ownCustomTile.offsetCenterX = ownCustomTile.offsetCenterY = 0;
             }
             ownCustomTile.identifier = file.name();
-            Tiles.addCustomTile(ownCustomTile);
+            if (ownCustomTile.texturePath != null)
+                Tiles.addCustomTile(ownCustomTile);
         } catch (Exception ignored) {
 //            throw new RuntimeException(ignored);
         }

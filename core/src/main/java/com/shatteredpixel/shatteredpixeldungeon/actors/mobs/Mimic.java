@@ -130,7 +130,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 	}
 
 	@Override
-	public String description() {
+	public String desc() {
 		if (alignment == Alignment.NEUTRAL && customDesc == null){
 			if (MimicTooth.stealthyMimics() || superHidden){
 				return Messages.get(Heap.class, "chest_desc");
@@ -138,13 +138,13 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 				return Messages.get(Heap.class, "chest_desc") + "\n\n" + Messages.get(this, "hidden_hint");
 			}
 		} else {
-			return super.description();
+			return super.desc();
 		}
 	}
 
 	@Override
 	public String info() {
-		if (!CustomDungeon.knowsEverything() && isLikeChest()) return description();
+		if (!CustomDungeon.knowsEverything() && isLikeChest()) return desc();
 		return super.info();
 	}
 
@@ -164,9 +164,9 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public CharSprite sprite() {
-		MimicSprite sprite = (MimicSprite) super.sprite();
-		sprite.superHidden = superHidden;
-		if (alignment == Alignment.NEUTRAL && state == PASSIVE) sprite.hideMimic();
+		CharSprite sprite = super.sprite();
+		if (sprite instanceof MimicSprite) ((MimicSprite) sprite).superHidden = superHidden;
+		if (alignment == Alignment.NEUTRAL && state == PASSIVE) MimicSprite.hideMimic(sprite);
 		return sprite;
 	}
 

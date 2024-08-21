@@ -46,7 +46,7 @@ public class LootTableComp extends ItemsWithChanceDistrComp {
 
     @Override
     protected WndBag.ItemSelector createSelector(Consumer<Item> onSelect) {
-        return createSelector(Item.class, true, Items.bag.getClass(), onSelect);
+        return createSelector(Item.class, true, Items.bag().getClass(), onSelect);
     }
 
     @Override

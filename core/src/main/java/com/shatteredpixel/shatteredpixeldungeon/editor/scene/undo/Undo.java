@@ -37,6 +37,18 @@ public final class Undo {
         }
     }
 
+    public static void addActionPartToBeginning(ActionPart part) {
+        if (part != null && part.hasContent() && !actionsInProgress.isEmpty()) {
+            ActionPartList currentAction = actionsInProgress.peek();
+            currentAction.addActionPartToBeginning(part);
+        }
+    }
+
+    public static boolean alreadyHasContent() {
+        if (actionsInProgress.isEmpty()) return false;
+        return actionsInProgress.peek().hasContent();
+    }
+
     private static int autoSaveCounter = SPDSettings.autoSave();
 
     private static void addAction(ActionPartList action) {

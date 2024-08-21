@@ -23,7 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bee;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
@@ -42,7 +42,7 @@ public class SecretHoneypotRoom extends SecretRoom {
 		if (!itemsGenerated) generateItems(level);
 		
 		Honeypot.ShatteredPot pot = null;
-		for (Item item : spawnItemsInRoom.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
+		for (Item item : spawnItemsInRoom.toArray(EditorUtilities.EMPTY_ITEM_ARRAY)) {
 			if (item instanceof Honeypot.ShatteredPot) {
 				spawnItemsInRoom.remove(pot = (Honeypot.ShatteredPot) item);
 				break;

@@ -27,9 +27,10 @@ import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -131,11 +132,11 @@ public abstract class Trap extends GameObject implements Copyable<Trap> {
 	}
 
 	public Image getSprite() {
-		return EditorUtilies.getTerrainFeatureTexture((active ? color : Trap.BLACK) + (shape * 16) + (visible ? 0 : 128));
+		return EditorUtilities.getTerrainFeatureTexture((active ? color : Trap.BLACK) + (shape * 16) + (visible ? 0 : 128));
 	}
 
 	@Override
-	public int sparseArrayKey() {
+	public final int sparseArrayKey() {
 		return pos;
 	}
 
@@ -181,5 +182,23 @@ public abstract class Trap extends GameObject implements Copyable<Trap> {
 		Bundle bundle = new Bundle();
 		bundle.put("TRAP",this);
 		return  (Trap) bundle.get("TRAP");
+	}
+
+	@Override
+	public void copyStats(GameObject template) {
+		if (template == null) return;
+		if (getClass() != template.getClass()) return;
+		Bundle bundle = new Bundle();
+		bundle.put("OBJ", template);
+		bundle.getBundle("OBJ").put(CustomGameObjectClass.INHERIT_STATS, true);
+
+		int pos = this.pos;
+//		boolean replaceSprite = spriteClass != ((Mob) template).spriteClass;
+		restoreFromBundle(bundle.getBundle("OBJ"));
+		this.pos = pos;
+
+//		if (replaceSprite && sprite != null) {
+//			EditorScene.replaceMobSprite(this, ((Mob) template).spriteClass);
+//		}
 	}
 }

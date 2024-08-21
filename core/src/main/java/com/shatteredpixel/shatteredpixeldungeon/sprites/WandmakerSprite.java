@@ -37,23 +37,28 @@ public class WandmakerSprite extends MobSprite {
 		
 		texture( Assets.Sprites.MAKER );
 		
-		TextureFilm frames = new TextureFilm( texture, 12, 14 );
+		initAnimations();
 		
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 12, 14 );
+
 		idle = new Animation( 10, true );
 		idle.frames( frames, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 2, 1 );
-		
+
 		run = new Animation( 20, true );
 		run.frames( frames, 0 );
-		
+
 		die = new Animation( 20, false );
 		die.frames( frames, 0 );
 
 		attack = new Animation( 17, false );
 		attack.frames( frames, 2, 3, 3, 3, 3, 3, 2, 1 );
-		
-		play( idle );
 	}
-	
+
 	@Override
 	public void link( Char ch ) {
 		super.link( ch );

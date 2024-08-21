@@ -11,10 +11,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndColorPicker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Point;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@NotAllowedInLua
 public final class WndZones {
 
     private WndZones() {
@@ -210,7 +212,7 @@ public final class WndZones {
             if (name != null) {
 
                 if (Dungeon.level.zoneMap.containsKey(name)) {
-                    EditorUtilies.showDuplicateNameWarning();
+                    EditorUtilities.showDuplicateNameWarning();
                     return;
                 }
                 obj.name = name;

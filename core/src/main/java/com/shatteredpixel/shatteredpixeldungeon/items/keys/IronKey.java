@@ -24,7 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.keys;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
@@ -47,7 +47,7 @@ public class IronKey extends Key {
 
     @Override
     public String desc() {
-        return CustomDungeon.knowsEverything() ? EditorUtilies.addIronKeyDescription(super.desc(), Dungeon.level) : super.desc();
+        return CustomDungeon.knowsEverything() ? EditorUtilities.addIronKeyDescription(super.desc(), Dungeon.level) : super.desc();
     }
 
 }

@@ -25,39 +25,56 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Random;
 
+import java.util.LinkedHashMap;
+
 public class MonkSprite extends MobSprite {
 	
 	private Animation kick;
+	protected float kickChance = 0.5f;
+
+	@Override
+	public LinkedHashMap<String, Animation> getAnimations() {
+		LinkedHashMap<String, Animation> result = super.getAnimations();
+		result.put("kick", kick);
+		return result;
+	}
 	
 	public MonkSprite() {
 		super();
 		
 		texture( Assets.Sprites.MONK );
 		
-		TextureFilm frames = new TextureFilm( texture, 15, 14 );
-		
-		idle = new Animation( 6, true );
-		idle.frames( frames, 1, 0, 1, 2 );
-		
-		run = new Animation( 15, true );
-		run.frames( frames, 11, 12, 13, 14, 15, 16 );
-		
-		attack = new Animation( 12, false );
-		attack.frames( frames, 3, 4, 3, 4 );
-		
-		kick = new Animation( 10, false );
-		kick.frames( frames, 5, 6, 5 );
-		
-		die = new Animation( 15, false );
-		die.frames( frames, 1, 7, 8, 8, 9, 10 );
+		initAnimations();
 		
 		play( idle );
 	}
-	
+
+	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 15, 14 );
+
+		int c = texOffset();
+
+		idle = new Animation( 6, true );
+		idle.frames( frames, c+1, c+0, c+1, c+2 );
+
+		run = new Animation( 15, true );
+		run.frames( frames, c+11, c+12, c+13, c+14, c+15, c+16 );
+
+		attack = new Animation( 12, false );
+		attack.frames( frames, c+3, c+4, c+3, c+4 );
+
+		kick = new Animation( 10, false );
+		kick.frames( frames, c+5, c+6, c+5 );
+
+		die = new Animation( 15, false );
+		die.frames( frames, c+1, c+7, c+8, c+8, c+9, c+10 );
+	}
+
 	@Override
 	public void attack( int cell ) {
 		super.attack( cell );
-		if (Random.Float() < 0.5f) {
+		if (Random.Float() < kickChance) {
 			play( kick );
 		}
 	}
@@ -65,5 +82,9 @@ public class MonkSprite extends MobSprite {
 	@Override
 	public void onComplete( Animation anim ) {
 		super.onComplete( anim == kick ? attack : anim );
+	}
+
+	protected int texOffset() {
+		return 0;
 	}
 }

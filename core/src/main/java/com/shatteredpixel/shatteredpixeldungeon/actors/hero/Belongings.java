@@ -25,7 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.KeepProguard;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.annotations.KeepProguard;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Predicate;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;

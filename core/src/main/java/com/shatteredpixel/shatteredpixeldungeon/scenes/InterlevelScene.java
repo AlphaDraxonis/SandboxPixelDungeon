@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.GameLog;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.watabou.NotAllowedInLua;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.*;
@@ -48,6 +49,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+@NotAllowedInLua
 public class InterlevelScene extends PixelScene {
 	
 	//slow fade on entering a new region

@@ -8,7 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -115,7 +115,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             protected void showWndEditItemComp(ItemContainer<Item>.Slot slot, Item item) {
                 EditorScene.show(new EditCompWindow(item, heap, advancedListPaneItem) {
                     {
-                        Window w = EditorUtilies.getParentWindow(EditHeapComp.this);
+                        Window w = EditorUtilities.getParentWindow(EditHeapComp.this);
                         if (w instanceof EditCompWindowTabbed)
                             ((EditItemComp) content).reorderHeapComp.editCompWindowTabbed = (EditCompWindowTabbed) w;
                     }
@@ -136,12 +136,22 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
     }
 
     @Override
+    protected void updateStates() {
+        super.updateStates();
+        autoExplored.checked(obj.autoExplored);
+        haunted.checked(obj.haunted);
+        priceMultiplier.setValue(obj.priceMultiplier);
+        heapType.setValue(obj.type);
+        itemContainer.setItemList(obj.items);
+    }
+
+    @Override
     protected String createDescription() {
         if (obj.type == Heap.Type.HEAP) return Messages.get(EditHeapComp.class, "desc_heap_open");
         if (obj.type == Heap.Type.FOR_SALE)
             return Messages.get(EditHeapComp.class, "desc_heap_for_sale");
-        if (obj.type == Heap.Type.LOCKED_CHEST) return EditorUtilies.addGoldKeyDescription(obj.info(), Dungeon.level);
-        if (obj.type == Heap.Type.CRYSTAL_CHEST) return EditorUtilies.addCrystalKeyDescription(obj.info(), Dungeon.level);
+        if (obj.type == Heap.Type.LOCKED_CHEST) return EditorUtilities.addGoldKeyDescription(obj.info(), Dungeon.level);
+        if (obj.type == Heap.Type.CRYSTAL_CHEST) return EditorUtilities.addCrystalKeyDescription(obj.info(), Dungeon.level);
         return obj.info();
     }
 
@@ -156,7 +166,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         else if (heap.type == Heap.Type.FOR_SALE)
             title = Messages.get(EditHeapComp.class, "title_heap_open");
         else title = Messages.titleCase(heap.title());
-        return title + " " + EditorUtilies.cellToString(heap.pos);
+        return title + " " + EditorUtilities.cellToString(heap.pos);
     }
 
     @Override
@@ -167,7 +177,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
     }
 
     @Override
-    protected void updateObj() {
+	public void updateObj() {
         obj.sprite.view(obj).place(obj.pos);
 
         updateHauntedEnabledState();

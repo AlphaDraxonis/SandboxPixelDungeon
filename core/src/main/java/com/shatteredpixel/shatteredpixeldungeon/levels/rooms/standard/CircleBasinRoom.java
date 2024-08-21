@@ -24,8 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomRect;
 import com.watabou.utils.Point;
-import com.watabou.utils.Rect;
 
 public class CircleBasinRoom extends PatchRoom {
 
@@ -42,7 +42,7 @@ public class CircleBasinRoom extends PatchRoom {
 
 	//cannot roll even numbers
 	@Override
-	public Rect resize(int w, int h) {
+	public RoomRect resize(int w, int h) {
 		super.resize(w, h);
 		if (width() % 2 == 0) right--;
 		if (height() % 2 == 0) bottom--;

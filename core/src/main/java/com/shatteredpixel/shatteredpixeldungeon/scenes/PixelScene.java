@@ -33,31 +33,21 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Tooltip;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Holiday;
+import com.watabou.NotAllowedInLua;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;
-import com.watabou.noosa.BitmapText;
+import com.watabou.noosa.*;
 import com.watabou.noosa.BitmapText.Font;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.ColorBlock;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Gizmo;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.Scene;
-import com.watabou.noosa.Visual;
 import com.watabou.noosa.ui.Component;
 import com.watabou.noosa.ui.Cursor;
-import com.watabou.utils.Callback;
-import com.watabou.utils.DeviceCompat;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.PointF;
-import com.watabou.utils.Reflection;
-import com.watabou.utils.Signal;
+import com.watabou.utils.*;
 
 import java.util.ArrayList;
 
+@NotAllowedInLua
 public class PixelScene extends Scene {
 
 	// Minimum virtual display size for mobile portrait orientation

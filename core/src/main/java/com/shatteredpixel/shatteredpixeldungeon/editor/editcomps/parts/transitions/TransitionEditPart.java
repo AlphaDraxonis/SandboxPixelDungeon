@@ -7,7 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -106,7 +106,7 @@ public abstract class TransitionEditPart extends Component {
             destCell.setData(new ArrayList<>(2), -1, null);
             return;
         }
-        String destN = EditorUtilies.getCodeName(destL);
+        String destN = EditorUtilities.getCodeName(destL);
         transition.destLevel = destN;
         if (destN == null || destN.isEmpty() || destN.equals(Level.SURFACE) || Dungeon.customDungeon.getFloor(destN) == null) {
             destCell.enable(false);

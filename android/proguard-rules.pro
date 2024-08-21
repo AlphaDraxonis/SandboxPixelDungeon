@@ -29,8 +29,11 @@
     public <methods>;
 }
 -keepclassmembers class * {
-    @com.shatteredpixel.shatteredpixeldungeon.editor.lua.KeepProguard *;
+    @com.shatteredpixel.shatteredpixeldungeon.editor.lua.annotations.KeepProguard *;
 }
+#-keepclassmembers class * {
+#    @net.bytebuddy.implementation.bind.annotation.RuntimeType *;
+#}
 
 # libGDX stuff
 -dontwarn android.support.**

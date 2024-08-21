@@ -7,8 +7,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StringInputComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -24,8 +25,8 @@ public class ChangeMobCustomizable extends ChangeCustomizable<Mob> {
 
     MobSpriteItem currentSprite;
 
-    public ChangeMobCustomizable(EditMobComp editMobComp) {
-        super(editMobComp);
+    public ChangeMobCustomizable(SimpleWindow window, EditMobComp editMobComp) {
+        super(window, editMobComp);
 
         if (MobSpriteItem.canChangeSprite(obj)) {
             currentSprite = new MobSpriteItem(obj.spriteClass);
@@ -33,7 +34,7 @@ public class ChangeMobCustomizable extends ChangeCustomizable<Mob> {
             mobSprite = new ItemSelector(Messages.get(this, "sprite", defaultMob == null ? obj.getClass().getSimpleName() : defaultMob.name()),
                     MobSpriteItem.class, currentSprite, ItemSelector.NullTypeSelector.DISABLED) {
                 {
-                    selector.preferredBag = MobSprites.bag.getClass();
+                    selector.preferredBag = MobSprites.bag().getClass();
                 }
                 @Override
                 public void change() {
@@ -59,7 +60,8 @@ public class ChangeMobCustomizable extends ChangeCustomizable<Mob> {
                         desc.setText(obj.getCustomDesc());
                     }
 
-                    EditorScene.replaceMobSprite(obj, i.getObject());
+                    if (obj.pos != -1)
+                        EditorScene.replaceMobSprite(obj, i.getObject());
                     currentSprite = i;
                     editMobComp.updateTitleIcon();
                     editMobComp.updateObj();
@@ -90,8 +92,8 @@ public class ChangeMobCustomizable extends ChangeCustomizable<Mob> {
     @Override
     protected void layout() {
         height = 0;
-        height = EditorUtilies.layoutCompsLinear(2, this, mobSprite, name, desc) + 2;
-        height = EditorUtilies.layoutCompsLinear(2, this, dialogs.toArray(new StringInputComp[0]));
+        height = EditorUtilities.layoutCompsLinear(2, this, mobSprite, name, desc) + 2;
+        height = EditorUtilities.layoutCompsLinear(2, this, dialogs.toArray(new StringInputComp[0]));
 
         addDialog.setRect(x + width / 5, height + 4,width * 3 / 5, ItemSpriteSheet.SIZE);
         height = addDialog.bottom() + 1;

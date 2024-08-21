@@ -21,6 +21,7 @@
 
 package com.watabou.noosa;
 
+import com.watabou.NotAllowedInLua;
 import com.watabou.glscripts.Script;
 
 //This class should be used on heavy pixel-fill based loads when lighting is not needed.
@@ -28,6 +29,7 @@ import com.watabou.glscripts.Script;
 
 //Remember that switching programs is expensive
 // if this script is to be used many times try to block them together
+@NotAllowedInLua
 public class NoosaScriptNoLighting extends NoosaScript {
 
 	@Override

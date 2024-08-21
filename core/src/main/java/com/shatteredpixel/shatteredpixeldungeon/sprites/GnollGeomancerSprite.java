@@ -39,9 +39,31 @@ public class GnollGeomancerSprite extends MobSprite {
 
 		texture(Assets.Sprites.GNOLL_GEOMANCER);
 
-		updateAnims();
+		initAnimations();
+
+		play(idle);
 
 		scale.set(1.25f);
+	}
+
+	@Override
+	public void initAnimations() {
+		TextureFilm frames = new TextureFilm( texture, 12, 16 );
+
+		int ofs = isStatue ? 21 : 0;
+		idle = new Animation( isStatue ? 1 : 2, true );
+		idle.frames( frames, ofs+0, ofs+0, ofs+0, ofs+1, ofs+0, ofs+0, ofs+1, ofs+1 );
+
+		run = new Animation( 12, true );
+		run.frames( frames, ofs+4, ofs+5, ofs+6, ofs+7 );
+
+		attack = new Animation( 12, false );
+		attack.frames( frames, ofs+2, ofs+3, ofs+0 );
+
+		zap = attack.clone();
+
+		die = new Animation( 12, false );
+		die.frames( frames, ofs+8, ofs+9, ofs+10 );
 	}
 
 	@Override
@@ -59,22 +81,7 @@ public class GnollGeomancerSprite extends MobSprite {
 
 	private void updateAnims(){
 
-		TextureFilm frames = new TextureFilm( texture, 12, 16 );
-
-		int ofs = isStatue ? 21 : 0;
-		idle = new Animation( isStatue ? 1 : 2, true );
-		idle.frames( frames, ofs+0, ofs+0, ofs+0, ofs+1, ofs+0, ofs+0, ofs+1, ofs+1 );
-
-		run = new Animation( 12, true );
-		run.frames( frames, ofs+4, ofs+5, ofs+6, ofs+7 );
-
-		attack = new Animation( 12, false );
-		attack.frames( frames, ofs+2, ofs+3, ofs+0 );
-
-		zap = attack.clone();
-
-		die = new Animation( 12, false );
-		die.frames( frames, ofs+8, ofs+9, ofs+10 );
+		initAnimations();
 
 		play(idle);
 

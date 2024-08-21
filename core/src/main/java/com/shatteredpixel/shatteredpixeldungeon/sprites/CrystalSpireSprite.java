@@ -42,6 +42,13 @@ public abstract class CrystalSpireSprite extends MobSprite {
 	public CrystalSpireSprite(){
 		texture( Assets.Sprites.CRYSTAL_SPIRE );
 
+		initAnimations();
+
+		play(idle);
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 24, 41 );
 
 		int c = texOffset();
@@ -55,8 +62,6 @@ public abstract class CrystalSpireSprite extends MobSprite {
 
 		die = new Animation(1, false);
 		die.frames( frames, 4+c );
-
-		play(idle);
 	}
 
 	public void updateIdle(){

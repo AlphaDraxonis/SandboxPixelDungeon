@@ -2,7 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -35,7 +35,7 @@ public class EditRemoverComp extends DefaultEditComp<EditorItem.NullItemClass> {
     protected void layout() {
         super.layout();
         height += 4;
-        height = EditorUtilies.layoutCompsLinear(WndTitledMessage.GAP * 2, this, priorityLabel, priorityChanger);
+        height = EditorUtilities.layoutCompsLinear(WndTitledMessage.GAP * 2, this, priorityLabel, priorityChanger);
     }
 
     @Override

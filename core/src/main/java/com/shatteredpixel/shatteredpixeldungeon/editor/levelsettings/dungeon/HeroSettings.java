@@ -20,7 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.AbstractWndChooseSubclas
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHeroInfo;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundlable;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+@NotAllowedInLua
 
 public class HeroSettings extends Component {
 
@@ -252,7 +254,7 @@ public class HeroSettings extends Component {
                     MobSpriteItem.class, curentSprite == null ? EditorItem.NULL_ITEM : curentSprite, ItemSelector.NullTypeSelector.NOTHING) {
                 MobSpriteItem currentSprite = curentSprite;
                 {
-                    selector.preferredBag = MobSprites.bag.getClass();
+                    selector.preferredBag = MobSprites.bag().getClass();
                     setShowWhenNull(511);
                     setSelectedItem(currentSprite);
                 }
@@ -287,7 +289,7 @@ public class HeroSettings extends Component {
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
-            }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
+            }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
             plusLvl.addChangeListener(() -> data.plusLvl = (int) plusLvl.getValue() - 1);
             itemSelectorParent.add(plusLvl);
 
@@ -296,7 +298,7 @@ public class HeroSettings extends Component {
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
-            }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
+            }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
             plusStr.addChangeListener(() -> data.plusStr = (int) plusStr.getValue() - Hero.STARTING_STR);
             itemSelectorParent.add(plusStr);
 
@@ -369,8 +371,8 @@ public class HeroSettings extends Component {
                 posY = subClassesEnabled.bottom() + gap;
             }
             itemSelectorParent.setSize(width, 0);
-            itemSelectorParent.setRect(x, posY, width,  EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
-                    new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, sprite, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+            itemSelectorParent.setRect(x, posY, width,  EditorUtilities.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
+                    new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, sprite, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
                             plusLvl, plusStr}));
             PixelScene.align(itemSelectorParent);
             posY = itemSelectorParent.bottom() + gap;

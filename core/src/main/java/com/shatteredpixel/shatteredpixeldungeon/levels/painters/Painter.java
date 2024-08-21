@@ -23,8 +23,9 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.painters;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomRect;
 import com.watabou.utils.Point;
-import com.watabou.utils.Rect;
+import com.watabou.utils.WatabouRect;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,16 +61,28 @@ public abstract class Painter {
 			Arrays.fill( level.map, pos, pos + w, value );
 		}
 	}
+
+	public static void fill(Level level, WatabouRect rect, int value ) {
+		fill( level, rect.left, rect.top, rect.width(), rect.height(), value );
+	}
+
+	public static void fill(Level level, WatabouRect rect, int m, int value ) {
+		fill( level, rect.left + m, rect.top + m, rect.width() - m*2, rect.height() - m*2, value );
+	}
+
+	public static void fill(Level level, WatabouRect rect, int l, int t, int r, int b, int value ) {
+		fill( level, rect.left + l, rect.top + t, rect.width() - (l + r), rect.height() - (t + b), value );
+	}
 	
-	public static void fill( Level level, Rect rect, int value ) {
+	public static void fill(Level level, RoomRect rect, int value ) {
 		fill( level, rect.left, rect.top, rect.width(), rect.height(), value );
 	}
 	
-	public static void fill( Level level, Rect rect, int m, int value ) {
+	public static void fill(Level level, RoomRect rect, int m, int value ) {
 		fill( level, rect.left + m, rect.top + m, rect.width() - m*2, rect.height() - m*2, value );
 	}
 	
-	public static void fill( Level level, Rect rect, int l, int t, int r, int b, int value ) {
+	public static void fill(Level level, RoomRect rect, int l, int t, int r, int b, int value ) {
 		fill( level, rect.left + l, rect.top + t, rect.width() - (l + r), rect.height() - (t + b), value );
 	}
 	
@@ -97,11 +110,19 @@ public abstract class Painter {
 		}
 	}
 
-	public static void fillEllipse(Level level, Rect rect, int value ) {
+	public static void fillEllipse(Level level, WatabouRect rect, int value ) {
 		fillEllipse( level, rect.left, rect.top, rect.width(), rect.height(), value );
 	}
 
-	public static void fillEllipse(Level level, Rect rect, int m, int value ) {
+	public static void fillEllipse(Level level, WatabouRect rect, int m, int value ) {
+		fillEllipse( level, rect.left + m, rect.top + m, rect.width() - m*2, rect.height() - m*2, value );
+	}
+
+	public static void fillEllipse(Level level, RoomRect rect, int value ) {
+		fillEllipse( level, rect.left, rect.top, rect.width(), rect.height(), value );
+	}
+
+	public static void fillEllipse(Level level, RoomRect rect, int m, int value ) {
 		fillEllipse( level, rect.left + m, rect.top + m, rect.width() - m*2, rect.height() - m*2, value );
 	}
 	
@@ -138,11 +159,19 @@ public abstract class Painter {
 
 	}
 
-	public static void fillDiamond(Level level, Rect rect, int value ) {
+	public static void fillDiamond(Level level, WatabouRect rect, int value ) {
 		fillDiamond( level, rect.left, rect.top, rect.width(), rect.height(), value );
 	}
 
-	public static void fillDiamond(Level level, Rect rect, int m, int value ) {
+	public static void fillDiamond(Level level, WatabouRect rect, int m, int value ) {
+		fillDiamond( level, rect.left + m, rect.top + m, rect.width() - m*2, rect.height() - m*2, value );
+	}
+	
+	public static void fillDiamond(Level level, RoomRect rect, int value ) {
+		fillDiamond( level, rect.left, rect.top, rect.width(), rect.height(), value );
+	}
+
+	public static void fillDiamond(Level level, RoomRect rect, int m, int value ) {
 		fillDiamond( level, rect.left + m, rect.top + m, rect.width() - m*2, rect.height() - m*2, value );
 	}
 

@@ -9,13 +9,15 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfSirensSong;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.SummonElemental;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blocking;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoBuff;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -31,7 +33,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
     protected StyledSpinner duration, level;
     protected StyledCheckBox showFx;
 
-    private final Component[] comps, linearComps;
+    private final Component[] rectComps, linearComps;
 
     public EditBuffComp(Buff buff, DefaultEditComp<?> editComp) {
         super(buff);
@@ -148,7 +150,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
                         if (editComp instanceof EditMobComp) ((EditMobComp) editComp).buffs.removeBuffFromUI(buff.getClass());
                         editComp.updateObj();
                     }
-                    EditorUtilies.getParentWindow(this).hide();
+                    EditorUtilities.getParentWindow(this).hide();
                 }
             };
             add(removeBuff);
@@ -175,15 +177,55 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
 //        } else changeDuration = null;
 
 
-        comps = new Component[]{permanent, duration, level, showFx};
+        rectComps = new Component[]{permanent, duration, level, showFx};
         linearComps = new Component[]{removeBuff};
+
+        initializeCompsForCustomObjectClass();
+    }
+
+    @Override
+    protected void updateStates() {
+        super.updateStates();
+
+        if (permanent != null) permanent.checked(obj.permanent);
+        if (duration != null) {
+            if (obj instanceof FlavourBuff) duration.setValue(obj.visualcooldown());
+            else duration.setValue(((BuffWithDuration) obj).left);
+        }
+        if (level != null) {
+            if (obj instanceof Corrosion) duration.setValue(((Corrosion) obj).damage);
+            else duration.setValue(((BuffWithDuration) obj).left);
+        }
+        if (showFx != null) showFx.checked(!obj.alwaysHidesFx);
+    }
+
+    @Override
+    protected void onInheritStatsClicked(boolean flag, boolean initializing) {
+        if (flag && !initializing) {
+            obj.copyStats((Buff) UserContentManager.getLuaClass(((CustomGameObjectClass) obj).getIdentifier()));
+        }
+
+        for (Component c : rectComps) {
+            if (c != null) c.setVisible(!flag);
+        }
+
+        for (Component c : linearComps) {
+            if (c != null) c.setVisible(!flag);
+        }
+
+        if (rename != null) rename.setVisible(!flag);
+
+        ((CustomGameObjectClass) obj).setInheritStats(flag);
+//        if (viewScript != null) viewScript.visible = viewScript.active = true;
     }
 
     @Override
     protected void layout() {
         super.layout();
-        layoutCompsInRectangles(comps);
+        layoutCompsInRectangles(rectComps);
         layoutCompsLinear(linearComps);
+
+        layoutCustomObjectEditor();
     }
 
     @Override

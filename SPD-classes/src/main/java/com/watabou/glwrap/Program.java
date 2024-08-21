@@ -23,10 +23,12 @@ package com.watabou.glwrap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.BufferUtils;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 
 import java.nio.IntBuffer;
 
+@NotAllowedInLua
 public class Program {
 
 	private int handle;

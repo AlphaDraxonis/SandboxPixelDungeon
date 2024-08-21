@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.NecromancerSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SpectralNecromancerSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
@@ -55,16 +56,15 @@ public class SpectralNecromancer extends Necromancer {
 			for (int wraithID : wraithIDs) {
 				Actor ch = Actor.findById(wraithID);
 				if (ch instanceof Mob) {
-					((Mob) ch).spawningWeight_NOT_SAVED_IN_BUNDLE = 0;//spawningWeight is not stored is bundle, but mobs act before level respawner
+					((Mob) ch).spawningWeight_NOT_SAVED_IN_BUNDLE = 0;//spawningWeight is not stored in bundle, but mobs act before level respawner
 				}
 			}
 			justLoaded = false;
 		}
 		if (summoning && state != HUNTING){
 			summoning = false;
-			if (sprite instanceof SpectralNecromancerSprite) {
-				((SpectralNecromancerSprite) sprite).cancelSummoning();
-			}
+			if (sprite.extraCode instanceof NecromancerSprite.SummoningParticle)
+				((NecromancerSprite.SummoningParticle) sprite.extraCode).cancelSummoning();
 		}
 		return super.act();
 	}

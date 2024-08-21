@@ -85,7 +85,8 @@ public class Necromancer extends SpawnerMob {
 	protected boolean act() {
 		if (summoning && state != HUNTING){
 			summoning = false;
-			if (sprite instanceof NecromancerSprite) ((NecromancerSprite) sprite).cancelSummoning();
+			if (sprite.extraCode instanceof NecromancerSprite.SummoningParticle)
+				((NecromancerSprite.SummoningParticle) sprite.extraCode).cancelSummoning();
 		}
 		return super.act();
 	}
@@ -209,7 +210,8 @@ public class Necromancer extends SpawnerMob {
 			//cancel if character cannot be moved
 			if (Char.hasProp(Actor.findChar(summoningPos), Property.IMMOVABLE)){
 				summoning = false;
-				((NecromancerSprite)sprite).finishSummoning();
+				if (sprite.extraCode instanceof NecromancerSprite.SummoningParticle)
+					((NecromancerSprite.SummoningParticle) sprite.extraCode).finishSummoning(sprite);
 				spend(TICK);
 				return null;
 			}
@@ -255,8 +257,8 @@ public class Necromancer extends SpawnerMob {
 		mySummon.pos = summoningPos;
 		GameScene.add(mySummon);
 		Dungeon.level.occupyCell(mySummon);
-		if (sprite instanceof NecromancerSprite)
-			((NecromancerSprite)sprite).finishSummoning();
+		if (sprite.extraCode instanceof NecromancerSprite.SummoningParticle)
+			((NecromancerSprite.SummoningParticle) sprite.extraCode).finishSummoning(sprite);
 
 		if (mySummon instanceof Wraith) {
 			Wraith.showSpawnParticle((Wraith) mySummon);

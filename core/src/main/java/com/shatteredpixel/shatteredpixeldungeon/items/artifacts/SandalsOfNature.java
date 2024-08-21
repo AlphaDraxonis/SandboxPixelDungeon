@@ -221,7 +221,7 @@ public class SandalsOfNature extends Artifact {
 		super.level(value);
 	}
 
-	private void updateSprite(int level) {
+	protected void updateSprite(int level) {
 		if (level < 0)        image = ItemSpriteSheet.ARTIFACT_SANDALS;
 		else if (level == 0)  image = ItemSpriteSheet.ARTIFACT_SHOES;
 		else if (level == 1)  image = ItemSpriteSheet.ARTIFACT_BOOTS;

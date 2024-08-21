@@ -84,52 +84,27 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
         layoutParent();
     }
 
+    @Override
+    protected float requiredWidthForControlButtons() {
+        float w = super.requiredWidthForControlButtons();
+        if (adder.visible) w += BUTTON_HEIGHT + BUTTON_GAP;
+        if (remover.visible) w += BUTTON_HEIGHT + BUTTON_GAP;
+        return w;
+    }
 
     @Override
-    protected void layout() {
+    protected float layoutControlButtons(float posX, float posY, float titleHeight) {
+        if (reverseBtnOrder) posX = super.layoutControlButtons(posX, posY, titleHeight);
 
-        //maybe too much copy paste
-
-        float posY = y;
-
-        float posX = width - 2;
-        float titleWidth = posX;
-
-        if (remover.visible || adder.visible) titleWidth -= BUTTON_HEIGHT + BUTTON_GAP;
-        if (fold.visible || expand.visible) titleWidth -= BUTTON_HEIGHT + BUTTON_GAP;
-
-        title.maxWidth((int) titleWidth);
-        float titleHeight = Math.max(BUTTON_HEIGHT, title.height());
-
-        IconButton last = reverseBtnOrder ?
-                (fold.visible ? fold : expand):
-                (remover.visible ? remover : (adder.visible ? adder : null));
-
-        if (last != null) {
-            last.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - last.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        if (adder != null && adder.visible) {
+            adder.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - adder.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        }
+        if (remover != null && remover.visible) {
+            remover.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - remover.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
         }
 
-        IconButton next = !reverseBtnOrder ?
-                (fold.visible ? fold : expand):
-                (remover.visible ? remover : (adder.visible ? adder : null));
+        if (!reverseBtnOrder) posX = super.layoutControlButtons(posX, posY, titleHeight);
 
-        if (next != null) {
-            next.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - next.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
-        }
-
-        title.setPos(x, (titleHeight - title.height()) * 0.5f + posY + 1);
-
-        posY += titleHeight + 2;
-
-        if (body != null && body.visible) {
-            body.setRect(x, posY, width, -1);
-            posY = body.bottom();
-        }
-        height = posY - y + 1;
-
-        line.size(width, 1);
-        line.x = x;
-        line.y = y + height;
-
+        return posX;
     }
 }

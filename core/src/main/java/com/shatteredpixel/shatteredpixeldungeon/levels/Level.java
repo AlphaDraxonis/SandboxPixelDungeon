@@ -39,12 +39,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.KeepProguard;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.annotations.KeepProguard;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
@@ -789,7 +789,7 @@ public abstract class Level implements Bundlable {
 		bundle.put( VIEW_DISTANCE, viewDistance );
 		bundle.put( ORIGINAL_VIEW_DISTANCE, originalViewDistance );
 
-		bundle.put(MUSIC_REQUESTS, musicRequests.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
+		bundle.put(MUSIC_REQUESTS, musicRequests.toArray(EditorUtilities.EMPTY_STRING_ARRAY));
 		int[] intArray = new int[musicRequestsMobIDs.size()];
 		int index = 0;
 		for (int i : musicRequestsMobIDs) {

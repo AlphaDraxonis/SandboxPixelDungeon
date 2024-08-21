@@ -5,7 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -14,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.services.server.DungeonPreview;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.FileUtils;
@@ -21,6 +22,7 @@ import com.watabou.utils.FileUtils;
 import java.io.IOException;
 import java.util.List;
 
+@NotAllowedInLua
 public class WndPreview extends Component {
 
     private final DungeonPreview preview;
@@ -47,7 +49,7 @@ public class WndPreview extends Component {
 
         String displayTime;
 //        displayTime = new SimpleDateFormat("dd.MM.yyyy, HH:mm", Languages.getCurrentLocale()).format(new Date(preview.uploadTime));//absolute time
-        displayTime = EditorUtilies.convertTimeDifferenceToString(System.currentTimeMillis() - preview.uploadTime);//relative time
+        displayTime = EditorUtilities.convertTimeDifferenceToString(System.currentTimeMillis() - preview.uploadTime);//relative time
         time = PixelScene.renderTextBlock(Messages.get(WndPreview.class, "time") + ": "
                 + displayTime, 6);
         add(time);
@@ -147,7 +149,7 @@ public class WndPreview extends Component {
     protected void layout() {
         desc.maxWidth((int) width);
         height = 0;
-        float posY = y + EditorUtilies.layoutCompsLinear(4, this, desc, creator, difficulty, time, version) + 5;
+        float posY = y + EditorUtilities.layoutCompsLinear(4, this, desc, creator, difficulty, time, version) + 5;
         download.setRect(x + width / 5, posY, width * 3 / 5, 16);
         height = posY - y + 16 + 2;
 

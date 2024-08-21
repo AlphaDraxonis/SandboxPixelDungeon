@@ -21,7 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledItemSelector;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
@@ -176,6 +176,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
     @Override
     public CharSprite sprite() {
+        //TODO tzz might not work!
         HeroSprite.HeroMobSprite sprite = new HeroSprite.HeroMobSprite(internalHero) {
             @Override
             public void link(Char ch) {
@@ -193,8 +194,8 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     }
 
     @Override
-    public String description() {
-        return customDesc == null ? internalHero.heroClass.shortDesc() : super.description();
+    public String desc() {
+        return customDesc == null ? internalHero.heroClass.shortDesc() : super.desc();
     }
 
     @Override
@@ -1291,7 +1292,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             direct = new RedButton(Messages.get(DriedRose.class, "ac_direct")) {
                 @Override
                 protected void onClick() {
-                    EditorUtilies.getParentWindow(this).hide();
+                    EditorUtilities.getParentWindow(this).hide();
                     GameScene.selectCell(new CellSelector.Listener(){
                         @Override
                         public void onSelect(Integer cell) {

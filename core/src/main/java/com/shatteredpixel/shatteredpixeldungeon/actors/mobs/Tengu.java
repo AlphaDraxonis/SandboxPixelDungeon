@@ -30,7 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.*;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
@@ -859,7 +859,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 			Heap h = Dungeon.level.heaps.get(bombPos);
 			if (h != null) {
-				for (Item i : h.items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
+				for (Item i : h.items.toArray(EditorUtilities.EMPTY_ITEM_ARRAY)) {
 					if (i instanceof BombItem) {
 						h.remove(i);
 					}

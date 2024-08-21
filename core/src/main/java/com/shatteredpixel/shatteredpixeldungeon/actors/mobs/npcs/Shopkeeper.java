@@ -245,7 +245,7 @@ public class Shopkeeper extends NPC {
 					if (options[i].length() > maxLen) options[i] = options[i].substring(0, maxLen-3) + "...";
 					i++;
 				}
-				GameScene.show(new WndOptions(sprite(), Messages.titleCase(name()), description(), options){
+				GameScene.show(new WndOptions(sprite(), Messages.titleCase(name()), desc(), options){
 					@Override
 					protected void onSelect(int index) {
 						super.onSelect(index);

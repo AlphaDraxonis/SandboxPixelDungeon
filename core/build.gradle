@@ -7,4 +7,22 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api project(':SPD-classes')
     implementation project(':services')
+
+    implementation 'net.bytebuddy:byte-buddy:1.14.18'
+    //implementation 'net.bytebuddy:byte-buddy-agent:1.14.18' //for redefining existing classes
+}
+
+apply plugin: 'java-library'
+
+// Set encoding and Java compatibility
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+sourceCompatibility = targetCompatibility = appJavaCompatibility
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api project(':SPD-classes')
+    implementation project(':services')
+
+    // Byte Buddy for bytecode manipulation
+    implementation 'net.bytebuddy:byte-buddy:1.14.18'
 }

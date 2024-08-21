@@ -22,9 +22,11 @@
 package com.watabou.glwrap;
 
 import com.badlogic.gdx.Gdx;
+import com.watabou.NotAllowedInLua;
 
 import java.nio.FloatBuffer;
 
+@NotAllowedInLua
 public class Attribute {
 
 	private int location;

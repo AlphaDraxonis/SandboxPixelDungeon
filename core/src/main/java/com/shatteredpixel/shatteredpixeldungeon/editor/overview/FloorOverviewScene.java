@@ -4,7 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
@@ -16,11 +16,13 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.NinePatch;
 
 import java.io.IOException;
 
+@NotAllowedInLua
 public class FloorOverviewScene extends PixelScene {
 
     private static FloorOverviewScene instance;
@@ -105,7 +107,7 @@ public class FloorOverviewScene extends PixelScene {
 
         updateList();
 
-        EditorItemBag.callStaticInitializers();
+        EditorInventory.callStaticInitializers();
     }
 
     public static void updateList() {

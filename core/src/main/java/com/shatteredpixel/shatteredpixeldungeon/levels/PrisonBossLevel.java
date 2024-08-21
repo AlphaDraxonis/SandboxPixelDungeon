@@ -33,7 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.StormCloud;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -148,11 +148,11 @@ public class PrisonBossLevel extends Level {
 	}
 	
 	private static final int ENTRANCE_POS = 10 + 4*32;
-	private static final Rect entranceRoom = new Rect(8, 2, 13, 8);
-	private static final Rect startHallway = new Rect(9, 7, 12, 24);
-	private static final Rect[] startCells = new Rect[]{ new Rect(5, 9, 10, 16), new Rect(11, 9, 16, 16),
-	                                         new Rect(5, 15, 10, 22), new Rect(11, 15, 16, 22)};
-	private static final Rect tenguCell = new Rect(6, 23, 15, 32);
+	private static final WatabouRect entranceRoom = new WatabouRect(8, 2, 13, 8);
+	private static final WatabouRect startHallway = new WatabouRect(9, 7, 12, 24);
+	private static final WatabouRect[] startCells = new WatabouRect[]{ new WatabouRect(5, 9, 10, 16), new WatabouRect(11, 9, 16, 16),
+	                                         new WatabouRect(5, 15, 10, 22), new WatabouRect(11, 15, 16, 22)};
+	private static final WatabouRect tenguCell = new WatabouRect(6, 23, 15, 32);
 	private static final Point tenguCellCenter = new Point(10, 27);
 	private static final Point tenguCellDoor = new Point(10, 23);
 	private static final Point[] startTorches = new Point[]{ new Point(10, 2),
@@ -175,7 +175,7 @@ public class PrisonBossLevel extends Level {
 		
 		Painter.set(this, startHallway.left+1, startHallway.top, Terrain.DOOR);
 		
-		for (Rect r : startCells){
+		for (WatabouRect r : startCells){
 			Painter.fill(this, r, Terrain.WALL);
 			Painter.fill(this, r, 1, Terrain.EMPTY);
 		}
@@ -196,7 +196,7 @@ public class PrisonBossLevel extends Level {
 	}
 
 	//area where items/chars are preserved when moving to the arena
-	private static final Rect pauseSafeArea = new Rect(9, 2, 12, 12);
+	private static final WatabouRect pauseSafeArea = new WatabouRect(9, 2, 12, 12);
 
 	private void setMapPause(){
 		setMapStart();
@@ -213,7 +213,7 @@ public class PrisonBossLevel extends Level {
 
 	}
 	
-	private static final Rect arena = new Rect(3, 1, 18, 16);
+	private static final WatabouRect arena = new WatabouRect(3, 1, 18, 16);
 	
 	private void setMapArena(){
 		transitions.clear();
@@ -304,7 +304,7 @@ public class PrisonBossLevel extends Level {
 	//keep track of removed items as the level is changed. Dump them back into the level at the end.
 	private ArrayList<Item> storedItems = new ArrayList<>();
 	
-	private void clearEntities(Rect safeArea){
+	private void clearEntities(WatabouRect safeArea){
 		for (Heap heap : heaps.valueList()){
 			if (safeArea == null || !safeArea.inside(cellToPoint(heap.pos))){
 				for (Item item : heap.items){
@@ -587,7 +587,7 @@ public class PrisonBossLevel extends Level {
 
 		items.addAll(storedItems);
 
-		for (Item i : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)){
+		for (Item i : items.toArray(EditorUtilities.EMPTY_ITEM_ARRAY)){
 			if (i instanceof Tengu.BombAbility.BombItem || i instanceof Tengu.ShockerAbility.ShockerItem){
 				items.remove(i);
 			}
@@ -597,7 +597,7 @@ public class PrisonBossLevel extends Level {
 	}
 
 	private int randomPrisonCellPos(){
-		Rect room = startCells[Random.Int(startCells.length)];
+		WatabouRect room = startCells[Random.Int(startCells.length)];
 		
 		return Random.IntRange(room.left+1, room.right-2)
 				+ width()*Random.IntRange(room.top+1, room.bottom-2);
@@ -732,13 +732,13 @@ public class PrisonBossLevel extends Level {
 			texture = Assets.Environment.TERRAIN_FEATURES;
 		}
 		
-		Rect area;
+		WatabouRect area;
 		
 		private float fadeDuration = 1f;
 		private float initialAlpha = .4f;
 		private float fadeDelay = 1f;
 		
-		public void setCoveringArea(Rect area){
+		public void setCoveringArea(WatabouRect area){
 			tileX = area.left;
 			tileY = area.top;
 			tileH = area.bottom - area.top;

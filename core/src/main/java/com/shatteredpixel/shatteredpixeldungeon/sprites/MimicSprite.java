@@ -23,8 +23,10 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.utils.RectF;
 
 public class MimicSprite extends MobSprite {
 
@@ -47,11 +49,18 @@ public class MimicSprite extends MobSprite {
 	public MimicSprite() {
 		super();
 
-		int c = texOffset();
-
 		texture( Assets.Sprites.MIMIC );
 
+		initAnimations();
+
+		play( idle );
+	}
+
+	@Override
+	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 16, 16 );
+
+		int c = texOffset();
 
 		advancedHiding = new Animation( 1, true );
 		advancedHiding.frames( frames, 0+c);
@@ -70,25 +79,34 @@ public class MimicSprite extends MobSprite {
 
 		die = new Animation( 5, false );
 		die.frames( frames, 10+c, 11+c, 12+c );
-
-		play( idle );
 	}
-	
+
 	@Override
 	public void linkVisuals(Char ch) {
 		super.linkVisuals(ch);
-		if (ch.alignment == Char.Alignment.NEUTRAL) {
-			hideMimic();
+		if (ch instanceof Mimic && ch.alignment == Char.Alignment.NEUTRAL) {
+			hideMimicSprite();
 		}
 	}
 
-	public void hideMimic(){
+	protected void hideMimicSprite() {
 		if (superHidden || MimicTooth.stealthyMimics()){
 			play(advancedHiding);
 		} else {
 			play(hiding);
 		}
 		hideSleep();
+	}
+
+	public static void hideMimic(CharSprite sprite) {
+		if (sprite instanceof MimicSprite) ((MimicSprite) sprite).hideMimicSprite();
+		else {
+			Animation hide = new Animation( 5, true );
+			hide.frames = new RectF[1];
+			hide.frames[0] = sprite.idle.frames[0];
+			sprite.play(hide);
+			sprite.hideSleep();
+		}
 	}
 
 	@Override
@@ -120,8 +138,8 @@ public class MimicSprite extends MobSprite {
 		}
 
 		@Override
-		public void hideMimic() {
-			super.hideMimic();
+		protected void hideMimicSprite() {
+			super.hideMimicSprite();
 			alpha(0.2f);
 		}
 

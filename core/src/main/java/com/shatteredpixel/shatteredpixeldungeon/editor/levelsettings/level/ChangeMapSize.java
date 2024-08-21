@@ -13,9 +13,11 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
+@NotAllowedInLua
 public class ChangeMapSize extends Component {
 
     private Spinner topSpinner, rightSpinner, bottomSpinner, leftSpinner;

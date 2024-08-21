@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.ControllerHandler;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
+@NotAllowedInLua
 public class WndSettings extends WndTabbed {
 
 	private static final int WIDTH_P	    = 122;

@@ -37,7 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
-import com.watabou.utils.Rect;
+import com.watabou.utils.WatabouRect;
 
 public class ItemSlot extends Button {
 
@@ -52,7 +52,7 @@ public class ItemSlot extends Button {
     private static final float ENABLED	= 1.0f;
     private static final float DISABLED	= 0.3f;
 
-    private Rect margin = new Rect();
+    private WatabouRect margin = new WatabouRect();
 
     protected Image      sprite;
     protected Item       item;
@@ -193,12 +193,16 @@ public class ItemSlot extends Button {
         layout();
     }
 
+    public void updateCurrentItem() {
+        if (item != null) {
+            viewSprite(item);
+        }
+        updateText();
+    }
+
     public void item( Item item ) {
         if (this.item == item) {
-            if (item != null) {
-                viewSprite(item);
-            }
-            updateText();
+            updateCurrentItem();
             return;
         }
 

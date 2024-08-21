@@ -156,19 +156,19 @@ public class Waterskin extends Item {
 	}
 
 	public boolean isFull() {
-		return volume >= MAX_VOLUME;
+		return volume >= maxVolume();
 	}
 
 	public int volumeRemaining(){
-		return MAX_VOLUME - volume;
+		return maxVolume() - volume;
 	}
 
 	public void collectDew( Dewdrop dew ) {
 
 		GLog.i( Messages.get(this, "collected") );
 		volume += dew.quantity;
-		if (volume >= MAX_VOLUME) {
-			volume = MAX_VOLUME;
+		if (volume >= maxVolume()) {
+			volume = maxVolume();
 			GLog.p( Messages.get(this, "full") );
 		}
 
@@ -176,13 +176,17 @@ public class Waterskin extends Item {
 	}
 
 	public void fill() {
-		volume = MAX_VOLUME;
+		volume = maxVolume();
 		updateQuickslot();
+	}
+
+	protected int maxVolume() {
+		return MAX_VOLUME;
 	}
 
 	@Override
 	public String status() {
-		return Messages.format( TXT_STATUS, volume, MAX_VOLUME );
+		return Messages.format( TXT_STATUS, volume, maxVolume() );
 	}
 
 }

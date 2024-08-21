@@ -1,10 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.QuestSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -24,7 +24,7 @@ public class ItemSelectorList<T extends Item> extends Component {
 
     protected InventorySlot[] itemSlots;
 
-    protected final List<T> list;
+    protected List<T> list;
 
     public static final Item NULL_ITEM = new Item() {
         @Override
@@ -39,11 +39,21 @@ public class ItemSelectorList<T extends Item> extends Component {
 
     public ItemSelectorList(List<T> list, String label, int fontSize) {
 
-        this.list = list;
-
         this.label = PixelScene.renderTextBlock(label, fontSize);
         add(this.label);
 
+        setList(list);
+
+    }
+
+    public void setList(List<T> list) {
+        this.list = list;
+        if (itemSlots != null) {
+            for (InventorySlot slot : itemSlots) {
+                slot.destroy();
+                slot.remove();
+            }
+        }
         itemSlots = new InventorySlot[list.size()];
 
         int index = 0;
@@ -58,7 +68,6 @@ public class ItemSelectorList<T extends Item> extends Component {
                 add(itemSlots[index]);
             }
         }
-
     }
 
     private static final int GAP = 2;
@@ -103,7 +112,7 @@ public class ItemSelectorList<T extends Item> extends Component {
     public void setSelectedItem(T selectedItem, int index) {
         list.set(index, selectedItem);
         if (selectedItem != null)
-            selectedItem.image = Dungeon.customDungeon.getItemSpriteOnSheet(selectedItem);
+            selectedItem.image = CustomDungeon.getItemSpriteOnSheet(selectedItem);
         itemSlots[index].item(selectedItem);
     }
 

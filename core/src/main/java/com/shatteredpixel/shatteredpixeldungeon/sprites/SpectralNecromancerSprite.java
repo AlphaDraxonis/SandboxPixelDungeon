@@ -32,13 +32,17 @@ public class SpectralNecromancerSprite extends NecromancerSprite {
 		return 16;
 	}
 
-	@Override
-	protected void playSummoningSound() {
-		Sample.INSTANCE.play(Assets.Sounds.CURSED);
+	public static class SummoningParticle extends NecromancerSprite.SummoningParticle {
+
+		@Override
+		protected void playSummoningSound() {
+			Sample.INSTANCE.play(Assets.Sounds.CURSED);
+		}
+
+		@Override
+		protected void emitSummoningParticles() {
+			summoningParticles.pour(ShadowParticle.MISSILE, 0.1f);
+		}
 	}
 
-	@Override
-	protected void emitSummoningParticles() {
-		summoningParticles.pour(ShadowParticle.MISSILE, 0.1f);
-	}
 }

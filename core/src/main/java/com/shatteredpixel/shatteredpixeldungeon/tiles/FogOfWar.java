@@ -28,7 +28,7 @@ import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.NoosaScriptNoLighting;
-import com.watabou.utils.Rect;
+import com.watabou.utils.WatabouRect;
 
 import java.util.ArrayList;
 
@@ -72,8 +72,8 @@ public class FogOfWar extends Image {
 	private int width2;
 	private int height2;
 
-	private volatile ArrayList<Rect> toUpdate;
-	private volatile ArrayList<Rect> updating;
+	private volatile ArrayList<WatabouRect> toUpdate;
+	private volatile ArrayList<WatabouRect> updating;
 
 	//should be divisible by 2
 	private static final int PIX_PER_TILE = 2;
@@ -122,16 +122,16 @@ public class FogOfWar extends Image {
 		scale.set( size, size );
 
 		toUpdate = new ArrayList<>();
-		toUpdate.add(new Rect(0, 0, mapWidth, mapHeight));
+		toUpdate.add(new WatabouRect(0, 0, mapWidth, mapHeight));
 	}
 
 	public synchronized void updateFog(){
 		toUpdate.clear();
-		toUpdate.add(new Rect(0, 0, mapWidth, mapHeight));
+		toUpdate.add(new WatabouRect(0, 0, mapWidth, mapHeight));
 	}
 	
-	public synchronized void updateFog(Rect update){
-		for (Rect r : toUpdate.toArray(new Rect[0])){
+	public synchronized void updateFog(WatabouRect update){
+		for (WatabouRect r : toUpdate.toArray(new WatabouRect[0])){
 			if (!r.intersect(update).isEmpty()){
 				toUpdate.remove(r);
 				toUpdate.add(r.union(update));
@@ -142,7 +142,7 @@ public class FogOfWar extends Image {
 	}
 
 	public synchronized void updateFog( int cell, int radius ){
-		Rect update = new Rect(
+		WatabouRect update = new WatabouRect(
 				(cell % mapWidth) - radius,
 				(cell / mapWidth) - radius,
 				(cell % mapWidth) - radius + 1 + 2*radius,
@@ -156,7 +156,7 @@ public class FogOfWar extends Image {
 	}
 
 	public synchronized void updateFogArea(int x, int y, int w, int h){
-		updateFog(new Rect(x, y, x + w, y + h));
+		updateFog(new WatabouRect(x, y, x + w, y + h));
 	}
 
 	private synchronized void moveToUpdating(){
@@ -179,7 +179,7 @@ public class FogOfWar extends Image {
 		
 		boolean fullUpdate = false;
 		if (updating.size() == 1){
-			Rect update = updating.get(0);
+			WatabouRect update = updating.get(0);
 			if (update.height() == mapHeight && update.width() == mapWidth){
 				fullUpdate = true;
 			}
@@ -190,7 +190,7 @@ public class FogOfWar extends Image {
 
 		int cell;
 		
-		for (Rect update : updating) {
+		for (WatabouRect update : updating) {
 			for (int i = update.top; i < update.bottom; i++) {
 				cell = mapWidth * i + update.left;
 				for (int j = update.left; j < update.right; j++) {

@@ -1,15 +1,18 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 
 public class ActionPartList implements ActionPart {
 
-    private final List<ActionPart> actions = new ArrayList<>(5);
+    private final LinkedList<ActionPart> actions = new LinkedList<>();
 
     public void addActionPart(ActionPart part) {
         if (part != null && part.hasContent()) actions.add(part);
+    }
+
+    public void addActionPartToBeginning(ActionPart part) {
+        if (part != null && part.hasContent()) actions.addFirst(part);
     }
 
     public void undo() {

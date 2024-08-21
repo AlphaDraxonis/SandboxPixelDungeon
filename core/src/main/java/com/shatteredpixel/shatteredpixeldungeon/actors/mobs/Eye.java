@@ -120,6 +120,8 @@ public class Eye extends Mob {
 	@Override
 	protected boolean act() {
 		if (beamCharged && state != HUNTING){
+			if (sprite.extraCode instanceof EyeSprite.ChargeParticles)
+				((EyeSprite.ChargeParticles) sprite.extraCode).cancelCharging();
 			beamCharged = false;
 			sprite.idle();
 		}
@@ -139,7 +141,7 @@ public class Eye extends Mob {
 		if (beamCooldown > 0 || (!beamCharged && !beam.subPath(1, beam.dist).contains(enemy.pos))) {
 			return super.doAttack(enemy);
 		} else if (!beamCharged){
-			((EyeSprite)sprite).charge( enemy.pos );
+			EyeSprite.charge( sprite, enemy.pos );
 			spend( attackDelay()*2f );
 			beamCharged = true;
 			return true;
@@ -149,10 +151,11 @@ public class Eye extends Mob {
 			
 			if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[beam.collisionPos] ) {
 				sprite.zap( beam.collisionPos );
+				if (sprite.instantZapDamage()) zap();
 				return false;
 			} else {
 				sprite.idle();
-				deathGaze();
+				zap();
 				return true;
 			}
 		}
@@ -170,19 +173,13 @@ public class Eye extends Mob {
 
 	@Override
 	public void zap() {
-		deathGaze();
-	}
-
-	@Override
-	public void playZapAnim(int target) {
-		EyeSprite.playZap(sprite.parent, sprite, target, this);
-	}
-
-	public void deathGaze(){
 		if (!beamCharged || beamCooldown > 0 || beam == null)
 			return;
 
+		if (sprite.extraCode instanceof EyeSprite.ChargeParticles)
+			((EyeSprite.ChargeParticles) sprite.extraCode).cancelCharging();
 		beamCharged = false;
+
 		beamCooldown = Random.IntRange(4, 6);
 
 		boolean terrainAffected = false;
@@ -229,6 +226,11 @@ public class Eye extends Mob {
 
 		beam = null;
 		beamTarget = -1;
+	}
+
+	@Override
+	public void playZapAnim(int target) {
+		EyeSprite.playZap(sprite.parent, sprite, target, this);
 	}
 
 	//generates an average of 1 dew, 0.25 seeds, and 0.25 stones
@@ -323,8 +325,6 @@ public class Eye extends Mob {
 			beamTarget = bundle.getInt(BEAM_TARGET);
 		beamCooldown = bundle.getInt(BEAM_COOLDOWN);
 		beamCharged = bundle.getBoolean(BEAM_CHARGED);
-
-		spriteClass = EyeSprite.class;
 	}
 
 	{
@@ -343,5 +343,10 @@ public class Eye extends Mob {
 			}
 			return super.act(enemyInFOV, justAlerted);
 		}
+	}
+
+
+	public static boolean usesEvilEyeZapAnimation(CharSprite sprite) {
+		return sprite instanceof EyeSprite || !sprite.hasOwnZapAnimation();
 	}
 }

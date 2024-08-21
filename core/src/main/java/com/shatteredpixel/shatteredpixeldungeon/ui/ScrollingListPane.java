@@ -167,7 +167,7 @@ public class ScrollingListPane extends ScrollPane {
             label = PixelScene.renderTextBlock(icon == null ? 9 : 7);
             add(label);
 
-            line = new ColorBlock(1, 1, 0xFF222222);
+            line = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
             add(line);
 
             label.text(text);
@@ -257,7 +257,7 @@ public class ScrollingListPane extends ScrollPane {
             label.hardlight(Window.TITLE_COLOR);
             add(label);
 
-            line = new ColorBlock(1, 1, 0xFF222222);
+            line = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
             add(line);
 
         }
@@ -277,7 +277,7 @@ public class ScrollingListPane extends ScrollPane {
 
     }
 
-    public static abstract class ListButton extends ListItem {
+    public static abstract class ListButton extends ListItem implements Runnable {
 
         protected StyledButton button;
 
@@ -299,6 +299,11 @@ public class ScrollingListPane extends ScrollPane {
             button.setRect(x + (width - Math.max(width * 0.8f, button.reqWidth())) * 0.5f, y + Math.max(0, (height - button.reqHeight() - 2) * 0.5f),
                     Math.max(width * 0.8f, button.reqWidth()), Math.min(height, button.reqHeight() + 2));
             PixelScene.align(button);
+        }
+
+        @Override
+        public void run() {
+            button.onClick();
         }
 
         protected abstract StyledButton createButton();

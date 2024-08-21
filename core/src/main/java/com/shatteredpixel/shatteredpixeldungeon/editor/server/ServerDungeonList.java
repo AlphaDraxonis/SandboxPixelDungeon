@@ -4,7 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelec
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.DungeonPreview;
@@ -14,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -22,6 +23,7 @@ import com.watabou.noosa.ui.Component;
 import java.util.HashSet;
 import java.util.Set;
 
+@NotAllowedInLua
 public class ServerDungeonList extends MultiWindowTabComp {
 
 	private static ServerDungeonList instance;
@@ -144,7 +146,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			((SpinnerIntegerModel) instance.outsideSp.getModel()).setMaximum(numPages);
 			((SpinnerIntegerModel) instance.outsideSp.getModel()).setAbsoluteMaximum(numPages);
 			Game.runOnRenderThread(() -> instance.outsideSp.setValue(instance.outsideSp.getValue()));
-			((WndServerDungeonList) EditorUtilies.getParentWindow(instance)).updateLayout();
+			((WndServerDungeonList) EditorUtilities.getParentWindow(instance)).updateLayout();
 		}
 	}
 
@@ -241,7 +243,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		}
 		else {
 			content.setSize(width, 0);
-			content.setSize(width, EditorUtilies.layoutCompsLinear(GAP, content, mainWindowComps));
+			content.setSize(width, EditorUtilities.layoutCompsLinear(GAP, content, mainWindowComps));
 		}
 		upload.setRect(x + width - 17, y + height - 15, 16, 16);
 	}
@@ -350,7 +352,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			desc.maxNumLines = 3;
 			add(desc);
 
-			line = new ColorBlock(1, 1, 0xFF222222);
+			line = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
 			add(line);
 		}
 

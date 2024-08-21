@@ -96,7 +96,7 @@ public class ChaliceOfBlood extends Artifact {
 		}
 	}
 
-	private void prick(Hero hero){
+	protected void prick(Hero hero){
 		int damage = 5 + 3*(level()*level());
 
 		Earthroot.Armor armor = hero.buff(Earthroot.Armor.class);
@@ -145,7 +145,7 @@ public class ChaliceOfBlood extends Artifact {
 		super.level(value);
 	}
 
-	private void updateSprite(int level){
+	protected void updateSprite(int level){
 		if (level >= 6)
 			image = ItemSpriteSheet.ARTIFACT_CHALICE3;
 		else if (level >= 2)

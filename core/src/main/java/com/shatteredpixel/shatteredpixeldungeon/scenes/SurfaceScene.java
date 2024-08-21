@@ -38,6 +38,8 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.watabou.NotAllowedInLua;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Matrix;
@@ -54,6 +56,7 @@ import java.nio.FloatBuffer;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+@NotAllowedInLua
 public class SurfaceScene extends PixelScene {
 
 	private static final int FRAME_WIDTH    = 88;
@@ -249,6 +252,9 @@ public class SurfaceScene extends PixelScene {
 
 		RedButton gameOver = new RedButton( Messages.get(this, "exit") ) {
 			protected void onClick() {
+
+				UserContentManager.loadUserContentFromFiles();
+
 				if (Dungeon.isLevelTesting()){
 					EditorScene.start();
 					EditorScene.openDifferentLevel = false;

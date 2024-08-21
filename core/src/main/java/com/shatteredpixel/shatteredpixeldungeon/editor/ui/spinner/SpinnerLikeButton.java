@@ -26,7 +26,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 
@@ -117,8 +116,8 @@ public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 		return icon.height() + text.height() + 4 + value.height() + 3 + bg.marginVer() + 4;
 	}
 
-	public void setValue(Wand.RechargeRule rechargeRule) {
-		model.setValue(rechargeRule);
+	public void setValue(Object value) {
+		model.setValue(value);
 	}
 
 	@Override

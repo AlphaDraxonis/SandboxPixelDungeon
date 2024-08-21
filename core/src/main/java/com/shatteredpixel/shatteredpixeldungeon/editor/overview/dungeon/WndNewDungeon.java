@@ -16,6 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSupportPrompt;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.TextInput;
 import com.watabou.utils.Callback;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
+@NotAllowedInLua
 public class WndNewDungeon extends WndTextInput {
 
 
