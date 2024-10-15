@@ -22,10 +22,18 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 
-import com.shatteredpixel.shatteredpixeldungeon.*;
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LifeLink;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
@@ -60,7 +68,11 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -676,7 +688,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			} else if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
 				if (bossMusic == null) Dungeon.level.playSpecialMusic(Assets.Music.CITY_BOSS_FINALE, id());
 			}
-		} else if (phase == 3 && preHP > 20 && HP < 20){
+		} else if (phase == 3 && preHP > 20 && HP < 20 && isAlive()){
 			yell( Messages.get(this, "losing") );
 		}
 	}
