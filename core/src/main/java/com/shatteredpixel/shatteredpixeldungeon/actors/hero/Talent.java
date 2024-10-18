@@ -170,6 +170,13 @@ public enum Talent {
 	//Duelist A3 T4
 	FEIGNED_RETREAT(151, 4), EXPOSE_WEAKNESS(152, 4), COUNTER_ABILITY(153, 4),
 
+	//Cleric T1
+	CLERICT1A(160), CLERICT1B(161), CLERICT1C(162), CLERICT1D(163),
+	//Cleric T2
+	CLERICT2A(164), CLERICT2B(165), CLERICT2C(166), CLERICT2D(167), CLERICT2E(168),
+	//Cleric T3
+	CLERICT3A(169, 3), CLERICT3B(170, 3),
+
 	//universal T4
 	HEROIC_ENERGY(26, 4), //See icon() and title() for special logic for this one
 	//Ratmogrify T4
@@ -416,7 +423,7 @@ public enum Talent {
 				case DUELIST:
 					return 154;
 				case CLERIC:
-					return 26; //TODO CLERIC talent sprite here
+					return 186;
 			}
 		} else {
 			return icon;
@@ -1007,6 +1014,7 @@ public enum Talent {
 				case ROGUE:     return new Talent[] {CACHED_RATIONS, THIEFS_INTUITION, SUCKER_PUNCH, PROTECTIVE_SHADOWS};
 				case HUNTRESS:  return new Talent[] {NATURES_BOUNTY, SURVIVALISTS_INTUITION, FOLLOWUP_STRIKE, NATURES_AID};
 				case DUELIST:   return new Talent[] {STRENGTHENING_MEAL, ADVENTURERS_INTUITION, PATIENT_STRIKE, AGGRESSIVE_BARRIER};
+				case CLERIC:    return new Talent[] {CLERICT1A, CLERICT1B, CLERICT1C, CLERICT1D};
 				default: 	    return new Talent[0];
 			}
 		}
