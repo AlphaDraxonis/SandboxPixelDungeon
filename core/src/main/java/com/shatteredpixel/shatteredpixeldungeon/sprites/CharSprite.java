@@ -442,16 +442,17 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	}
 	
 	public void add( State state ) {
-		switch (state) {
-			case BURNING:
-				burning = emitter();
-				burning.pour( FlameParticle.FACTORY, 0.06f );
-				if (visible) {
-					Sample.INSTANCE.play( Assets.Sounds.BURNING );
-				}
-				break;
-			case LEVITATING:
-				if (levitation != null) {
+		synchronized (State.class) {
+			switch (state) {
+				case BURNING:
+					burning = emitter();
+					burning.pour(FlameParticle.FACTORY, 0.06f);
+					if (visible) {
+						Sample.INSTANCE.play(Assets.Sounds.BURNING);
+					}
+					break;
+				case LEVITATING:
+					if (levitation != null) {
 					levitation.killAndErase();
 				}
 				levitation = emitter();
@@ -468,123 +469,126 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 				} else
 					alpha( 0.4f );
 				visible = state == State.HALF_INVISIBLE || !(this instanceof MobSprite) || CustomDungeon.isEditing();
-				break;
-			case PARALYSED:
-				paused = true;
-				break;
-			case FROZEN:
-				iceBlock = IceBlock.freeze( this );
-				break;
-			case ILLUMINATED:
-				GameScene.effect( light = new TorchHalo( this ) );
-				break;
-			case CHILLED:
-				chilled = emitter();
-				chilled.pour(SnowParticle.FACTORY, 0.1f);
-				break;
-			case DARKENED:
-				darkBlock = DarkBlock.darken( this );
-				break;
-			case MARKED:
-				marked = emitter();
-				marked.pour(ShadowParticle.UP, 0.1f);
-				break;
-			case HEALING:
-				healing = emitter();
-				healing.pour(Speck.factory(Speck.HEALING), 0.5f);
-				break;
-			case SHIELDED:
-				if (shield != null) {
-					shield.killAndErase();
-				}
-				GameScene.effect(shield = new ShieldHalo(this));
-				break;
-			case HEARTS:
-				hearts = emitter();
-				hearts.pour(Speck.factory(Speck.HEART), 0.5f);
-				break;
+					break;
+				case PARALYSED:
+					paused = true;
+					break;
+				case FROZEN:
+					iceBlock = IceBlock.freeze(this);
+					break;
+				case ILLUMINATED:
+					GameScene.effect(light = new TorchHalo(this));
+					break;
+				case CHILLED:
+					chilled = emitter();
+					chilled.pour(SnowParticle.FACTORY, 0.1f);
+					break;
+				case DARKENED:
+					darkBlock = DarkBlock.darken(this);
+					break;
+				case MARKED:
+					marked = emitter();
+					marked.pour(ShadowParticle.UP, 0.1f);
+					break;
+				case HEALING:
+					healing = emitter();
+					healing.pour(Speck.factory(Speck.HEALING), 0.5f);
+					break;
+				case SHIELDED:
+					if (shield != null) {
+						shield.killAndErase();
+					}
+					GameScene.effect(shield = new ShieldHalo(this));
+					break;
+				case HEARTS:
+					hearts = emitter();
+					hearts.pour(Speck.factory(Speck.HEART), 0.5f);
+					break;
+			}
 		}
 		if (realCharSprite != null) realCharSprite.add(state);
 	}
 	
 	public void remove( State state ) {
-		switch (state) {
-			case BURNING:
-				if (burning != null) {
-					burning.on = false;
-					burning = null;
-				}
-				break;
-			case LEVITATING:
-				if (levitation != null) {
-					levitation.on = false;
-					levitation = null;
-				}
-				break;
-			case INVISIBLE:
-				if (invisible != null) {
-					invisible.killAndErase();
-					invisible = null;
-				}
-				alpha( 1f );
-				visible = true;
-				break;
-			case HALF_INVISIBLE:
-				if (invisible != null) {
-					invisible.killAndErase();
-					invisible = null;
-				}
-				alpha( 1f );
-				break;
-			case PARALYSED:
-				paused = false;
-				break;
-			case FROZEN:
-				if (iceBlock != null) {
-					iceBlock.melt();
-					iceBlock = null;
-				}
-				break;
-			case ILLUMINATED:
-				if (light != null) {
-					light.putOut();
-				}
-				break;
-			case CHILLED:
-				if (chilled != null){
-					chilled.on = false;
-					chilled = null;
-				}
-				break;
-			case DARKENED:
-				if (darkBlock != null) {
-					darkBlock.lighten();
-					darkBlock = null;
-				}
-				break;
-			case MARKED:
-				if (marked != null){
-					marked.on = false;
-					marked = null;
-				}
-				break;
-			case HEALING:
-				if (healing != null){
-					healing.on = false;
-					healing = null;
-				}
-				break;
-			case SHIELDED:
-				if (shield != null){
-					shield.putOut();
-				}
-				break;
-			case HEARTS:
-				if (hearts != null){
-					hearts.on = false;
-					hearts = null;
-				}
-				break;
+		synchronized (State.class) {
+			switch (state) {
+				case BURNING:
+					if (burning != null) {
+						burning.on = false;
+						burning = null;
+					}
+					break;
+				case LEVITATING:
+					if (levitation != null) {
+						levitation.on = false;
+						levitation = null;
+					}
+					break;
+				case INVISIBLE:
+					if (invisible != null) {
+						invisible.killAndErase();
+						invisible = null;
+					}
+					alpha(1f);
+					visible = true;
+					break;
+				case HALF_INVISIBLE:
+					if (invisible != null) {
+						invisible.killAndErase();
+						invisible = null;
+					}
+					alpha( 1f );
+					break;
+				case PARALYSED:
+					paused = false;
+					break;
+				case FROZEN:
+					if (iceBlock != null) {
+						iceBlock.melt();
+						iceBlock = null;
+					}
+					break;
+				case ILLUMINATED:
+					if (light != null) {
+						light.putOut();
+					}
+					break;
+				case CHILLED:
+					if (chilled != null) {
+						chilled.on = false;
+						chilled = null;
+					}
+					break;
+				case DARKENED:
+					if (darkBlock != null) {
+						darkBlock.lighten();
+						darkBlock = null;
+					}
+					break;
+				case MARKED:
+					if (marked != null) {
+						marked.on = false;
+						marked = null;
+					}
+					break;
+				case HEALING:
+					if (healing != null) {
+						healing.on = false;
+						healing = null;
+					}
+					break;
+				case SHIELDED:
+					if (shield != null) {
+						shield.putOut();
+					}
+					break;
+				case HEARTS:
+					if (hearts != null) {
+						hearts.on = false;
+						hearts = null;
+					}
+					break;
+			}
 		}
 		if (realCharSprite != null) realCharSprite.remove(state);
 	}
@@ -627,34 +631,36 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		if (flashTime > 0 && (flashTime -= Game.elapsed) <= 0) {
 			resetColor();
 		}
-		
-		if (burning != null) {
-			burning.visible = visible;
-		}
-		if (levitation != null) {
-			levitation.visible = visible;
-		}
-		if (iceBlock != null) {
-			iceBlock.visible = visible;
-		}
-		if (chilled != null) {
-			chilled.visible = visible;
-		}
-		if (marked != null) {
-			marked.visible = visible;
-		}
-		if (healing != null){
-			healing.visible = visible;
-		}
-		if (hearts != null){
-			hearts.visible = visible;
-		}
-		if (aura != null){
-			if (aura.parent == null){
-				aura.show(this, 0);
+
+		synchronized (State.class) {
+			if (burning != null) {
+				burning.visible = visible;
 			}
-			aura.visible = visible;
-			aura.point(center());
+			if (levitation != null) {
+				levitation.visible = visible;
+			}
+			if (iceBlock != null) {
+				iceBlock.visible = visible;
+			}
+			if (chilled != null) {
+				chilled.visible = visible;
+			}
+			if (marked != null) {
+				marked.visible = visible;
+			}
+			if (healing != null) {
+				healing.visible = visible;
+			}
+			if (hearts != null) {
+				hearts.visible = visible;
+			}
+			if (aura != null) {
+				if (aura.parent == null) {
+					aura.show(this, 0);
+				}
+				aura.visible = visible;
+				aura.point(center());
+			}
 		}
 		if (sleeping) {
 			showSleep();
