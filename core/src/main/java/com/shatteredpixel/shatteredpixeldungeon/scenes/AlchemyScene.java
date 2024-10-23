@@ -556,7 +556,8 @@ public class AlchemyScene extends PixelScene {
 		}
 
 		fadeIn();
-		
+
+		saveNeeded = false;
 		try {
 			Dungeon.saveAll();
 			Badges.saveGlobal();
@@ -818,8 +819,11 @@ public class AlchemyScene extends PixelScene {
 		Statistics.itemsCrafted++;
 		Badges.validateItemsCrafted();
 
+		saveNeeded = false;
 		try {
 			Dungeon.saveAll();
+			Badges.saveGlobal();
+			Journal.saveGlobal();
 		} catch (IOException e) {
 			SandboxPixelDungeon.reportException(e);
 		}
@@ -867,7 +871,24 @@ public class AlchemyScene extends PixelScene {
 		}
 		updateState();
 	}
-	
+
+	private boolean saveNeeded = false;
+
+	@Override
+	public void onPause() {
+		if (saveNeeded) {
+			saveNeeded = false;
+			clearSlots();
+			try {
+				Dungeon.saveAll();
+				Badges.saveGlobal();
+				Journal.saveGlobal();
+			} catch (IOException e) {
+				ShatteredPixelDungeon.reportException(e);
+			}
+		}
+	}
+
 	@Override
 	public void destroy() {
 		synchronized ( inputs ) {
@@ -876,7 +897,8 @@ public class AlchemyScene extends PixelScene {
 				inputs[i] = null;
 			}
 		}
-		
+
+		saveNeeded = false;
 		try {
 			Dungeon.saveAll();
 			Badges.saveGlobal();
@@ -927,6 +949,9 @@ public class AlchemyScene extends PixelScene {
 		sparkEmitter.burst(SparkParticle.FACTORY, 20);
 		Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 
+		//queue a save here, as items may be in the input windows and we don't want to clear them
+		// but if the game becomes paused we do this to prevent exploits
+		saveNeeded = true;
 		updateState();
 	}
 
