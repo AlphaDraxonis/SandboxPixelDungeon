@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ScrollEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WandEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.GuidingLight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -171,7 +172,7 @@ public enum Talent {
 	FEIGNED_RETREAT(151, 4), EXPOSE_WEAKNESS(152, 4), COUNTER_ABILITY(153, 4),
 
 	//Cleric T1
-	CLERICT1A(160), CLERICT1B(161), CLERICT1C(162), CLERICT1D(163),
+	CLERICT1A(160), CLERICT1B(161), SEARING_LIGHT(162), CLERICT1D(163),
 	//Cleric T2
 	CLERICT2A(164), CLERICT2B(165), CLERICT2C(166), CLERICT2D(167), CLERICT2E(168),
 	//Cleric T3
@@ -789,6 +790,13 @@ public enum Talent {
 			} else if (hero.buff(DeadlyFollowupTracker.class) != null
 					&& hero.buff(DeadlyFollowupTracker.class).object == enemy.id()){
 				dmg = Math.round(dmg * (1.0f + .1f*hero.pointsInTalent(DEADLY_FOLLOWUP)));
+			}
+		}
+
+		if (enemy.buff(GuidingLight.GuidingLightDebuff.class) != null){
+			enemy.buff(GuidingLight.GuidingLightDebuff.class).detach();
+			if (hero.hasTalent(Talent.SEARING_LIGHT)){
+				dmg += 1 + 2*hero.pointsInTalent(Talent.SEARING_LIGHT);
 			}
 		}
 
