@@ -172,7 +172,7 @@ public enum Talent {
 	FEIGNED_RETREAT(151, 4), EXPOSE_WEAKNESS(152, 4), COUNTER_ABILITY(153, 4),
 
 	//Cleric T1
-	CLERICT1A(160), DETECT_CURSE(161), SEARING_LIGHT(162), CLERICT1D(163),
+	SATIATED_SPELLS(160), DETECT_CURSE(161), SEARING_LIGHT(162), SHIELD_OF_LIGHT(163),
 	//Cleric T2
 	CLERICT2A(164), CLERICT2B(165), CLERICT2C(166), CLERICT2D(167), CLERICT2E(168),
 	//Cleric T3
@@ -390,6 +390,12 @@ public enum Talent {
 		}
 	}
 	public static class CounterAbilityTacker extends FlavourBuff{};
+	public static class SatiatedSpellsTracker extends Buff{
+		@Override
+		public int icon() {
+			return BuffIndicator.SPELL_FOOD;
+		}
+	};
 
 	int icon;
 	int maxPoints;
@@ -579,6 +585,9 @@ public enum Talent {
 				// lvl/3 / lvl/2 bonus dmg on next hit for other classes
 				Buff.affect( hero, PhysicalEmpower.class).set(Math.round(hero.lvl / (4f - hero.pointsInTalent(FOCUSED_MEAL))), 1);
 			}
+		}
+		if (hero.hasTalent(SATIATED_SPELLS)){
+			Buff.affect( hero, SatiatedSpellsTracker.class );
 		}
 	}
 
@@ -1022,7 +1031,7 @@ public enum Talent {
 				case ROGUE:     return new Talent[] {CACHED_RATIONS, THIEFS_INTUITION, SUCKER_PUNCH, PROTECTIVE_SHADOWS};
 				case HUNTRESS:  return new Talent[] {NATURES_BOUNTY, SURVIVALISTS_INTUITION, FOLLOWUP_STRIKE, NATURES_AID};
 				case DUELIST:   return new Talent[] {STRENGTHENING_MEAL, ADVENTURERS_INTUITION, PATIENT_STRIKE, AGGRESSIVE_BARRIER};
-				case CLERIC:    return new Talent[] {CLERICT1A, CLERICT1B, CLERICT1C, CLERICT1D};
+				case CLERIC:    return new Talent[] {SATIATED_SPELLS, DETECT_CURSE, SEARING_LIGHT, SHIELD_OF_LIGHT};
 				default: 	    return new Talent[0];
 			}
 		}
