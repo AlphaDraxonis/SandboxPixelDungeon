@@ -55,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
@@ -174,7 +175,7 @@ public enum Talent {
 	//Cleric T1
 	SATIATED_SPELLS(160), DETECT_CURSE(161), SEARING_LIGHT(162), SHIELD_OF_LIGHT(163),
 	//Cleric T2
-	CLERICT2A(164), CLERICT2B(165), CLERICT2C(166), CLERICT2D(167), CLERICT2E(168),
+	ENLIGHTENING_MEAL(164), CLERICT2B(165), CLERICT2C(166), CLERICT2D(167), CLERICT2E(168),
 	//Cleric T3
 	CLERICT3A(169, 3), CLERICT3B(170, 3),
 
@@ -588,6 +589,13 @@ public enum Talent {
 		}
 		if (hero.hasTalent(SATIATED_SPELLS)){
 			Buff.affect( hero, SatiatedSpellsTracker.class );
+		}
+		if (hero.hasTalent(ENLIGHTENING_MEAL)){
+			HolyTome tome = hero.belongings.getItem(HolyTome.class);
+			if (tome != null) {
+				tome.directCharge( 0.5f * (1+hero.pointsInTalent(ENLIGHTENING_MEAL)));
+				ScrollOfRecharging.charge(hero);
+			}
 		}
 	}
 

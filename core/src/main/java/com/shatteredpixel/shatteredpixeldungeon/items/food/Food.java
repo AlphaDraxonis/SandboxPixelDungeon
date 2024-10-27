@@ -21,7 +21,11 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.food;
 
-import com.shatteredpixel.shatteredpixeldungeon.*;
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -99,7 +103,8 @@ public class Food extends Item {
 			|| Dungeon.hero.hasTalent(Talent.ENERGIZING_MEAL)
 			|| Dungeon.hero.hasTalent(Talent.MYSTICAL_MEAL)
 			|| Dungeon.hero.hasTalent(Talent.INVIGORATING_MEAL)
-			|| Dungeon.hero.hasTalent(Talent.FOCUSED_MEAL)){
+			|| Dungeon.hero.hasTalent(Talent.FOCUSED_MEAL)
+			|| Dungeon.hero.hasTalent(Talent.ENLIGHTENING_MEAL)){
 			return TIME_TO_EAT - 2;
 		} else {
 			return TIME_TO_EAT;
