@@ -642,8 +642,14 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			if (iceBlock != null) {
 				iceBlock.visible = visible;
 			}
+			if (light != null) {
+				light.visible = visible;
+			}
 			if (chilled != null) {
 				chilled.visible = visible;
+			}
+			if (darkBlock != null) {
+				darkBlock.visible = visible;
 			}
 			if (marked != null) {
 				marked.visible = visible;
@@ -654,6 +660,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			if (hearts != null) {
 				hearts.visible = visible;
 			}
+			//shield fx updates its own visibility
 			if (aura != null) {
 				if (aura.parent == null) {
 					aura.show(this, 0);
