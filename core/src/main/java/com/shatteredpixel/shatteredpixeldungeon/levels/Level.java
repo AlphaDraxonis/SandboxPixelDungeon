@@ -53,6 +53,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.DivineSense;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
@@ -2519,6 +2520,9 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 				int mindVisRange = 0;
 				if (hero.hasTalent(Talent.HEIGHTENED_SENSES)){
 					mindVisRange = 1+hero.pointsInTalent(Talent.HEIGHTENED_SENSES);
+				}
+				if (c.buff(DivineSense.DivineSenseTracker.class) != null){
+					mindVisRange = 4+4*((Hero) c).pointsInTalent(Talent.DIVINE_SENSE);
 				}
 				mindVisRange = Math.max(mindVisRange, EyeOfNewt.mindVisionRange(hero));
 
