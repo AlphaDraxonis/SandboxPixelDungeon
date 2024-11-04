@@ -54,7 +54,7 @@ public class StoneOfBlink extends Runestone {
 	
 	@Override
 	protected void activate(int cell) {
-		if (!Zone.canTeleportTo(Dungeon.level, cell) || !ScrollOfTeleportation.teleportToLocation(curUser, cell, false)){
+		if (!Zone.canTeleportTo(Dungeon.level, cell) || !ScrollOfTeleportation.teleportToLocation(curUser, cell, false) && !anonymous){
 			Dungeon.level.drop(this, cell).sprite.drop();
 		}
 	}
