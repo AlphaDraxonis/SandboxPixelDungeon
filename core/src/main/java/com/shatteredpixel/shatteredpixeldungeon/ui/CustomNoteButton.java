@@ -40,13 +40,12 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.OriginalWndTitledMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournalItem;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.Callback;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -79,44 +78,56 @@ public class CustomNoteButton extends IconButton {
 			return;
 		}
 
-		GameScene.show(new WndOptions(Icons.SCROLL_COLOR.get(),
-				Messages.get(CustomNoteButton.class, "title"),
-				Messages.get(CustomNoteButton.class, "desc"),
-				Messages.get(CustomNoteButton.class, "new_text"),
-				Messages.get(CustomNoteButton.class, "new_floor"),
-				Messages.get(CustomNoteButton.class, "new_inv"),
-				Messages.get(CustomNoteButton.class, "new_type")){
-			@Override
-			protected void onSelect(int index) {
-				if (index == 0){
-					Notes.CustomRecord custom = new Notes.CustomRecord("", "");
-					addNote(custom,
-							Messages.get(CustomNoteButton.class, "new_text"),
-							Messages.get(CustomNoteButton.class, "new_text_title"));
-				} else if (index == 1){
-					GameScene.show(new WndDepthSelect());
-				} else if (index == 2){
-					GameScene.selectItem(itemSelector);
-				} else {
-					GameScene.show(new WndItemtypeSelect());
-				}
-			}
+		GameScene.show(new WndNoteTypeSelect());
 
-			@Override
-			public void hide() {
-				//do nothing, prevents window closing when user steps back in note creation process
-			}
-
-			@Override
-			public void onBackPressed() {
-				super.hide(); //actually hide in this case
-			}
-		});
 	}
 
 	@Override
 	protected String hoverText() {
 		return Messages.get(this, "title");
+	}
+
+	private static WndNoteTypeSelect NOTE_SELECT_INSTANCE;
+
+	private class WndNoteTypeSelect extends WndOptions {
+
+		public WndNoteTypeSelect(){
+			super(Icons.SCROLL_COLOR.get(),
+					Messages.get(CustomNoteButton.class, "title"),
+					Messages.get(CustomNoteButton.class, "desc"),
+					Messages.get(CustomNoteButton.class, "new_text"),
+					Messages.get(CustomNoteButton.class, "new_floor"),
+					Messages.get(CustomNoteButton.class, "new_inv"),
+					Messages.get(CustomNoteButton.class, "new_type"));
+			NOTE_SELECT_INSTANCE = this;
+		}
+
+		@Override
+		protected void onSelect(int index) {
+			if (index == 0){
+				Notes.CustomRecord custom = new Notes.CustomRecord("", "");
+				addNote(null, custom,
+						Messages.get(CustomNoteButton.class, "new_text"),
+						Messages.get(CustomNoteButton.class, "new_text_title"));
+			} else if (index == 1){
+				GameScene.show(new WndDepthSelect());
+			} else if (index == 2){
+				GameScene.selectItem(itemSelector);
+			} else {
+				GameScene.show(new WndItemtypeSelect());
+			}
+		}
+
+		@Override
+		public void hide() {
+			//do nothing, prevents window closing when user steps back in note creation process
+		}
+
+		@Override
+		public void onBackPressed() {
+			super.hide(); //actually hide in this case
+			NOTE_SELECT_INSTANCE = null;
+		}
 	}
 
 	private static class WndDepthSelect extends SimpleWindow {
@@ -217,7 +228,7 @@ public class CustomNoteButton extends IconButton {
 					((EquipableItem) item).customNoteID = custom.ID();
 				}
 
-				addNote(custom,
+				addNote(null, custom,
 						Messages.get(CustomNoteButton.class, "new_inv"),
 						Messages.get(CustomNoteButton.class, "new_item_title", Messages.titleCase(item.name())));
 			}
@@ -249,7 +260,7 @@ public class CustomNoteButton extends IconButton {
 				ItemButton itemButton = new ItemButton(){
 					@Override
 					protected void onClick() {
-						addNote(new Notes.CustomRecord(item, "", ""),
+						addNote(WndItemtypeSelect.this, new Notes.CustomRecord(item, "", ""),
 								Messages.get(CustomNoteButton.class, "new_type"),
 								Messages.get(CustomNoteButton.class, "new_item_title", Messages.titleCase(item.name())));
 					}
@@ -313,7 +324,8 @@ public class CustomNoteButton extends IconButton {
 						public void onSelect(boolean positive, String text) {
 							if (positive && !text.isEmpty()){
 								rec.editText(text, rec.desc());
-								refreshScene(rec);
+								CustomNoteWindow.this.hide();
+								SandboxPixelDungeon.scene().addToFront(new CustomNoteWindow(rec));
 							}
 						}
 					});
@@ -337,7 +349,8 @@ public class CustomNoteButton extends IconButton {
 						public void onSelect(boolean positive, String text) {
 							if (positive){
 								rec.editText(rec.title(), text);
-								refreshScene(rec);
+								CustomNoteWindow.this.hide();
+								SandboxPixelDungeon.scene().addToFront(new CustomNoteWindow(rec));
 							}
 						}
 					});
@@ -358,7 +371,8 @@ public class CustomNoteButton extends IconButton {
 						protected void onSelect(int index) {
 							if (index == 0){
 								Notes.remove(rec);
-								refreshScene(null);
+								CustomNoteWindow.this.hide();
+								SandboxPixelDungeon.scene().addToFront(new WndJournal());
 							}
 						}
 					});
@@ -376,7 +390,7 @@ public class CustomNoteButton extends IconButton {
 		}
 	}
 
-	private static void addNote(Notes.CustomRecord note, String promptTitle, String prompttext){
+	private static void addNote(Window parentWindow, Notes.CustomRecord note, String promptTitle, String prompttext){
 		GameScene.show(new WndTextInput(promptTitle,
 				prompttext,
 				"",
@@ -389,32 +403,21 @@ public class CustomNoteButton extends IconButton {
 				if (positive && !text.isEmpty()){
 					Notes.add(note);
 					note.editText(text, "");
-					refreshScene(null);
+					if (parentWindow != null) {
+						parentWindow.hide();
+					}
+					if (WndBag.INSTANCE != null) {
+						WndBag.INSTANCE.hide();
+					}
+					if (NOTE_SELECT_INSTANCE != null){
+						NOTE_SELECT_INSTANCE.onBackPressed();
+					}
+					hide();
+					DungeonScene.show(new WndJournal());
+					DungeonScene.show(new CustomNoteWindow(note));
 				}
 			}
 		});
 	}
 
-	private static void refreshScene(Notes.CustomRecord recToShow){
-		if (recToShow == null){
-			SandboxPixelDungeon.seamlessResetScene();
-		} else {
-			SandboxPixelDungeon.seamlessResetScene(new Game.SceneChangeCallback() {
-				@Override
-				public void beforeCreate() {
-
-				}
-
-				@Override
-				public void afterCreate() {
-					Game.runOnRenderThread(new Callback() {
-						@Override
-						public void call() {
-							DungeonScene.show(new CustomNoteWindow(recToShow));
-						}
-					});
-				}
-			});
-		}
-	}
 }

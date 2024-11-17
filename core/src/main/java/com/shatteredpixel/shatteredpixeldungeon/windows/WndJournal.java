@@ -90,44 +90,50 @@ import java.util.Comparator;
 import java.util.List;
 
 public class WndJournal extends WndTabbed {
-
+	
 	public static final int WIDTH_P     = 126;
 	public static final int HEIGHT_P    = 180;
-
+	
 	public static final int WIDTH_L     = 216;
 	public static final int HEIGHT_L    = 130;
-
+	
 	private static final int ITEM_HEIGHT	= 18;
-
+	
 	private GuideTab guideTab;
 	private AlchemyTab alchemyTab;
 	private NotesTab notesTab;
 	private CatalogTab catalogTab;
 	private BadgesTab badgesTab;
-
+	
 	public static int last_index = 0;
 
+	private static WndJournal INSTANCE = null;
+	
 	public WndJournal(){
 
+		if (INSTANCE != null){
+			INSTANCE.hide();
+		}
+		
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 		int height = PixelScene.landscape() ? HEIGHT_L : HEIGHT_P;
-
+		
 		resize(width, height);
-
+		
 		guideTab = new GuideTab();
 		add(guideTab);
 		guideTab.setRect(0, 0, width, height);
 		guideTab.updateList();
-
+		
 		alchemyTab = new AlchemyTab();
 		add(alchemyTab);
 		alchemyTab.setRect(0, 0, width, height);
-
+		
 		notesTab = new NotesTab();
 		add(notesTab);
 		notesTab.setRect(0, 0, width, height);
 		notesTab.updateList();
-
+		
 		catalogTab = new CatalogTab();
 		add(catalogTab);
 		catalogTab.setRect(0, 0, width, height);
@@ -137,7 +143,7 @@ public class WndJournal extends WndTabbed {
 		add(badgesTab);
 		badgesTab.setRect(0, 0, width, height);
 		badgesTab.updateList();
-
+		
 		Tab[] tabs = {
 				new IconTab( Icons.JOURNAL.get() ) {
 					protected void select( boolean value ) {
@@ -204,10 +210,12 @@ public class WndJournal extends WndTabbed {
 		for (Tab tab : tabs) {
 			add( tab );
 		}
-
+		
 		layoutTabs();
-
+		
 		select(last_index);
+
+		INSTANCE = this;
 	}
 
 	@Override
@@ -228,23 +236,23 @@ public class WndJournal extends WndTabbed {
 		notesTab.layout();
 		catalogTab.layout();
 	}
-
+	
 	public static class GuideTab extends Component {
 
 		private ScrollingListPane list;
-
+		
 		@Override
 		protected void createChildren() {
 			list = new ScrollingListPane();
 			add( list );
 		}
-
+		
 		@Override
 		protected void layout() {
 			super.layout();
 			list.setRect( x, y, width, height);
 		}
-
+		
 		public void updateList(){
 			list.addTitle(Document.ADVENTURERS_GUIDE.title());
 
@@ -279,7 +287,7 @@ public class WndJournal extends WndTabbed {
 		}
 
 	}
-
+	
 	public static class AlchemyTab extends Component {
 
 		private static final int[] sprites = {
@@ -294,7 +302,7 @@ public class WndJournal extends WndTabbed {
 				ItemSpriteSheet.SPELL_HOLDER,
 				ItemSpriteSheet.SOMETHING
 		};
-
+		
 		public static int currentPageIdx   = 0;
 
 		protected AbstractCategoryScroller<?> categoryScroller;
@@ -468,24 +476,24 @@ public class WndJournal extends WndTabbed {
 			categoryScroller.selectCategory(currentPageIdx);
 		}
 	}
-
+	
 	private static class NotesTab extends Component {
-
+		
 		private ScrollingGridPane grid;
 		private CustomNoteButton custom;
-
+		
 		@Override
 		protected void createChildren() {
 			grid = new ScrollingGridPane();
 			add(grid);
 		}
-
+		
 		@Override
 		protected void layout() {
 			super.layout();
 			grid.setRect( x, y, width, height);
 		}
-
+		
 		private void updateList(){
 
 			grid.addHeader("_" + Messages.get(this, "title") + "_", 9, true);
@@ -578,7 +586,7 @@ public class WndJournal extends WndTabbed {
 			grid.setRect(x, y, width, height);
 
 		}
-
+		
 	}
 
 	public static class CatalogTab extends Component {
@@ -598,7 +606,7 @@ public class WndJournal extends WndTabbed {
 		private int numButtons;
 
 		private ScrollingGridPane grid;
-
+		
 		@Override
 		protected void createChildren() {
 
@@ -633,7 +641,7 @@ public class WndJournal extends WndTabbed {
 			};
 			add( grid );
 		}
-
+		
 		@Override
 		protected void layout() {
 			super.layout();
@@ -647,15 +655,15 @@ public class WndJournal extends WndTabbed {
 						buttonWidth, ITEM_HEIGHT);
 				PixelScene.align(itemButtons[i]);
 			}
-
+			
 			grid.setRect(x,
 					itemButtons[itemButtons.length -1].bottom() + 1,
 					width,
 					height - itemButtons[itemButtons.length -1].height() - 1);
 		}
-
+		
 		public void updateList() {
-
+			
 			grid.clear();
 
 			for (int i = 0; i < itemButtons.length; i++){
@@ -665,7 +673,7 @@ public class WndJournal extends WndTabbed {
 					itemButtons[i].icon().resetColor();
 				}
 			}
-
+			
 			grid.scrollTo( 0, 0 );
 
 			if (currentItemIdx == EQUIP_IDX) {
@@ -723,7 +731,7 @@ public class WndJournal extends WndTabbed {
 
 			grid.scrollTo(0, scrollPositions[currentItemIdx]);
 		}
-
+		
 	}
 
 	//also includes item-like things such as enchantments, glyphs, curses.
