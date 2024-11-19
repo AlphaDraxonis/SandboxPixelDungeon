@@ -190,10 +190,6 @@ public class HeroSelectScene extends PixelScene {
 		add(infoButton);
 
 		for (HeroClass cl : HeroClass.values()){
-			//TODO CLERIC skip this when not in debug for now
-			if (cl == HeroClass.CLERIC && !DeviceCompat.isDebug()){
-				continue;
-			}
 			HeroBtn button = new HeroBtn(cl);
 			add(button);
 			heroBtns.add(button);
