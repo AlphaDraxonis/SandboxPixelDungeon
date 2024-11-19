@@ -180,6 +180,10 @@ public enum Talent {
 	ENLIGHTENING_MEAL(164), RECALL_GLYPH(165), SUNRAY(166), DIVINE_SENSE(167), CLERICT2E(168),
 	//Cleric T3
 	CLERICT3A(169, 3), CLERICT3B(170, 3),
+	//Priest T3
+	PRIESTT3A(171, 3), PRIESTT3B(172, 3), PRIESTT3C(173, 3),
+	//Paladin T3
+	PALADINT3A(174, 3), PALADINT3B(175, 3), PALADINT3C(176, 3),
 
 	//universal T4
 	HEROIC_ENERGY(26, 4), //See icon() and title() for special logic for this one
@@ -876,7 +880,7 @@ public enum Talent {
 		}
 
 		//tier 2
-		for (Talent talent :availableTalents(cls, null, 2)){
+		for (Talent talent : availableTalents(cls, null, 2)){
 			if (replacements.containsKey(talent)){
 				talent = replacements.get(talent);
 			}
