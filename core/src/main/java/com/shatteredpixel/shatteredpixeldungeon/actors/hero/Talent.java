@@ -179,7 +179,7 @@ public enum Talent {
 	//Cleric T2
 	ENLIGHTENING_MEAL(164), RECALL_GLYPH(165), SUNRAY(166), DIVINE_SENSE(167), CLERICT2E(168),
 	//Cleric T3
-	CLERICT3A(169, 3), CLERICT3B(170, 3),
+	CLERICT3A(169, 3), LIGHT_READING(170, 3),
 	//Priest T3
 	PRIESTT3A(171, 3), PRIESTT3B(172, 3), PRIESTT3C(173, 3),
 	//Paladin T3
@@ -539,6 +539,16 @@ public enum Talent {
 			toGive = new Gloves().identify();
 			if (!toGive.collect()){
 				Dungeon.level.drop(toGive, hero.pos).sprite.drop();
+			}
+		}
+
+		if (talent == LIGHT_READING && hero.heroClass == HeroClass.CLERIC){
+			for (Item item : Dungeon.hero.belongings.backpack){
+				if (item instanceof HolyTome){
+					if (!hero.belongings.lostInventory() || item.keptThroughLostInventory()) {
+						((HolyTome) item).activate(Dungeon.hero);
+					}
+				}
 			}
 		}
 	}
