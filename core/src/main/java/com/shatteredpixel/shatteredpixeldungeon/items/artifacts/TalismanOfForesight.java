@@ -25,7 +25,11 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -188,6 +192,8 @@ public class TalismanOfForesight extends Artifact {
 					Char ch = Actor.findChar(cell);
 					if (ch != null && ch.alignment != Char.Alignment.NEUTRAL && ch.alignment != curUser.alignment){
 						Buff.append(curUser, CharAwareness.class, 5 + 2*level()).charID = ch.id();
+
+						artifactProc(ch, visiblyUpgraded(), (int)(3 + dist*1.08f));
 
 						if (!curUser.fieldOfView[ch.pos]){
 							earnedExp += 10;

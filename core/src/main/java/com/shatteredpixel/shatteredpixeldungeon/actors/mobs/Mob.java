@@ -998,7 +998,7 @@ public abstract class Mob extends Char implements Customizable {
 		if (playerAlignment == NEUTRAL_ALIGNMENT) return INFINITE_EVASION;
 		if ( !surprisedBy(enemy)
 				&& paralysed == 0
-				&& buff(GuidingLight.GuidingLightDebuff.class) == null
+				&& buff(GuidingLight.Illuminated.class) == null
 				&& !(alignment == Alignment.ALLY && enemy == Dungeon.hero)) {
 			return glyphArmor == null ? this.defenseSkill : Math.round(glyphArmor.evasionFactor(this, this.defenseSkill));
 		} else {
