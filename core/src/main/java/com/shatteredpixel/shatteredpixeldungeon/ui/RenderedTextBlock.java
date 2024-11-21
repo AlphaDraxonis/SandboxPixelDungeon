@@ -37,7 +37,7 @@ public class RenderedTextBlock extends Component {
 
 	private static final RenderedText SPACE = new RenderedText();
 	private static final RenderedText NEWLINE = new RenderedText();
-
+	
 	protected String text;
 	protected String[] tokens = null;
 	protected ArrayList<RenderedText> words = new ArrayList<>();
@@ -139,7 +139,10 @@ public class RenderedTextBlock extends Component {
 			if (str.isEmpty()) continue;
 
 			int forceColorChange = COLOR_MARKERS.indexOf(str.charAt(0));
-			if (str.equals("_") && highlightingEnabled) {
+
+			//if highlighting is enabled, '_' or '**' is used to toggle highlighting on or off
+			// the actual symbols are not rendered
+			if ((str.equals("_") || str.equals("**")) && highlightingEnabled){
 				highlighting = !highlighting;
 			} else if (forceColorChange != -1) {
 				currentMarkingColor = COLORS[forceColorChange] == currentMarkingColor ? -1 : COLORS[forceColorChange];
