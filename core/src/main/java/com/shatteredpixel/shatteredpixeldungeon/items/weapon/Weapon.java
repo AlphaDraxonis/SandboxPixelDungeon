@@ -121,7 +121,7 @@ abstract public class Weapon extends KindOfWeapon {
 
 		if (attacker.buff(MagicImmune.class) == null) {
 			if (attacker instanceof Hero && isEquipped((Hero) attacker)
-					&& !hasCurseEnchant() && attacker.buff(HolyWeapon.HolyWepBuff.class) != null){
+					&& attacker.buff(HolyWeapon.HolyWepBuff.class) != null){
 				defender.damage(Math.round(2f * Enchantment.genericProcChanceMultiplier(attacker)), HolyWeapon.INSTANCE);
 			} else if (enchantment != null) {
 				damage = enchantment.proc(this, attacker, defender, damage);
