@@ -179,7 +179,7 @@ public enum Talent {
 	//Cleric T2
 	ENLIGHTENING_MEAL(164), RECALL_GLYPH(165), SUNRAY(166), DIVINE_SENSE(167), CLERICT2E(168),
 	//Cleric T3
-	CLERICT3A(169, 3), LIGHT_READING(170, 3),
+	CLEANSE(169, 3), LIGHT_READING(170, 3),
 	//Priest T3
 	HOLY_LANCE(171, 3), PRIESTT3B(172, 3), PRIESTT3C(173, 3),
 	//Paladin T3
@@ -1081,6 +1081,7 @@ public enum Talent {
 					case ROGUE:     return new Talent[] {ENHANCED_RINGS, LIGHT_CLOAK};
 					case HUNTRESS:  return new Talent[] {POINT_BLANK, SEER_SHOT};
 					case DUELIST:   return new Talent[] {PRECISE_ASSAULT, DEADLY_FOLLOWUP};
+					case CLERIC:    return new Talent[] {CLEANSE, LIGHT_READING};
 					default: 	    return new Talent[0];
 				}
 			}
