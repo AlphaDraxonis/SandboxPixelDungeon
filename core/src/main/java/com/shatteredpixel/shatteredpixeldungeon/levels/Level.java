@@ -50,6 +50,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Shadows;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
@@ -1099,6 +1100,18 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 	//returns true if we immediately transition, false otherwise
 	public boolean activateTransition(Hero hero, LevelTransition transition){
 		if (lockedCount > 0){
+			return false;
+		}
+
+		if (transition.type == LevelTransition.Type.REGULAR_EXIT
+				&& Dungeon.depth >= 20
+				&& Dungeon.hero.heroClass == HeroClass.CLERIC){
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					GameScene.show(new WndMessage("Thanks for playing the Alpha!\n\nRuns with the Cleric cap out at floor 20 for the moment, but you'll be able to finish your run closer to the beta releases."));
+				}
+			});
 			return false;
 		}
 

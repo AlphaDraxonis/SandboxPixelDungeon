@@ -217,6 +217,10 @@ public class WelcomeScene extends PixelScene {
 
 			}
 
+			message = "Greetings Alpha testers, and welcome to an early look at the Cleric!\n\n" +
+					"I'm releasing this Alpha so that you guys can give early feedback, but please note that the Cleric is currently quite unfinished! There will be missing features, bugs, balance issues, etc. and the game currently caps out on floor 20 for the Cleric.\n\n" +
+					"As always, read the changelog for full change details, and let me know if you encounter any bugs!";
+
 		} else {
 			message = Messages.get(this, "what_msg");
 		}
