@@ -1171,7 +1171,7 @@ public abstract class Mob extends Char implements Customizable {
 					//assume the hero is hitting us in these common cases
 					if (src instanceof Wand || src instanceof ClericSpell || src instanceof ArmorAbility) {
 						aggro(Dungeon.hero);
-						target = enemy.pos;
+						target = Dungeon.hero.pos;
 					}
 				} else {
 					if (src instanceof Wand || src instanceof ClericSpell || src instanceof ArmorAbility) {
