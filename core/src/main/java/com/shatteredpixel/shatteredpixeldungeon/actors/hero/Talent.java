@@ -84,6 +84,7 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -178,7 +179,7 @@ public enum Talent {
 	//Cleric T1
 	SATIATED_SPELLS(160), DETECT_CURSE(161), SEARING_LIGHT(162), SHIELD_OF_LIGHT(163),
 	//Cleric T2
-	ENLIGHTENING_MEAL(164), RECALL_GLYPH(165), SUNRAY(166), DIVINE_SENSE(167), CLERICT2E(168),
+	ENLIGHTENING_MEAL(164), RECALL_GLYPH(165), SUNRAY(166), DIVINE_SENSE(167), BLESS(168),
 	//Cleric T3
 	CLEANSE(169, 3), LIGHT_READING(170, 3),
 	//Priest T3
@@ -898,7 +899,27 @@ public enum Talent {
 		}
 
 		//tier 2
-		for (Talent talent : availableTalents(cls, null, 2)){
+		switch (cls){
+			case WARRIOR: default:
+				Collections.addAll(tierTalents, IRON_STOMACH, LIQUID_WILLPOWER, RUNIC_TRANSFERENCE, LETHAL_MOMENTUM, IMPROVISED_PROJECTILES);
+				break;
+			case MAGE:
+				Collections.addAll(tierTalents, ENERGIZING_MEAL, INSCRIBED_POWER, WAND_PRESERVATION, ARCANE_VISION, SHIELD_BATTERY);
+				break;
+			case ROGUE:
+				Collections.addAll(tierTalents, MYSTICAL_MEAL, INSCRIBED_STEALTH, WIDE_SEARCH, SILENT_STEPS, ROGUES_FORESIGHT);
+				break;
+			case HUNTRESS:
+				Collections.addAll(tierTalents, INVIGORATING_MEAL, LIQUID_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES);
+				break;
+			case DUELIST:
+				Collections.addAll(tierTalents, FOCUSED_MEAL, LIQUID_AGILITY, WEAPON_RECHARGING, LETHAL_HASTE, SWIFT_EQUIP);
+				break;
+			case CLERIC:
+				Collections.addAll(tierTalents, ENLIGHTENING_MEAL, RECALL_GLYPH, SUNRAY, DIVINE_SENSE, CLERICT2E);
+				break;
+		}
+		for (Talent talent : tierTalents){
 			if (replacements.containsKey(talent)){
 				talent = replacements.get(talent);
 			}
@@ -1072,6 +1093,7 @@ public enum Talent {
 				case ROGUE:     return new Talent[] {MYSTICAL_MEAL, INSCRIBED_STEALTH, WIDE_SEARCH, SILENT_STEPS, ROGUES_FORESIGHT};
 				case HUNTRESS:  return new Talent[] {INVIGORATING_MEAL, LIQUID_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES};
 				case DUELIST:   return new Talent[] {FOCUSED_MEAL, LIQUID_AGILITY, WEAPON_RECHARGING, LETHAL_HASTE, SWIFT_EQUIP};
+				case CLERIC:    return new Talent[] {ENLIGHTENING_MEAL, RECALL_GLYPH, SUNRAY, DIVINE_SENSE, BLESS};
 				default: 	    return new Talent[0];
 			}
 		}
