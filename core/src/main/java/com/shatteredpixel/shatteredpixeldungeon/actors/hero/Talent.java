@@ -44,7 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WandEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.GuidingLight;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.RecallGlyph;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.RecallInscription;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -84,7 +84,6 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -177,9 +176,9 @@ public enum Talent {
 	FEIGNED_RETREAT(151, 4), EXPOSE_WEAKNESS(152, 4), COUNTER_ABILITY(153, 4),
 
 	//Cleric T1
-	SATIATED_SPELLS(160), DETECT_CURSE(161), SEARING_LIGHT(162), SHIELD_OF_LIGHT(163),
+	SATIATED_SPELLS(160), HOLY_INTUITION(161), SEARING_LIGHT(162), SHIELD_OF_LIGHT(163),
 	//Cleric T2
-	ENLIGHTENING_MEAL(164), RECALL_GLYPH(165), SUNRAY(166), DIVINE_SENSE(167), BLESS(168),
+	ENLIGHTENING_MEAL(164), RECALL_INSCRIPTION(165), SUNRAY(166), DIVINE_SENSE(167), BLESS(168),
 	//Cleric T3
 	CLEANSE(169, 3), LIGHT_READING(170, 3),
 	//Priest T3
@@ -724,18 +723,18 @@ public enum Talent {
 			Sample.INSTANCE.play( Assets.Sounds.MELD );
 		}
 		if (hero.heroClass == HeroClass.CLERIC
-				&& hero.hasTalent(RECALL_GLYPH)
+				&& hero.hasTalent(RECALL_INSCRIPTION)
 				&& Scroll.class.isAssignableFrom(cls)
 				&& cls != ScrollOfUpgrade.class){
-			Buff.prolong(hero, RecallGlyph.UsedGlyphTracker.class, hero.pointsInTalent(RECALL_GLYPH) == 2 ? 300 : 10).item = cls;
+			Buff.prolong(hero, RecallInscription.UsedGlyphTracker.class, hero.pointsInTalent(RECALL_INSCRIPTION) == 2 ? 300 : 10).item = cls;
 		}
 	}
 
 	public static void onRunestoneUsed( Hero hero, int pos, Class<?extends Item> cls ){
 		if (hero.heroClass == HeroClass.CLERIC
-				&& hero.hasTalent(RECALL_GLYPH)
+				&& hero.hasTalent(RECALL_INSCRIPTION)
 				&& Runestone.class.isAssignableFrom(cls)){
-			Buff.prolong(hero, RecallGlyph.UsedGlyphTracker.class, hero.pointsInTalent(RECALL_GLYPH) == 2 ? 300 : 10).item = cls;
+			Buff.prolong(hero, RecallInscription.UsedGlyphTracker.class, hero.pointsInTalent(RECALL_INSCRIPTION) == 2 ? 300 : 10).item = cls;
 		}
 	}
 
@@ -897,29 +896,9 @@ public enum Talent {
 			}
 			talents.get(0).put(talent, 0);
 		}
-
+		
 		//tier 2
-		switch (cls){
-			case WARRIOR: default:
-				Collections.addAll(tierTalents, IRON_STOMACH, LIQUID_WILLPOWER, RUNIC_TRANSFERENCE, LETHAL_MOMENTUM, IMPROVISED_PROJECTILES);
-				break;
-			case MAGE:
-				Collections.addAll(tierTalents, ENERGIZING_MEAL, INSCRIBED_POWER, WAND_PRESERVATION, ARCANE_VISION, SHIELD_BATTERY);
-				break;
-			case ROGUE:
-				Collections.addAll(tierTalents, MYSTICAL_MEAL, INSCRIBED_STEALTH, WIDE_SEARCH, SILENT_STEPS, ROGUES_FORESIGHT);
-				break;
-			case HUNTRESS:
-				Collections.addAll(tierTalents, INVIGORATING_MEAL, LIQUID_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES);
-				break;
-			case DUELIST:
-				Collections.addAll(tierTalents, FOCUSED_MEAL, LIQUID_AGILITY, WEAPON_RECHARGING, LETHAL_HASTE, SWIFT_EQUIP);
-				break;
-			case CLERIC:
-				Collections.addAll(tierTalents, ENLIGHTENING_MEAL, RECALL_GLYPH, SUNRAY, DIVINE_SENSE, CLERICT2E);
-				break;
-		}
-		for (Talent talent : tierTalents){
+		for (Talent talent : availableTalents(cls, null, 2)){
 			if (replacements.containsKey(talent)){
 				talent = replacements.get(talent);
 			}
@@ -1013,6 +992,10 @@ public enum Talent {
 
 	private static final HashMap<String, String> renamedTalents = new HashMap<>();
 	static{
+		//v3.0.0 ALPHA
+		renamedTalents.put("DETECT_CURSE",              "HOLY_INTUITION");
+		renamedTalents.put("RECALL_GLYPH",              "RECALL_INSCRIPTION");
+
 		//v2.4.0
 		renamedTalents.put("SECONDARY_CHARGE",          "VARIED_CHARGE");
 
@@ -1082,7 +1065,7 @@ public enum Talent {
 				case ROGUE:     return new Talent[] {CACHED_RATIONS, THIEFS_INTUITION, SUCKER_PUNCH, PROTECTIVE_SHADOWS};
 				case HUNTRESS:  return new Talent[] {NATURES_BOUNTY, SURVIVALISTS_INTUITION, FOLLOWUP_STRIKE, NATURES_AID};
 				case DUELIST:   return new Talent[] {STRENGTHENING_MEAL, ADVENTURERS_INTUITION, PATIENT_STRIKE, AGGRESSIVE_BARRIER};
-				case CLERIC:    return new Talent[] {SATIATED_SPELLS, DETECT_CURSE, SEARING_LIGHT, SHIELD_OF_LIGHT};
+				case CLERIC:    return new Talent[] {SATIATED_SPELLS, HOLY_INTUITION, SEARING_LIGHT, SHIELD_OF_LIGHT};
 				default: 	    return new Talent[0];
 			}
 		}
@@ -1093,7 +1076,7 @@ public enum Talent {
 				case ROGUE:     return new Talent[] {MYSTICAL_MEAL, INSCRIBED_STEALTH, WIDE_SEARCH, SILENT_STEPS, ROGUES_FORESIGHT};
 				case HUNTRESS:  return new Talent[] {INVIGORATING_MEAL, LIQUID_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES};
 				case DUELIST:   return new Talent[] {FOCUSED_MEAL, LIQUID_AGILITY, WEAPON_RECHARGING, LETHAL_HASTE, SWIFT_EQUIP};
-				case CLERIC:    return new Talent[] {ENLIGHTENING_MEAL, RECALL_GLYPH, SUNRAY, DIVINE_SENSE, BLESS};
+				case CLERIC:    return new Talent[] {ENLIGHTENING_MEAL, RECALL_INSCRIPTION, SUNRAY, DIVINE_SENSE, BLESS};
 				default: 	    return new Talent[0];
 			}
 		}
