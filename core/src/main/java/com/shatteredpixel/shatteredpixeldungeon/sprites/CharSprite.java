@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.DarkBlock;
 import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
+import com.shatteredpixel.shatteredpixeldungeon.effects.GlowBlock;
 import com.shatteredpixel.shatteredpixeldungeon.effects.IceBlock;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.ShieldHalo;
@@ -89,7 +90,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	protected float shadowOffset    = 0.25f;
 
 	public enum State {
-		BURNING, LEVITATING, INVISIBLE, HALF_INVISIBLE, PARALYSED, FROZEN, ILLUMINATED, CHILLED, DARKENED, MARKED, HEALING, SHIELDED, HEARTS
+		BURNING, LEVITATING, INVISIBLE, HALF_INVISIBLE, PARALYSED, FROZEN, ILLUMINATED, CHILLED, DARKENED, MARKED, HEALING, SHIELDED, HEARTS, GLOWING
 	}
 	private int stunStates = 0;
 	
@@ -113,6 +114,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	
 	protected IceBlock iceBlock;
 	protected DarkBlock darkBlock;
+	protected GlowBlock glowBlock;
 	protected TorchHalo light;
 	protected ShieldHalo shield;
 	protected AlphaTweener invisible;
@@ -504,6 +506,9 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					hearts = emitter();
 					hearts.pour(Speck.factory(Speck.HEART), 0.5f);
 					break;
+				case GLOWING:
+					glowBlock = GlowBlock.lighten(this);
+					break;
 			}
 		}
 		if (realCharSprite != null) realCharSprite.add(state);
@@ -588,6 +593,11 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 						hearts = null;
 					}
 					break;
+				case GLOWING:
+					if (glowBlock != null){
+						glowBlock.darken();
+						glowBlock = null;
+					}
 			}
 		}
 		if (realCharSprite != null) realCharSprite.remove(state);
