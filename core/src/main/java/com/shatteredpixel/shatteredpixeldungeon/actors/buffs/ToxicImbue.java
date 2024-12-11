@@ -45,6 +45,10 @@ public class ToxicImbue extends BuffWithDuration {
 		this.left = duration;
 	}
 
+	public void extend( float duration ) {
+		left += duration;
+	}
+
 	@Override
 	public boolean act() {
 		if (left > 0 || permanent) {

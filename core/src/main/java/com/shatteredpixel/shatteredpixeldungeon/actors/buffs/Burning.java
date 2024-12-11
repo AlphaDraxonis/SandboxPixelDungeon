@@ -199,8 +199,12 @@ public class Burning extends BuffWithDuration implements Hero.Doom {
 				}
 			}
 		}
-		left = duration;
+		if (left < duration) left = duration;
 		acted = false;
+	}
+
+	public void extend( float duration ) {
+		left += duration;
 	}
 	
 	@Override

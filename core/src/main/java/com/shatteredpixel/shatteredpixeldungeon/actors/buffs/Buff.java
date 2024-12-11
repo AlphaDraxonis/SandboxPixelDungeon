@@ -36,6 +36,9 @@ public class Buff extends Actor {
 	
 	public Char target;
 
+	//whether this buff was already extended by the mnemonic prayer spell
+	public boolean mnemonicExtended = false;
+
 	{
 		actPriority = BUFF_PRIO; //low priority, towards the end of a turn
 	}
@@ -170,7 +173,38 @@ public class Buff extends Actor {
 	}
 
 
-    //creates a fresh instance of the buff and attaches that, this allows duplication.
+    private static final String MNEMONIC_EXTENDED    = "mnemonic_extended";
+	private static final String PERMANENT = "permanent";
+	private static final String ZONE_BUFF = "zone_buff";
+	private static final String ALWAYS_HIDES_FX = "always_hides_fx";
+	private static final String TIME_WHEN_PAUSED = "time_when_paused";
+	private static final String COOLDOWN_WHEN_PAUSED = "cooldown_when_paused";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		if (mnemonicExtended) bundle.put(MNEMONIC_EXTENDED, mnemonicExtended);
+		bundle.put(PERMANENT, permanent);
+		bundle.put(ZONE_BUFF, zoneBuff);
+		bundle.put(ALWAYS_HIDES_FX, alwaysHidesFx);
+		bundle.put(TIME_WHEN_PAUSED, timeWhenPaused);
+		bundle.put(COOLDOWN_WHEN_PAUSED, cooldownWhenPaused);
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		if (bundle.contains(MNEMONIC_EXTENDED)) {
+			mnemonicExtended = bundle.getBoolean(MNEMONIC_EXTENDED);
+		}
+		permanent = bundle.getBoolean(PERMANENT);
+		zoneBuff = bundle.getBoolean(ZONE_BUFF);
+		alwaysHidesFx = bundle.getBoolean(ALWAYS_HIDES_FX);
+		timeWhenPaused = bundle.getFloat(TIME_WHEN_PAUSED);
+		cooldownWhenPaused = bundle.getFloat(COOLDOWN_WHEN_PAUSED);
+	}
+	
+	//creates a fresh instance of the buff and attaches that, this allows duplication.
     public static <T extends Buff> T append(Char target, Class<T> buffClass) {
         return append(target, Reflection.newInstance(buffClass));
     }
@@ -255,29 +289,4 @@ public class Buff extends Actor {
         return b;
     }
 
-    public static final String PERMANENT = "permanent";
-    public static final String ZONE_BUFF = "zone_buff";
-    public static final String ALWAYS_HIDES_FX = "always_hides_fx";
-    public static final String TIME_WHEN_PAUSED = "time_when_paused";
-    public static final String COOLDOWN_WHEN_PAUSED = "cooldown_when_paused";
-
-    @Override
-    public void storeInBundle(Bundle bundle) {
-        super.storeInBundle(bundle);
-        bundle.put(PERMANENT, permanent);
-        bundle.put(ZONE_BUFF, zoneBuff);
-        bundle.put(ALWAYS_HIDES_FX, alwaysHidesFx);
-        bundle.put(TIME_WHEN_PAUSED, timeWhenPaused);
-        bundle.put(COOLDOWN_WHEN_PAUSED, cooldownWhenPaused);
-    }
-
-    @Override
-    public void restoreFromBundle(Bundle bundle) {
-        super.restoreFromBundle(bundle);
-        permanent = bundle.getBoolean(PERMANENT);
-        zoneBuff = bundle.getBoolean(ZONE_BUFF);
-        alwaysHidesFx = bundle.getBoolean(ALWAYS_HIDES_FX);
-        timeWhenPaused = bundle.getFloat(TIME_WHEN_PAUSED);
-        cooldownWhenPaused = bundle.getFloat(COOLDOWN_WHEN_PAUSED);
-    }
 }

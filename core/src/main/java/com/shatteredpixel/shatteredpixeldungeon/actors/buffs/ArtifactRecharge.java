@@ -73,7 +73,7 @@ public class ArtifactRecharge extends BuffWithDuration {
 		return this;
 	}
 	
-	public ArtifactRecharge prolong( float amount ){
+	public ArtifactRecharge extend(float amount ){
 		left += amount;
 		return this;
 	}

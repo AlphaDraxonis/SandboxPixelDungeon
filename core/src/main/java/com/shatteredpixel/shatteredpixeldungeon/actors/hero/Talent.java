@@ -181,7 +181,7 @@ public enum Talent {
 	//Cleric T3
 	CLEANSE(169, 3), LIGHT_READING(170, 3),
 	//Priest T3
-	HOLY_LANCE(171, 3), HALLOWED_GROUND(172, 3), PRIESTT3C(173, 3),
+	HOLY_LANCE(171, 3), HALLOWED_GROUND(172, 3), MNEMONIC_PRAYER(173, 3),
 	//Paladin T3
 	PALADINT3A(174, 3), PALADINT3B(175, 3), PALADINT3C(176, 3),
 	//Cleric A1 T4
@@ -1096,6 +1096,7 @@ public enum Talent {
 					case WARDEN:		return new Talent[] {DURABLE_TIPS, BARKSKIN, SHIELDING_DEW};
 					case CHAMPION:		return new Talent[] {VARIED_CHARGE, TWIN_UPGRADES, COMBINED_LETHALITY};
 					case MONK:			return new Talent[] {UNENCUMBERED_SPIRIT, MONASTIC_VIGOR, COMBINED_ENERGY};
+					case PRIEST:		return new Talent[] {HOLY_LANCE, HALLOWED_GROUND, MNEMONIC_PRAYER};
 					default:			return new Talent[0];
 				}
 			}

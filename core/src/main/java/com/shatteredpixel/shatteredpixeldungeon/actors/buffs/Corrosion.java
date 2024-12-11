@@ -69,6 +69,10 @@ public class Corrosion extends BuffWithDuration implements Hero.Doom {
 		if (this.damage < damage) this.damage = damage;
 		this.source = source;
 	}
+
+	public void extend( float duration ) {
+		left += duration;
+	}
 	
 	@Override
 	public void set(BuffWithDuration buff, Class source) {

@@ -621,7 +621,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		} else if (phase == 3 && !(src instanceof Viscosity.DeferedDamage)){
 			if (dmg >= 0) {
 				Viscosity.DeferedDamage deferred = Buff.affect( this, Viscosity.DeferedDamage.class );
-				deferred.prolong( dmg );
+				deferred.extend( dmg );
 
 				sprite.showStatus( CharSprite.WARNING, Messages.get(Viscosity.class, "deferred", dmg) );
 			}

@@ -145,6 +145,10 @@ public class ScrollOfChallenge extends ExoticScroll {
 
 		}
 
+		public void extend( float duration ) {
+			left += duration;
+		}
+
 		@Override
 		public boolean act() {
 
