@@ -389,10 +389,10 @@ public class LuaGlobals extends Globals {
 			public LuaValue call(LuaValue min, LuaValue max) {
 				if (max.isnil()) {
 					if (!min.isint()) throw new LuaError("Illegal arguments: use Random.combatRoll(int max)");
-					return LuaValue.valueOf(Char.combatRoll(0, min.checkint()));
+					return LuaValue.valueOf(Random.NormalIntRange(0, min.checkint()));
 				}
 				if (!min.isint() || !max.isint()) throw new LuaError("Illegal arguments: use Random.combatRoll(int min, int max)");
-				return LuaValue.valueOf(Char.combatRoll(min.checkint(), max.checkint()));
+				return LuaValue.valueOf(Random.NormalIntRange(min.checkint(), max.checkint()));
 			}
 		});
 		randomUtils.set("element", new OneArgFunction() {
@@ -1019,19 +1019,19 @@ public class LuaGlobals extends Globals {
 
 				int damage;
 				if (arg3.isint()) {
-					if (arg4.isint()) damage = Char.combatRoll( arg3.checkint(), arg4.checkint() );
+					if (arg4.isint()) damage = Random.NormalIntRange( arg3.checkint(), arg4.checkint() );
 					else {
-						if (arg5.isint()) damage = Char.combatRoll( arg3.checkint(), arg5.checkint() );
+						if (arg5.isint()) damage = Random.NormalIntRange( arg3.checkint(), arg5.checkint() );
 						else damage = arg3.checkint();
 					}
 				}
 				else if (arg4.isint()) {
-					if (arg5.isint()) damage = Char.combatRoll( arg4.checkint(), arg5.checkint() );
+					if (arg5.isint()) damage = Random.NormalIntRange( arg4.checkint(), arg5.checkint() );
 					else damage = arg4.checkint();
 				}
 				else if (arg5.isint()) damage = arg5.checkint();
 				else {
-					if (attacker instanceof Mob) damage = Char.combatRoll( ((Mob) attacker).damageRollMin, ((Mob) attacker).damageRollMin );
+					if (attacker instanceof Mob) damage = Random.NormalIntRange( ((Mob) attacker).damageRollMin, ((Mob) attacker).damageRollMin );
 					else damage = 0;
 				}
 

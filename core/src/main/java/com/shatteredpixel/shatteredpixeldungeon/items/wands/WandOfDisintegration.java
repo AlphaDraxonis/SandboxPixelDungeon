@@ -58,7 +58,11 @@ public class WandOfDisintegration extends DamageWand {
 	
 	@Override
 	public int targetingPos(Hero user, int dst) {
-		return dst;
+		if (!cursed || !cursedKnown()) {
+			return dst;
+		} else {
+			return super.targetingPos(user, dst);
+		}
 	}
 
 	@Override
@@ -127,7 +131,12 @@ public class WandOfDisintegration extends DamageWand {
 	public int distance() {
 		return buffedLvl()*2 + 6;
 	}
-	
+
+	@Override
+	public String upgradeStat2(int level) {
+		return Integer.toString(6 + level*2);
+	}
+
 	@Override
 	public void fx(Ballistica beam, Callback callback) {
 		

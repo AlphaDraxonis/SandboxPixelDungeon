@@ -188,8 +188,8 @@ public class ItemSpriteSheet {
 	public static final int FIRE_BOMB       = BOMBS+2;
 	public static final int FROST_BOMB      = BOMBS+3;
 	public static final int REGROWTH_BOMB   = BOMBS+4;
-	public static final int FLASHBANG       = BOMBS+5;
-	public static final int SHOCK_BOMB      = BOMBS+6;
+	public static final int SMOKE_BOMB      = BOMBS+5;
+	public static final int FLASHBANG       = BOMBS+6;
 	public static final int HOLY_BOMB       = BOMBS+7;
 	public static final int WOOLY_BOMB      = BOMBS+8;
 	public static final int NOISEMAKER      = BOMBS+9;
@@ -202,8 +202,8 @@ public class ItemSpriteSheet {
 		assignItemRect(FIRE_BOMB,       13, 12);
 		assignItemRect(FROST_BOMB,      13, 12);
 		assignItemRect(REGROWTH_BOMB,   13, 12);
-		assignItemRect(FLASHBANG,       13, 12);
-		assignItemRect(SHOCK_BOMB,      10, 13);
+		assignItemRect(SMOKE_BOMB,      13, 12);
+		assignItemRect(FLASHBANG,       10, 13);
 		assignItemRect(HOLY_BOMB,       10, 13);
 		assignItemRect(WOOLY_BOMB,      10, 13);
 		assignItemRect(NOISEMAKER,      10, 13);
@@ -402,12 +402,14 @@ public class ItemSpriteSheet {
 	public static final int WAND_WARDING        = WANDS+10;
 	public static final int WAND_REGROWTH       = WANDS+11;
 	public static final int WAND_TRANSFUSION    = WANDS+12;
-	public static final int WAND_INSTABILITY    = WANDS+13;
-	public static final int WAND_SUMMONING      = WANDS+14;
-	public static final int WAND_YENDOR         = WANDS+15;
+	public static final int WAND_INSTABILITY    = xy(14, 30);
+	public static final int WAND_SUMMONING      = xy(15, 30);
+	public static final int WAND_YENDOR         = xy(16, 30);
 	static {
-		for (int i = WANDS; i < WANDS+15; i++)
+		for (int i = WANDS; i < WANDS+16; i++)
 			assignItemRect(i, 14, 14);
+		assignItemRect(WAND_INSTABILITY, 14, 14);
+		assignItemRect(WAND_SUMMONING, 14, 14);
 		assignItemRect(WAND_YENDOR, 16, 16);
 	}
 
@@ -424,10 +426,11 @@ public class ItemSpriteSheet {
 	public static final int RING_QUARTZ     = RINGS+9;
 	public static final int RING_AGATE      = RINGS+10;
 	public static final int RING_DIAMOND    = RINGS+11;
-	public static final int RING_CITRINE    = RINGS+12;
+	public static final int RING_CITRINE    = xy(14, 31);
 	static {
 		for (int i = RINGS; i < RINGS+16; i++)
 			assignItemRect(i, 8, 10);
+		assignItemRect(RING_CITRINE, 8, 10);
 	}
 
 	private static final int ARTIFACTS          =                            xy(1, 16);  //24 slots
@@ -492,6 +495,10 @@ public class ItemSpriteSheet {
 	public static final int MIMIC_TOOTH     = TRINKETS+8;
 	public static final int WONDROUS_RESIN  = TRINKETS+9;
 	public static final int EYE_OF_NEWT     = TRINKETS+10;
+	public static final int SALT_CUBE       = TRINKETS+11;
+	public static final int BLOOD_VIAL      = TRINKETS+12;
+	public static final int OBLIVION_SHARD  = TRINKETS+13;
+	public static final int CHAOTIC_CENSER  = TRINKETS+14;
 	static{
 		assignItemRect(RAT_SKULL,       16, 11);
 		assignItemRect(PARCHMENT_SCRAP, 10, 14);
@@ -504,6 +511,10 @@ public class ItemSpriteSheet {
 		assignItemRect(MIMIC_TOOTH,     8,  15);
 		assignItemRect(WONDROUS_RESIN,  12, 11);
 		assignItemRect(EYE_OF_NEWT,     12, 12);
+		assignItemRect(SALT_CUBE,       12, 13);
+		assignItemRect(BLOOD_VIAL,      6,  15);
+		assignItemRect(OBLIVION_SHARD,  7,  14);
+		assignItemRect(CHAOTIC_CENSER,  13, 15);
 	}
 
 	public static final int SCROLLS         =                               xy(1, 19);  //16 slots
@@ -519,12 +530,13 @@ public class ItemSpriteSheet {
 	public static final int SCROLL_BERKANAN = SCROLLS+9;
 	public static final int SCROLL_ODAL     = SCROLLS+10;
 	public static final int SCROLL_TIWAZ    = SCROLLS+11;
-	public static final int SCROLL_WIPE_OUT = SCROLLS+12;
+	public static final int SCROLL_WIPE_OUT = xy(15, 31);
 
 	public static final int ARCANE_RESIN    = SCROLLS+13;
 	static {
 		for (int i = SCROLLS; i < SCROLLS+16; i++)
 			assignItemRect(i, 15, 14);
+		assignItemRect(SCROLL_WIPE_OUT   , 15, 14);
 		assignItemRect(ARCANE_RESIN   , 12, 11);
 	}
 	
@@ -554,7 +566,7 @@ public class ItemSpriteSheet {
 	public static final int STONE_BLINK         = STONES+4;
 	public static final int STONE_CLAIRVOYANCE  = STONES+5;
 	public static final int STONE_SLEEP         = STONES+6;
-	public static final int STONE_DISARM        = STONES+7;
+	public static final int STONE_DETECT        = STONES+7;
 	public static final int STONE_ENCHANT       = STONES+8;
 	public static final int STONE_FLOCK         = STONES+9;
 	public static final int STONE_INTUITION     = STONES+10;

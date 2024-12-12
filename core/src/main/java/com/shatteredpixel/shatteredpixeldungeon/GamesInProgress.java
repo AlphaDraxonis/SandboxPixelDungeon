@@ -71,49 +71,51 @@ public class GamesInProgress {
 	public static String checkpointFolder(int slot) {
 		return gameFolder(slot) + "/" + CHECKPOINT_FOLDER;
 	}
+	
+	public static int firstEmpty(){
+		for (int i = 1; i <= MAX_SLOTS; i++){
+			if (check(i) == null) return i;
+		}
+		return -1;
+	}
+	
+	public static ArrayList<Info> checkAll(){
+		ArrayList<Info> result = new ArrayList<>();
+		for (int i = 1; i <= MAX_SLOTS; i++){
+			Info curr = check(i);
+			if (curr != null) result.add(curr);
+		}
+		Collections.sort(result, scoreComparator);
+		return result;
+	}
+	
+	public static Info check( int slot ) {
+		
+		if (slotStates.containsKey( slot )) {
 
-    public static int firstEmpty() {
-        for (int i = 1; i <= MAX_SLOTS; i++) {
-            if (check(i) == null) return i;
-        }
-        return -1;
-    }
-
-    public static ArrayList<Info> checkAll() {
-        ArrayList<Info> result = new ArrayList<>();
-        for (int i = 1; i <= MAX_SLOTS; i++) {
-            Info curr = check(i);
-            if (curr != null) result.add(curr);
-        }
-        Collections.sort(result, scoreComparator);
-        return result;
-    }
-
-    public static Info check(int slot) {
-
-        if (slotStates.containsKey(slot)) {
-
-            if (slotStates.get(slot) != null && slotStates.get(slot).testGame) return null;
-            return slotStates.get(slot);
-
-        } else if (!gameExists(slot)) {
-
-            slotStates.put(slot, null);
-            return null;
-
-        } else {
-
-            Info info;
-            try {
-
-                Bundle bundle = FileUtils.bundleFromFile(gameFile(slot));
-                info = new Info();
-                info.slot = slot;
-                if (!Dungeon.preview(info, bundle)) info = null;
+			if (slotStates.get(slot) != null && slotStates.get(slot).testGame) return null;
+			return slotStates.get( slot );
+			
+		} else if (!gameExists( slot )) {
+			
+			slotStates.put(slot, null);
+			return null;
+			
+		} else {
+			
+			Info info;
+			try {
+				
+				Bundle bundle = FileUtils.bundleFromFile(gameFile(slot));
 
 				//saves from before v1.4.3 are not supported
-				if (info.version < SandboxPixelDungeon.v1_4_3) {
+				if (bundle.getInt( "version" ) < SandboxPixelDungeon.v1_4_3) {
 					info = null;
+				} else {
+
+					info = new Info();
+					info.slot = slot;
+					Dungeon.preview(info, bundle);
 				}
 
 			} catch (IOException e) {
@@ -143,7 +145,7 @@ public class GamesInProgress {
 		info.dailyReplay = Dungeon.dailyReplay;
 
 		info.dungeonName = Dungeon.customDungeon.getName();
-		
+
 		info.level = Dungeon.hero.lvl;
 		info.str = Dungeon.hero.STR;
 		info.strBonus = Dungeon.hero.STR() - Dungeon.hero.STR;

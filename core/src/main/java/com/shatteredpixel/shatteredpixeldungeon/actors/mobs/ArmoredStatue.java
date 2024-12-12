@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Function;
+import com.watabou.utils.Random;
 
 public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelectable {
 
@@ -108,7 +109,7 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	@Override
 	public int drRoll() {
 		if (armor == null) return super.drRoll();
-		return super.drRoll() + Char.combatRoll( armor.DRMin(), armor.DRMax());
+		return super.drRoll() + Random.NormalIntRange( armor.DRMin(), armor.DRMax());
 	}
 
 	@Override
@@ -178,7 +179,7 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	}
 
 	@Override
-	public String description() {
+	public String desc() {
 		if (customDesc != null || armor == null && Dungeon.hero != null) return super.desc();
 		String desc = Messages.get(this, "desc");
 		if (weapon != null && armor != null || CustomDungeon.isEditing()){

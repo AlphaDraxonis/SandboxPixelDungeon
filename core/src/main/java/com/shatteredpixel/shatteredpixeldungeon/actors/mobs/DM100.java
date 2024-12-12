@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.DM100Sprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.utils.Random;
 
 public class DM100 extends DMMob {
 
@@ -70,7 +71,7 @@ public class DM100 extends DMMob {
 
 //	@Override
 //	public int damageRoll() {
-//		return Char.combatRoll( 2, 8 );
+//		return Random.NormalIntRange( 2, 8 );
 //	}
 //
 //	@Override
@@ -80,7 +81,7 @@ public class DM100 extends DMMob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Char.combatRoll(0, 4);
+//		return super.drRoll() + Random.NormalIntRange(0, 4);
 //	}
 
 	@Override
@@ -112,7 +113,7 @@ public class DM100 extends DMMob {
 
 		Invisibility.dispel(this);
 		if (hit( this, enemy, true )) {
-			int dmg = Char.combatRoll(specialDamageRollMin, specialDamageRollMax);
+			int dmg = Random.NormalIntRange(specialDamageRollMin, specialDamageRollMax);
 			dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
 			enemy.damage( dmg, new LightningBolt() );
 

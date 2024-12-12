@@ -78,7 +78,7 @@ public class DM200Sprite extends MobSprite {
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
 		MagicMissile.boltFromChar( parent,
-				MagicMissile.TOXIC_VENT,
+				MagicMissile.SPECK + Speck.TOXIC,
 				sprite,
 				cell,
 				new Callback() {

@@ -7,8 +7,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BuffWithDuration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
@@ -322,7 +322,7 @@ public class Zone implements Bundlable {
 
     public Mob createMob() {
         return mobRotation == null || !ownMobRotationEnabled ? null
-                : Bestiary.createMob(mobsToSpawn, () -> Bestiary.getMobRotation(mobRotation));
+                : MobSpawner.createMob(mobsToSpawn, () -> MobSpawner.getMobRotation(mobRotation));
     }
 
 

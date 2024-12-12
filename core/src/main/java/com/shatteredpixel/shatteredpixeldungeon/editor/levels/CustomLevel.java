@@ -6,9 +6,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.*;
@@ -229,7 +229,7 @@ public class CustomLevel extends Level {
             levelScheme.zones.addAll(zoneMap.keySet());
             Zone.setupZoneArray(this);
             if (LevelScheme.getBoss(levelTemplate) == REGION_NONE && levelTemplate != LastLevel.class && levelTemplate != DeadEndLevel.class)
-                mobRotation = Bestiary.getRotationForDepth(Dungeon.getSimulatedDepth(temp));
+                mobRotation = MobSpawner.getRotationForDepth(Dungeon.getSimulatedDepth(temp));
 
 
             addVisuals();
@@ -357,7 +357,7 @@ public class CustomLevel extends Level {
 
     @Override
     public List<? extends Mob> getMobRotation() {
-        return Bestiary.getMobRotation(mobRotation);
+        return MobSpawner.getMobRotation(mobRotation);
     }
 
     @Override
@@ -526,7 +526,7 @@ public class CustomLevel extends Level {
         respawnCooldown = bundle.getInt(RESPAWN_COOLDOWN);
         mobLimit = bundle.getInt(MOB_LIMIT);
         if (bundle.contains("mob_rotation")) {
-            mobRotation = Bestiary.convertMobRotation(Arrays.asList(bundle.getClassArray("mob_rotation")));
+            mobRotation = MobSpawner.convertMobRotation(Arrays.asList(bundle.getClassArray("mob_rotation")));
         } else mobRotation = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(MOB_ROTATION);
         ignoreTerrainForExploringScore = bundle.getBoolean(IGNORE_TERRAIN_FOR_EXPLORING_SCORE);
 

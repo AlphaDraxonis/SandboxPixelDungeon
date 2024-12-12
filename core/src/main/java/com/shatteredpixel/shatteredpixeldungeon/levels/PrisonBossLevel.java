@@ -97,7 +97,7 @@ public class PrisonBossLevel extends Level {
 	public State state(){
 		return state;
 	}
-	
+
 	private static final String STATE	        = "state";
 	private static final String TENGU	        = "tengu";
 	private static final String STORED_ITEMS    = "storeditems";
@@ -192,6 +192,14 @@ public class PrisonBossLevel extends Level {
 		
 		for (Point p : startTorches){
 			Painter.set(this, p, Terrain.WALL_DECO);
+		}
+
+		//we set up the exit for consistently with other levels, even though it's in the walls
+		int exitCell = pointToCell(levelExit);
+		LevelTransition exit = addRegularExit(exitCell);
+		if (exit != null) {
+			exit.right+=2;
+			exit.bottom+=3;
 		}
 	}
 
@@ -293,11 +301,14 @@ public class PrisonBossLevel extends Level {
 			cell += width();
 		}
 
-		int exitCell = pointToCell(levelExit);
-		LevelTransition exit = addRegularExit(exitCell);
-		if (exit != null) {
-			exit.right+=2;
-			exit.bottom+=3;
+		//pre-2.5.1 saves, if exit wasn't already added
+		if (exit() == entrance()) {
+			int exitCell = pointToCell(levelExit);
+			LevelTransition exit = addRegularExit(exitCell);
+			if (exit != null) {
+				exit.right+=2;
+				exit.bottom+=3;
+			}
 		}
 	}
 	

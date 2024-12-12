@@ -48,7 +48,9 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 		this.plants = plants;
 		this.traps = traps;
 
-		map( CustomDungeon.isEditing() ? Dungeon.level.map : Dungeon.level.visualMap, Dungeon.level.width() );
+		if (Dungeon.level != null) {
+			map(CustomDungeon.isEditing() ? Dungeon.level.map : Dungeon.level.visualMap, Dungeon.level.width());
+		}
 
 		instance = this;
 	}
@@ -93,6 +95,8 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 	}
 
 	public static Image getTrapVisual( Trap trap ){
+		if (instance == null) instance = new TerrainFeaturesTilemap(null, null);
+
 		RectF uv = instance.tileset.get((trap.active ? trap.color : Trap.BLACK) + (trap.shape * 16));
 		if (uv == null) return null;
 
@@ -102,6 +106,8 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 	}
 
 	public static Image getPlantVisual( Plant plant ){
+		if (instance == null) instance = new TerrainFeaturesTilemap(null, null);
+
 		RectF uv = instance.tileset.get(plant.image + 7*16);
 		if (uv == null) return null;
 

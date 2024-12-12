@@ -198,11 +198,11 @@ public class Pasty extends Food {
 	}
 
 	@Override
-	public String info() {
+	public String desc() {
 		if (customDesc != null) return super.info();
 		switch(holiday){
 			case NONE: default:
-				return super.info();
+				return super.desc();
 			case LUNAR_NEW_YEAR:
 				return Messages.get(this, "fish_desc");
 			case APRIL_FOOLS:

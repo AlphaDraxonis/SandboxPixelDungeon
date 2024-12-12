@@ -128,7 +128,7 @@ public class WndEditFloorInOverview extends WndTabbed {
             title.setHighlighting(false);
             add(title);
 
-            rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
+            rename = new IconButton(Icons.get(Icons.SCROLL_COLOR)) {
                 @Override
                 protected void onClick() {
                     Window w = new WndTextInput(Messages.get(WndSelectDungeon.class, "rename_title"),

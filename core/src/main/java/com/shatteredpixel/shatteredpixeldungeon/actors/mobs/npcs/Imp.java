@@ -31,6 +31,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ImpSprite;
@@ -51,6 +53,11 @@ public class Imp extends QuestNPC<ImpQuest> {
 	}
 	
 	private boolean seenBefore = false;
+
+	@Override
+	public Notes.Landmark landmark() {
+		return Notes.Landmark.IMP;
+	}
 
 	public Imp() {
 	}
@@ -103,7 +110,8 @@ public class Imp extends QuestNPC<ImpQuest> {
 			}
 			
 		} else if (quest.type() > Quest.NONE){
-			tell(Messages.get(this, quest.getMessageString()+"_1"));
+			tell(Messages.get(this, "intro") + "\n\n" +
+					Messages.get(this, quest.getMessageString()+"_1", Messages.titleCase(Dungeon.hero.name())));
 			quest.start();
 		} else if (!dialogs.isEmpty()) {
 			tellDialog();
@@ -111,7 +119,7 @@ public class Imp extends QuestNPC<ImpQuest> {
 
 		return true;
 	}
-	
+
 	private void tell( String text ) {
 		Game.runOnRenderThread(new Callback() {
 			@Override

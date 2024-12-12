@@ -56,6 +56,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingSpike;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
@@ -150,6 +151,10 @@ public enum HeroClass {
             hero.belongings.misc.reset();
             if (hero.belongings.misc.identifyOnStart) hero.belongings.misc.identify();
             maybePutIntoToolbar(hero.belongings.misc);
+        }
+
+        if (hero.belongings.armor != null && hero.belongings.armor.checkSeal() != null) {
+            Catalog.setSeen(BrokenSeal.class); //as it's not added to the inventory
         }
     }
 

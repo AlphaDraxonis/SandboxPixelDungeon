@@ -62,6 +62,7 @@ public abstract class Trap extends GameObject implements Copyable<Trap> {
 	public int shape;
 
 	public int pos;
+	public boolean reclaimed = false; //if this trap was spawned by reclaim trap
 
 	public boolean visible;
 	public boolean active = true;
@@ -102,7 +103,8 @@ public abstract class Trap extends GameObject implements Copyable<Trap> {
 			}
 			if (disarmedByActivation) disarm();
 			if (revealedWhenTriggered) Dungeon.level.discover(pos);
-			Bestiary.trackEncounter(getClass());
+			Bestiary.setSeen(getClass());
+			Bestiary.countEncounter(getClass());
 			activate();
 		}
 	}
@@ -118,7 +120,7 @@ public abstract class Trap extends GameObject implements Copyable<Trap> {
 	//If the trap is part of the level, it should use the true depth
 	//If it's not part of the level (e.g. effect from reclaim trap), use scaling depth
 	protected int scalingDepth(){
-		return Dungeon.level.traps.get(pos) == this ? Dungeon.depth : Dungeon.scalingDepth();
+		return (reclaimed || Dungeon.level.traps.get(pos) != this) ? Dungeon.scalingDepth() : Dungeon.depth;
 	}
 
 	public String name(){

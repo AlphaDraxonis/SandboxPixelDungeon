@@ -142,18 +142,6 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
                 i = 0;
                 checkBoxes[i++] = new StyledCheckBox[] {
-                        new StyledCheckBox(Messages.titleCase(Messages.get(LevelGenComp.class, "spawn_torch"))) {
-                            {
-                                text.align(RenderedTextBlock.CENTER_ALIGN);
-                                super.checked(newLevelScheme.spawnTorchIfDarkness);
-                            }
-
-                            @Override
-                            public void checked(boolean value) {
-                                super.checked(value);
-                                newLevelScheme.spawnTorchIfDarkness = value;
-                            }
-                        },
                         new StyledCheckBox(Messages.get(LevelGenComp.class, "reduce_view")) {
                             {
                                 text.align(RenderedTextBlock.CENTER_ALIGN);

@@ -129,12 +129,7 @@ public class WandOfWarding extends Wand {
 			}
 		}
 
-		if (!Dungeon.level.isPassableAlly(target) && curUser.alignment == Char.Alignment.ALLY
-			|| !Dungeon.level.isPassableMob(target) && curUser.alignment == Char.Alignment.ENEMY){
-			GLog.w( Messages.get(this, "bad_location"));
-			Dungeon.level.pressCell(target);
-			
-		} else if (ch != null){
+		if (ch != null){
 			if (ch instanceof Ward){
 				if (wardAvailable) {
 					((Ward) ch).upgrade( buffedLvl() );
@@ -147,6 +142,11 @@ public class WandOfWarding extends Wand {
 				Dungeon.level.pressCell(target);
 			}
 			
+		} else if (!Dungeon.level.isPassableAlly(target) && curUser.alignment == Char.Alignment.ALLY
+				|| !Dungeon.level.isPassableMob(target) && curUser.alignment == Char.Alignment.ENEMY){
+			GLog.w( Messages.get(this, "bad_location"));
+			Dungeon.level.pressCell(target);
+
 		} else {
 			Ward ward = new Ward();
 			ward.pos = target;
@@ -213,6 +213,16 @@ public class WandOfWarding extends Wand {
 			return Messages.get(this, "stats_desc", 2);
 	}
 
+	@Override
+	public String upgradeStat1(int level) {
+		return 2+level + "-" + (8+4*level);
+	}
+
+	@Override
+	public String upgradeStat2(int level) {
+		return Integer.toString(level+2);
+	}
+
 	public static class Ward extends NPC {
 
 		public int tier = 1;
@@ -262,7 +272,7 @@ public class WandOfWarding extends Wand {
 					break;
 			}
 
-			if (tier >= 4){
+			if (Actor.chars().contains(this) && tier >= 3){
 				Bestiary.setSeen(WardSentry.class);
 			}
 
@@ -322,7 +332,7 @@ public class WandOfWarding extends Wand {
 		public int drRoll() {
 			int dr = super.drRoll();
 			if (tier > 3){
-				return dr + Math.round(Char.combatRoll(0, 3 + Dungeon.scalingDepth()/2) / (7f - tier));
+				return dr + Math.round(Random.NormalIntRange(0, 3 + Dungeon.scalingDepth()/2) / (7f - tier));
 			} else {
 				return dr;
 			}
@@ -343,7 +353,7 @@ public class WandOfWarding extends Wand {
 			spend( 1f );
 
 			//always hits
-			int dmg = Char.combatRoll( 2 + wandLevel, 8 + 4*wandLevel );
+			int dmg = Hero.heroDamageIntRange( 2 + wandLevel, 8 + 4*wandLevel );
 			Char enemy = this.enemy;
 			enemy.damage( dmg, this );
 			if (enemy.isAlive()){
@@ -437,8 +447,8 @@ public class WandOfWarding extends Wand {
 		}
 
 		@Override
-		public String description() {
-			if (customDesc != null) return super.description();
+		public String desc() {
+			if (customDesc != null) return super.desc();
 			if (!Actor.chars().contains(this)){
 				//for viewing in the journal
 				if (tier < 4){

@@ -50,8 +50,7 @@ public class WndScoreBreakdown extends Window {
 
 		float pos = title.bottom()+2;
 
-		NumberFormat num = NumberFormat.getInstance(Locale.US);
-		if(SPDSettings.language() == Languages.GERMAN)num = NumberFormat.getInstance(Locale.GERMAN);//Why should we get 1000 times less scrore when language is german?
+		NumberFormat num = NumberFormat.getInstance(Messages.locale());
 		pos = statSlot(this, Messages.get(this, "progress_title"),
 				num.format(Statistics.progressScore), pos, Statistics.progressScore >= 50_000);
 		pos = addInfo(this, Messages.get(this, "progress_desc"), pos);

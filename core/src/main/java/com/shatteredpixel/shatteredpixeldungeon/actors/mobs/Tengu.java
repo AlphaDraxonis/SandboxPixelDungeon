@@ -80,9 +80,10 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		lootChance = 1f;
 
 		HUNTING = new Hunting();
+
 		WANDERING = new Wandering();
 		state = HUNTING;
-		
+
 		properties.add(Property.BOSS);
 		
 		viewDistance = 12;
@@ -97,14 +98,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 //	@Override
 //	public int damageRoll() {
-//		return Char.combatRoll( 6, 12 );
+//		return Random.NormalIntRange( 6, 12 );
 //	}
-
-
-	@Override
-	public boolean avoidsHazards() {
-		return true;
-	}
 
 	@Override
 	public int attackSkill( Char target ) {
@@ -127,7 +122,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 	//	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Char.combatRoll(0, 5);
+//		return super.drRoll() + Random.NormalIntRange(0, 5);
 //	}
 
 	boolean loading = false;
@@ -435,6 +430,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	}
 	
 	{
+		immunities.add( Roots.class );
 		immunities.add( Blindness.class );
 		immunities.add( Dread.class );
 		immunities.add( Terror.class );
@@ -837,7 +833,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				if (PathFinder.distance[cell] < Integer.MAX_VALUE) {
 					Char ch = Actor.findChar(cell);
 					if (ch != null && !(ch instanceof Tengu)) {
-						int dmg = Char.combatRoll(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth() * 2);
+						int dmg = Random.NormalIntRange(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth() * 2);
 						dmg -= ch.drRoll();
 
 						if (dmg > 0) {

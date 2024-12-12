@@ -21,26 +21,27 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.trinkets;
 
-import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.journal.Guidebook;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndReward;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -66,7 +67,6 @@ public class TrinketCatalyst extends Item {
 	public boolean doPickUp(Hero hero, int pos) {
 		if (super.doPickUp(hero, pos)){
 			if (!Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_ALCHEMY)){
-				GLog.p(Messages.get(Guidebook.class, "hint"));
 				GameScene.flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_ALCHEMY);
 			}
 			return true;
@@ -83,6 +83,10 @@ public class TrinketCatalyst extends Item {
 	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
 		return super.doOnAllGameObjects(whatToDo)
 				| doOnAllGameObjectsList(rolledTrinkets, whatToDo);
+	}
+
+	public boolean hasRolledTrinkets(){
+		return !rolledTrinkets.isEmpty();
 	}
 
 	private static final String ROLLED_TRINKETS = "rolled_trinkets";
@@ -119,9 +123,6 @@ public class TrinketCatalyst extends Item {
 
 		@Override
 		public int cost(ArrayList<Item> ingredients) {
-			if (ingredients.get(0) instanceof TrinketCatalyst && ((TrinketCatalyst) ingredients.get(0)).paidEnergy){
-				return 0; //costs 0 if rolledTrinkets has items as the player already paid 6 energy
-			}
 			return 6;
 		}
 
@@ -138,6 +139,11 @@ public class TrinketCatalyst extends Item {
 			newCata.initRandom();
 
 			Game.scene().addToFront(new WndTrinket(newCata));
+			try {
+				Dungeon.saveAll(); //do a save here as pausing alch scene doesn't otherwise save
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 			return null;
 		}
 
@@ -145,6 +151,14 @@ public class TrinketCatalyst extends Item {
 		public Item sampleOutput(ArrayList<Item> ingredients) {
 			return new Trinket.PlaceHolder();
 		}
+	}
+
+	public static class RandomTrinket extends Item {
+
+		{
+			image = ItemSpriteSheet.TRINKET_HOLDER;
+		}
+
 	}
 
 	private void initRandom() {
@@ -178,9 +192,23 @@ public class TrinketCatalyst extends Item {
 					new SingleItemRewardsBody(Messages.get(TrinketCatalyst.class, "window_text"), null, cata, cata.rolledTrinkets.toArray(EditorUtilities.EMPTY_ITEM_ARRAY)) {
 						@Override
 						protected void onSelectReward(Item reward) {
-							((AlchemyScene)Game.scene()).craftItem(null, reward);
-						}
-					}, null);
+							Catalog.countUse(cata.getClass());
+
+							if (SandboxPixelDungeon.scene() instanceof AlchemyScene) {
+								((AlchemyScene) SandboxPixelDungeon.scene()).craftItem(null, reward);
+							} else {
+								Sample.INSTANCE.play( Assets.Sounds.PUFF );
+
+								Statistics.itemsCrafted++;
+								Badges.validateItemsCrafted();
+
+								try {
+									Dungeon.saveAll();
+								} catch (IOException e) {
+									SandboxPixelDungeon.reportException(e);
+								}
+							}
+					}}, null);
 
 		}
 

@@ -33,114 +33,115 @@ import com.watabou.utils.Reflection;
 import java.util.HashSet;
 
 public class Buff extends Actor {
+	
+	public Char target;
 
-    public Char target;
+	{
+		actPriority = BUFF_PRIO; //low priority, towards the end of a turn
+	}
 
-    {
-        actPriority = BUFF_PRIO; //low priority, towards the end of a turn
-    }
+	//determines how the buff is announced when it is shown.
+	public enum buffType {POSITIVE, NEGATIVE, NEUTRAL}
+	public buffType type = buffType.NEUTRAL;
+	
+	//whether or not the buff announces its name
+	public boolean announced = false;
 
-    //determines how the buff is announced when it is shown.
-    public enum buffType {POSITIVE, NEGATIVE, NEUTRAL}
+	//whether a buff should persist through revive effects or similar (e.g. transmogrify)
+	public boolean revivePersists = false;
+	
+	protected HashSet<Class> resistances = new HashSet<>();
+	
+	public HashSet<Class> resistances() {
+		return new HashSet<>(resistances);
+	}
+	
+	protected HashSet<Class> immunities = new HashSet<>();
+	
+	public HashSet<Class> immunities() {
+		return new HashSet<>(immunities);
+	}
 
-    public buffType type = buffType.NEUTRAL;
+	public boolean permanent = false;
+	public boolean zoneBuff = false;
+	public boolean alwaysHidesFx = false;
+	
+	public boolean attachTo( Char target ) {
 
-    //whether or not the buff announces its name
-    public boolean announced = false;
+		if (target.isImmune( getClass() )) {
+			return false;
+		}
+		
+		this.target = target;
 
-    //whether a buff should persist through revive effects for the hero
-    public boolean revivePersists = false;
+		if (target.add( this )){
+			if (target.sprite != null) fx( true );
+			return true;
+		} else {
+			this.target = null;
+			return false;
+		}
+	}
+	
+	public void detach() {
+		if (target.remove( this ) && target.sprite != null) fx( false );
+	}
+	
+	@Override
+	public boolean act() {
+		if (permanent){
+			spend(0.005f);
+		} else {
+			diactivate();
+		}
+		return true;
+	}
 
-    protected HashSet<Class> resistances = new HashSet<>();
+	protected float timeWhenPaused;
+	protected float cooldownWhenPaused;
+	public void makePermanent(boolean flag) {
+		if (permanent = flag) {
+			timeWhenPaused = Actor.now();
+			cooldownWhenPaused = cooldown();
+		}
+	}
+	
+	public int icon() {
+		return BuffIndicator.NONE;
+	}
 
-    public HashSet<Class> resistances() {
-        return new HashSet<>(resistances);
-    }
+	//some buffs may want to tint the base texture color of their icon
+	public void tintIcon( Image icon ){
+		//do nothing by default
+	}
 
-    protected HashSet<Class> immunities = new HashSet<>();
+	//percent (0-1) to fade out out the buff icon, usually if buff is expiring
+	public float iconFadePercent(){
+		return 0;
+	}
 
-    public HashSet<Class> immunities() {
-        return new HashSet<>(immunities);
-    }
+	//text to display on large buff icons in the desktop UI
+	public String iconTextDisplay(){
+		return "";
+	}
 
-    public boolean permanent = false;
-    public boolean zoneBuff = false;
-    public boolean alwaysHidesFx = false;
+	//visual effect usually attached to the sprite of the character the buff is attacked to
+	public void fx(boolean on) {
+		//do nothing by default
+	}
 
-    public boolean attachTo(Char target) {
+	public String heroMessage(){
+		String msg = Messages.get(this, "heromsg");
+		if (msg.isEmpty()) {
+			return null;
+		} else {
+			return msg;
+		}
+	}
 
-        if (target.isImmune(getClass())) {
-            return false;
-        }
-
-        this.target = target;
-
-        if (target.add(this)) {
-            if (target.sprite != null) fx(true);
-            return true;
-        } else {
-            this.target = null;
-            return false;
-        }
-    }
-
-    public void detach() {
-        if (target.remove(this) && target.sprite != null) fx(false);
-    }
-
-    @Override
-    public boolean act() {
-        if (permanent){
-            spend(0.005f);
-        } else diactivate();
-        return true;
-    }
-
-    protected float timeWhenPaused;
-    protected float cooldownWhenPaused;
-    public void makePermanent(boolean flag) {
-        if (permanent = flag) {
-            timeWhenPaused = Actor.now();
-            cooldownWhenPaused = cooldown();
-        }
-    }
-
-    public int icon() {
-        return BuffIndicator.NONE;
-    }
-
-    //some buffs may want to tint the base texture color of their icon
-    public void tintIcon(Image icon) {
-        //do nothing by default
-    }
-
-    //percent (0-1) to fade out out the buff icon, usually if buff is expiring
-    public float iconFadePercent() {
-        return 0;
-    }
-
-    //text to display on large buff icons in the desktop UI
-    public String iconTextDisplay() {
-        return "";
-    }
-
-    //visual effect usually attached to the sprite of the character the buff is attacked to
-    public void fx(boolean on) {
-        //do nothing by default
-    }
-
-    public String heroMessage() {
-        String msg = Messages.get(this, "heromsg");
-        if (msg.isEmpty()) {
-            return null;
-        } else {
-            return msg;
-        }
-    }
-
-    public String name() {
-        return Messages.get(this, "name");
-    }
+	public String name() {
+		return Messages.get(this, "name");
+	}
 
     public String desc() {
         return Messages.get(this, "desc") + appendDescForPermanent();
@@ -156,10 +157,10 @@ public class Buff extends Actor {
         return permanent ? SpinnerIntegerModel.INFINITY : Messages.decimalFormat("#.##", input);
     }
 
-    //buffs act after the hero, so it is often useful to use cooldown+1 when display buff time remaining
-    public float visualcooldown() {
-        return cooldown() + 1f;
-    }
+	//buffs act after the hero, so it is often useful to use cooldown+1 when display buff time remaining
+	public float visualcooldown(){
+		return cooldown()+1f;
+	}
 
     //creates a fresh instance of the buff and attaches that, this allows duplication.
     public static <T extends Buff> T append(Char target, Class<T> buffClass) {
@@ -190,31 +191,31 @@ public class Buff extends Actor {
         return buff;
     }
 
-    //postpones an already active buff, or creates & attaches a new buff and delays that.
-    public static <T extends FlavourBuff> T prolong(Char target, Class<T> buffClass, float duration) {
-        T buff = affect(target, buffClass);
-        buff.postpone(duration * target.resist(buffClass));
-        return buff;
-    }
+	//postpones an already active buff, or creates & attaches a new buff and delays that.
+	public static<T extends FlavourBuff> T prolong( Char target, Class<T> buffClass, float duration ) {
+		T buff = affect( target, buffClass );
+		buff.postpone( duration * target.resist(buffClass) );
+		return buff;
+	}
 
-    public static <T extends CounterBuff> T count(Char target, Class<T> buffclass, float count) {
-        T buff = affect(target, buffclass);
-        buff.countUp(count);
-        return buff;
-    }
+	public static<T extends CounterBuff> T count( Char target, Class<T> buffclass, float count ) {
+		T buff = affect( target, buffclass );
+		buff.countUp( count );
+		return buff;
+	}
+	
+	public static void detach( Char target, Class<? extends Buff> cl ) {
+		for ( Buff b : target.buffs( cl )){
+			b.detach();
+		}
+	}
 
-    public static void detach(Char target, Class<? extends Buff> cl) {
-        for (Buff b : target.buffs(cl)) {
-            b.detach();
-        }
-    }
 
-
-    public static <T extends Buff> T affectAnyBuffAndSetDuration(Char target, Class<T> buffclass, float duration) {
-        T buff = Buff.affect(target, buffclass);
-        buff.spend(duration);// duration times  * m.resist(Burning.class)  ??
-        return buff;
-    }
+	public static <T extends Buff> T affectAnyBuffAndSetDuration(Char target, Class<T> buffclass, float duration) {
+		T buff = Buff.affect(target, buffclass);
+		buff.spend(duration);// duration times  * m.resist(Burning.class)  ??
+		return buff;
+	}
 
     @Override
     public Actor getCopy() {

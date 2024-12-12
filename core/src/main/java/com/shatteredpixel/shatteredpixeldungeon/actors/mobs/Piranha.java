@@ -56,7 +56,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 		HUNTING = new Hunting();
 
 		properties.add(Property.AQUATIC);
-		
+
 		state = SLEEPING;
 
 	}
@@ -80,7 +80,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 	
 	@Override
 	public int damageRoll() {
-		return (int) (Char.combatRoll( Dungeon.depth, 4 + Dungeon.depth * 2 ) * statsScale);
+		return (int) (Random.NormalIntRange( Dungeon.depth, 4 + Dungeon.depth * 2 ) * statsScale);
 	}
 	
 	@Override
@@ -90,7 +90,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 	
 	@Override
 	public int drRoll() {
-		return (int) (super.drRoll() + Char.combatRoll(0, Dungeon.depth) * statsScale);
+		return (int) (super.drRoll() + Random.NormalIntRange(0, Dungeon.depth) * statsScale);
 	}
 
 	@Override
@@ -181,8 +181,13 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 
 
 	public static boolean canSurviveOnCell(Char ch, int cell, Level level) {
-		return level.water[cell] || ((Terrain.flags[level.map[cell]] & Terrain.WATER) == Terrain.flags[Terrain.WATER]) || !Char.hasProp(ch, Property.AQUATIC)
-				|| (ch instanceof Hero && (TileItem.isEntranceTerrainCell(level.map[cell]) || TileItem.isExitTerrainCell(level.map[cell])));
+		if (ch.isFlying() && Char.hasProp(ch, Property.AQUATIC)) {
+			return false;
+		}
+		return level.water[cell]
+				|| ((Terrain.flags[level.map[cell]] & Terrain.WATER) == Terrain.flags[Terrain.WATER])
+				|| !Char.hasProp(ch, Property.AQUATIC)
+				|| ch instanceof Hero && ( (TileItem.isEntranceTerrainCell(level.map[cell]) || TileItem.isExitTerrainCell(level.map[cell])) );
 	}
 
 }

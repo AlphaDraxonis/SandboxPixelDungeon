@@ -46,7 +46,9 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
 
     @Override
     public Image getSprite() {
-        return createImage(getObject());
+        Image img = createImage(getObject());
+        img.originToCenter();
+        return img;
     }
 
     public static String getName(CustomTilemap customTile, int cell) {

@@ -30,29 +30,29 @@ import com.watabou.noosa.ui.Component;
 
 public class WndTitledMessage extends Window {
 
-    public static final int WIDTH_MIN    = 120;
-    public static final int WIDTH_MAX    = 220;
-    public static final int GAP	= 2;
+    public static final int WIDTH_MIN = 120;
+    public static final int WIDTH_MAX = 220;
+    public static final int GAP = 2;
 
     protected WindowContent content;
     protected RenderedTextBlock text;
 
 
-    public WndTitledMessage(Image icon, String title, String message ) {
+    public WndTitledMessage(Image icon, String title, String message) {
         this(icon, title, message, Chrome.Type.WINDOW);
     }
 
-    public WndTitledMessage(Image icon, String title, String message, Chrome.Type type ) {
+    public WndTitledMessage(Image icon, String title, String message, Chrome.Type type) {
 
-        this( new IconTitle( icon, title ), message, type );
+        this(new IconTitle(icon, title), message, type);
 
     }
 
-    public WndTitledMessage(Component titlebar, String message ) {
+    public WndTitledMessage(Component titlebar, String message) {
         this(titlebar, message, Chrome.Type.WINDOW);
     }
 
-    public WndTitledMessage(Component titlebar, String message, Chrome.Type type ) {
+    public WndTitledMessage(Component titlebar, String message, Chrome.Type type) {
 
         super(0, 0, Chrome.get(type));
 
@@ -76,7 +76,7 @@ public class WndTitledMessage extends Window {
     }
 
     public void setHighlightingEnabled(boolean enableHighligthing) {
-        content.setHighligtingEnabled(enableHighligthing);
+        content.setHighlightingEnabled(enableHighligthing);
         resize((int) Math.ceil(content.width()), (int) Math.ceil(content.height()));
         content.setPos(0, 0);
     }
@@ -88,21 +88,30 @@ public class WndTitledMessage extends Window {
         resize((int) Math.ceil(content.width()), (int) Math.ceil(content.height()));
     }
 
-    protected static class WindowContent extends Component {
+    protected boolean useHighlighting() {
+        return true;
+    }
+
+    protected float targetHeight() {
+        return PixelScene.MIN_HEIGHT_L - 10;
+    }
+
+    protected class WindowContent extends Component {
 
         protected Component titlebar;
         protected RenderedTextBlock text;
         protected ScrollPane sp;
 
-        public WindowContent(Component titlebar, String message ) {
+        public WindowContent(Component titlebar, String message) {
             this.titlebar = titlebar;
             add(titlebar);
 
             sp = new ScrollPane(new Component() {
                 @Override
                 protected void createChildren() {
-                    text = PixelScene.renderTextBlock( 6 );
-                    text.text( message );
+                    text = PixelScene.renderTextBlock(6);
+                    if (!useHighlighting()) text.setHighlighting(false);
+                    text.text(message);
                     add(text);
                 }
 
@@ -131,27 +140,25 @@ public class WndTitledMessage extends Window {
             text.maxWidth((int) width);
 
             while (PixelScene.landscape()
-                    && text.bottom() < (PixelScene.MIN_HEIGHT_L - 10)
-                    && width < maxWidth){
+                    && text.bottom() > targetHeight()
+                    && width < WIDTH_MAX) {
                 width += 20;
                 titlebar.setRect(0, 0, width, 0);
-                sp.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
+                text.setPos(titlebar.left(), titlebar.bottom() + 2 * GAP);
                 text.maxWidth((int) width);
             }
 
             bringToFront(titlebar);
 
-            height = titlebar.height() + 2*GAP + text.height() + 2 - 1;
+            height = titlebar.height() + 2 * GAP + text.height() + 2 - 1;
             boolean needsSp = height > PixelScene.uiCamera.height * 0.85f;
             if (needsSp) height = PixelScene.uiCamera.height * 0.85f;
-            sp.setRect( titlebar.left(), titlebar.bottom() + 2*GAP, width, height - titlebar.height() - 2*GAP + (needsSp ? 0 : 1) );
+            sp.setRect(titlebar.left(), titlebar.bottom() + 2 * GAP, width, height - titlebar.height() - 2 * GAP + (needsSp ? 0 : 1));
         }
 
-        public void setHighligtingEnabled(boolean enableHighligthing){
+        public void setHighlightingEnabled(boolean enableHighligthing) {
             text.setHighlighting(enableHighligthing);
             layout();
         }
-
     }
-
 }

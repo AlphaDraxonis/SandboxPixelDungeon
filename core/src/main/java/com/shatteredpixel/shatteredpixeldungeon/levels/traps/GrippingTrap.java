@@ -43,7 +43,7 @@ public class GrippingTrap extends Trap {
 
 		Char c = Actor.findChar( pos );
 
-		if (c != null && !c.avoidsHazards()) {
+		if (c != null && !c.isFlying()) {
 			int damage = Math.max( 0,  (2 + scalingDepth()/2) - c.drRoll()/2 );
 			Buff.affect( c, Bleeding.class ).set( damage );
 			Buff.prolong( c, Cripple.class, Cripple.DURATION);

@@ -71,17 +71,20 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 	
 	public ArrayList<Item> items;
 	public boolean superHidden = false;//if not distinguishable from chests; still occupies one cell
-	
+	private boolean stealthy = false;
+
 	private static final String LEVEL	= "level";
 	private static final String ITEMS	= "items";
+	private static final String STEALTHY= "stealthy";
 	private static final String SUPER_HIDDEN = "super_hidden";
-	
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		if (items != null) bundle.put( ITEMS, items );
 		bundle.put( LEVEL, CustomDungeon.isEditing() ? -1 : level );
-		bundle.put(SUPER_HIDDEN, superHidden);
+		bundle.put( SUPER_HIDDEN, superHidden );
+		bundle.put( STEALTHY, stealthy );
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -92,6 +95,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 		}
 		level = bundle.getInt( LEVEL );
 		adjustStats(level);
+		stealthy = bundle.getBoolean(STEALTHY);
 		super.restoreFromBundle(bundle);
 		if (state != PASSIVE && alignment == Alignment.NEUTRAL){
 			alignment = Alignment.ENEMY;
@@ -132,7 +136,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 	@Override
 	public String desc() {
 		if (alignment == Alignment.NEUTRAL && customDesc == null){
-			if (MimicTooth.stealthyMimics() || superHidden){
+			if (stealthy()){
 				return Messages.get(Heap.class, "chest_desc");
 			} else {
 				return Messages.get(Heap.class, "chest_desc") + "\n\n" + Messages.get(this, "hidden_hint");
@@ -166,7 +170,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 	public CharSprite sprite() {
 		CharSprite sprite = super.sprite();
 		if (sprite instanceof MimicSprite) ((MimicSprite) sprite).superHidden = superHidden;
-		if (alignment == Alignment.NEUTRAL && state == PASSIVE) MimicSprite.hideMimic(sprite);
+		if (alignment == Alignment.NEUTRAL) MimicSprite.hideMimic(sprite, this);
 		return sprite;
 	}
 
@@ -242,20 +246,26 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 		}
 	}
 
+	//stealthy mimics have changes to visual behaviour that make them much harder to detect
+	public boolean stealthy(){
+		return stealthy
+				|| superHidden && state == PASSIVE;
+	}
+
 	@Override
 	public int damageRoll() {
 		if (alignment == Alignment.NEUTRAL){
-			int dmg = Char.combatRoll(2 + 2 * level, 2 + 2 * level);
+			int dmg = Random.NormalIntRange(2 + 2 * level, 2 + 2 * level);
 			if (superHidden) dmg *= 3;
 			return (int) (dmg * statsScale);
 		} else {
-			return (int) (Char.combatRoll(1 + level, 2 + 2 * level) * statsScale);
+			return (int) (Random.NormalIntRange(1 + level, 2 + 2 * level) * statsScale);
 		}
 	}
 
 	@Override
 	public int drRoll() {
-		return (int) (super.drRoll() + Char.combatRoll(0, 1 + level / 2) * statsScale);
+		return (int) (super.drRoll() + Random.NormalIntRange(0, 1 + level / 2) * statsScale);
 	}
 
 	@Override
@@ -346,11 +356,15 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 		if (Barrier.stopChar(pos, m)) return null;
 
 		m.items = new ArrayList<>( Arrays.asList(items) );
-		m.setLevel( Dungeon.depth );
+		m.setLevel( Dungeon.scalingDepth() );
 		m.pos = pos;
 
 		//generate an extra reward for killing the mimic
 		m.generatePrize(useDecks);
+
+		if (MimicTooth.stealthyMimics()){
+			m.stealthy = true;
+		}
 
 		return m;
 	}
@@ -377,6 +391,11 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 			}
 		} while (reward == null || Challenges.isItemBlocked(reward));
 		items.add(reward);
+
+		if (MimicTooth.stealthyMimics()){
+			//add an extra random item if player has a mimic tooth
+			items.add(Generator.randomUsingDefaults());
+		}
 	}
 
 }

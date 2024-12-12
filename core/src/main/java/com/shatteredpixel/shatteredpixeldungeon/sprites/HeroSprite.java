@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.HeroDisguise;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -70,6 +71,11 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 			idle();
 		else
 			die();
+	}
+
+	public void disguise(HeroClass cls){
+		texture( cls.spritesheet() );
+		updateArmor();
 	}
 	
 	public void updateArmor() {
@@ -220,6 +226,14 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 		}
 		
 		return tiers;
+	}
+
+	public static Image avatar( Hero hero ){
+		if (hero.buff(HeroDisguise.class) != null){
+			return avatar(hero.buff(HeroDisguise.class).getDisguise(), hero.tier());
+		} else {
+			return avatar(hero.heroClass, hero.tier());
+		}
 	}
 	
 	public static Image avatar( HeroClass cl, int armorTier ) {

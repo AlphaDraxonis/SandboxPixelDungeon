@@ -34,7 +34,9 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHaste;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -205,13 +207,19 @@ public class SentryRoom extends SpecialRoom {
 		}
 
 		//1 floor set higher in probability, never cursed
-		do {
-			if (Random.Int(2) == 0) {
-				prize = Generator.randomWeapon(Dungeon.level.levelScheme.getRegion());
-			} else {
-				prize = Generator.randomArmor(Dungeon.level.levelScheme.getRegion());
+		//1 floor set higher in probability, never cursed
+		if (Random.Int(2) == 0) {
+			prize = Generator.randomWeapon(Dungeon.level.levelScheme.getRegion());
+			if (((Weapon)prize).hasCurseEnchant()){
+				((Weapon) prize).enchant(null);
 			}
-		} while (prize.cursed || Challenges.isItemBlocked(prize));
+		} else {
+			prize = Generator.randomArmor(Dungeon.level.levelScheme.getRegion());
+			if (((Armor)prize).hasCurseGlyph()){
+				((Armor) prize).inscribe(null);
+			}
+		}
+		prize.cursed = false;
 		prize.setCursedKnown(true);
 
 		//33% chance for an extra update.
@@ -324,7 +332,7 @@ public class SentryRoom extends SpecialRoom {
 		@Override
 		public void zap() {
 			if (hit(this, Dungeon.hero, true)) {
-				Dungeon.hero.damage((int) (Char.combatRoll(2 + Dungeon.depth / 2, 4 + Dungeon.depth) * statsScale), new Eye.DeathGaze());
+				Dungeon.hero.damage((int) (Random.NormalIntRange(2 + Dungeon.depth / 2, 4 + Dungeon.depth) * statsScale), new Eye.DeathGaze());
 				if (!Dungeon.hero.isAlive()) {
 					Badges.validateDeathFromEnemyMagic();
 					Dungeon.fail(this);

@@ -57,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.*;
@@ -112,7 +113,15 @@ public abstract class Level implements Bundlable {
 		DARK,
 		LARGE,
 		TRAPS,
-		SECRETS
+		SECRETS;
+
+		public String title(){
+			return Messages.get(this, name()+"_title");
+		}
+
+		public String desc() {
+			return Messages.get(this, name()+"_desc");
+		}
 	}
 
 	protected int width;
@@ -298,6 +307,7 @@ public abstract class Level implements Bundlable {
 						break;
 					case 3:
 						feeling = Feeling.DARK;
+						viewDistance = Math.round(5*viewDistance/8f);
 						break;
 					case 4:
 						feeling = Feeling.LARGE;
@@ -332,10 +342,6 @@ public abstract class Level implements Bundlable {
 			} else if (feeling == Feeling.LARGE && levelScheme.spawnItems) {
 					if (!(this instanceof CustomLevel)) {
 						addItemToSpawn(Generator.random(Generator.Category.FOOD));
-						//add a second torch to help with the larger floor
-						if (Dungeon.isChallenged(Challenges.DARKNESS)) {
-							addItemToSpawn(new Torch());
-						}
 					}
 				}
 			if (feeling == null) feeling = Feeling.NONE;//this also includes default case
@@ -900,7 +906,7 @@ public abstract class Level implements Bundlable {
 	private List<Mob> mobsToSpawn = new ArrayList<>();
 	
 	public Mob createMob() {
-		return Bestiary.createMob(mobsToSpawn, this::getMobRotation);
+		return MobSpawner.createMob(mobsToSpawn, this::getMobRotation);
 	}
 
 	public List<? extends Mob> getMobRotation() {
@@ -1065,9 +1071,11 @@ public abstract class Level implements Bundlable {
 		Swiftthistle.TimeBubble timeBubble = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
 		if (timeBubble != null) timeBubble.disarmPresses();
 
-		//iron stomach does not persist through chasm falling
+		//iron stomach and challenge arena do not persist between floors
 		Talent.WarriorFoodImmunity foodImmune = Dungeon.hero.buff(Talent.WarriorFoodImmunity.class);
 		if (foodImmune != null) foodImmune.detach();
+		ScrollOfChallenge.ChallengeArena arena = Dungeon.hero.buff(ScrollOfChallenge.ChallengeArena.class);
+		if (arena != null) arena.detach();
 
 		//spend the hero's partial turns,  so the hero cannot take partial turns between floors
 		Dungeon.hero.spendToWhole();
@@ -1220,7 +1228,14 @@ public abstract class Level implements Bundlable {
 	public ArrayList<Item> getItemsToPreserveFromSealedResurrect(){
 		ArrayList<Item> items = new ArrayList<>();
 		for (Heap h : heaps.valueList()){
-			if (h.type == Heap.Type.HEAP) items.addAll(h.items);
+			if (h.type == Heap.Type.HEAP) {
+				for (Item i : h.items){
+					if (i instanceof Bomb){
+						((Bomb) i).fuse = null;
+					}
+					items.add(i);
+				}
+			}
 		}
 		for (Mob m : mobs){
 			for (PinCushion b : m.buffs(PinCushion.class)){
@@ -1695,7 +1710,11 @@ public abstract class Level implements Bundlable {
 	}
 
 	public boolean[] getPassableAndAnyVarForBoth(Char a, Char b, boolean[] input) {
-		boolean[] passableModifyable = BArray.or(passable, input, null);
+		return getPassableAndAnyVarForBoth(a, b, input, null);
+	}
+
+	public boolean[] getPassableAndAnyVarForBoth(Char a, Char b, boolean[] input, boolean[] putIntoResult) {
+		boolean[] passableModifyable = BArray.or(passable, input, putIntoResult);
 		for (Barrier barrier : barriers.values()) {
 			if (Barrier.stopChar(barrier.pos, a) || Barrier.stopChar(barrier.pos, b))
 				passableModifyable[barrier.pos] = false;
@@ -1709,6 +1728,14 @@ public abstract class Level implements Bundlable {
 
 	public boolean[] getPassableAndAvoidVar(Char ch) {
 		return getPassableAndAvoidVarForBoth(ch, null);
+	}
+
+	public boolean[] getPassableAndAvoidVar(Char ch, boolean[] putIntoResult) {
+		return getPassableAndAvoidVarForBoth(ch, null, putIntoResult);
+	}
+
+	public boolean[] getPassableAndAvoidVarForBoth(Char a, Char b, boolean[] putIntoResult) {
+		return getPassableAndAnyVarForBoth(a, b, avoid, putIntoResult);
 	}
 
 	public boolean isFlamable(int cell) {
@@ -2063,7 +2090,18 @@ public abstract class Level implements Bundlable {
 			}
 		}
 
-		if (!ch.avoidsHazards()) {
+		if (!ch.isFlying()) {
+
+			//we call act here instead of detach in case the debuffs haven't managed to deal dmg once yet
+			if (map[ch.pos] == Terrain.WATER){
+				if (ch.buff(Burning.class) != null){
+					ch.buff(Burning.class).act();
+				}
+				if (ch.buff(Ooze.class) != null){
+					ch.buff(Ooze.class).act();
+				}
+			}
+
 			if ( (map[ch.pos] == Terrain.GRASS || map[ch.pos] == Terrain.EMBERS)
 					&& ch == Dungeon.hero && Dungeon.hero.hasTalent(Talent.REJUVENATING_STEPS)
 					&& ch.buff(Talent.RejuvenatingStepsCooldown.class) == null) {
@@ -2224,7 +2262,7 @@ public abstract class Level implements Bundlable {
 		int cy = c.pos / width();
 		
 		boolean sighted = c.buff( Blindness.class ) == null && c.buff( Shadows.class ) == null
-						&& c.buff( TimekeepersHourglass.timeStasis.class ) == null && c.isAlive();
+						&& c.isAlive();
 		if (sighted) {
 			boolean[] blocking = null;
 
@@ -2337,10 +2375,9 @@ public abstract class Level implements Bundlable {
 			}
 
 			Dungeon.hero.mindVisionEnemies.clear();
-			boolean stealthyMimics = MimicTooth.stealthyMimics();
 			if (c.buff( MindVision.class ) != null) {
 				for (Mob mob : mobs) {
-					if (!Mimic.isLikeMob(mob) || stealthyMimics && mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL){
+					if (mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL && ((Mimic) mob).stealthy()){
 						continue;
 					}
 					for (int i : PathFinder.NEIGHBOURS9) {
@@ -2357,11 +2394,11 @@ public abstract class Level implements Bundlable {
 
 				if (mindVisRange >= 1) {
 					for (Mob mob : mobs) {
-						if (!Mimic.isLikeMob(mob) || stealthyMimics && mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL){
-						continue;
-					}
-					int p = mob.pos;
-					if (!fieldOfView[p] && distance(c.pos, p) <= mindVisRange) {
+						if (mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL&& ((Mimic) mob).stealthy()){
+							continue;
+						}
+						int p = mob.pos;
+						if (!fieldOfView[p] && distance(c.pos, p) <= mindVisRange) {
 							for (int i : PathFinder.NEIGHBOURS9) {
 								int cell = mob.pos + i;
 							if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;}
@@ -2450,6 +2487,11 @@ public abstract class Level implements Bundlable {
 		int bx = b % width();
 		int by = b / width();
 		return (float)Math.sqrt(Math.pow(Math.abs( ax - bx ), 2) + Math.pow(Math.abs( ay - by ), 2));
+	}
+
+	//usually just if a cell is solid, but other cases exist too
+	public boolean invalidHeroPos( int tile ){
+		return !passable[tile] && !avoid[tile];
 	}
 
 	//returns true if the input is a valid tile within the level

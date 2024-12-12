@@ -81,14 +81,19 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 	}
 
 	@Override
+	public Notes.Landmark landmark() {
+		return (!quest.completed() || quest.rewardsAvailable()) ? Notes.Landmark.TROLL : null;
+	}
+	
+	@Override
 	protected boolean act() {
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null) {
 			die(null);
-			Notes.remove(Notes.Landmark.TROLL);
+			Notes.remove( landmark() );
 			return true;
 		}
-		if (quest != null && quest.type() >= 0 && !quest.started() && Dungeon.level.visited[pos]) {
-			Notes.add(Notes.Landmark.TROLL);
+		if (!quest.rewardsAvailable() && quest.completed()) {
+			Notes.remove(landmark());
 		}
 		return super.act();
 	}
@@ -231,7 +236,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 
 		return true;
 	}
-	
+
 	private void tell( String text ) {
 		Game.runOnRenderThread(new Callback() {
 			@Override

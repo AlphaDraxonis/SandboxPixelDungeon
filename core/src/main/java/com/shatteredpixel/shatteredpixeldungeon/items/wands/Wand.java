@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ShardOfOblivion;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.WondrousResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -73,7 +74,7 @@ public abstract class Wand extends Item {
 	protected Charger charger;
 
 	public RechargeRule rechargeRule = RechargeRule.ALWAYS;
-	
+
 	public boolean curChargeKnown = false;
 	
 	public boolean curseInfusionBonus = false;
@@ -120,7 +121,11 @@ public abstract class Wand extends Item {
 
 	@Override
 	public int targetingPos(Hero user, int dst) {
-		return new Ballistica( user.pos, dst, collisionProperties, null ).collisionPos;
+		if (cursed && cursedKnown()){
+			return new Ballistica(user.pos, dst, Ballistica.REAL_MAGIC_BOLT, null).collisionPos;
+		} else {
+			return new Ballistica(user.pos, dst, collisionProperties, null).collisionPos;
+		}
 	}
 
 	public abstract void onZap(Ballistica attack);
@@ -237,6 +242,10 @@ public abstract class Wand extends Item {
 		return this;
 	}
 
+	public boolean readyToIdentify(){
+		return !isIdentified() && usesLeftToID <= 0;
+	}
+
 	@Override
 	public void onHeroGainExp( float levelPercent, Hero hero ){
 		levelPercent *= Talent.itemIDSpeedFactor(hero, this);
@@ -248,7 +257,7 @@ public abstract class Wand extends Item {
 
 	@Override
 	public String info() {
-		String desc = desc();
+		String desc = super.info();
 
 		desc += "\n\n" + statsDesc();
 
@@ -268,7 +277,7 @@ public abstract class Wand extends Item {
 			desc += " " + Messages.get(this, "perma_curse");
 		}
 
-		if (Dungeon.hero!=null && Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){
+		if (Dungeon.hero != null && Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){
 			desc += "\n\n" + Messages.get(this, "bmage_desc");
 		}
 
@@ -278,7 +287,19 @@ public abstract class Wand extends Item {
 	public String statsDesc(){
 		return Messages.get(this, "stats_desc");
 	}
-	
+
+	public String upgradeStat1(int level){
+		return null;
+	}
+
+	public String upgradeStat2(int level){
+		return null;
+	}
+
+	public String upgradeStat3(int level){
+		return null;
+	}
+
 	@Override
 	public boolean isIdentified() {
 		return super.isIdentified() && curChargeKnown;
@@ -382,7 +403,7 @@ public abstract class Wand extends Item {
 		curCharges = Math.min( curCharges, maxCharges );
 	}
 	
-	protected int initialCharges() {
+	public int initialCharges() {
 		return 2;
 	}
 
@@ -413,11 +434,21 @@ public abstract class Wand extends Item {
 			availableUsesToID -= uses;
 			usesLeftToID -= uses;
 			if (usesLeftToID <= 0 || curUser.pointsInTalent(Talent.SCHOLARS_INTUITION) >= 2) {
-				identify();
+				if (ShardOfOblivion.passiveIDDisabled()){
+					if (usesLeftToID > -1){
+						GLog.p(Messages.get(ShardOfOblivion.class, "identify_ready"), name());
+					}
+					usesLeftToID = -1;
+				} else {
+					identify();
+				}
 				if (curUser == Dungeon.hero) {
 					GLog.p(Messages.get(Wand.class, "identify"));
 					Badges.validateItemLevelAquired(this);
 				}
+			}
+			if (ShardOfOblivion.passiveIDDisabled()){
+				Buff.prolong(curUser, ShardOfOblivion.WandUseTracker.class, 50f);
 			}
 		}
 
@@ -676,11 +707,12 @@ public abstract class Wand extends Item {
 				fx(shot, () -> {
 					onZap(shot);
 					if (Random.Float() < WondrousResin.extraCurseEffectChance(curUser)){
-						CursedWand.cursedZap(this,
+						WondrousResin.forcePositive = true;
+									CursedWand.cursedZap(this,
 								curUser,
-								new Ballistica(curUser.pos, target, Ballistica.MAGIC_BOLT, null), new Callback() {
+								new Ballistica(curUser.pos, target, Ballistica.REAL_MAGIC_BOLT, null), new Callback() {
 									@Override
-									public void call() {
+									public void call() {WondrousResin.forcePositive = false;
 										Wand.this.wandUsed();
 									}
 								});
@@ -707,7 +739,6 @@ public abstract class Wand extends Item {
 				if (curItem instanceof Wand) {
 					((Wand) curItem).performZap(target, curUser);
 				}
-
 			}
 		}
 		
@@ -728,7 +759,7 @@ public abstract class Wand extends Item {
 			return this == ALWAYS || this == ONLY_WITH_BUFF;
 		}
 	}
-	
+
 	public class Charger extends Buff {
 		
 		private static final float BASE_CHARGE_DELAY = 10f;

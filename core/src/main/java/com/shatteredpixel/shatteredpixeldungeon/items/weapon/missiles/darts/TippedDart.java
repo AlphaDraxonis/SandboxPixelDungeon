@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Crossbow;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.*;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -64,13 +65,25 @@ public abstract class TippedDart extends Dart {
 	public void execute(final Hero hero, String action) {
 		super.execute(hero, action);
 		if (action.equals( AC_CLEAN )){
-			
+
+			String[] options;
+			if (quantity() > 1){
+				options = new String[]{
+					Messages.get(this, "clean_all"),
+					Messages.get(this, "clean_one"),
+					Messages.get(this, "cancel")
+				};
+			} else {
+				options = new String[]{
+					Messages.get(this, "clean_one"),
+					Messages.get(this, "cancel")
+				};
+			}
+
 			GameScene.show(new WndOptions(new ItemSprite(this),
 					Messages.titleCase(name()),
 					Messages.get(this, "clean_desc"),
-					Messages.get(this, "clean_all"),
-					Messages.get(this, "clean_one"),
-					Messages.get(this, "cancel")){
+					options){
 				@Override
 				protected void onSelect(int index) {
 					if (index == 0){
@@ -80,7 +93,7 @@ public abstract class TippedDart extends Dart {
 						hero.spend( 1f );
 						hero.busy();
 						hero.sprite.operate(hero.pos);
-					} else if (index == 1){
+					} else if (index == 1 && quantity() > 1){
 						detach(hero.belongings.backpack);
 						if (!new Dart().collect()) Dungeon.level.drop(new Dart(), hero.pos).sprite.drop();
 
@@ -108,6 +121,7 @@ public abstract class TippedDart extends Dart {
 		if (durability <= 0){
 			//attempt to stick the dart to the enemy, just drop it if we can't.
 			Dart d = new Dart();
+			Catalog.countUse(getClass());
 			if (sticky && enemy != null && enemy.isAlive() && enemy.alignment != Char.Alignment.ALLY){
 				PinCushion p = Buff.affect(enemy, PinCushion.class);
 				if (p.target == enemy){
@@ -141,22 +155,22 @@ public abstract class TippedDart extends Dart {
 	public float durabilityPerUse() {
 		float use = super.durabilityPerUse(false);
 
-		if (Dungeon.hero != null) use /= (1 + Dungeon.hero.pointsInTalent(Talent.DURABLE_TIPS));
+		if (Dungeon.hero != null) {
+			use /= (1 + Dungeon.hero.pointsInTalent(Talent.DURABLE_TIPS));
 
-		//checks both destination and source position
-		float lotusPreserve = 0f;
-		if (targetPos != -1){
-			for (Char ch : Actor.chars()){
-				if (ch instanceof WandOfRegrowth.Lotus){
-					WandOfRegrowth.Lotus l = (WandOfRegrowth.Lotus) ch;
-					if (l.inRange(targetPos)){
-						lotusPreserve = Math.max(lotusPreserve, l.seedPreservation());
+			//checks both destination and source position
+			float lotusPreserve = 0f;
+			if (targetPos != -1) {
+				for (Char ch : Actor.chars()) {
+					if (ch instanceof WandOfRegrowth.Lotus) {
+						WandOfRegrowth.Lotus l = (WandOfRegrowth.Lotus) ch;
+						if (l.inRange(targetPos)) {
+							lotusPreserve = Math.max(lotusPreserve, l.seedPreservation());
+						}
 					}
 				}
+				targetPos = -1;
 			}
-			targetPos = -1;
-		}
-		if (Dungeon.hero != null) {
 			int p = curUser == null ? Dungeon.hero.pos : curUser.pos;
 			for (Char ch : Actor.chars()) {
 				if (ch instanceof WandOfRegrowth.Lotus) {
@@ -166,8 +180,8 @@ public abstract class TippedDart extends Dart {
 					}
 				}
 			}
+			use *= (1f - lotusPreserve);
 		}
-		use *= (1f - lotusPreserve);
 
 		float usages = Math.round(MAX_DURABILITY/use);
 

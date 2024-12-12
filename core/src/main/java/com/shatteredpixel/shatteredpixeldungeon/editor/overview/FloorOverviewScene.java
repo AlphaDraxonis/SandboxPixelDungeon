@@ -48,13 +48,13 @@ public class FloorOverviewScene extends PixelScene {
 
         add(bg);
 
-        listPane = new LevelListPane() {
+        listPane = new LevelListPane(new LevelListPane.Selector() {
             @Override
             public void onSelect(LevelSchemeLike levelScheme, LevelListPane.ListItem listItem) {
                 if(levelScheme instanceof LevelScheme)
                     WndSwitchFloor.selectLevelScheme((LevelScheme) levelScheme,listItem,listPane);
             }
-        };
+        });
         add(listPane);
         createFloor = new RedButton(Messages.get(WndSwitchFloor.class,"new_floor")) {
             @Override

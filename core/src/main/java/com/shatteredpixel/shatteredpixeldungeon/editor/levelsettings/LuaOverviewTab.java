@@ -149,7 +149,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
 	@Override
 	public Image createIcon() {
-		return Icons.RENAME_ON.get();
+		return Icons.SCROLL_COLOR.get();
 	}
 
 	@Override

@@ -24,10 +24,11 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,68 +36,19 @@ import java.util.Collections;
 import java.util.List;
 
 @NotAllowedInLua
-public abstract class LevelListPane extends ScrollingListPane {
+public class LevelListPane extends ScrollPane {
 
-    @Override
-    protected boolean validClick() {
-        return false;
-    }
+    public final Selector selector;
+
+    public LevelListPane(Selector selector) {
+		super(new Content(selector));
+        this.selector = selector;
+        selector.listPane = this;
+	}
 
     public void updateList() {
-        clear();
-        List<LevelSchemeLike> levels = filterLevels(Dungeon.customDungeon.levelSchemes());
-        if (levels.isEmpty()) ;//TODO show that its empty
-        Collections.sort(levels, (a, b) -> {
-            if (a instanceof LevelScheme && b instanceof LevelScheme) return ((LevelScheme) a).compareTo((LevelScheme) b);
-            return 0;//there are only LevelSchemes!
-        });
-        for (LevelSchemeLike levelScheme : levels) {
-            addItem(new ListItem(levelScheme) {
-                @Override
-                protected void onClick() {
-                    onSelect(getLevelScheme(), this);
-                }
-
-                @Override
-                protected void onRightClick() {
-                    if (!onLongClick()) {
-                        onClick();
-                    }
-                }
-
-                @Override
-                protected boolean onLongClick() {
-                    return getLevelScheme() instanceof LevelScheme && onEdit((LevelScheme) getLevelScheme(), this);
-                }
-            });
-        }
+        ((Content) content).updateContent();
         scrollToCurrentView();
-    }
-
-    protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
-        return new ArrayList<>(levels);
-    }
-
-    protected abstract void onSelect(LevelSchemeLike levelScheme, LevelListPane.ListItem listItem);
-
-    public boolean onEdit(LevelScheme levelScheme, LevelListPane.ListItem listItem) {
-        if (SPDSettings.tutorialOpenRegularLevel() || levelScheme.getType() == CustomLevel.class) {
-            EditorScene.show(new WndEditFloorInOverview(levelScheme, listItem, this));
-        } else {
-            final long time = System.currentTimeMillis();
-            EditorScene.show(new WndOptions(
-                    Messages.get(WndSwitchFloor.class, "tutorial_cant_open_regular_title"),
-                    Messages.get(WndSwitchFloor.class, "tutorial_cant_open_regular_body"),
-                    Messages.get(WndSwitchFloor.class, "tutorial_cant_open_regular_close")){
-                @Override
-                public void hide() {
-                    super.hide();
-                    if (time + 1100 < System.currentTimeMillis()) SPDSettings.tutorialOpenRegularLevel(true);
-                    EditorScene.show(new WndEditFloorInOverview(levelScheme, listItem, LevelListPane.this));
-                }
-            });
-        }
-        return true;
     }
 
     @Override
@@ -104,8 +56,106 @@ public abstract class LevelListPane extends ScrollingListPane {
         layout(true);
 
         content.setSize(width, 0);
-        float pos = EditorUtilities.layoutStyledCompsInRectangles(2, width, content, getItems());
-        content.setSize(width, pos);
+        content.setSize(width, content.height());
+    }
+
+    public static abstract class Selector {
+
+        private LevelListPane listPane;
+
+		protected abstract void onSelect(LevelSchemeLike levelScheme, ListItem listItem);
+
+        protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
+            return new ArrayList<>(levels);
+        }
+
+        public boolean onEdit(LevelScheme levelScheme, ListItem listItem) {
+            if (listPane == null) {
+                return false;
+            }
+
+            if (SPDSettings.tutorialOpenRegularLevel() || levelScheme.getType() == CustomLevel.class) {
+                EditorScene.show(new WndEditFloorInOverview(levelScheme, listItem, listPane));
+            } else {
+                final long time = System.currentTimeMillis();
+                EditorScene.show(new WndOptions(
+                        Messages.get(WndSwitchFloor.class, "tutorial_cant_open_regular_title"),
+                        Messages.get(WndSwitchFloor.class, "tutorial_cant_open_regular_body"),
+                        Messages.get(WndSwitchFloor.class, "tutorial_cant_open_regular_close")){
+                    @Override
+                    public void hide() {
+                        super.hide();
+                        if (time + 1100 < System.currentTimeMillis()) SPDSettings.tutorialOpenRegularLevel(true);
+                        EditorScene.show(new WndEditFloorInOverview(levelScheme, listItem, listPane));
+                    }
+                });
+            }
+            return true;
+        }
+
+    }
+
+    public static class Content extends Component {
+
+        private final Selector selector;
+
+        private Component[] children;
+
+		public Content(Selector selector) {
+			this.selector = selector;
+		}
+
+		public void updateContent() {
+            clear();
+            List<LevelSchemeLike> levels = selector.filterLevels(Dungeon.customDungeon.levelSchemes());
+            if (levels.isEmpty()) ;//TODO show that its empty
+            Collections.sort(levels, (a, b) -> {
+                if (a instanceof LevelScheme && b instanceof LevelScheme) return ((LevelScheme) a).compareTo((LevelScheme) b);
+                return 0;//there are only LevelSchemes!
+            });
+            children = new Component[levels.size()];
+            int i = 0;
+            for (LevelSchemeLike levelScheme : levels) {
+                children[i] = new ListItem(levelScheme) {
+                    @Override
+                    protected void onClick() {
+                        selector.onSelect(getLevelScheme(), this);
+                    }
+
+                    @Override
+                    protected void onRightClick() {
+                        if (!onLongClick()) {
+                            onClick();
+                        }
+                    }
+
+                    @Override
+                    protected boolean onLongClick() {
+                        return getLevelScheme() instanceof LevelScheme && selector.onEdit((LevelScheme) getLevelScheme(), this);
+                    }
+                };
+                add(children[i]);
+                i++;
+            }
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+
+            height = 0;
+            height = EditorUtilities.layoutStyledCompsInRectangles(2, width, this, children);
+        }
+
+        @Override
+        public synchronized void clear() {
+            super.clear();
+            for (Component c : children) {
+                c.remove();
+                c.destroy();
+            }
+            children = null;
+        }
     }
 
     public static class ListItem extends StyledButtonWithIconAndText {
@@ -115,7 +165,7 @@ public abstract class LevelListPane extends ScrollingListPane {
         protected RenderedTextBlock depthText;
         protected Image depthIcon;
 
-        public ListItem(LevelSchemeLike levelScheme) {
+        private ListItem(LevelSchemeLike levelScheme) {
             super(Chrome.Type.GREY_BUTTON_TR, "");
             this.levelScheme = levelScheme;
             text.setHighlighting(false);

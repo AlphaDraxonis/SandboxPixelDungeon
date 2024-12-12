@@ -36,19 +36,18 @@ public class WndSwitchFloor extends Window {
         instance = this;
         resize(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
 
-        listPane = new LevelListPane() {
-
+        listPane = new LevelListPane(new LevelListPane.Selector() {
             @Override
             public void onSelect(LevelSchemeLike levelScheme, LevelListPane.ListItem listItem) {
                 if (levelScheme instanceof LevelScheme) {
                     LevelScheme ls = (LevelScheme) levelScheme;
                     if (ls.getType() == CustomLevel.class) {
                         hide();
-                        selectLevelScheme(ls, listItem, this);
+                        selectLevelScheme(ls, listItem, listPane);
                     } else onEdit(ls, listItem);
                 }
             }
-        };
+        });
         add(listPane);
 
         createFloor = new RedButton(Messages.get(WndSwitchFloor.class, "new_floor")) {
@@ -136,7 +135,7 @@ public class WndSwitchFloor extends Window {
                 return;
             }
             EditorScene.open(f);
-        } else listPane.onEdit(levelScheme, listItem);
+        } else listPane.selector.onEdit(levelScheme, listItem);
     }
 
 }

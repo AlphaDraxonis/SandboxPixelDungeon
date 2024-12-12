@@ -57,7 +57,7 @@ public abstract class Shaman extends Mob {
 	
 //	@Override
 //	public int damageRoll() {
-//		return Char.combatRoll( 5, 10 );
+//		return Random.NormalIntRange( 5, 10 );
 //	}
 //
 //	@Override
@@ -67,7 +67,7 @@ public abstract class Shaman extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Char.combatRoll(0, 6);
+//		return super.drRoll() + Random.NormalIntRange(0, 6);
 //	}
 
 	@Override
@@ -128,7 +128,7 @@ public abstract class Shaman extends Mob {
 				if (enemy == Dungeon.hero) Sample.INSTANCE.play( Assets.Sounds.DEBUFF );
 			}
 			
-			int dmg = Char.combatRoll( 6, 15 );
+			int dmg = Random.NormalIntRange( 6, 15 );
 			dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
 			enemy.damage( dmg, new EarthenBolt() );
 			

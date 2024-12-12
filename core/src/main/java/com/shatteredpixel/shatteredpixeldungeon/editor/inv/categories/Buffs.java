@@ -124,7 +124,7 @@ public final class Buffs extends GameObjectCategory<Buff> {
             super(new Class[] {
 //                  Fury.class,
                     Bless.class,
-                    AnkhInvulnerability.class,
+                    Invulnerability.class,
                     SoulMark.class,
 
                     Weakness.class,

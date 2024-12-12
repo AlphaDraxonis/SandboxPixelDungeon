@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
@@ -70,11 +71,12 @@ public class Shopkeeper extends NPC {
 	private int turnsSinceHarmed = -1;
 
 	@Override
-	protected boolean act() {
+	public Notes.Landmark landmark() {
+		return Notes.Landmark.SHOP;
+	}
 
-		if (Dungeon.level.visited[pos]){
-			Notes.add(Notes.Landmark.SHOP);
-		}
+	@Override
+	protected boolean act() {
 
 		if (turnsSinceHarmed >= 0){
 			turnsSinceHarmed ++;
@@ -109,35 +111,47 @@ public class Shopkeeper extends NPC {
 			turnsSinceHarmed = 0;
 			yell(Messages.get(this, "warn"));
 
-			//cleanses all harmful blobs in the shop
-			ArrayList<Blob> blobs = new ArrayList<>();
-			for (Class c : new BlobImmunity().immunities()){
-				Dungeon.level.blobs.doOnEach(c, b -> {
+			//use a new actor as we can't clear the gas while we're in the middle of processing it
+			Actor.add(new Actor() {
+				{
+					actPriority = VFX_PRIO;
+				}
+
+				@Override
+				protected boolean act() {
+					//cleanses all harmful blobs in the shop
+					ArrayList<Blob> blobs = new ArrayList<>();
+					for (Class c : new BlobImmunity().immunities()){
+						Dungeon.level.blobs.doOnEach(c, b -> {
 					if (b.volume > 0){
 						blobs.add(b);
 					}
 				});
 			}
 
-			PathFinder.buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 4 );
+					PathFinder.buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 4 );
 
-			for (int i=0; i < Dungeon.level.length(); i++) {
-				if (PathFinder.distance[i] < Integer.MAX_VALUE) {
+					for (int i=0; i < Dungeon.level.length(); i++) {
+						if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 
-					boolean affected = false;
-					for (Blob blob : blobs) {
-						if (blob.cur[i] > 0) {
-							blob.clear(i);
-							affected = true;
+							boolean affected = false;
+							for (Blob blob : blobs) {
+								if (blob.cur[i] > 0) {
+									blob.clear(i);
+									affected = true;
+								}
+							}
+
+							if (affected && Dungeon.level.heroFOV[i]) {
+								CellEmitter.get( i ).burst( Speck.factory( Speck.DISCOVER ), 2 );
+							}
+
 						}
 					}
-
-					if (affected && Dungeon.level.heroFOV[i]) {
-						CellEmitter.get( i ).burst( Speck.factory( Speck.DISCOVER ), 2 );
-					}
-
+					Actor.remove(this);
+					return true;
 				}
-			}
+			});
 
 		//There is a 1 turn buffer before more damage/debuffs make the shopkeeper flee
 		//This is mainly to prevent stacked effects from causing an instant flee
@@ -145,11 +159,13 @@ public class Shopkeeper extends NPC {
 			flee();
 		}
 	}
-	
+
 	public void flee() {
 		destroy();
 
-		Notes.remove(Notes.Landmark.SHOP);
+		Notes.remove( landmark() );
+		GLog.newLine();
+		GLog.n(Messages.get(this, "flee"));
 
 		if (sprite != null) {
 			sprite.killAndErase();

@@ -2,11 +2,15 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://storage.googleapis.com/r8-releases/raw")
+        }
     }
     dependencies {
-        //the R8 version bundled with AGP 8.1.0+ causes crashes on very old Android versions
-        //This affects ICS and Lollipop at least, maybe also KitKat
-        classpath 'com.android.tools.build:gradle:8.0.2'
+        //gradle version packaged with AGP 8.5 causes crashes on Android 4.4-
+        //this won't be needed once the bundled R8 version is 8.7.11+ (should happen with AGP 8.6)
+        classpath 'com.android.tools:r8:8.7.11'
+        classpath 'com.android.tools.build:gradle:8.5.2'
     }
 }
 
@@ -16,7 +20,7 @@ allprojects {
         appName = 'Sandbox Pixel Dungeon'
         appPackageName = 'com.alphadraxonis.sandboxpd'
 
-        appVersionCode = 786
+        appVersionCode = 803
         appVersionName = '1.3.0'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8

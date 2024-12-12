@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -74,7 +75,7 @@ public abstract class Key extends Item {
 	}
 
 	@Override
-	public boolean collect() {
+	public boolean collect(Bag bag) {
 		instantPickupKey(Dungeon.hero.pos);
 		return true;
 	}
@@ -82,7 +83,7 @@ public abstract class Key extends Item {
 	public void instantPickupKey(int pos) {
 		Catalog.setSeen(getClass());
 		GameScene.pickUpJournal(this, pos);
-		WndJournal.last_index = 2;
+		WndJournal.last_index = 0;
 		Notes.add(this);
 		GameScene.updateKeyDisplay();
 	}

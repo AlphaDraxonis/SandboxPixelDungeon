@@ -38,6 +38,8 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 
+import java.util.ArrayList;
+
 public class PitfallTrap extends Trap {
 
 	{
@@ -58,17 +60,20 @@ public class PitfallTrap extends Trap {
 		DelayedPit p = Buff.append(Dungeon.hero, DelayedPit.class, delay);
 		p.activatedOn = Dungeon.levelName;
 		p.branch = Dungeon.branch;
-		p.pos = pos;
 		p.radius = radius;
-		if (delay == 0) p.act();
 
+		ArrayList<Integer> positions = new ArrayList<>();
 		for (int i : PathFinder.GET_ALL_CELLS_IN_RADIUS(radius)){
 			int cell = pos + i;
 			if (cell < 0 || cell > Dungeon.level.length()) continue;
 			if (!Dungeon.level.solid[cell] || Dungeon.level.isPassable(cell)){
 				CellEmitter.floor(cell).burst(PitfallParticle.FACTORY4, 8);
+				positions.add(pos+i);
 			}
 		}
+		p.setPositions(positions);
+
+		if (delay == 0) p.act();
 
 		if (pos == Dungeon.hero.pos){
 			GLog.n(Messages.get(this, "triggered_hero"));
@@ -84,10 +89,12 @@ public class PitfallTrap extends Trap {
 			revivePersists = true;
 		}
 
-		int pos;
-		String activatedOn;
-		int branch;
-		int radius, delay;
+		public int[] positions = new int[0];
+		public String activatedOn;
+		public int branch;
+		public int radius, delay;
+
+		public boolean ignoreAllies = false;
 
 		@Override
 		public boolean act() {
@@ -95,10 +102,12 @@ public class PitfallTrap extends Trap {
 
 			boolean herofell = false;
 			if (activatedOn.equals(Dungeon.levelName) && branch == Dungeon.branch) {
-				for (int i : PathFinder.GET_ALL_CELLS_IN_RADIUS(radius)) {
+				for (int cell : positions) {
 
-					int cell = pos + i;
-					if (cell < 0 || cell > Dungeon.level.length()) continue;
+					if (!Dungeon.level.insideMap(cell)
+							|| (Dungeon.level.solid[cell] && !Dungeon.level.isPassable(cell))){
+						continue;
+					}
 
 					if (delay > 0 ) {
 						if (!Dungeon.level.solid[cell] || Dungeon.level.isPassable(cell)){
@@ -107,14 +116,21 @@ public class PitfallTrap extends Trap {
 						continue;
 					}
 
-					if (Dungeon.level.solid[pos+i] && !Dungeon.level.isPassable(pos+i)){
-						continue;
+					CellEmitter.floor(cell).burst(PitfallParticle.FACTORY8, 12);
+
+					Char ch = Actor.findChar(cell);
+					//don't trigger on flying chars, or immovable neutral chars
+					if (ch != null && !ch.isFlying()
+							&& !(ch.alignment == Char.Alignment.NEUTRAL && Char.hasProp(ch, Char.Property.IMMOVABLE))
+							&& !(ch.alignment == Char.Alignment.ALLY && ignoreAllies)) {
+						if (ch == Dungeon.hero) {
+							herofell = true;
+						} else {
+							Chasm.mobFall((Mob) ch);
+						}
 					}
 
-					CellEmitter.floor(pos+i).burst(PitfallParticle.FACTORY8, 12);
-
 					Heap heap = Dungeon.level.heaps.get(cell);
-
 					if (heap != null && heap.type != Heap.Type.FOR_SALE
 							&& heap.type != Heap.Type.LOCKED_CHEST
 							&& heap.type != Heap.Type.CRYSTAL_CHEST) {
@@ -127,48 +143,51 @@ public class PitfallTrap extends Trap {
 						Dungeon.level.heaps.remove(cell);
 					}
 
-					Char ch = Actor.findChar(cell);
-
-					//don't trigger on flying chars, or immovable neutral chars
-					if (ch != null && !ch.avoidsHazards() && ! ch.isFlying()
-						&& !(ch.alignment == Char.Alignment.NEUTRAL && Char.hasProp(ch, Char.Property.IMMOVABLE))) {
-						if (ch == Dungeon.hero) {
-							Chasm.heroFall(cell);
-							herofell = true;
-						} else {
-							Chasm.mobFall((Mob) ch);
-						}
-					}
-
 				}
+			}
+
+			//process hero falling last
+			if (herofell){
+				Chasm.heroFall(Dungeon.hero.pos);
 			}
 
 			detach();
 			return !herofell;
 		}
 
-		private static final String POS = "pos";
+		public void setPositions(ArrayList<Integer> positions){
+			this.positions = new int[positions.size()];
+			for (int i = 0; i < this.positions.length; i++){
+				this.positions[i] = positions.get(i);
+			}
+		}
+
+		private static final String POSITIONS = "positions";
 		private static final String ACTIVATED_ON = "activated_on";
 		private static final String BRANCH = "branch";
+
+		private static final String IGNORE_ALLIES = "ignore_allies";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
-			bundle.put(POS, pos);
+			bundle.put(POSITIONS, positions);
 			bundle.put(ACTIVATED_ON, activatedOn);
 			bundle.put(BRANCH, branch);
 			bundle.put(RADIUS, radius);
 			bundle.put(DELAY, delay);
+			bundle.put(IGNORE_ALLIES, ignoreAllies);
 		}
 
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			pos = bundle.getInt(POS);
+			positions = bundle.getIntArray(POSITIONS);
 			activatedOn = bundle.getString(ACTIVATED_ON);
 			branch = bundle.getInt(BRANCH);
 			radius = bundle.getInt(RADIUS);
 			delay = bundle.getInt(DELAY);
+			ignoreAllies = bundle.getBoolean(IGNORE_ALLIES);
 		}
 
 	}

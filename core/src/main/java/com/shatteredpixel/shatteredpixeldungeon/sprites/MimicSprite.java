@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
-import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.RectF;
 
@@ -85,12 +84,12 @@ public class MimicSprite extends MobSprite {
 	public void linkVisuals(Char ch) {
 		super.linkVisuals(ch);
 		if (ch instanceof Mimic && ch.alignment == Char.Alignment.NEUTRAL) {
-			hideMimicSprite();
+			hideMimic(this, ch);
 		}
 	}
 
-	protected void hideMimicSprite() {
-		if (superHidden || MimicTooth.stealthyMimics()){
+	public void hideMimicSprite(Char ch){
+		if (ch instanceof Mimic && ((Mimic) ch).stealthy()){
 			play(advancedHiding);
 		} else {
 			play(hiding);
@@ -98,8 +97,8 @@ public class MimicSprite extends MobSprite {
 		hideSleep();
 	}
 
-	public static void hideMimic(CharSprite sprite) {
-		if (sprite instanceof MimicSprite) ((MimicSprite) sprite).hideMimicSprite();
+	public static void hideMimic(CharSprite sprite, Char ch) {
+		if (sprite instanceof MimicSprite) ((MimicSprite) sprite).hideMimicSprite(ch);
 		else {
 			Animation hide = new Animation( 5, true );
 			hide.frames = new RectF[1];
@@ -138,9 +137,17 @@ public class MimicSprite extends MobSprite {
 		}
 
 		@Override
-		protected void hideMimicSprite() {
-			super.hideMimicSprite();
+		public void hideMimicSprite(Char ch) {
+			super.hideMimicSprite(ch);
 			alpha(0.2f);
+		}
+
+		@Override
+		public void resetColor() {
+			super.resetColor();
+			if (curAnim == advancedHiding){
+				alpha(0.2f);
+			}
 		}
 
 		@Override

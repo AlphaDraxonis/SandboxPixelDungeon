@@ -738,29 +738,6 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		}
 	}
 
-	public void showNeutral() {
-		if (emo == null) {
-			synchronized (EmoIcon.class) {
-				if (!(emo instanceof EmoIcon.Neutral)) {
-					if (emo != null) {
-						emo.killAndErase();
-					}
-					emo = new EmoIcon.Neutral(this);
-					emo.visible = visible;
-				}
-			}
-		}
-	}
-
-	public void hideNeutral() {
-		synchronized (EmoIcon.class) {
-			if (emo instanceof EmoIcon.Neutral) {
-				emo.killAndErase();
-				emo = null;
-			}
-		}
-	}
-
 	public void hideEmo(){
 		synchronized (EmoIcon.class) {
 			if (emo != null) {

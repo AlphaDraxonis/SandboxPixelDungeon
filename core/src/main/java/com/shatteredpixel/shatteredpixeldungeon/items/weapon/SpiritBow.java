@@ -130,34 +130,30 @@ public class SpiritBow extends Weapon {
 		return super.proc(attacker, defender, damage);
 	}
 
-    @Override
-    public String info() {
-        String info = desc();
-
-        if (Dungeon.hero != null) {
-            info += "\n\n" + Messages.get(SpiritBow.class, "stats",
-                    Math.round(augment.damageFactor(min())),
-                    Math.round(augment.damageFactor(max())),
-                    STRReq());
-        }
-
-        if (Dungeon.hero != null) {
-            if (STRReq() > Dungeon.hero.STR()) {
-                info += " " + Messages.get(Weapon.class, "too_heavy");
-            } else if (Dungeon.hero.STR() > STRReq()) {
-                info += " " + Messages.get(Weapon.class, "excess_str", Dungeon.hero.STR() - STRReq());
-            }
-        }
-
-        switch (augment) {
-            case SPEED:
-                info += "\n\n" + Messages.get(Weapon.class, "faster");
-                break;
-            case DAMAGE:
-                info += "\n\n" + Messages.get(Weapon.class, "stronger");
-                break;
-            case NONE:
-        }
+	@Override
+	public String info() {
+		String info = super.info();
+		
+		info += "\n\n" + Messages.get( SpiritBow.class, "stats",
+				Math.round(augment.damageFactor(min())),
+				Math.round(augment.damageFactor(max())),
+				STRReq());
+		
+		if (STRReq() > Dungeon.hero.STR()) {
+			info += " " + Messages.get(Weapon.class, "too_heavy");
+		} else if (Dungeon.hero.STR() > STRReq()){
+			info += " " + Messages.get(Weapon.class, "excess_str", Dungeon.hero.STR() - STRReq());
+		}
+		
+		switch (augment) {
+			case SPEED:
+				info += "\n\n" + Messages.get(Weapon.class, "faster");
+				break;
+			case DAMAGE:
+				info += "\n\n" + Messages.get(Weapon.class, "stronger");
+				break;
+			case NONE:
+		}
 
         if (enchantment != null && (cursedKnown() || !enchantment.curse())) {
             info += "\n\n" + Messages.capitalize(Messages.get(Weapon.class, "enchanted", enchantment.name()));
@@ -231,7 +227,7 @@ public class SpiritBow extends Weapon {
 		if (owner instanceof Hero) {
 			int exStr = ((Hero)owner).STR() - STRReq();
 			if (exStr > 0) {
-				damage += Char.combatRoll( 0, exStr );
+				damage += Hero.heroDamageIntRange( 0, exStr );
 			}
 		}
 

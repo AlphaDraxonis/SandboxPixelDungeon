@@ -39,9 +39,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class GooSprite extends MobSprite {
-
-    private Animation pump;
-    private Animation pumpAttack;
+	
+	private Animation pump;
+	private Animation pumpAttack;
 
     @Override
     public LinkedHashMap<String, Animation> getAnimations() {
@@ -53,52 +53,47 @@ public class GooSprite extends MobSprite {
 
     private Emitter spray;
 
-    public GooSprite() {
-        super();
+	public GooSprite() {
+		super();
 
-        texture(Assets.Sprites.GOO);
+		texture( Assets.Sprites.GOO );
 
-        initAnimations();
+		TextureFilm frames = new TextureFilm( texture, 20, 14 );
 
-        play(idle);
+		idle = new Animation( 10, true );
+		idle.frames( frames, 2, 1, 0, 0, 1 );
 
-        spray = centerEmitter();
-        if (spray != null) {
-            spray.autoKill = false;
-            spray.pour(GooParticle.FACTORY, 0.04f);
-            spray.on = false;
-        }
-    }
+		run = new Animation( 15, true );
+		run.frames( frames, 3, 2, 1, 2 );
 
-    @Override
-    public void initAnimations() {
-        TextureFilm frames = new TextureFilm(texture, 20, 14);
+		pump = new Animation( 20, true );
+		pump.frames( frames, 4, 3, 2, 1, 0 );
 
-        idle = new Animation(10, true);
-        idle.frames(frames, 2, 1, 0, 0, 1);
+		pumpAttack = new Animation ( 20, false );
+		pumpAttack.frames( frames, 4, 3, 2, 1, 0, 7);
 
-        run = new Animation(15, true);
-        run.frames(frames, 3, 2, 1, 2);
+		attack = new Animation( 10, false );
+		attack.frames( frames, 8, 9, 10 );
 
-        pump = new Animation(20, true);
-        pump.frames(frames, 4, 3, 2, 1, 0);
+		die = new Animation( 10, false );
+		die.frames( frames, 5, 6, 7 );
 
-        pumpAttack = new Animation(20, false);
-        pumpAttack.frames(frames, 4, 3, 2, 1, 0, 7);
+		play(idle);
 
-        attack = new Animation(10, false);
-        attack.frames(frames, 8, 9, 10);
+		spray = centerEmitter();
+		if (spray != null) {
+			spray.autoKill = false;
+			spray.pour(GooParticle.FACTORY, 0.04f);
+			spray.on = false;
+		}
+	}
 
-        die = new Animation(10, false);
-        die.frames(frames, 5, 6, 7);
-    }
-
-    @Override
-    public void link(Char ch) {
-        super.link(ch);
-        if (ch.HP * 2 <= ch.HT)
-            spray(true);
-    }
+	@Override
+	public void link(Char ch) {
+		super.link(ch);
+		if (ch.HP*2 <= ch.HT)
+			spray(true);
+	}
 
     public static void pumpUp(CharSprite sprite, int warnDist) {
         if (warnDist == 0) {
@@ -184,73 +179,73 @@ public class GooSprite extends MobSprite {
             }
         }
 
-        public void clearEmitters() {
-            for (Emitter e : pumpUpEmitters) {
-                e.on = false;
-            }
-            pumpUpEmitters.clear();
-        }
+	public void clearEmitters(){
+		for (Emitter e : pumpUpEmitters){
+			e.on = false;
+		}
+		pumpUpEmitters.clear();
+	}
 
-        public void triggerEmitters() {
-            for (Emitter e : pumpUpEmitters) {
-                e.burst(ElmoParticle.FACTORY, 10);
-            }
-            Sample.INSTANCE.play(Assets.Sounds.BURNING);
-            pumpUpEmitters.clear();
-        }
-    }
-
-    public static class GooParticle extends PixelParticle.Shrinking {
-
-        public static final Emitter.Factory FACTORY = new Factory() {
-            @Override
-            public void emit(Emitter emitter, int index, float x, float y) {
-                ((GooParticle) emitter.recycle(GooParticle.class)).reset(x, y);
-            }
-        };
-
-        public GooParticle() {
-            super();
-
-            color(0x000000);
-            lifespan = 0.3f;
-
-            acc.set(0, +50);
-        }
-
-        public void reset(float x, float y) {
-            revive();
-
-            this.x = x;
-            this.y = y;
-
-            left = lifespan;
-
-            size = 4;
-            speed.polar(-Random.Float(PointF.PI), Random.Float(32, 48));
-        }
-
-        @Override
-        public void update() {
-            super.update();
-            float p = left / lifespan;
-            am = p > 0.5f ? (1 - p) * 2f : 1;
+	public void triggerEmitters() {
+		for (Emitter e : pumpUpEmitters) {
+            e.burst(ElmoParticle.FACTORY, 10);
+		}
+        Sample.INSTANCE.play(Assets.Sounds.BURNING);
+         pumpUpEmitters.clear();
         }
     }
 
-    @Override
-    public void onComplete(Animation anim) {
-        super.onComplete(anim);
+	public static class GooParticle extends PixelParticle.Shrinking {
 
-        if (anim == pumpAttack) {
+		public static final Emitter.Factory FACTORY = new Factory() {
+			@Override
+			public void emit( Emitter emitter, int index, float x, float y ) {
+				((GooParticle)emitter.recycle( GooParticle.class )).reset( x, y );
+			}
+		};
+
+		public GooParticle() {
+			super();
+
+			color( 0x000000 );
+			lifespan = 0.3f;
+
+			acc.set( 0, +50 );
+		}
+
+		public void reset( float x, float y ) {
+			revive();
+
+			this.x = x;
+			this.y = y;
+
+			left = lifespan;
+
+			size = 4;
+			speed.polar( -Random.Float( PointF.PI ), Random.Float( 32, 48 ) );
+		}
+
+		@Override
+		public void update() {
+			super.update();
+			float p = left / lifespan;
+			am = p > 0.5f ? (1 - p) * 2f : 1;
+		}
+	}
+
+	@Override
+	public void onComplete( Animation anim ) {
+		super.onComplete(anim);
+
+		if (anim == pumpAttack) {
 
             if (extraCode instanceof PumpUpEmitters)
                 ((PumpUpEmitters) extraCode).triggerEmitters();
 
-            idle();
-            ch.onAttackComplete();
-        } else if (anim == die) {
-            spray.killAndErase();
-        }
-    }
+			idle();
+			ch.onAttackComplete();
+		} else if (anim == die) {
+			spray.killAndErase();
+		}
+	}
 }

@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.PointF;
@@ -35,7 +36,7 @@ public class MirrorSprite extends MobSprite {
 	private static final int FRAME_HEIGHT	= 15;
 
 	private static final int RUN_FRAMERATE	= 20;
-	
+
 	public MirrorSprite() {
 		super();
 
@@ -60,7 +61,7 @@ public class MirrorSprite extends MobSprite {
 	
 	public void updateArmor( Hero hero ) {
 
-		if (hero.internalSpriteClass != null) {
+		if (hero != null && hero.internalSpriteClass != null) {
 
 			CharSprite anims = Reflection.newInstance(hero.internalSpriteClass);
 
@@ -80,9 +81,9 @@ public class MirrorSprite extends MobSprite {
 
 		} else {
 
-			texture( hero.heroClass.spritesheet() );
+			texture( hero != null ? hero.heroClass.spritesheet() : HeroClass.WARRIOR.spritesheet());
 
-			TextureFilm film = new TextureFilm( HeroSprite.tiers(), hero.tier(), FRAME_WIDTH, FRAME_HEIGHT );
+			TextureFilm film = new TextureFilm( HeroSprite.tiers(), hero != null ? hero.tier() : 0, FRAME_WIDTH, FRAME_HEIGHT );
 
 			idle = new Animation( 1, true );
 			idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );

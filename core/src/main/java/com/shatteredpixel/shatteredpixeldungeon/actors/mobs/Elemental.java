@@ -51,10 +51,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ElementalSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
+import com.watabou.utils.*;
 
 import java.util.ArrayList;
 
@@ -132,10 +129,10 @@ public abstract class Elemental extends Mob {
 
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Char.combatRoll(0, 5);
+//		return super.drRoll() + Random.NormalIntRange(0, 5);
 //	}
 
-	protected int rangedCooldown = Char.combatRoll( 3, 5 );
+	protected int rangedCooldown = Random.NormalIntRange( 3, 5 );
 	
 	@Override
 	protected boolean act() {
@@ -145,7 +142,13 @@ public abstract class Elemental extends Mob {
 		
 		return super.act();
 	}
-	
+
+	@Override
+	public void die(Object cause) {
+		setFlying(false);
+		super.die(cause);
+	}
+
 	@Override
 	protected boolean canAttack( Char enemy ) {
 		if (super.canAttack(enemy)){
@@ -191,13 +194,13 @@ public abstract class Elemental extends Mob {
 			enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
 		}
 
-		rangedCooldown = Char.combatRoll( 3, 5 );
+		rangedCooldown = Random.NormalIntRange( 3, 5 );
 	}
 
 	@Override
 	public boolean add( Buff buff ) {
 		if (harmfulBuffs.contains( buff.getClass() )) {
-			damage( Char.combatRoll( HT/2, HT * 3/5 ), buff );
+			damage( Random.NormalIntRange( HT/2, HT * 3/5 ), buff );
 			return false;
 		} else {
 			return super.add( buff );
@@ -389,7 +392,7 @@ public abstract class Elemental extends Mob {
 			}
 
 			targetingPos = -1;
-			rangedCooldown = Char.combatRoll( 3, 5 );
+			rangedCooldown = Random.NormalIntRange( 3, 5 );
 		}
 
 		@Override
@@ -558,12 +561,38 @@ public abstract class Elemental extends Mob {
 		
 		@Override
 		protected void meleeProc( Char enemy, int damage ) {
-			CursedWand.cursedEffect(null, this, enemy);
+			Ballistica aim = new Ballistica(pos, enemy.pos, Ballistica.STOP_TARGET, null);
+			//TODO shortcutting the fx seems fine for now but may cause problems with new cursed effects
+			//of course, not shortcutting it means actor ordering issues =S
+			CursedWand.randomValidEffect(null, this, aim, false).effect(null, this, aim, false);
 		}
-		
+
+		@Override
+		public void zap() {
+			spend( 1f );
+
+			Invisibility.dispel(this);
+			Char enemy = this.enemy;
+			//skips accuracy check, always hits
+			rangedProc( enemy );
+
+			rangedCooldown = Random.NormalIntRange( 3, 5 );
+		}
+
+		@Override
+		public void onZapComplete() {
+			zap();
+			//next(); triggers after wand effect
+		}
+
 		@Override
 		protected void rangedProc( Char enemy ) {
-			CursedWand.cursedEffect(null, this, enemy);
+			CursedWand.cursedZap(null, this, new Ballistica(pos, enemy.pos, Ballistica.STOP_TARGET, null), new Callback() {
+				@Override
+				public void call() {
+					next();
+				}
+			});
 		}
 
 		@Override

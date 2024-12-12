@@ -181,8 +181,7 @@ public abstract class KindofMisc extends EquipableItem {
 
 	@Override
 	public boolean isEquipped( Hero hero ) {
-		return hero != null &&
-				(hero.belongings.artifact() == this
+		return hero != null && (hero.belongings.artifact() == this
 				|| hero.belongings.misc() == this
 				|| hero.belongings.ring() == this);
 	}

@@ -18,7 +18,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
 import com.shatteredpixel.shatteredpixeldungeon.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -100,7 +99,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public Class<? extends Builder> builder;
 
     //Challenge stuff
-    public boolean spawnTorchIfDarkness = true, reduceViewDistanceIfDarkness = true,
+    public boolean reduceViewDistanceIfDarkness = true,
             affectedByNoScrolls = true, rollForChampionIfChampionChallenge = true;
 
 
@@ -522,8 +521,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             initRandomStats(seed);
 
             if (Dungeon.isChallenged(Challenges.DARKNESS)) {
-                if (reduceViewDistanceIfDarkness) level.viewDistance /= 4;
-                if (spawnTorchIfDarkness) itemsToSpawn.add(new Torch());
+                if (reduceViewDistanceIfDarkness) level.viewDistance = level.viewDistance* 5/8;
             }
 
             spawnItemsAndMobs(seed + 229203);
@@ -697,7 +695,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String NATURAL_REGEN = "natural_regen";
     private static final String HUNGER_SPEED = "hunger_speed";
     private static final String BUILDER = "builder";
-    private static final String SPAWN_TORCH_IF_DARKNESS = "spawn_torch_if_darkness";
     private static final String REDUCE_VIEW_DISTANCE_IF_DARKNESS = "reduce_view_distance_if_darkness";
     private static final String AFFECTED_BY_NO_SCROLLS = "affected_by_no_scrolls";
     private static final String ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE = "roll_for_champion_if_champion_challenge";
@@ -729,7 +726,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(REMEMBER_LAYOUT, rememberLayout);
         bundle.put(MAGIC_MAPPING_DISABLED, magicMappingDisabled);
 
-        bundle.put(SPAWN_TORCH_IF_DARKNESS, spawnTorchIfDarkness);
         bundle.put(REDUCE_VIEW_DISTANCE_IF_DARKNESS, reduceViewDistanceIfDarkness);
         bundle.put(AFFECTED_BY_NO_SCROLLS, affectedByNoScrolls);
         bundle.put(ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE, rollForChampionIfChampionChallenge);
@@ -794,7 +790,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         rememberLayout = !bundle.contains(REMEMBER_LAYOUT) || bundle.getBoolean(REMEMBER_LAYOUT);
         magicMappingDisabled = bundle.getBoolean(MAGIC_MAPPING_DISABLED);
 
-        spawnTorchIfDarkness = bundle.getBoolean(SPAWN_TORCH_IF_DARKNESS);
         reduceViewDistanceIfDarkness = bundle.getBoolean(REDUCE_VIEW_DISTANCE_IF_DARKNESS);
         affectedByNoScrolls = bundle.getBoolean(AFFECTED_BY_NO_SCROLLS);
         rollForChampionIfChampionChallenge = bundle.getBoolean(ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE);

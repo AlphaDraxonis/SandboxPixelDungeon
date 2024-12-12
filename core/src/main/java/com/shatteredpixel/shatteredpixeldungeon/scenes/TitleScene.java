@@ -25,7 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.server.ServerDungeonList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
@@ -39,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSettings;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndVictoryCongrats;
 import com.watabou.NotAllowedInLua;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.BitmapText;
@@ -163,19 +163,20 @@ public class TitleScene extends PixelScene {
 		add(btnRankings);
 		Dungeon.daily = Dungeon.dailyReplay = false;
 
-//		StyledButton btnBadges = new StyledButton(GREY_TR, Messages.get(this, "badges")){
+//		StyledButton btnBadges = new StyledButton(GREY_TR, Messages.get(this, "journal")){
 //			@Override
 //			protected void onClick() {
-//				SandboxPixelDungeon.switchNoFade( BadgesScene.class );
+//				ShatteredPixelDungeon.switchNoFade( JournalScene.class );
 //			}
 //		};
-//		btnBadges.icon(Icons.get(Icons.BADGES));
+//		btnBadges.icon(Icons.get(Icons.JOURNAL));
 //		add(btnBadges);
 
 		StyledButton btnDiscover = new StyledButton(GREY_TR, Messages.get(this, "discover")) {
 			@Override
 			protected void onClick() {
-				Game.scene().addToFront(new ServerDungeonList.WndServerDungeonList());
+				SandboxPixelDungeon.switchNoFade( JournalScene.class );
+//				Game.scene().addToFront(new ServerDungeonList.WndServerDungeonList());
 			}
 		};
 		btnDiscover.icon(Icons.get(Icons.DOWNLOAD));
@@ -241,9 +242,15 @@ public class TitleScene extends PixelScene {
 			add(btnExit);
 		}
 
+		Badges.loadGlobal();
+		if (Badges.isUnlocked(Badges.Badge.VICTORY) && !SPDSettings.victoryNagged()) {
+			SPDSettings.victoryNagged(true);
+			add(new WndVictoryCongrats());
+		}
+
 		fadeIn();
 	}
-	
+
 	private void placeTorch( float x, float y ) {
 		Fireball fb = new Fireball();
 		fb.setColor(Window.GOLD);
@@ -371,7 +378,7 @@ public class TitleScene extends PixelScene {
 		@Override
 		protected void onClick() {
 			if (Messages.lang().status() == Languages.Status.X_UNFINISH){
-				WndSettings.last_index = 4;
+				WndSettings.last_index = 5;
 			}
 			SandboxPixelDungeon.scene().add(new WndSettings());
 		}

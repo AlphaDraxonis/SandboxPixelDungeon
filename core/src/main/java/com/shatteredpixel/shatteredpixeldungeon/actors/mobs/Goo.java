@@ -88,7 +88,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 				Statistics.bossScores[0] -= 100;
 			}
 		}
-		return Char.combatRoll( min, max);
+		return Random.NormalIntRange( min, max);
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 //	@Override
 //	public int drRoll() {
-//		return (int) (super.drRoll() + Char.combatRoll(0, 2) * statsScale);
+//		return (int) (super.drRoll() + Random.NormalIntRange(0, 2) * statsScale);
 //	}
 
 	@Override
@@ -128,7 +128,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 			sprite.idle();
 		}
 
-		if (Dungeon.level.water[pos] && HP < HT) {
+		if (!isFlying() && Dungeon.level.water[pos] && HP < HT) {
 			HP += healInc;
 			Statistics.qualifiedForBossChallengesBadge[0] = false;
 

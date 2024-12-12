@@ -47,8 +47,8 @@ public class BlacksmithQuest extends Quest {
 
     //pre-generate these so they are consistent between seeds
     public ArrayList<Item> smithRewards;
-    public static Weapon.Enchantment smithEnchant;
-    public static Armor.Glyph smithGlyph;
+    public Weapon.Enchantment smithEnchant;
+    public Armor.Glyph smithGlyph;
 
     private static int oldGoldQuestsActive;
     private static final Map<Integer, BlacksmithQuest> quests = new HashMap<>();
@@ -124,10 +124,14 @@ public class BlacksmithQuest extends Quest {
         }
 
         // 30% base chance to be enchanted, stored separately so status isn't revealed early
+        //we generate first so that the outcome doesn't affect the number of RNG rolls
+        smithEnchant = Weapon.Enchantment.random();
+        smithGlyph = Armor.Glyph.random();
+
         float enchantRoll = Random.Float();
-        if (enchantRoll <= 0.3f * ParchmentScrap.enchantChanceMultiplier()){
-            smithEnchant = Weapon.Enchantment.random();
-            smithGlyph = Armor.Glyph.random();
+        if (enchantRoll > 0.3f * ParchmentScrap.enchantChanceMultiplier()){
+            smithEnchant = null;
+            smithGlyph = null;
         }
 
         GameObject.doOnAllGameObjectsList(smithRewards, GameObject::initRandoms);

@@ -340,8 +340,8 @@ public class Heap extends GameObject implements Copyable<Heap> {
 
 			for (Item item : items.toArray( EditorUtilities.EMPTY_ITEM_ARRAY )) {
 
-				//unique items aren't affect by explosions
-				if (item.unique || (item instanceof Armor && ((Armor) item).checkSeal() != null)){
+				//unique items and equipment aren't affect by explosions
+				if (item.unique || item.isUpgradable() || item instanceof EquipableItem){
 					continue;
 				}
 
@@ -361,8 +361,7 @@ public class Heap extends GameObject implements Copyable<Heap> {
 						return;
 					}
 
-				//upgraded items can endure the blast
-				} else if (item.level() <= 0) {
+				} else {
 					items.remove( item );
 				}
 

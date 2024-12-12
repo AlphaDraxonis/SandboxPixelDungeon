@@ -172,7 +172,7 @@ public class WandOfCorruption extends Wand {
 		if (enemy instanceof Hero) {
 			debuffs.put(Paralysis.class, 0f);
 		}
-		
+
 		//all buffs with a > 0 chance are flavor buffs
 		Class<?extends FlavourBuff> debuffCls = (Class<? extends FlavourBuff>) Random.chances(debuffs);
 		
@@ -215,6 +215,16 @@ public class WandOfCorruption extends Wand {
 
 			Buff.prolong( defender, Amok.class, Math.round((4+level*2) * powerMulti));
 		}
+	}
+
+	@Override
+	public String upgradeStat1(int level) {
+		return Messages.decimalFormat("#.##", 3f + level/3f);
+	}
+
+	@Override
+	public String upgradeStat2(int level) {
+		return Integer.toString(6 + 3*level);
 	}
 
 	@Override

@@ -1062,7 +1062,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 CharSprite sprite = ((MobTitleEditor) mainTitleComp).image;
                 if (sprite instanceof MimicSprite) ((MimicSprite) sprite).superHidden = ((Mimic) obj).superHidden;
                 if (obj.state != obj.PASSIVE) sprite.idle();
-                else MimicSprite.hideMimic(sprite);
+                else MimicSprite.hideMimic(sprite, obj);
             }
 
             ((MobTitleEditor) mainTitleComp).setText(((MobTitleEditor) mainTitleComp).createTitle(obj));
@@ -1122,7 +1122,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             CharSprite sprite = mob.sprite;
             if (sprite instanceof MimicSprite) ((MimicSprite) sprite).superHidden = ((Mimic) mob).superHidden;
             if (mob.state != mob.PASSIVE) sprite.idle();
-            else MimicSprite.hideMimic(sprite);
+            else MimicSprite.hideMimic(sprite, mob);
         }
     }
 
@@ -1248,7 +1248,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         public MobTitleEditor(Mob mob) {
             super(mob, false);
 
-            rename = new IconButton(Icons.RENAME_ON.get()) {
+            rename = new IconButton(Icons.SCROLL_COLOR.get()) {
                 @Override
                 protected void onClick() {
                     ChangeCustomizable.showAsWindow(EditMobComp.this, w -> new ChangeMobCustomizable(w, EditMobComp.this));

@@ -57,7 +57,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesi
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
-import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -215,47 +214,8 @@ public class Dungeon {
 
 	public static DungeonScript dungeonScript = Reflection.newInstance(LuaClassGenerator.luaUserContentClass(DungeonScript.class));
 
-	public static void init() {
-
-        String levelDir = GamesInProgress.gameFolder(GamesInProgress.curSlot) + "/";
-        FileUtils.deleteDir(levelDir);
-        FileUtils.resetDefaultFileType();
-        try {
-            CustomDungeonSaves.copyLevelsForNewGame(customDungeon.getName(), levelDir);
-        } catch (IOException e) {
-            SandboxPixelDungeon.reportException(e);
-        }
-        CustomDungeonSaves.setCurDirectory(levelDir);
-
-        CustomTileLoader.loadTiles(false);
-//
-//        if (customDungeon == null) {
-//            customDungeon = new CustomDungeon("DefaultDungeon");
-//            customDungeon.initDefault();
-//        } else {
-//            try {
-//                customDungeon = CustomDungeonSaves.loadDungeon(customDungeon.getName());
-//            } catch (IOException e) {
-//                SandboxPixelDungeon.reportException(e);
-//            }
-//        }
-
-        visited = new String[]{};
-        completed = new String[]{};
-//
-//        ghostLevel = RandomGenUtils.calculateQuestLevel(layout().getGhostSpawnLevels());
-//        wandmakerLevel = RandomGenUtils.calculateQuestLevel(layout().getWandmakerSpawnLevels());
-//        blacksmithLevel = RandomGenUtils.calculateQuestLevel(layout().getBlacksmithSpawnLevels());
-//        impLevel = RandomGenUtils.calculateQuestLevel(layout().getImpSpawnLevels());
-        visitedDepths = new HashSet<>();
-
-		reachedCheckpoint = null;
-
-
-        initialVersion = version = Game.versionCode;
-        challenges = SPDSettings.challenges(true);
-        mobsToChampion = -1;
-
+	//we initialize the seed separately so that things like interlevelscene can access it early
+	public static void initSeed(){
 		if (daily) {
 			//Ensures that daily seeds are not in the range of user-enterable seeds
 			seed = SPDSettings.lastDaily() + DungeonSeed.TOTAL_SEEDS;
@@ -269,6 +229,48 @@ public class Dungeon {
 			customSeedText = "";
 			seed = DungeonSeed.randomSeed();
 		}
+	}
+
+	public static void init() {
+
+			String levelDir = GamesInProgress.gameFolder(GamesInProgress.curSlot) + "/";
+			FileUtils.deleteDir(levelDir);
+			FileUtils.resetDefaultFileType();
+			try {
+				CustomDungeonSaves.copyLevelsForNewGame(customDungeon.getName(), levelDir);
+			} catch (IOException e) {
+				SandboxPixelDungeon.reportException(e);
+			}
+			CustomDungeonSaves.setCurDirectory(levelDir);
+
+			CustomTileLoader.loadTiles(false);
+//
+//        if (customDungeon == null) {
+//            customDungeon = new CustomDungeon("DefaultDungeon");
+//            customDungeon.initDefault();
+//        } else {
+//            try {
+//                customDungeon = CustomDungeonSaves.loadDungeon(customDungeon.getName());
+//            } catch (IOException e) {
+//                SandboxPixelDungeon.reportException(e);
+//            }
+//        }
+
+			visited = new String[]{};
+			completed = new String[]{};
+//
+//        ghostLevel = RandomGenUtils.calculateQuestLevel(layout().getGhostSpawnLevels());
+//        wandmakerLevel = RandomGenUtils.calculateQuestLevel(layout().getWandmakerSpawnLevels());
+//        blacksmithLevel = RandomGenUtils.calculateQuestLevel(layout().getBlacksmithSpawnLevels());
+//        impLevel = RandomGenUtils.calculateQuestLevel(layout().getImpSpawnLevels());
+			visitedDepths = new HashSet<>();
+
+			reachedCheckpoint = null;
+
+
+			initialVersion = version = Game.versionCode;
+			challenges = SPDSettings.challenges(true);
+			mobsToChampion = -1;
 
 		Actor.clear();
 		Actor.resetNextID();
@@ -422,12 +424,12 @@ public class Dungeon {
     private static void addLevelToVisited(Level level) {
         List<String> tempVisited = new ArrayList<>(Arrays.asList(Dungeon.visited));
         tempVisited.add(convertNameAsInVisited(level.name, Dungeon.branch));
-        Dungeon.visited = tempVisited.toArray(new String[]{});
+        Dungeon.visited = tempVisited.toArray(new String[0]);
     }
     private static void addLevelToCompleted(String name, int branch) {
         List<String> tempCompleted = new ArrayList<>(Arrays.asList(Dungeon.completed));
         tempCompleted.add(convertNameAsInVisited(name, branch));
-        Dungeon.completed = tempCompleted.toArray(new String[]{});
+        Dungeon.completed = tempCompleted.toArray(new String[0]);
     }
 
     public static String convertNameAsInVisited(String name, int branch){
@@ -439,23 +441,23 @@ public class Dungeon {
         Actor.clear();
 
         level.reset();
-        switchLevel(level, level.entrance());
-    }
+		switchLevel(level, level.entrance());
+	}
 
-    public static long seedCurLevel() {
-        return seedForLevel(levelName, branch);
-    }
+	public static long seedCurLevel() {
+		return seedForLevel(levelName, branch);
+	}
 
-    public static long seedForLevel(String levelName, int branch) {
-        return customDungeon.getFloor(levelName).getSeed() + 13 * branch;
-    }
+	public static long seedForLevel(String levelName, int branch) {
+		return customDungeon.getFloor(levelName).getSeed() + 13 * branch;
+	}
 
-    public static boolean bossLevel() {
-        return bossLevel(levelName);
-    }
+	public static boolean bossLevel() {
+		return bossLevel(levelName);
+	}
 
-    public static boolean bossLevel(String levelName) {
-        return customDungeon.getFloor(levelName) != null && customDungeon.getFloor(levelName).hasBoss();
+	public static boolean bossLevel(String levelName) {
+		return customDungeon.getFloor(levelName) != null && customDungeon.getFloor(levelName).hasBoss();
     }
 
 	//value used for scaling of damage values and other effects.
@@ -489,9 +491,8 @@ public class Dungeon {
 		}
 
 		//Place hero at the entrance if they are out of the map (often used for pos = -1)
-		// or if they are in solid terrain (except in the mining level, where that happens normally)
-		if (pos < 0 || pos >= level.length()
-				|| (/*!(level instanceof MiningLevel) &&*/ !level.isPassable(pos) && !level.avoid[pos]) || Barrier.stopHero(pos, level)){
+		// or if they are in invalid terrain terrain (except in the mining level, where that happens normally)
+		if (pos < 0 || pos >= level.length() || level.invalidHeroPos(pos)){
 			LevelTransition t = pos == -1 ? level.getTransitionFromSurface() : level.getTransition(null);
 			if (t == null) {
 				Random.pushGenerator(Dungeon.seedCurLevel() + 5);
@@ -659,13 +660,10 @@ public class Dungeon {
 		return false;
 	}
 
-	// 1/4
-	// 3/4 * 1/3 = 3/12 = 1/4
-	// 3/4 * 2/3 * 1/2 = 6/24 = 1/4
-	// 1/4
+
 
 	private static final String INIT_VER = "init_ver";
-    private static final String VERSION = "version";
+    public static final String VERSION = "version";
     private static final String SEED = "seed";
     private static final String CUSTOM_SEED = "custom_seed";
     private static final String DAILY = "daily";
@@ -823,7 +821,7 @@ public class Dungeon {
 
 		loadGame( save );
 	}
-	
+
 	public static void loadGame( int save, boolean fullLoad ) throws IOException {
 		
 		Bundle bundle = FileUtils.bundleFromFile( GamesInProgress.gameFile( save ) );
@@ -1075,12 +1073,11 @@ public class Dungeon {
 	
 		GameScene.updateFog(l, t, width, height);
 
-		boolean stealthyMimics = MimicTooth.stealthyMimics();
         if (level.levelScheme.rememberLayout) {
 
             if (hero.buff(MindVision.class) != null) {
                 for (Mob m : level.mobs.toArray(new Mob[0])) {
-					if (!Mimic.isLikeMob(m) || stealthyMimics && m instanceof Mimic && m.alignment == Char.Alignment.NEUTRAL){
+					if (m instanceof Mimic && m.alignment == Char.Alignment.NEUTRAL && ((Mimic) m).stealthy()){
 						continue;
 					}
 					BArray.or(level.visited, level.heroFOV, m.pos - 1 - level.width(), 3, level.visited);
@@ -1182,7 +1179,7 @@ public class Dungeon {
         } else {
 
             if (ch.isFlying() || ch.buff(Amok.class) != null) {
-                BArray.or(pass, Dungeon.level.avoid, passable);
+				pass = Dungeon.level.getPassableAndAvoidVar(ch, pass);
                 for (Barrier b : Dungeon.level.barriers.values()) {
                     if (b.blocksChar(ch)) passable[b.pos] = false;
                 }
@@ -1223,7 +1220,7 @@ public class Dungeon {
 
         setupPassable();
         if (ch.isFlying() || ch.buff(Amok.class) != null) {
-            BArray.or(pass, Dungeon.level.avoid, passable);
+			pass = Dungeon.level.getPassableAndAvoidVar(ch, pass);
             for (Barrier b : Dungeon.level.barriers.values()) {
                 if (b.blocksChar(ch)) passable[b.pos] = false;
             }

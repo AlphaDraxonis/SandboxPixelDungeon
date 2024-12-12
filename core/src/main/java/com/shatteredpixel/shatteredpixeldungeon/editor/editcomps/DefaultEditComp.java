@@ -54,7 +54,7 @@ public abstract class DefaultEditComp<T> extends Component {
 
         this.obj = obj;
 
-        rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
+        rename = new IconButton(Icons.SCROLL_COLOR.get()) {
             @Override
             protected void onClick() {
                 onRenameClicked();

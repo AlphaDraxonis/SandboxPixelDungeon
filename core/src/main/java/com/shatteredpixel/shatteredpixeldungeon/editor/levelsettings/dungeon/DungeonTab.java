@@ -103,7 +103,7 @@ public class DungeonTab extends MultiWindowTabComp {
                 Dungeon.customDungeon.forceChallenges = forceChallenges;
             }
         };
-        forceChallenges.icon(Icons.CHALLENGE_ON.get());
+        forceChallenges.icon(Icons.CHALLENGE_COLOR.get());
         content.add(forceChallenges);
 
         customRecipes = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "custom_recipes"), PixelScene.landscape() ? 8 : 6){

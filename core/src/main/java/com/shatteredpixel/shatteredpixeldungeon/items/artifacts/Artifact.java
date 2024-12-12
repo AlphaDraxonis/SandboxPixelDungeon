@@ -84,7 +84,7 @@ public class Artifact extends KindofMisc {
 
 	public void activate( Char ch ) {
 		if (passiveBuff != null){
-			passiveBuff.detach();
+			if (passiveBuff.target != null) passiveBuff.detach();
 			passiveBuff = null;
 		}
 		passiveBuff = passiveBuff();
@@ -96,7 +96,7 @@ public class Artifact extends KindofMisc {
 		if (super.doUnequip( hero, collect, single )) {
 
 			if (passiveBuff != null) {
-				passiveBuff.detach();
+				if (passiveBuff.target != null) passiveBuff.detach();
 				passiveBuff = null;
 			}
 
@@ -137,7 +137,7 @@ public class Artifact extends KindofMisc {
 
 	@Override
 	public String info() {
-		String desc = desc();
+		String desc = super.info();
 
 		if (cursed && cursedKnown() && !isEquipped( Dungeon.hero )) {
 			desc += "\n\n" + Messages.get(Artifact.class, "curse_known");

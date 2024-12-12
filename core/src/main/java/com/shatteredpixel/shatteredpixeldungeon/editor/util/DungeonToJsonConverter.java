@@ -5,8 +5,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -225,7 +225,7 @@ public class DungeonToJsonConverter {
                 obj -> appendMobValues(b, obj));
 
         if (f == null) {
-            Class[] rot = Bestiary.standardMobRotation(Dungeon.getSimulatedDepth(l)).toArray(new Class[0]);
+            Class[] rot = MobSpawner.standardMobRotation(Dungeon.getSimulatedDepth(l)).toArray(new Class[0]);
             appendArray(b, "bestiary", rot);
         }
         //else appendArray(b, "bestiary", f.getMobRotationVar().toArray(new Class[0]));

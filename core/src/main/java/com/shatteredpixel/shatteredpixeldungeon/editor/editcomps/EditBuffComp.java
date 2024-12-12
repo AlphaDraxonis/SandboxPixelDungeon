@@ -127,7 +127,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
             add(level);
         }
 
-        if (buff instanceof AnkhInvulnerability || buff instanceof Barrier || buff instanceof Blocking.BlockBuff || buff instanceof Tengu.BombAbility
+        if (buff instanceof Invulnerability || buff instanceof Barrier || buff instanceof Blocking.BlockBuff || buff instanceof Tengu.BombAbility
                 || buff instanceof Burning || buff instanceof ScrollOfChallenge.ChallengeArena || buff instanceof ChampionEnemy || buff instanceof Chill
                 || buff instanceof Corruption || buff instanceof DelayedRockFall || buff instanceof Doom || buff instanceof ScrollOfSirensSong.Enthralled
                 || buff instanceof Ghoul.GhoulLifeLink || buff instanceof Healing || buff instanceof SummonElemental.InvisAlly || buff instanceof Levitation

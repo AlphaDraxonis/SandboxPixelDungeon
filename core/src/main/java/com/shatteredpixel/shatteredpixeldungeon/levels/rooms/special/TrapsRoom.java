@@ -22,10 +22,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLevitation;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -39,6 +42,15 @@ public class TrapsRoom extends SpecialRoom {
 	{
 		spawnItemsOnLevel.add(new PotionOfLevitation());
 	}
+
+	//size is a bit limited to prevent too many or too few traps
+	@Override
+	public int minWidth() { return 6; }
+	public int maxWidth() { return 8; }
+
+	@Override
+	public int minHeight() { return 6; }
+	public int maxHeight() { return 8; }
 
 	public void paint( Level level ) {
 		 
@@ -93,7 +105,7 @@ public class TrapsRoom extends SpecialRoom {
 		}
 
 		if (!itemsGenerated) generateItems(level);
-		
+
 		int pos = x + y * level.width();
 		if (Random.Int( 3 ) == 0) {
 			if (lastRow == Terrain.CHASM) {
@@ -127,13 +139,18 @@ public class TrapsRoom extends SpecialRoom {
 		}
 		
 		//1 floor set higher in probability, never cursed
-		do {
-			if (Random.Int(2) == 0) {
-				prize = Generator.randomWeapon(level.levelScheme.getRegion());
-			} else {
-				prize = Generator.randomArmor(level.levelScheme.getRegion());
+		if (Random.Int(2) == 0) {
+			prize = Generator.randomWeapon(level.levelScheme.getRegion());
+			if (((Weapon)prize).hasCurseEnchant()){
+				((Weapon) prize).enchant(null);
 			}
-		} while (prize.cursed || Challenges.isItemBlocked(prize));
+		} else {
+			prize = Generator.randomArmor(level.levelScheme.getRegion());
+			if (((Armor)prize).hasCurseGlyph()){
+				((Armor) prize).inscribe(null);
+			}
+		}
+		prize.cursed = false;
 		prize.setCursedKnown(true);
 
 		//33% chance for an extra update.

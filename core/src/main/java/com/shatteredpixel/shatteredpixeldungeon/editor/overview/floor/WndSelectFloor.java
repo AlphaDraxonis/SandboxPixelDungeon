@@ -18,8 +18,7 @@ public abstract class WndSelectFloor extends Window {
     public WndSelectFloor() {
         resize(PixelScene.landscape() ? 215 : Math.min(160, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
 
-        listPane = new LevelListPane() {
-
+        listPane = new LevelListPane(new LevelListPane.Selector() {
             @Override
             public void onSelect(LevelSchemeLike levelScheme, LevelListPane.ListItem listItem) {
                 if (WndSelectFloor.this.onSelect(levelScheme)) hide();
@@ -29,7 +28,7 @@ public abstract class WndSelectFloor extends Window {
             protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
                 return WndSelectFloor.this.filterLevels(levels);
             }
-        };
+        });
         add(listPane);
 
         listPane.setSize(width, height);

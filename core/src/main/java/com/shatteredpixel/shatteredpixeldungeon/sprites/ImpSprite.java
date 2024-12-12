@@ -63,7 +63,7 @@ public class ImpSprite extends MobSprite {
 		super.link( ch );
 		
 		if (ch instanceof Imp) {
-			alpha( 0.4f );
+			alpha( 0.5f );
 		}
 	}
 	

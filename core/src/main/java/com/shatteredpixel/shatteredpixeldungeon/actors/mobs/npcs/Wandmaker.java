@@ -63,14 +63,20 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 	}
 
 	@Override
+	public Notes.Landmark landmark() {
+		return Notes.Landmark.WANDMAKER;
+	}
+
+	@Override
 	protected boolean act() {
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
 			die(null);
 			return true;
 		}
-		if (quest != null && quest.type() >= 0 && Dungeon.level.visited[pos] && quest.wand1 != null){
-			Notes.add( Notes.Landmark.WANDMAKER );
-		}
+		//tzzz wiesto evan auskommentiert hat dies??
+//		if (quest != null && quest.type() >= 0 && Dungeon.level.visited[pos] && quest.wand1 != null){
+//			Notes.add( Notes.Landmark.WANDMAKER );
+//		}
 		return super.act();
 	}
 

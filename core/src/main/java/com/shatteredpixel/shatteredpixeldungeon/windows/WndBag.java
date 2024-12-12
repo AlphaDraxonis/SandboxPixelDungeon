@@ -27,9 +27,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -47,129 +49,129 @@ import com.watabou.utils.PointF;
 import java.util.List;
 
 public class WndBag extends WndTabbed {
+	
+	//only one bag window can appear at a time
+	public static Window INSTANCE;
 
-    //only one bag window can appear at a time
-    public static Window INSTANCE;
+	protected static final int COLS_P   = 5;
+	protected static final int COLS_L   = 5;
+	
+	protected static int SLOT_WIDTH_P   = 28;
+	protected static int SLOT_WIDTH_L   = 28;
 
-    protected static final int COLS_P = 5;
-    protected static final int COLS_L = 5;
+	protected static int SLOT_HEIGHT_P	= 28;
+	protected static int SLOT_HEIGHT_L	= 28;
 
-    public static int SLOT_WIDTH_P = 28;
-    public static int SLOT_WIDTH_L = 28;
+	protected static final int SLOT_MARGIN	= 1;
+	
+	protected static final int TITLE_HEIGHT	= 14;
+	
+	private ItemSelector selector;
 
-    public static int SLOT_HEIGHT_P = 28;
-    public static int SLOT_HEIGHT_L = 28;
+	private int nCols;
+	private int nRows;
 
-    protected static final int SLOT_MARGIN = 1;
+	private int slotWidth;
+	private int slotHeight;
 
-    protected static final int TITLE_HEIGHT = 14;
+	protected int count;
+	protected int col;
+	protected int row;
+	
+	private static Bag lastBag;
 
-    protected ItemSelector selector;
+	public WndBag( Bag bag ) {
+		this(bag, null);
+	}
 
-    private int nCols;
-    private int nRows;
+	public WndBag( Bag bag, ItemSelector selector ) {
+		
+		super();
+		
+		if( INSTANCE != null ){
+			INSTANCE.hide();
+		}
+		INSTANCE = this;
+		
+		this.selector = selector;
+		
+		lastBag = bag;
 
-    private int slotWidth;
-    private int slotHeight;
+		slotWidth = PixelScene.landscape() ? SLOT_WIDTH_L : SLOT_WIDTH_P;
+		slotHeight = PixelScene.landscape() ? SLOT_HEIGHT_L : SLOT_HEIGHT_P;
 
-    protected int count;
-    protected int col;
-    protected int row;
+		nCols = PixelScene.landscape() ? COLS_L : COLS_P;
+		nRows = (int)Math.ceil(25/(float)nCols); //we expect to lay out 25 slots in all cases
 
-    private static Bag lastBag;
+		int windowWidth = slotWidth * nCols + SLOT_MARGIN * (nCols - 1);
+		int windowHeight = TITLE_HEIGHT + slotHeight * nRows + SLOT_MARGIN * (nRows - 1);
 
-    public WndBag(Bag bag) {
-        this(bag, null);
-    }
+		if (PixelScene.landscape()){
+			while (slotHeight >= 24 && (windowHeight + 20 + chrome.marginTop()) > PixelScene.uiCamera.height){
+				slotHeight--;
+				windowHeight -= nRows;
+			}
+		} else {
+			while (slotWidth >= 26 && (windowWidth + chrome.marginHor()) > PixelScene.uiCamera.width){
+				slotWidth--;
+				windowWidth -= nCols;
+			}
+		}
 
-    public WndBag(Bag bag, ItemSelector selector) {
+		placeTitle( bag, windowWidth );
+		
+		placeItems( bag );
 
-        super();
+		resize( windowWidth, windowHeight );
 
-        if (INSTANCE != null) {
-            INSTANCE.hide();
-        }
-        INSTANCE = this;
+		int i = 1;
+		for (Bag b : getBags()) {
+			if (b != null) {
+				BagTab tab = new BagTab( b, i++ );
+				add( tab );
+				tab.select( b == bag );
+			}
+		}
 
-        this.selector = selector;
+		layoutTabs();
+	}
 
-        lastBag = bag;
+	protected List<Bag> getBags() {
+		if (selector == null) return Dungeon.hero.belongings.getBags();
+		else {
+			List<Bag> result = selector.getBags();
+			return result == null ? Dungeon.hero.belongings.getBags() : result;
+		}
+	}
+	
+	public static WndBag lastBag( ItemSelector selector ) {
+		
+		if (lastBag != null && Dungeon.hero.belongings.backpack.contains( lastBag )) {
+			
+			return new WndBag( lastBag, selector );
+			
+		} else {
+			
+			return new WndBag( Dungeon.hero.belongings.backpack, selector );
+			
+		}
+	}
 
-        slotWidth = PixelScene.landscape() ? SLOT_WIDTH_L : SLOT_WIDTH_P;
-        slotHeight = PixelScene.landscape() ? SLOT_HEIGHT_L : SLOT_HEIGHT_P;
+	public static WndBag getBag( ItemSelector selector ) {
+		if (selector.preferredBag() == Belongings.Backpack.class){
+			return new WndBag( Dungeon.hero.belongings.backpack, selector );
 
-        nCols = PixelScene.landscape() ? COLS_L : COLS_P;
-        nRows = (int) Math.ceil(25 / (float) nCols); //we expect to lay out 25 slots in all cases
+		} else if (selector.preferredBag() != null){
+			Bag bag = Dungeon.hero.belongings.getItem( selector.preferredBag() );
+			if (bag != null)    return new WndBag( bag, selector );
+			//if a specific preferred bag isn't present, then the relevant items will be in backpack
+			else                return new WndBag( Dungeon.hero.belongings.backpack, selector );
+		}
 
-        int windowWidth = slotWidth * nCols + SLOT_MARGIN * (nCols - 1);
-        int windowHeight = TITLE_HEIGHT + slotHeight * nRows + SLOT_MARGIN * (nRows - 1);
-
-        if (PixelScene.landscape()) {
-            while (slotHeight >= 24 && (windowHeight + 20 + chrome.marginTop()) > PixelScene.uiCamera.height) {
-                slotHeight--;
-                windowHeight -= nRows;
-            }
-        } else {
-            while (slotWidth >= 26 && (windowWidth + chrome.marginHor()) > PixelScene.uiCamera.width) {
-                slotWidth--;
-                windowWidth -= nCols;
-            }
-        }
-
-        placeTitle(bag, windowWidth);
-
-        placeItems(bag);
-
-        resize(windowWidth, windowHeight);
-
-        int i = 1;
-        for (Bag b : getBags()) {
-            if (b != null) {
-                BagTab tab = new BagTab(b, i++);
-                add(tab);
-                tab.select(b == bag);
-            }
-        }
-
-        layoutTabs();
-    }
-
-    protected List<Bag> getBags() {
-        if (selector == null) return Dungeon.hero.belongings.getBags();
-        else {
-            List<Bag> result = selector.getBags();
-            return result == null ? Dungeon.hero.belongings.getBags() : result;
-        }
-    }
-
-    public static WndBag lastBag(ItemSelector selector) {
-
-        if (lastBag != null && Dungeon.hero.belongings.backpack.contains(lastBag)) {
-
-            return new WndBag(lastBag, selector);
-
-        } else {
-
-            return new WndBag(Dungeon.hero.belongings.backpack, selector);
-
-        }
-    }
-
-    public static WndBag getBag(ItemSelector selector) {
-        if (selector.preferredBag() == Belongings.Backpack.class) {
-            return new WndBag(Dungeon.hero.belongings.backpack, selector);
-
-        } else if (selector.preferredBag() != null) {
-            Bag bag = Dungeon.hero.belongings.getItem(selector.preferredBag());
-            if (bag != null) return new WndBag(bag, selector);
-                //if a specific preferred bag isn't present, then the relevant items will be in backpack
-            else return new WndBag(Dungeon.hero.belongings.backpack, selector);
-        }
-
-        return lastBag(selector);
-    }
-
-    protected void placeTitle(Bag bag, int width) {
+		return lastBag( selector );
+	}
+	
+	protected void placeTitle( Bag bag, int width ){
 
         float titleWidth = addGoldAndEnergy(width);
 
@@ -195,46 +197,46 @@ public class WndBag extends WndTabbed {
             PixelScene.align(gold);
             add(gold);
 
-            BitmapText amt = new BitmapText(Integer.toString(Dungeon.gold), PixelScene.pixelFont);
-            amt.hardlight(TITLE_COLOR);
-            amt.measure();
-            amt.x = width - gold.width() - amt.width() - 1;
-            amt.y = (TITLE_HEIGHT - amt.baseLine()) / 2f - 1;
-            PixelScene.align(amt);
-            add(amt);
+			BitmapText amt = new BitmapText(Integer.toString(Dungeon.gold), PixelScene.pixelFont);
+			amt.hardlight(TITLE_COLOR);
+			amt.measure();
+			amt.x = width - gold.width() - amt.width() - 1;
+			amt.y = (TITLE_HEIGHT - amt.baseLine()) / 2f - 1;
+			PixelScene.align(amt);
+			add(amt);
 
-            titleWidth = amt.x;
-        } else {
+			titleWidth = amt.x;
+		} else {
 
-            Image gold = Icons.get(Icons.COIN_SML);
-            gold.x = width - gold.width() - 0.5f;
-            gold.y = 0;
-            PixelScene.align(gold);
-            add(gold);
+			Image gold = Icons.get(Icons.COIN_SML);
+			gold.x = width - gold.width() - 0.5f;
+			gold.y = 0;
+			PixelScene.align(gold);
+			add(gold);
 
-            BitmapText amt = new BitmapText(Integer.toString(Dungeon.gold), PixelScene.pixelFont);
-            amt.hardlight(TITLE_COLOR);
-            amt.measure();
-            amt.x = width - gold.width() - amt.width() - 2f;
-            amt.y = 0;
-            PixelScene.align(amt);
-            add(amt);
+			BitmapText amt = new BitmapText(Integer.toString(Dungeon.gold), PixelScene.pixelFont);
+			amt.hardlight(TITLE_COLOR);
+			amt.measure();
+			amt.x = width - gold.width() - amt.width() - 2f;
+			amt.y = 0;
+			PixelScene.align(amt);
+			add(amt);
 
-            titleWidth = amt.x;
+			titleWidth = amt.x;
 
-            Image energy = Icons.get(Icons.ENERGY_SML);
-            energy.x = width - energy.width();
-            energy.y = gold.height();
-            PixelScene.align(energy);
-            add(energy);
+			Image energy = Icons.get(Icons.ENERGY_SML);
+			energy.x = width - energy.width();
+			energy.y = gold.height();
+			PixelScene.align(energy);
+			add(energy);
 
-            amt = new BitmapText(Integer.toString(Dungeon.energy), PixelScene.pixelFont);
-            amt.hardlight(0x44CCFF);
-            amt.measure();
-            amt.x = width - energy.width() - amt.width() - 1;
-            amt.y = energy.y;
-            PixelScene.align(amt);
-            add(amt);
+			amt = new BitmapText(Integer.toString(Dungeon.energy), PixelScene.pixelFont);
+			amt.hardlight(0x44CCFF);
+			amt.measure();
+			amt.x = width - energy.width() - amt.width() - 1;
+			amt.y = energy.y;
+			PixelScene.align(amt);
+			add(amt);
 
             titleWidth = Math.min(titleWidth, amt.x);
         }
@@ -251,39 +253,39 @@ public class WndBag extends WndTabbed {
         placeItem(stuff.misc != null ? stuff.misc : new Placeholder(ItemSpriteSheet.SOMETHING));
         placeItem(stuff.ring != null ? stuff.ring : new Placeholder(ItemSpriteSheet.RING_HOLDER));
 
-        int equipped = 5;
+		int equipped = 5;
 
-        //the container itself if it's not the root backpack
-        if (container != Dungeon.hero.belongings.backpack) {
-            placeItem(container);
-            count--; //don't count this one, as it's not actually inside of itself
-        } else if (stuff.secondWep != null) {
-            //second weapon always goes to the front of view on main bag
-            placeItem(stuff.secondWep);
-            equipped++;
-        }
+		//the container itself if it's not the root backpack
+		if (container != Dungeon.hero.belongings.backpack){
+			placeItem(container);
+			count--; //don't count this one, as it's not actually inside of itself
+		} else if (stuff.secondWep != null) {
+			//second weapon always goes to the front of view on main bag
+			placeItem(stuff.secondWep);
+			equipped++;
+		}
 
-        // Items in the bag, except other containers (they have tags at the bottom)
-        for (Item item : container.items.toArray(EditorUtilities.EMPTY_ITEM_ARRAY)) {
-            if (!(item instanceof Bag)) {
-                placeItem(item);
-            } else {
-                count++;
-            }
-        }
+		// Items in the bag, except other containers (they have tags at the bottom)
+		for (Item item : container.items.toArray(EditorUtilities.EMPTY_ITEM_ARRAY)) {
+			if (!(item instanceof Bag)) {
+				placeItem( item );
+			} else {
+				count++;
+			}
+		}
+		
+		// Free Space
+		while ((count - equipped) < container.capacity()) {
+			placeItem( null );
+		}
+	}
+	
+	protected void placeItem( final Item item ) {
 
-        // Free Space
-        while ((count - equipped) < container.capacity()) {
-            placeItem(null);
-        }
-    }
-
-    protected void placeItem(final Item item) {
-
-        count++;
-
-        int x = col * (slotWidth + SLOT_MARGIN);
-        int y = TITLE_HEIGHT + row * (slotHeight + SLOT_MARGIN);
+		count++;
+		
+		int x = col * (slotWidth + SLOT_MARGIN);
+		int y = TITLE_HEIGHT + row * (slotHeight + SLOT_MARGIN);
 
         InventorySlot slot = createInventorySlot(item);
         slot.setRect(x, y, slotWidth, slotHeight);
@@ -306,186 +308,193 @@ public class WndBag extends WndTabbed {
             protected void onClick() {
                 if (lastBag != item && !lastBag.contains(item) && !item.isEquipped(Dungeon.hero)) {
 
-                    hide();
+					hide();
 
-                } else if (selector != null) {
+				} else if (selector != null) {
 
-                    hide();
-                    selector.onSelect(item);
+					if (selector.hideAfterSelecting()){
+						hide();
+					}
+					selector.onSelect( item );
 
-                } else {
+				} else {
 
-                    Game.scene().addToFront(new WndUseItem(WndBag.this, item));
+					Game.scene().addToFront(new WndUseItem( WndBag.this, item ) );
 
-                }
-            }
+				}
+			}
 
-            @Override
-            protected void onRightClick() {
-                if (lastBag != item && !lastBag.contains(item) && !item.isEquipped(Dungeon.hero)) {
+			@Override
+			protected void onRightClick() {
+				if (lastBag != item && !lastBag.contains(item) && !item.isEquipped(Dungeon.hero)){
 
-                    hide();
+					hide();
 
-                } else if (selector != null) {
+				} else if (selector != null) {
 
-                    hide();
-                    selector.onSelect(item);
+					if (selector.hideAfterSelecting()){
+						hide();
+					}
+					selector.onSelect( item );
 
-                } else {
+				} else {
 
-                    RightClickMenu r = new RightClickMenu(item) {
-                        @Override
-                        public void onSelect(int index) {
-                            WndBag.this.hide();
-                        }
-                    };
-                    parent.addToFront(r);
-                    r.camera = camera();
-                    PointF mousePos = PointerEvent.currentHoverPos();
-                    mousePos = camera.screenToCamera((int) mousePos.x, (int) mousePos.y);
-                    r.setPos(mousePos.x - 3, mousePos.y - 3);
+					RightClickMenu r = new RightClickMenu(item){
+						@Override
+						public void onSelect(int index) {
+							WndBag.this.hide();
+						}
+					};
+					parent.addToFront(r);
+					r.camera = camera();
+					PointF mousePos = PointerEvent.currentHoverPos();
+					mousePos = camera.screenToCamera((int)mousePos.x, (int)mousePos.y);
+					r.setPos(mousePos.x-3, mousePos.y-3);
 
-                }
-            }
+				}
+			}
 
-            @Override
-            protected boolean onLongClick() {
-                if (selector == null && item.defaultAction() != null) {
-                    hide();
-                    QuickSlotButton.set(item);
-                    return true;
-                } else if (selector != null) {
-                    Game.scene().addToFront(new WndInfoItem(item));
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        };
-    }
+			@Override
+			protected boolean onLongClick() {
+				if (selector == null && item.defaultAction() != null) {
+					hide();
+					QuickSlotButton.set( item );
+					return true;
+				} else if (selector != null) {
+					DungeonScene.show(new WndInfoItem(item));
+					return true;
+				} else {
+					return false;
+				}
+			}
+		};
+	}
 
-    @Override
-    public boolean onSignal(KeyEvent event) {
-        if (event.pressed && KeyBindings.getActionForKey(event) == SPDAction.INVENTORY) {
-            onBackPressed();
-            return true;
-        } else {
-            return super.onSignal(event);
-        }
-    }
+	@Override
+	public boolean onSignal(KeyEvent event) {
+		if (event.pressed && KeyBindings.getActionForKey( event ) == SPDAction.INVENTORY) {
+			onBackPressed();
+			return true;
+		} else {
+			return super.onSignal(event);
+		}
+	}
+	
+	@Override
+	public void onBackPressed() {
+		if (selector != null) {
+			selector.onSelect( null );
+		}
+		super.onBackPressed();
+	}
+	
+	@Override
+	protected void onClick( Tab tab ) {
+		hide();
+		Window w = new WndBag(((BagTab) tab).bag, selector);
+		if (Game.scene() instanceof GameScene){
+			GameScene.show(w);
+		} else {
+			Game.scene().addToFront(w);
+		}
+	}
+	
+	@Override
+	public void hide() {
+		super.hide();
+		if (INSTANCE == this){
+			INSTANCE = null;
+		}
+	}
+	
+	@Override
+	protected int tabHeight() {
+		return 20;
+	}
+	
+	private Image icon( Bag bag ) {
+		if (bag instanceof VelvetPouch) {
+			return Icons.get( Icons.SEED_POUCH );
+		} else if (bag instanceof ScrollHolder) {
+			return Icons.get( Icons.SCROLL_HOLDER );
+		} else if (bag instanceof MagicalHolster) {
+			return Icons.get( Icons.WAND_HOLSTER );
+		} else if (bag instanceof PotionBandolier) {
+			return Icons.get( Icons.POTION_BANDOLIER );
+		} else {
+			return Icons.get( Icons.BACKPACK );
+		}
+	}
+	
+	protected class BagTab extends IconTab {
 
-    @Override
-    public void onBackPressed() {
-        if (selector != null) {
-            selector.onSelect(null);
-        }
-        super.onBackPressed();
-    }
+		public final Bag bag;
+		private int index;
+		
+		public BagTab( Bag bag, int index ) {
+			super( icon(bag) );
+			
+			this.bag = bag;
+			this.index = index;
+		}
 
-    @Override
-    protected void onClick(Tab tab) {
-        hide();
-        Window w = new WndBag(((BagTab) tab).bag, selector);
-        if (Game.scene() instanceof GameScene) {
-            GameScene.show(w);
-        } else {
-            Game.scene().addToFront(w);
-        }
-    }
+		@Override
+		public GameAction keyAction() {
+			switch (index){
+				case 1: default:
+					return SPDAction.BAG_1;
+				case 2:
+					return SPDAction.BAG_2;
+				case 3:
+					return SPDAction.BAG_3;
+				case 4:
+					return SPDAction.BAG_4;
+				case 5:
+					return SPDAction.BAG_5;
+			}
+		}
 
-    @Override
-    public void hide() {
-        super.hide();
-        if (INSTANCE == this) {
-            INSTANCE = null;
-        }
-    }
+		@Override
+		protected String hoverText() {
+			return Messages.titleCase(bag.name());
+		}
 
-    @Override
-    protected int tabHeight() {
-        return 20;
-    }
+		@Override
+		protected void select(boolean value) {
+			super.select(value);
+		}
+	}
+	
+	public static class Placeholder extends Item {
 
-    private Image icon(Bag bag) {
-        if (bag instanceof VelvetPouch) {
-            return Icons.get(Icons.SEED_POUCH);
-        } else if (bag instanceof ScrollHolder) {
-            return Icons.get(Icons.SCROLL_HOLDER);
-        } else if (bag instanceof MagicalHolster) {
-            return Icons.get(Icons.WAND_HOLSTER);
-        } else if (bag instanceof PotionBandolier) {
-            return Icons.get(Icons.POTION_BANDOLIER);
-        } else {
-            return Icons.get(Icons.BACKPACK);
-        }
-    }
+		public Placeholder(int image ) {
+			this.image = image;
+		}
 
-    protected class BagTab extends IconTab {
+		@Override
+		public String name() {
+			return null;
+		}
 
-        public final Bag bag;
-        private int index;
-
-        public BagTab(Bag bag, int index) {
-            super(icon(bag));
-
-            this.bag = bag;
-            this.index = index;
-        }
-
-        @Override
-        public GameAction keyAction() {
-            switch (index) {
-                case 1:
-                default:
-                    return SPDAction.BAG_1;
-                case 2:
-                    return SPDAction.BAG_2;
-                case 3:
-                    return SPDAction.BAG_3;
-                case 4:
-                    return SPDAction.BAG_4;
-                case 5:
-                    return SPDAction.BAG_5;
-            }
-        }
-
-        @Override
-        protected String hoverText() {
-            return Messages.titleCase(bag.name());
-        }
-
-        @Override
-        protected void select(boolean value) {
-            super.select(value);
-        }
-    }
-
-    public static class Placeholder extends Item {
-
-        public Placeholder(int image) {
-            this.image = image;
-        }
-
-        @Override
-        public String name() {
-            return null;
-        }
-
-        @Override
-        public boolean isIdentified() {
-            return true;
-        }
-
-        @Override
-        public boolean isEquipped(Hero hero) {
-            return true;
-        }
-    }
+		@Override
+		public boolean isIdentified() {
+			return true;
+		}
+		
+		@Override
+		public boolean isEquipped( Hero hero ) {
+			return true;
+		}
+	}
 
     public interface ItemSelectorInterface {
         String textPrompt();
 
         Class<? extends Bag> preferredBag();
+
+		default boolean hideAfterSelecting(){//toDO tzz check where we should use this!!!
+			return true; //defaults to hiding the window when an item is picked
+		}
 
         List<Bag> getBags();
 

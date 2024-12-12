@@ -141,8 +141,15 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 	}
 
 //	@Override
+	public boolean add(Buff buff) {
+		//immune to buffs and debuff (except its own rock armor) while sleeping
+		if (state == SLEEPING && !(buff instanceof RockArmor))  return false;
+		else                                                    return super.add(buff);
+	}
+
+//	@Override
 //	public int damageRoll() {
-//		return Char.combatRoll( 3, 6 );
+//		return Random.NormalIntRange( 3, 6 );
 //	}
 //
 //	@Override
@@ -152,7 +159,7 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Char.combatRoll(0, 6);
+//		return super.drRoll() + Random.NormalIntRange(0, 6);
 //	}
 
 	@Override
@@ -701,7 +708,7 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 						}
 
 						if (ch != null && !(ch instanceof GnollGeomancer)){
-							ch.damage(Char.combatRoll(6, 12), new GnollGeomancer.Boulder());
+							ch.damage(Random.NormalIntRange(6, 12), new GnollGeomancer.Boulder());
 
 							if (ch.isAlive()){
 								Buff.prolong( ch, Paralysis.class, ch instanceof GnollGuard ? 10 : 3 );
@@ -804,7 +811,7 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 
 		@Override
 		public void affectChar(Char ch) {
-			ch.damage(Char.combatRoll(6, 12), this);
+			ch.damage(Random.NormalIntRange(6, 12), this);
 			if (ch.isAlive()) {
 				Buff.prolong(ch, Paralysis.class, ch instanceof GnollGuard ? 10 : 3);
 			} else if (ch == Dungeon.hero){

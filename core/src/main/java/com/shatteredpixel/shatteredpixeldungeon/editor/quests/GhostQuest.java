@@ -66,7 +66,17 @@ public class GhostQuest extends Quest {
             } else {
                 itemLevel = 3;
             }
-            boolean doEnchant = Random.Float() < 0.2f * ParchmentScrap.enchantChanceMultiplier();//20% to be enchanted. We store it separately so enchant status isn't revealed early
+
+            //20% to be enchanted. We store it separately so enchant status isn't revealed early
+            //we generate first so that the outcome doesn't affect the number of RNG rolls
+            enchant = Weapon.Enchantment.random();
+            glyph = Armor.Glyph.random();
+
+            float enchantRoll = Random.Float();
+            if (enchantRoll > 0.2f * ParchmentScrap.enchantChanceMultiplier()){
+                enchant = null;
+                glyph = null;
+            }
 
             if (armor == null) {
                 //50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
@@ -86,7 +96,7 @@ public class GhostQuest extends Quest {
                         break;
                 }
                 armor.upgrade(itemLevel);
-                if (doEnchant) glyph = Armor.Glyph.random();
+                armor.inscribe(glyph);
             } else {
                 GameObject.doOnSingleObject(armor, GameObject::initRandoms, newValue -> armor = newValue);
             }
@@ -100,7 +110,7 @@ public class GhostQuest extends Quest {
                 weapon.enchant(null);
                 weapon.cursed = false;
                 weapon.upgrade(itemLevel);
-                if (doEnchant) enchant = Weapon.Enchantment.random();
+                weapon.enchant(enchant);
             } else {
                 GameObject.doOnSingleObject(weapon, GameObject::initRandoms, newValue -> weapon = newValue);
             }

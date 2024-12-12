@@ -51,10 +51,11 @@ import java.util.ArrayList;
 public class Burning extends BuffWithDuration implements Hero.Doom {
 	
 	private static final float DURATION = 8f;
-	
-	//for tracking burning of hero items
-	private int burnIncrement = 0;
 
+	private boolean acted = false; //whether the debuff has done any damage at all yet
+	private int burnIncrement = 0; //for tracking burning of hero items
+
+	private static final String ACTED	= "acted";
 	private static final String BURN	= "burnIncrement";
 
 	{
@@ -65,12 +66,14 @@ public class Burning extends BuffWithDuration implements Hero.Doom {
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
+		bundle.put( ACTED, acted );
 		bundle.put( BURN, burnIncrement );
 	}
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle(bundle);
+		acted = bundle.getBoolean( ACTED );
 		burnIncrement = bundle.getInt( BURN );
 	}
 
@@ -89,14 +92,18 @@ public class Burning extends BuffWithDuration implements Hero.Doom {
 
 	@Override
 	public boolean act() {
-		
-		if (target.isAlive() && !target.isImmune(getClass())) {
-			
-			int damage = Char.combatRoll( 1, 3 + Dungeon.scalingDepth()/4 );
+
+		if (acted && Dungeon.level.water[target.pos] && !target.isFlying()){
+			detach();
+		} else if (target.isAlive() && !target.isImmune(getClass())) {
+
+			acted = true;
+			int damage = Random.NormalIntRange( 1, 3 + Dungeon.scalingDepth()/4 );
 			Buff.detach( target, Chill.class);
 
 			Hero hero = HeroSubclassAbilityBuff.targetHero(target);
-			if (hero != null && hero.buff(TimekeepersHourglass.timeStasis.class) == null) {
+			if (hero != null && hero.buff(TimekeepersHourglass.timeStasis.class) == null
+					&& target.buff(TimeStasis.class) ==null) {
 
 				hero.damage( damage, this );
 				burnIncrement++;
@@ -193,6 +200,7 @@ public class Burning extends BuffWithDuration implements Hero.Doom {
 			}
 		}
 		left = duration;
+		acted = false;
 	}
 	
 	@Override

@@ -51,6 +51,7 @@ public class SandboxPixelDungeon extends Game {
 	public static final int v2_2_1 = 755; //iOS was 755 (also called v2.2.2), other platforms were 754
 	public static final int v2_3_2 = 768;
 	public static final int v2_4_0 = 780;
+	public static final int v2_5_0 = 794;
 	
 	static {
 		Music.getExternalAudioFile = CustomDungeonSaves::getExternalFile;
@@ -62,10 +63,21 @@ public class SandboxPixelDungeon extends Game {
 	public SandboxPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
 
+		//pre-v2.5.2
+		com.watabou.utils.Bundle.addAlias(
+				com.shatteredpixel.shatteredpixeldungeon.items.bombs.FlashBangBomb.class,
+				"com.shatteredpixel.shatteredpixeldungeon.items.bombs.ShockBomb" );
+		com.watabou.utils.Bundle.addAlias(
+				com.shatteredpixel.shatteredpixeldungeon.items.bombs.SmokeBomb.class,
+				"com.shatteredpixel.shatteredpixeldungeon.items.bombs.Flashbang" );
+
 		//pre-v2.5.0
 		com.watabou.utils.Bundle.addAlias(
 				com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobSpawner.class,
 				"com.shatteredpixel.shatteredpixeldungeon.levels.Level$Respawner" );
+		com.watabou.utils.Bundle.addAlias(
+				com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invulnerability.class,
+				"com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AnkhInvulnerability" );
 
 		//pre-v2.4.0
 		com.watabou.utils.Bundle.addAlias(

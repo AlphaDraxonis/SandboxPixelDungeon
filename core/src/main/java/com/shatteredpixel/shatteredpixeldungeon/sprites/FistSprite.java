@@ -198,7 +198,7 @@ public abstract class FistSprite extends MobSprite {
 	public static class Rotting extends FistSprite {
 
 		{
-			boltType = MagicMissile.TOXIC_VENT;
+			boltType = MagicMissile.SPECK + Speck.TOXIC;
 		}
 
 		@Override
@@ -219,7 +219,7 @@ public abstract class FistSprite extends MobSprite {
 		}
 
 		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
-			playZap(parent, sprite, cell, ch, MagicMissile.TOXIC_VENT);
+			playZap(parent, sprite, cell, ch, MagicMissile.SPECK + Speck.TOXIC);
 		}
 	}
 

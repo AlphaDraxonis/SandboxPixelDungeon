@@ -213,7 +213,7 @@ public class WndSelectDungeon extends Window {
         public ListItem(CustomDungeonSaves.Info info) {
             super(Chrome.Type.GREY_BUTTON_TR, info.name, 9);
 
-            depthIcon = Icons.get(Icons.DEFAULT_DEPTH);
+            depthIcon = Icons.get(Icons.DEPTH);
             depthIcon.scale.set(1.2f);
             add(depthIcon);
             depthText = PixelScene.renderTextBlock(Integer.toString(info.numLevels), 7);
@@ -424,7 +424,7 @@ public class WndSelectDungeon extends Window {
                 upload.enable(!info.downloaded && info.numLevels > 0);
                 upload.icon(Icons.UPLOAD.get());
 
-                IconButton rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
+                IconButton rename = new IconButton(Icons.get(Icons.SCROLL_COLOR)) {
                     @Override
                     protected void onClick() {
                         Window w = new WndTextInput(Messages.get(WndSelectDungeon.class, "rename_title"),

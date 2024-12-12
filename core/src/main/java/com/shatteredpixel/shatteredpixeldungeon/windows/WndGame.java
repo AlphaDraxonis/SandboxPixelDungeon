@@ -68,7 +68,7 @@ public class WndGame extends Window {
 					GameScene.show( new WndChallenges( Dungeon.challenges, false ) );
 				}
 			} );
-			curBtn.icon(Icons.get(Icons.CHALLENGE_ON));
+			curBtn.icon(Icons.get(Icons.CHALLENGE_COLOR));
 		}
 
 		boolean heroDead = Dungeon.hero == null || !Dungeon.hero.isAlive();

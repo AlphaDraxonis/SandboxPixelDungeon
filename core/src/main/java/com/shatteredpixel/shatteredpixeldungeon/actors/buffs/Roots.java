@@ -35,7 +35,7 @@ public class Roots extends FlavourBuff {
 	
 	@Override
 	public boolean attachTo( Char target ) {
-		if (!target.avoidsHazards() && super.attachTo( target )) {
+		if (!target.isFlying() && super.attachTo( target )) {
 			target.rooted = true;
 			return true;
 		} else {

@@ -44,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -88,7 +89,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 //	@Override
 //	public int damageRoll() {
-//		return Char.combatRoll( 15, 25 );
+//		return Random.NormalIntRange( 15, 25 );
 //	}
 //
 //	@Override
@@ -98,7 +99,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Char.combatRoll(0, 10);
+//		return super.drRoll() + Random.NormalIntRange(0, 10);
 //	}
 
 	private int phase = 1;
@@ -641,13 +642,11 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 						s.detach();
 					}
 				}
-				for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
-					if (m.alignment == alignment) {
-						if (m instanceof DwarfKingMob && ((DwarfKingMob) m).getKingId() == id()) {
-							m.die(null);
-						}
-					}
+				Bestiary.skipCountingEncounters = true;
+				for (Mob m : getSubjects()) {
+					m.die(null);
 				}
+				Bestiary.skipCountingEncounters = false;
 				for (Buff b: buffs()){
 					if (b instanceof LifeLink){
 						b.detach();
@@ -712,9 +711,11 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 		Dungeon.level.unseal();
 
+		Bestiary.skipCountingEncounters = true;
 		for (Mob m : getSubjects()){
 			m.die(null);
 		}
+		Bestiary.skipCountingEncounters = false;
 
 		yell( Messages.get(this, "defeated") );
 
@@ -969,7 +970,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 					}
 				} else {
 					Char ch = Actor.findChar(pos);
-					ch.damage(Char.combatRoll(20, 40), this);
+					ch.damage(Random.NormalIntRange(20, 40), this);
 					if (((DwarfKing)target).phase == 2){
 						target.damage((int) Math.ceil(target.HT/(Dungeon.isChallenged(Challenges.STRONGER_BOSSES)? 18d : 12d)),
 								new KingDamager(kingID));
@@ -1033,6 +1034,10 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 	}
 
 	public static class KingDamager extends Buff {
+
+		{
+			revivePersists = true;
+		}
 
 		private int kingID;
 

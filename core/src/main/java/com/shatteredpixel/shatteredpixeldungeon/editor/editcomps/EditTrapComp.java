@@ -137,7 +137,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             add(revealedWhenTriggered);
 
             disarmedByActivation = new StyledCheckBox(Messages.get(this, "disarmed_by_activation"));
-            disarmedByActivation.icon(new ItemSprite(ItemSpriteSheet.STONE_DISARM));
+            disarmedByActivation.icon(new ItemSprite(ItemSpriteSheet.STONE_DETECT));
             disarmedByActivation.checked(obj.disarmedByActivation);
             disarmedByActivation.addChangeListener(v -> {
                 obj.disarmedByActivation = v;

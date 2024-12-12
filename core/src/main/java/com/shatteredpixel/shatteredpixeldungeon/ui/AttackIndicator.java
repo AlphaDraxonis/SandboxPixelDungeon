@@ -119,7 +119,7 @@ public class AttackIndicator extends Tag {
 			}
 		}
 		
-		if (!candidates.contains( lastTarget )) {
+		if (lastTarget == null || !candidates.contains( lastTarget )) {
 			if (candidates.isEmpty()) {
 				lastTarget = null;
 			} else {
@@ -129,8 +129,8 @@ public class AttackIndicator extends Tag {
 				flash();
 			}
 		} else {
+			active = true;
 			if (!bg.visible) {
-				active = true;
 				flash();
 			}
 		}

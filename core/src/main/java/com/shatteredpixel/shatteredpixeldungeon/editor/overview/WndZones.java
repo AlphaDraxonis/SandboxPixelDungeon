@@ -82,7 +82,7 @@ public final class WndZones {
             public ListItem(Zone zone, ZoneListPane listPane) {
                 super(Icons.get(Icons.ZONE), null, zone.getName());
 
-                editButton = new IconButton(Icons.get(Icons.RENAME_ON)) {
+                editButton = new IconButton(Icons.get(Icons.SCROLL_COLOR)) {
                     @Override
                     protected void onClick() {
                         openEditWindow();

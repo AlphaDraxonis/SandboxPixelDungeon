@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWea
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -276,7 +277,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 		if (Dungeon.level != null) {
 			if (!Dungeon.dungeonScript.onItemCollected(this)) return false;
 		}
-		
+
 		if (stackable) {
 			for (Item item:items) {
 				if (isSimilar( item )) {
@@ -601,6 +602,19 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 	public Emitter emitter() { return null; }
 	
 	public String info() {
+
+		if (Dungeon.hero != null) {
+			Notes.CustomRecord note;
+			if (this instanceof EquipableItem) {
+				note = Notes.findCustomRecord(((EquipableItem) this).customNoteID);
+			} else {
+				note = Notes.findCustomRecord(getClass());
+			}
+			if (note != null){
+				return Messages.get(this, "custom_note", note.title()) + "\n\n" + desc();
+			}
+		}
+
 		return desc();
 	}
 	

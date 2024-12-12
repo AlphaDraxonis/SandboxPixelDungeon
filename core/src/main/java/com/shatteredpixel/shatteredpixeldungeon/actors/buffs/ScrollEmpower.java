@@ -51,7 +51,7 @@ public class ScrollEmpower extends BuffWithDuration {
 
 	@Override
 	public int icon() {
-		return BuffIndicator.UPGRADE;
+		return BuffIndicator.WAND;
 	}
 
 	@Override
