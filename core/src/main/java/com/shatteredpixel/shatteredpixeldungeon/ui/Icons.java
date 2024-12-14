@@ -679,6 +679,40 @@ public enum Icons {
 		}
 	}
 
+	public static Image getWithNoOffset(Level.Feeling feeling){
+		if (feeling == null) return get(RANDOM_FEELING);
+
+		Image icon = new Image( Assets.Interfaces.ICONS );
+
+		switch (feeling){
+			case NONE: default:
+				icon.frame( icon.texture.uvRectBySize( 32, 80, 6, 7 ) );
+				break;
+			case CHASM:
+				icon.frame(icon.texture.uvRectBySize(40, 80, 7, 7));
+				break;
+			case WATER:
+				icon.frame( icon.texture.uvRectBySize( 48, 80, 7, 7 ) );
+				break;
+			case GRASS:
+				icon.frame( icon.texture.uvRectBySize( 56, 80, 7, 7 ) );
+				break;
+			case DARK:
+				icon.frame(icon.texture.uvRectBySize(64, 80, 7, 7));
+				break;
+			case LARGE:
+				icon.frame(icon.texture.uvRectBySize(72, 80, 7, 7));
+				break;
+			case TRAPS:
+				icon.frame(icon.texture.uvRectBySize(80, 80, 7, 7));
+				break;
+			case SECRETS:
+				icon.frame(icon.texture.uvRectBySize(88, 80, 7, 7));
+				break;
+		}
+		return icon;
+	}
+
 	public static Image getLarge(Level.Feeling feeling){
 		if (feeling == null) return get(STAIRS_RANDOM_FEELING);
 

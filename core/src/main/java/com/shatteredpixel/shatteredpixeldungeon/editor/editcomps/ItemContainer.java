@@ -5,11 +5,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot;
@@ -24,6 +24,9 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 public class ItemContainer<T extends Item> extends Component implements WndBag.ItemSelectorInterface { // needs access to protected methods
+
+    protected static final int GAP = 2;
+    protected static final int BTN_SIZE = ItemSpriteSheet.SIZE + 2;
 
     protected final DefaultEditComp<?> editComp;
     protected final boolean reverseUiOrder;//if true, newly added items are added in the front in ui (index=0), but ALWAYS last in logic
@@ -187,23 +190,21 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         return slots.size();
     }
 
-    protected static final int GAP = 2;
-
     @Override
     protected void layout() {
         float posY = y;
         float posX = x + GAP;
         for (Slot slot : slots) {
-            slot.setRect(posX, posY, WndMenuEditor.BTN_HEIGHT, WndMenuEditor.BTN_HEIGHT);
+            slot.setRect(posX, posY, BTN_SIZE, BTN_SIZE);
             PixelScene.align(slot);
             posX = slot.right() + GAP;
-            if (posX + WndMenuEditor.BTN_HEIGHT > width + x) {
+            if (posX + BTN_SIZE > width + x) {
                 posY = slot.bottom() + GAP;
                 posX = x + GAP;
             }
         }
         if (addBtn.visible) {
-            addBtn.setRect(posX, posY, WndMenuEditor.BTN_HEIGHT, WndMenuEditor.BTN_HEIGHT);
+            addBtn.setRect(posX, posY, BTN_SIZE, BTN_SIZE);
             PixelScene.align(addBtn);
             posY = addBtn.bottom() + WndTitledMessage.GAP;
         } else {

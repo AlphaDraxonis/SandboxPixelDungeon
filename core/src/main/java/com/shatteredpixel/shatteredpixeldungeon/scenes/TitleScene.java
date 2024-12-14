@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.server.ServerDungeonList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
@@ -115,6 +116,13 @@ public class TitleScene extends PixelScene {
 		signs.color(Window.SILVER);
 		add(signs);
 
+		BitmapText version = new BitmapText("v" + Game.version, pixelFont);
+		version.measure();
+		version.hardlight(0x888888);
+		version.x = w - version.width() - 4;
+		version.y = h - version.height() - 2;
+		add(version);
+
 		final Chrome.Type GREY_TR = Chrome.Type.GREY_BUTTON_TR;
 
 		DiscordButton btnDiscord = new DiscordButton();
@@ -125,6 +133,15 @@ public class TitleScene extends PixelScene {
 		ReportBugButton btnBug = new ReportBugButton();
 		btnBug.setPos(5, h - 5 - 16);
 		add(btnBug);
+
+		IconButton btnJournal = new IconButton(Icons.JOURNAL.get()) {
+			@Override
+			protected void onClick() {
+				SandboxPixelDungeon.switchNoFade( JournalScene.class );
+			}
+		};
+		btnJournal.setRect(w - 5 - btnJournal.icon().width(), version.y - 4 - btnJournal.icon().height(), btnJournal.icon().width(), btnJournal.icon().height());
+		add(btnJournal);
 
 		StyledButton btnPlay = new StyledButton(GREY_TR, Messages.get(this, "enter")) {
 			@Override
@@ -163,20 +180,10 @@ public class TitleScene extends PixelScene {
 		add(btnRankings);
 		Dungeon.daily = Dungeon.dailyReplay = false;
 
-//		StyledButton btnBadges = new StyledButton(GREY_TR, Messages.get(this, "journal")){
-//			@Override
-//			protected void onClick() {
-//				ShatteredPixelDungeon.switchNoFade( JournalScene.class );
-//			}
-//		};
-//		btnBadges.icon(Icons.get(Icons.JOURNAL));
-//		add(btnBadges);
-
 		StyledButton btnDiscover = new StyledButton(GREY_TR, Messages.get(this, "discover")) {
 			@Override
 			protected void onClick() {
-				SandboxPixelDungeon.switchNoFade( JournalScene.class );
-//				Game.scene().addToFront(new ServerDungeonList.WndServerDungeonList());
+				Game.scene().addToFront(new ServerDungeonList.WndServerDungeonList());
 			}
 		};
 		btnDiscover.icon(Icons.get(Icons.DOWNLOAD));
@@ -228,13 +235,6 @@ public class TitleScene extends PixelScene {
 			btnSettings.setRect(btnNews.left(), btnNews.bottom() + GAP, btnDiscover.width(), BTN_HEIGHT);
 			btnAbout.setRect(btnSettings.right() + 2, btnSettings.top(), btnSettings.width(), BTN_HEIGHT);
 		}
-
-		BitmapText version = new BitmapText("v" + Game.version, pixelFont);
-		version.measure();
-		version.hardlight(0x888888);
-		version.x = w - version.width() - 4;
-		version.y = h - version.height() - 2;
-		add(version);
 
 		if (DeviceCompat.isDesktop()) {
 			ExitButton btnExit = new ExitButton();

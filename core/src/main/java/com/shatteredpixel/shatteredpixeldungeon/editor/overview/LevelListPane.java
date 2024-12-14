@@ -48,15 +48,14 @@ public class LevelListPane extends ScrollPane {
 
     public void updateList() {
         ((Content) content).updateContent();
+        layout();
         scrollToCurrentView();
     }
 
     @Override
     protected void layout() {
-        layout(true);
-
         content.setSize(width, 0);
-        content.setSize(width, content.height());
+        layout(true);
     }
 
     public static abstract class Selector {
@@ -150,11 +149,13 @@ public class LevelListPane extends ScrollPane {
         @Override
         public synchronized void clear() {
             super.clear();
-            for (Component c : children) {
-                c.remove();
-                c.destroy();
+            if (children != null) {
+                for (Component c : children) {
+                    c.remove();
+                    c.destroy();
+                }
+                children = null;
             }
-            children = null;
         }
     }
 
@@ -271,7 +272,7 @@ public class LevelListPane extends ScrollPane {
             if (depth == -1) depthText.visible = false;
             else {
                 depthText.text(Integer.toString(depth));
-                depthIcon = Icons.get(feeling);
+                depthIcon = Icons.getWithNoOffset(feeling);
                 depthIcon.scale.set(1.5f);
                 add(depthIcon);
                 bringToFront(depthText);

@@ -169,17 +169,17 @@ public class ScrollPane extends Component {
 
         //If you edit this, also check out ALL overrides!
 
-        thumbVer.visible = height < content.height();
-        thumbHor.visible = width + 1f < content.width();
-        if (thumbVer.visible) {
-            thumbVer.scale.set(2, height * height / content.height());
-            thumbVer.x = right() - thumbVer.width();
-        }
-        if (thumbHor.visible) {
-            thumbHor.scale.set(width * width / content.width(), 2);
-            thumbHor.y = bottom() - thumbHor.height();
-        }
-        layoutThumbs();
+        thumbVer.visible = height < content.height();//
+        thumbHor.visible = width + 1f < content.width();//
+        if (thumbVer.visible) {//
+            thumbVer.scale.set(2, height * height / content.height());//
+            thumbVer.x = right() - thumbVer.width();//
+        }//
+        if (thumbHor.visible) {//
+            thumbHor.scale.set(width * width / content.width(), 2);//
+            thumbHor.y = bottom() - thumbHor.height();//
+        }//
+        layoutThumbs();//
 
         //If you edit this, also check out ALL overrides!
     }

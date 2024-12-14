@@ -152,6 +152,7 @@ public class CustomNoteButton extends IconButton {
 								}
 							});
 							add(levels);
+							levels.updateContent();
 						}
 
 						@Override
