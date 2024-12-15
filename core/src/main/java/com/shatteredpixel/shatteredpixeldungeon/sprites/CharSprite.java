@@ -476,6 +476,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					paused = true;
 					break;
 				case FROZEN:
+					if (iceBlock != null) iceBlock.killAndErase();
 					iceBlock = IceBlock.freeze(this);
 					break;
 				case ILLUMINATED:
@@ -486,6 +487,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					chilled.pour(SnowParticle.FACTORY, 0.1f);
 					break;
 				case DARKENED:
+					if (darkBlock != null) darkBlock.killAndErase();
 					darkBlock = DarkBlock.darken(this);
 					break;
 				case MARKED:
@@ -497,9 +499,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					healing.pour(Speck.factory(Speck.HEALING), 0.5f);
 					break;
 				case SHIELDED:
-					if (shield != null) {
-						shield.killAndErase();
-					}
+					if (shield != null) shield.killAndErase();
 					GameScene.effect(shield = new ShieldHalo(this));
 					break;
 				case HEARTS:
@@ -507,6 +507,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					hearts.pour(Speck.factory(Speck.HEART), 0.5f);
 					break;
 				case GLOWING:
+					if (glowBlock != null) glowBlock.killAndErase();
 					glowBlock = GlowBlock.lighten(this);
 					break;
 			}
@@ -677,6 +678,9 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 				}
 				aura.visible = visible;
 				aura.point(center());
+			}
+			if (glowBlock != null){
+				glowBlock.visible =visible;
 			}
 		}
 		if (sleeping) {
