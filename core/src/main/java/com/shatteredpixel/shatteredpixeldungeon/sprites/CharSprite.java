@@ -447,6 +447,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		synchronized (State.class) {
 			switch (state) {
 				case BURNING:
+					if (burning != null) burning.on = false;
 					burning = emitter();
 					burning.pour(FlameParticle.FACTORY, 0.06f);
 					if (visible) {
@@ -454,23 +455,20 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					}
 					break;
 				case LEVITATING:
-					if (levitation != null) {
-					levitation.killAndErase();
-				}
-				levitation = emitter();
-				levitation.pour( Speck.factory( Speck.JET ), 0.02f );
-				break;
-			case INVISIBLE:
-			case HALF_INVISIBLE:
-				if (invisible != null) {
-					invisible.killAndErase();
-				}
-				invisible = new AlphaTweener( this, 0.4f, 0.4f );
-				if (parent != null){
-					parent.add(invisible);
-				} else
-					alpha( 0.4f );
-				visible = state == State.HALF_INVISIBLE || !(this instanceof MobSprite) || CustomDungeon.isEditing();
+					if (levitation != null) levitation.on = false;
+					levitation = emitter();
+					levitation.pour(Speck.factory(Speck.JET), 0.02f);
+					break;
+				case INVISIBLE:
+				case HALF_INVISIBLE:
+					if (invisible != null) invisible.killAndErase();
+					invisible = new AlphaTweener(this, 0.4f, 0.4f);
+					if (parent != null) {
+						parent.add(invisible);
+					} else {
+						alpha(0.4f);
+					}
+					visible = state == State.HALF_INVISIBLE || !(this instanceof MobSprite) || CustomDungeon.isEditing();
 					break;
 				case PARALYSED:
 					paused = true;
@@ -480,9 +478,11 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					iceBlock = IceBlock.freeze(this);
 					break;
 				case ILLUMINATED:
+					if (light != null) light.putOut();
 					GameScene.effect(light = new TorchHalo(this));
 					break;
 				case CHILLED:
+					if (chilled != null) chilled.on = false;
 					chilled = emitter();
 					chilled.pour(SnowParticle.FACTORY, 0.1f);
 					break;
@@ -491,10 +491,12 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					darkBlock = DarkBlock.darken(this);
 					break;
 				case MARKED:
+					if (marked != null) marked.on = false;
 					marked = emitter();
 					marked.pour(ShadowParticle.UP, 0.1f);
 					break;
 				case HEALING:
+					if (healing != null) healing.on = false;
 					healing = emitter();
 					healing.pour(Speck.factory(Speck.HEALING), 0.5f);
 					break;
@@ -503,6 +505,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					GameScene.effect(shield = new ShieldHalo(this));
 					break;
 				case HEARTS:
+					if (hearts != null) hearts.on = false;
 					hearts = emitter();
 					hearts.pour(Speck.factory(Speck.HEART), 0.5f);
 					break;
@@ -557,6 +560,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 				case ILLUMINATED:
 					if (light != null) {
 						light.putOut();
+						light = null;
 					}
 					break;
 				case CHILLED:
