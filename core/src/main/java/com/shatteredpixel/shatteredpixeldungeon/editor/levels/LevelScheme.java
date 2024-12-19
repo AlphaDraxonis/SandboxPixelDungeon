@@ -90,8 +90,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public boolean spawnStandardRooms = true, spawnSecretRooms = true, spawnSpecialRooms = true;
     public boolean spawnMobs = true, spawnItems = true;
 
-    public boolean naturalRegeneration = true;
-    public float hungerSpeed = 1f;
+    public float hungerSpeed = 1f, naturalRegenSpeed = 1f;
     public boolean allowPickaxeMining = false;
     public boolean rememberLayout = true;
     public boolean magicMappingDisabled = false;
@@ -692,7 +691,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String SPAWN_SPECIAL_ROOMS = "spawn_special_rooms";
     private static final String SPAWN_MOBS = "spawn_mobs";
     private static final String SPAWN_ITEMS = "spawn_items";
-    private static final String NATURAL_REGEN = "natural_regen";
+    private static final String NATURAL_REGEN_SPEED = "natural_regen_speed";
     private static final String HUNGER_SPEED = "hunger_speed";
     private static final String BUILDER = "builder";
     private static final String REDUCE_VIEW_DISTANCE_IF_DARKNESS = "reduce_view_distance_if_darkness";
@@ -761,7 +760,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(SPAWN_MOBS, spawnMobs);
         bundle.put(SPAWN_ITEMS, spawnItems);
         bundle.put(HUNGER_SPEED, hungerSpeed);
-        bundle.put(NATURAL_REGEN, naturalRegeneration);
+        bundle.put(NATURAL_REGEN_SPEED, naturalRegenSpeed);
 
         bundle.put(WATER_TEXTURE, waterTexture);
         bundle.put(MUSIC_REGION, musicRegion);
@@ -858,8 +857,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         spawnMobs = bundle.getBoolean(SPAWN_MOBS);
         spawnItems = bundle.getBoolean(SPAWN_ITEMS);
         builder = bundle.getClass(BUILDER);
-        if (bundle.contains(NATURAL_REGEN)) {
-            naturalRegeneration = bundle.getBoolean(NATURAL_REGEN);
+        if (bundle.contains(NATURAL_REGEN_SPEED)) {
+            if (bundle.contains("natural_regen")) naturalRegenSpeed = bundle.getBoolean("natural_regen") ? 1f: 0f;
+            else naturalRegenSpeed = bundle.getFloat(NATURAL_REGEN_SPEED);
             if (bundle.contains("hunger_depletion")) hungerSpeed = bundle.getBoolean("hunger_depletion") ? 1f: 0f;
             else hungerSpeed = bundle.getFloat(HUNGER_SPEED);
         }

@@ -62,8 +62,8 @@ public class LevelTab extends MultiWindowTabComp {
         StyledButton mobSpawn;
         Spinner viewDistance, depth, shopPrice;
         StyledButton changeSize;
-        StyledSpinner hungerSpeed;
-        StyledCheckBox naturalRegen, allowPickaxeMining, rememberLayout, magicMappingDisabled;
+        StyledSpinner hungerSpeed, naturalRegenSpeed;
+        StyledCheckBox allowPickaxeMining, rememberLayout, magicMappingDisabled;
         StyledButton bossLevelRetexture;
         StyledButton levelColoring;
 
@@ -103,27 +103,27 @@ public class LevelTab extends MultiWindowTabComp {
         hungerSpeed.addChangeListener(() -> levelScheme.hungerSpeed = ((SpinnerFloatModel) hungerSpeed.getModel()).getAsFloat());
         content.add(hungerSpeed);
 
-        naturalRegen = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "regeneration")) {
+        naturalRegenSpeed = new StyledSpinner(new SpinnerFloatModel(0f, 100f, levelScheme.naturalRegenSpeed, 2, 0.1f) {
             @Override
-            public void checked(boolean value) {
-                super.checked(value);
-                levelScheme.naturalRegeneration = value;
+            protected String displayString(Object value) {
+                return "x " + super.displayString(value);
             }
 
             @Override
-            protected int textSize() {
-                return super.textSize() - 1;
+            public float getInputFieldWidth(float height) {
+                return Spinner.FILL;
             }
-        };
-        naturalRegen.checked(levelScheme.naturalRegeneration);
+        }, Messages.get(this, "regeneration"), 8);
+
         RectF r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.POTION_HEALING);
         if (r != null) {
             Image icon = new Image(Assets.Sprites.ITEM_ICONS);
             icon.frame(r);
             icon.scale.set(10 / Math.max(icon.width(), icon.height()));
-            naturalRegen.icon(icon);
+            naturalRegenSpeed.icon(icon);
         }
-        content.add(naturalRegen);
+        naturalRegenSpeed.addChangeListener(() -> levelScheme.naturalRegenSpeed = ((SpinnerFloatModel) naturalRegenSpeed.getModel()).getAsFloat());
+        content.add(naturalRegenSpeed);
 
         allowPickaxeMining = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "mining")) {
             @Override
@@ -241,7 +241,7 @@ public class LevelTab extends MultiWindowTabComp {
             lco = UserContentManager.getUserContent(levelScheme.luaScriptID, LuaLevelScript.class);
         }
 
-        luaScriptPath = new CustomObjSelector<String>("Lua Script Path, ", new CustomObjSelector.Selector<String>() {
+        luaScriptPath = new CustomObjSelector<String>(Messages.get(LevelTab.class, "script_path"), new CustomObjSelector.Selector<String>() {
 
             @Override
             public String getCurrentValue() {
@@ -305,7 +305,7 @@ public class LevelTab extends MultiWindowTabComp {
 
         mainWindowComps = new Component[]{
                 region, mobSpawn, changeSize,
-                hungerSpeed, naturalRegen, allowPickaxeMining, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
+                hungerSpeed, naturalRegenSpeed, allowPickaxeMining, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
                 depth, viewDistance, shopPrice, PixelScene.landscape() && viewDistance == null ? levelColoring : null, rememberLayout, magicMappingDisabled, PixelScene.landscape() && viewDistance == null ? null : levelColoring, bossLevelRetexture
                 ,luaScriptPath
         };

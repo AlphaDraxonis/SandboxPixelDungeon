@@ -59,7 +59,7 @@ public class Regeneration extends Buff {
 
 			boolean isStarving = hero.isStarving();
 
-			if (target.HP < regencap() && !isStarving && Dungeon.curLvlScheme().naturalRegeneration) {
+			if (target.HP < regencap() && !isStarving && Dungeon.curLvlScheme().naturalRegenSpeed > 0) {
 				if (regenOn()) {
 					target.HP += 1;
 					if (target.HP == regencap() && hero == Dungeon.hero) {
@@ -81,6 +81,7 @@ public class Regeneration extends Buff {
 				}
 			}
 			delay /= SaltCube.healthRegenMultiplier(hero);
+			delay /= Dungeon.curLvlScheme().naturalRegenSpeed;
 			spend( delay );
 			
 		} else {
