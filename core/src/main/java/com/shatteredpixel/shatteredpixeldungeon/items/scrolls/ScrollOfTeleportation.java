@@ -80,7 +80,8 @@ public class ScrollOfTeleportation extends Scroll {
 		if (pathNeeded) PathFinder.buildDistanceMap(pos, Dungeon.level.getPassableAndAvoidVar(ch), ch);
 		if (pathNeeded && PathFinder.distance[ch.pos] == Integer.MAX_VALUE
 				|| (!Dungeon.level.isPassable(pos, ch) && !Dungeon.level.avoid[pos])
-				|| !Barrier.canEnterCell(pos, ch, false, true)){
+				|| (Actor.findChar(pos) != null && Actor.findChar(pos) != ch)
+				|| !Barrier.canEnterCell(pos, ch, false, false)){
 			if (ch == Dungeon.hero){
 				GLog.w( Messages.get(ScrollOfTeleportation.class, "cant_reach") );
 			}
