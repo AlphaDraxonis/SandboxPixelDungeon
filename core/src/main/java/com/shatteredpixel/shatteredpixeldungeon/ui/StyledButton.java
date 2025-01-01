@@ -108,6 +108,16 @@ public class StyledButton extends Button {
 
 	}
 	
+	public float getMinimumHeight(float width) {
+		if (icon == null) {
+			if (multiline) text.maxWidth((int) (width - bg.marginHor() - 2));
+			return text.height() + bg.marginVer();
+		} else {
+			if (multiline) text.maxWidth((int) (width - bg.marginHor() - 2 - icon.width() - 2));
+			return Math.max(icon.height(), text.height()) + bg.marginVer();
+		}
+	}
+	
 	@Override
 	protected void onPointerDown() {
 		bg.brightness( 1.2f );

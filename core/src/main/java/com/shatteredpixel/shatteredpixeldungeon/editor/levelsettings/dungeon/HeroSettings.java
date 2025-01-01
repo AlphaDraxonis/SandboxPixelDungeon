@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -21,8 +22,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
-import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
-import com.shatteredpixel.shatteredpixeldungeon.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
+import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
+import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
@@ -31,12 +35,18 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.AbstractWndChooseSubclass;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHeroInfo;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -48,8 +58,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-@NotAllowedInLua
 
+@NotAllowedInLua
 public class HeroSettings extends Component {
 
     private final OutsideSpSwitchTabs outsideSp;
@@ -133,7 +143,7 @@ public class HeroSettings extends Component {
 
     public static Image createTabIcon(int index) {
         if (index == 0) return Icons.ANY_HERO.get();
-        return BadgeBanner.image(index - 1);
+        return new Image(HeroClass.getFromIndex(index-1).spritesheet(), 0, 90, 12, 15);
     }
 
     public static String getTabName(int index) {
@@ -143,31 +153,53 @@ public class HeroSettings extends Component {
 
     private static class HeroTab extends Component {
 
-        private CheckBox heroEnabled;
-        private RedButton subClassesEnabled;
+        private StyledButton heroEnabled;
+        private StyledButton subClassesEnabled;
         private final ItemContainerWithLabel<Item> startItems;
         private final ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
         private final ItemSelector sprite;
         private final StyledSpinner plusLvl, plusStr;
         private final PropertyListContainer properties;
 
-        private final Component itemSelectorParent;
-
         public HeroTab(int index) {
 
             if (index >= 1) {
-                heroEnabled = new CheckBox(Messages.get(HeroSettings.class, "unlocked")) {
+                heroEnabled = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "") {
+                    {
+                        checked(Dungeon.customDungeon.heroesEnabled[index - 1]);
+                    }
+                    
                     @Override
+                    protected void onClick() {
+                        checked( !Dungeon.customDungeon.heroesEnabled[index - 1] );
+                    }
+                    
                     public void checked(boolean value) {
-                        super.checked(value);
                         Dungeon.customDungeon.heroesEnabled[index - 1] = value;
+                        if (value) {
+                            text( Messages.get(HeroSettings.class, "unlocked") );
+                            icon( Icons.UNLOCKED.get() );
+                        } else {
+                            text( Messages.get(HeroSettings.class, "locked") );
+                            icon( Icons.LOCKED.get() );
+                        }
+                    }
+                    
+                    @Override
+                    protected void layout() {
+                        height = Math.max(height, getMinimumHeight(width));
+                        super.layout();
+                    }
+                    
+                    @Override
+                    public float getMinimumHeight(float width) {
+                        return Math.max(super.getMinimumHeight(width), WndMenuEditor.BTN_HEIGHT);
                     }
                 };
-                heroEnabled.checked(Dungeon.customDungeon.heroesEnabled[index - 1]);
                 add(heroEnabled);
 
                 final HeroClass heroClass = HeroClass.getFromIndex(index - 1);
-                subClassesEnabled = new RedButton(createSubclassBtnLabel(heroClass)) {
+                subClassesEnabled = new StyledButton(Chrome.Type.GREY_BUTTON_TR, createSubclassBtnLabel(heroClass)) {
                     @Override
                     protected void onClick() {
                         RenderedTextBlock titlebar = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(WndHeroInfo.class, "subclasses")),9);
@@ -189,14 +221,23 @@ public class HeroSettings extends Component {
                         };
                         EditorScene.show(w);
                     }
+                    
+                    @Override
+                    protected void layout() {
+                        height = Math.max(height, getMinimumHeight(width));
+                        super.layout();
+                    }
+                    
+                    @Override
+                    public float getMinimumHeight(float width) {
+                        return Math.max(super.getMinimumHeight(width), WndMenuEditor.BTN_HEIGHT);
+                    }
                 };
-                subClassesEnabled.leftJustify = true;
+                subClassesEnabled.icon(new ItemSprite(ItemSpriteSheet.MASK));
                 add(subClassesEnabled);
             }
 
             HeroStartItemsData data = Dungeon.customDungeon.startItems[index];
-
-            itemSelectorParent = new Component();
 
             startWeapon = new StyledItemSelector(Messages.get(HeroSettings.class, "weapon"), MeleeWeapon.class, data.weapon, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
@@ -207,7 +248,8 @@ public class HeroSettings extends Component {
                 }
             };
             startWeapon.setShowWhenNull(ItemSpriteSheet.WEAPON_HOLDER);
-            itemSelectorParent.add(startWeapon);
+            add(startWeapon);
+            
             startArmor = new StyledItemSelector(Messages.get(HeroSettings.class, "armor"), Armor.class, data.armor, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
@@ -217,7 +259,8 @@ public class HeroSettings extends Component {
                 }
             };
             startArmor.setShowWhenNull(ItemSpriteSheet.ARMOR_HOLDER);
-            itemSelectorParent.add(startArmor);
+            add(startArmor);
+            
             startRing = new StyledItemSelector(Messages.get(HeroSettings.class, "ring"), Ring.class, data.ring, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
@@ -227,7 +270,8 @@ public class HeroSettings extends Component {
                 }
             };
             startRing.setShowWhenNull(ItemSpriteSheet.RING_HOLDER);
-            itemSelectorParent.add(startRing);
+            add(startRing);
+            
             startArti = new StyledItemSelector(Messages.get(HeroSettings.class, "artifact"), Artifact.class, data.artifact, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
@@ -237,7 +281,8 @@ public class HeroSettings extends Component {
                 }
             };
             startArti.setShowWhenNull(ItemSpriteSheet.ARTIFACT_HOLDER);
-            itemSelectorParent.add(startArti);
+            add(startArti);
+            
             startMisc = new StyledItemSelector(Messages.get(HeroSettings.class, "misc"), KindofMisc.class, data.misc, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
@@ -247,7 +292,7 @@ public class HeroSettings extends Component {
                 }
             };
             startMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
-            itemSelectorParent.add(startMisc);
+            add(startMisc);
 
             final MobSpriteItem curentSprite = data.spriteClass == null ? null : new MobSpriteItem(data.spriteClass);
             sprite = new StyledItemSelector(Messages.get(HeroSettings.class, "sprite"),
@@ -278,7 +323,7 @@ public class HeroSettings extends Component {
 
                 }
             };
-            itemSelectorParent.add(sprite);
+            add(sprite);
 
 
             plusLvl = new StyledSpinner(new SpinnerIntegerModel(1, 30, 1 + data.plusLvl) {
@@ -291,7 +336,7 @@ public class HeroSettings extends Component {
                 }
             }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
             plusLvl.addChangeListener(() -> data.plusLvl = (int) plusLvl.getValue() - 1);
-            itemSelectorParent.add(plusLvl);
+            add(plusLvl);
 
             plusStr = new StyledSpinner(new SpinnerIntegerModel(0, 50, Hero.STARTING_STR + data.plusStr) {
                 @Override
@@ -300,9 +345,7 @@ public class HeroSettings extends Component {
                 }
             }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
             plusStr.addChangeListener(() -> data.plusStr = (int) plusStr.getValue() - Hero.STARTING_STR);
-            itemSelectorParent.add(plusStr);
-
-            add(itemSelectorParent);
+            add(plusStr);
 
             startItems = new ItemContainerWithLabel<Item>(data.items, Messages.get(HeroSettings.class, "items")) {
 
@@ -356,35 +399,17 @@ public class HeroSettings extends Component {
         @Override
         protected void layout() {
 
-            int gap = 2;
+            height = 0;
 
-            float posY = y;
+            height = EditorUtilities.layoutStyledCompsInRectangles(WndTitledMessage.GAP, width, 2, this, heroEnabled, subClassesEnabled);
+            height += WndTitledMessage.GAP;
 
-            if (heroEnabled != null) {
-                heroEnabled.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
-                PixelScene.align(heroEnabled);
-                posY = heroEnabled.bottom() + gap;
-            }
-            if (subClassesEnabled != null) {
-                subClassesEnabled.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
-                PixelScene.align(subClassesEnabled);
-                posY = subClassesEnabled.bottom() + gap;
-            }
-            itemSelectorParent.setSize(width, 0);
-            itemSelectorParent.setRect(x, posY, width,  EditorUtilities.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
-                    new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, sprite, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
-                            plusLvl, plusStr}));
-            PixelScene.align(itemSelectorParent);
-            posY = itemSelectorParent.bottom() + gap;
-            startItems.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
-            PixelScene.align(startItems);
-            posY = startItems.bottom() + gap * 2;
+            height = EditorUtilities.layoutStyledCompsInRectangles(WndTitledMessage.GAP, width, this,
+                    startWeapon, startArmor, startRing, startArti, startMisc, sprite, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
+                            plusLvl, plusStr);
+            height += WndTitledMessage.GAP * 1.5f;
 
-            properties.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
-            PixelScene.align(properties);
-            posY = properties.bottom() + gap;
-
-            height = (posY - y - gap);
+            height = EditorUtilities.layoutCompsLinear(WndTitledMessage.GAP, this, startItems, properties);
         }
     }
 

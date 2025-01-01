@@ -69,6 +69,8 @@ public enum Icons {
 	SWAP(true),
 	SCROLL_BAR_THUMB_TOP(true),
 	MENU(true),
+	LOCKED(true),
+	UNLOCKED(true),
 
 	REFRESH(true),
 	BUG(true),
@@ -289,6 +291,12 @@ public enum Icons {
 				break;
 			case MENU:
 				icon.frame(icon.texture.uvRectBySize(55, 43, 10, 10));
+				break;
+			case LOCKED:
+				icon.frame(icon.texture.uvRectBySize(66, 43, 8, 11));
+				break;
+			case UNLOCKED:
+				icon.frame(icon.texture.uvRectBySize(77, 43, 8, 11));
 				break;
 
 			case REFRESH:
