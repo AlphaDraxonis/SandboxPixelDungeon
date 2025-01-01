@@ -93,6 +93,7 @@ public class CompactCategoryScroller extends AbstractCategoryScroller<CompactCat
 	@Override
 	protected CategoryComp createCategoryComp(int index, Category category) {
 		CategoryComp result = new CategoryComp(index, category);
+		result.expandFoldInTitle.setVisible(false);
 //		result.fold();
 		result.fold.setVisible(false);
 		result.expand.setVisible(false);
@@ -363,7 +364,8 @@ public class CompactCategoryScroller extends AbstractCategoryScroller<CompactCat
 		@Override
 		protected void layout() {
 			super.layout();
-			expandFoldInTitle.setRect(title.left(), title.top() - 2, title.maxWidth(), title.height() + 4);
+			if (expandFoldInTitle.visible)
+				expandFoldInTitle.setRect(title.left(), title.top() - 2, title.maxWidth(), title.height() + 4);
 		}
 
 		@Override
