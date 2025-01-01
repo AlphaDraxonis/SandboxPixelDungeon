@@ -802,10 +802,12 @@ public class ItemSpriteSheet {
 		assignItemRect(CITY_PAGE,   10, 11);
 		assignItemRect(HALLS_PAGE,  10, 11);
 	}
-
-
+	
+	
+	public static int NO_ITEM = xy(14,32);
 	public static int NO_IMAGE = xy(16,32);
 	static {
+		assignItemRect(NO_ITEM,12, 12);
 		assignItemRect(NO_IMAGE,16, 16);
 	}
 

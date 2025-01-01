@@ -171,7 +171,7 @@ public abstract class EditorItem<T> extends Item implements CompactCategoryScrol
 
         @Override
         public Image getSprite() {
-            return new ItemSprite(ItemSpriteSheet.SOMETHING);
+            return new ItemSprite(ItemSpriteSheet.NO_ITEM);
         }
 
         @Override
