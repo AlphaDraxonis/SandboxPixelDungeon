@@ -4,7 +4,15 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Buffs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.GameObjectCategory;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -33,7 +41,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPaneWithScrollbar;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
@@ -52,7 +59,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
     public static boolean chooseClass = false;
 
-    private final int WIDTH = Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9));
+    private final int WIDTH = Math.min(215, (int) (PixelScene.uiCamera.width * 0.9));
     private final int HEIGHT = (int) (PixelScene.uiCamera.height * 0.9);
 
 
@@ -231,8 +238,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         lastPlantForImage = tempPlantSave;
         lastBuffForImage = tempBuffSave;
         lastItemForImage = tempItemSave;
-        Window w = new WndEditorInv((EditorItemBag) ((BagTab) tab).bag, selector);
-        EditorScene.show(w);
+        EditorScene.show( new WndEditorInv((EditorItemBag) ((BagTab) tab).bag, selector) );
     }
 
     private class BagTab extends IconTab {
