@@ -247,11 +247,11 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
     }
 
     protected void onItemSlotClick(Slot slot, Item item) {
-        showWndEditItemComp(slot, item);
+        onItemSlotRightClick(slot, item);
     }
 
     protected void onItemSlotRightClick(Slot slot, Item item) {
-        removeSlot(slot);
+        showWndEditItemComp(slot, item);
     }
 
     protected boolean onItemSlotLongClick(Slot slot, Item item) {
