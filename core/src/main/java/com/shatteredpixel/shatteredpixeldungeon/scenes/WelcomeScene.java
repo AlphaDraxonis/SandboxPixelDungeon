@@ -21,7 +21,14 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
-import com.shatteredpixel.shatteredpixeldungeon.*;
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.Rankings;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Fireball;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
@@ -44,6 +51,12 @@ import com.watabou.noosa.audio.Music;
 import com.watabou.utils.FileUtils;
 
 import java.util.Collections;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @NotAllowedInLua
 public class WelcomeScene extends PixelScene {
@@ -79,6 +92,9 @@ public class WelcomeScene extends PixelScene {
 		if (SandboxPixelDungeon.versionCode != previousVersion && previousVersion > 0){
 			updateVersion(previousVersion);
 		}
+		
+		loadGamesInProgress();
+		
 		if (SandboxPixelDungeon.versionCode == previousVersion && !SPDSettings.intro() || true) {
 			SandboxPixelDungeon.switchNoFade(TitleScene.class);
 			return;
@@ -223,7 +239,7 @@ public class WelcomeScene extends PixelScene {
 			});
 		}
 	}
-
+	
 	private void placeTorch( float x, float y ) {
 		Fireball fb = new Fireball();
 		fb.setPos( x, y );
@@ -277,8 +293,26 @@ public class WelcomeScene extends PixelScene {
 			Journal.saveGlobal(true);
 
 		}
+		
+		GamesInProgress.moveOldSavesToNewLocation();
 
 		SPDSettings.version(SandboxPixelDungeon.versionCode);
+	}
+	
+	private void loadGamesInProgress() {
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		
+		Future<Boolean> generator = executor.submit(() -> {
+			GamesInProgress.checkAll();
+			return true;
+		});
+		
+		try {
+			// Wait for 20 seconds
+			generator.get(20, TimeUnit.SECONDS);
+		} catch (InterruptedException | ExecutionException | TimeoutException ex) {
+			Game.reportException(ex);
+		}
 	}
 	
 }

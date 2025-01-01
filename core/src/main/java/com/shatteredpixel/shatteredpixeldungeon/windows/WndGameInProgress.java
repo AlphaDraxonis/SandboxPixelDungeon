@@ -31,7 +31,11 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.StartScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
@@ -109,7 +113,7 @@ public class WndGameInProgress extends Window {
 			statSlot( Messages.get(this, "dungeon_seed"), DungeonSeed.convertToCode(info.seed) );
 		}
 
-		statSlot("Dungeon", info.dungeonName);
+		statSlot("Dungeon", info.dungeonName, false);
 		
 		pos += GAP;
 		
@@ -162,10 +166,14 @@ public class WndGameInProgress extends Window {
 	}
 	
 	private void statSlot( String label, String value ) {
+		statSlot(label, value, true);
+	}
+	
+	private void statSlot( String label, String value, boolean enableHighlighting ) {
 		
 		RenderedTextBlock txt = PixelScene.renderTextBlock( label, 8 );
 		txt.setPos(0, pos);
-		txt.setHighlighting(false);
+		txt.setHighlighting(enableHighlighting);
 		add( txt );
 
 		int size = 8;

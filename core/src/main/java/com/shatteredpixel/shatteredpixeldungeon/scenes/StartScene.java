@@ -33,14 +33,18 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
@@ -51,11 +55,14 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
+import com.watabou.noosa.ui.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @NotAllowedInLua
@@ -90,46 +97,87 @@ public class StartScene extends PixelScene {
 		btnExit.setPos( w - btnExit.width(), 0 );
 		add( btnExit );
 		
-		IconTitle title = new IconTitle( Icons.ENTER.get(), Messages.get(this, "title"));
-		title.setSize(200, 0);
-		title.setPos(
-				(w - title.reqWidth()) / 2f,
-				(20 - title.height()) / 2f
-		);
-		align(title);
-		add(title);
+		
 		
 		ArrayList<GamesInProgress.Info> games = GamesInProgress.checkAll();
 		
-		int slotCount = Math.min(GamesInProgress.MAX_SLOTS, games.size()+1);
-		int slotGap = 10 - slotCount;
-		int slotsHeight = slotCount*SLOT_HEIGHT + (slotCount-1)* slotGap;
-
-		while (slotsHeight > (h-title.bottom()-2)){
-			slotGap--;
-			slotsHeight -= slotCount-1;
-		}
-		
-		float yPos = (h - slotsHeight + title.bottom() + 2)/2f;
+		LinkedHashMap<String, List<GamesInProgress.Info>> runsInEachDungeon = new LinkedHashMap<>();
 		
 		for (GamesInProgress.Info game : games) {
-			SaveSlotButton existingGame = new SaveSlotButton();
-			existingGame.set(game.slot);
-			existingGame.setRect((w - SLOT_WIDTH) / 2f, yPos, SLOT_WIDTH, SLOT_HEIGHT);
-			yPos += SLOT_HEIGHT + slotGap;
-			align(existingGame);
-			add(existingGame);
-			
+			List<GamesInProgress.Info> runs = runsInEachDungeon.get(game.dungeonName);
+			if (runs == null) {
+				runs = new ArrayList<>();
+				runsInEachDungeon.put(game.dungeonName, runs);
+			}
+			runs.add(game);
 		}
 		
-		if (games.size() < GamesInProgress.MAX_SLOTS){
-			SaveSlotButton newGame = new SaveSlotButton();
-			newGame.set(GamesInProgress.firstEmpty());
-			newGame.setRect((w - SLOT_WIDTH) / 2f, yPos, SLOT_WIDTH, SLOT_HEIGHT);
-			yPos += SLOT_HEIGHT + slotGap;
-			align(newGame);
-			add(newGame);
-		}
+		MultiWindowTabComp dungeonSelection = new MultiWindowTabComp() {
+			{
+				title = new IconTitle( Icons.ENTER.get(), Messages.get(StartScene.this, "title"));
+				add(title);
+				
+				mainWindowComps = new Component[runsInEachDungeon.size() + 1];
+				int i = 0;
+				for (Map.Entry<String, List<GamesInProgress.Info>> entry : runsInEachDungeon.entrySet()) {
+					content.add(
+							mainWindowComps[i++] = new DungeonWithRuns(entry.getKey(), entry.getValue()) {
+								@Override
+								protected void onClick() {
+									changeContent(
+											PixelScene.renderTextBlock(entry.getKey(), 9),
+											getIDKHowToName(entry.getValue(), sp.height()),
+											getOutsideSp(entry.getKey()),
+											0.5f, 0.5f);
+								}
+							}
+					);
+				}
+				SaveSlotButton newGame = new SaveSlotButton(null) {
+					@Override
+					protected void layout() {
+						height = Math.max(height, SLOT_HEIGHT);
+						super.layout();
+					}
+				};
+				newGame.set(GamesInProgress.firstEmpty());
+				content.add(newGame);
+				mainWindowComps[i++] = newGame;
+			}
+			@Override
+			public Image createIcon() {
+				return null;
+			}
+			
+			@Override
+			public String hoverText() {
+				return "";
+			}
+			
+			@Override
+			public void layout() {
+				float oldY = y;
+				title.setSize(200, 0);
+				y = (20 - title.height()) / 2f;
+				height = oldY - y + height;
+				super.layout();
+			}
+			
+			@Override
+			protected void layoutOwnContent() {
+				title.setPos(
+						(width - ((IconTitle) title).reqWidth()) / 2f,
+						title.top()
+				);
+				align(title);
+				
+				content.setSize(width, 0);
+				content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(5, width, content, mainWindowComps));
+			}
+		};
+		add(dungeonSelection);
+		
+		dungeonSelection.setRect(10, 0, w - 20, h - 20);
 		
 		GamesInProgress.curSlot = 0;
 		
@@ -137,10 +185,102 @@ public class StartScene extends PixelScene {
 		
 	}
 	
+	private static Component getOutsideSp(String dungeon) {
+		return new Component() {
+			private SaveSlotButton newGame;
+			{
+				newGame = new SaveSlotButton(dungeon);
+				newGame.set(GamesInProgress.firstEmpty());
+				add(newGame);
+			}
+			
+			@Override
+			protected void layout() {
+				newGame.setRect(x + (width - SLOT_WIDTH) / 2f, y, SLOT_WIDTH, SLOT_HEIGHT);
+				align(newGame);
+				height = SLOT_HEIGHT;
+			}
+		};
+	}
+	
+	private static Component getIDKHowToName(List<GamesInProgress.Info> games, float visibleHeight) {
+		
+		int slotCount = Math.min(GamesInProgress.MAX_SLOTS, games.size()+1);
+		int slotGap = 10 - slotCount;
+		int slotsHeight = slotCount*SLOT_HEIGHT + (slotCount-1)* slotGap;
+
+		while (slotsHeight > visibleHeight && slotGap > 5){
+			slotGap--;
+			slotsHeight -= slotCount-1;
+		}
+		
+		final int finalSlotGap = slotGap;
+		return new Component() {
+			private SaveSlotButton[] btns;
+			{
+				btns = new SaveSlotButton[games.size()];
+				int i = 0;
+				for (GamesInProgress.Info game : games) {
+					SaveSlotButton existingGame = new SaveSlotButton(game.dungeonName);
+					existingGame.set(game.slot);
+					add(existingGame);
+					btns[i++] = existingGame;
+				}
+			}
+			
+			@Override
+			protected void layout() {
+				
+				float yPos = y;
+				
+				for (SaveSlotButton btn : btns) {
+					btn.setRect(x + (width - SLOT_WIDTH) / 2f, yPos, SLOT_WIDTH, SLOT_HEIGHT);
+					yPos += SLOT_HEIGHT + finalSlotGap;
+					align(btn);
+				}
+				height = yPos - y - finalSlotGap;
+			}
+		};
+	}
+	
 	@Override
 	protected void onBackPressed() {
 		SandboxPixelDungeon.switchNoFade( TitleScene.class );
 	}
+	
+	private static class DungeonWithRuns extends StyledButton {
+		
+		private Image stairIcon;
+		private RenderedTextBlock numRuns;
+		
+		public DungeonWithRuns(String dungeonName, List<GamesInProgress.Info> runs) {
+			super(Chrome.Type.GEM, dungeonName);
+			
+			multiline = true;
+			
+			numRuns = PixelScene.renderTextBlock(Integer.toString(runs.size()), textSize());
+			add(numRuns);
+			stairIcon = Icons.getWithNoOffset(Level.Feeling.NONE);
+			add(stairIcon);
+		}
+		
+		@Override
+		protected void layout() {
+			height = Math.max(height, getMinimumHeight(width));
+			super.layout();
+			stairIcon.x = x + bg.marginLeft() * 0.5f + 1;
+			stairIcon.y = y + bg.marginTop() * 0.5f + 1;
+			numRuns.setPos(stairIcon.x + stairIcon.width(), stairIcon.y + (stairIcon.height() - numRuns.height()) * 0.5f);
+			PixelScene.align(stairIcon);
+			PixelScene.align(numRuns);
+		}
+		
+		@Override
+		public float getMinimumHeight(float width) {
+			return Math.max(20, super.getMinimumHeight(width));
+		}
+	}
+	
 	
 	private static class SaveSlotButton extends Button {
 		
@@ -156,6 +296,12 @@ public class StartScene extends PixelScene {
 		
 		private int slot;
 		private boolean newGame;
+		
+		private final String dungeon;
+		
+		public SaveSlotButton(String dungeon) {
+			this.dungeon = dungeon;
+		}
 		
 		@Override
 		protected void createChildren() {
@@ -299,7 +445,9 @@ public class StartScene extends PixelScene {
 					GamesInProgress.selectedClass = null;
 					GamesInProgress.curSlot = slot;
 					SandboxPixelDungeon.switchScene(HeroSelectScene.class);
-				} else showWndSelectDungeon(slot);
+				} else {
+					showWndSelectDungeon(slot, null, dungeon);
+				}
 			} else {
 				SandboxPixelDungeon.scene().add( new WndGameInProgress(slot));
 			}

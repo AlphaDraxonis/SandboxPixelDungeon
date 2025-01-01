@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -37,8 +38,8 @@ import java.util.HashMap;
 @NotAllowedInLua
 public class GamesInProgress {
 
-    public static final int TEST_SLOT = 99;//should always be larger than MAX_SLOTS !!!
-    public static final int MAX_SLOTS = HeroClass.values().length;
+    public static final int MAX_SLOTS = 1_000_000;
+	public static final int TEST_SLOT = 0;
 
     //null means we have loaded info and it is empty, no entry means unknown.
     private static HashMap<Integer, Info> slotStates = new HashMap<>();
@@ -46,24 +47,37 @@ public class GamesInProgress {
 
     public static HeroClass selectedClass;
 
-    private static final String GAME_FOLDER = "game%d";
+	private static final String FOLDER = "games_in_progress/";
+    private static final String GAME_FOLDER = FOLDER + "game%d";
     private static final String GAME_FILE = "game.dat";
     private static final String LEVEL_FILE = "level_%s.dat";
     private static final String DEPTH_BRANCH_FILE = "depth%d-branch%d.dat";
 	private static final String CHECKPOINT_FOLDER = "checkpoint";
+	public static final String TEST_SLOT_SAVE = "test_slot";
 
     public static boolean gameExists(int slot) {
         return FileUtils.dirExists(gameFolder(slot))
                 && FileUtils.fileLength(gameFile(slot)) > 1;
     }
+	
+	public static boolean gameExists(FileHandle gameFolder) {
+		return gameFolder.exists() && gameFolder.isDirectory()
+				&& FileUtils.fileLength(gameFile(gameFolder)) > 1;
+	}
 
     public static String gameFolder(int slot) {
-        return Messages.format(GAME_FOLDER, slot);
+        return slot == TEST_SLOT
+				? TEST_SLOT_SAVE
+				: Messages.format(GAME_FOLDER, slot);
     }
 
     public static String gameFile(int slot) {
         return gameFolder(slot) + "/" + GAME_FILE;
     }
+	
+	public static FileHandle gameFile(FileHandle gameFolder) {
+		return gameFolder.child(GAME_FILE);
+	}
 
     public static String levelFile(int slot, String levelName, int branch) {
         if (branch == 0) return gameFolder(slot) + "/" + Messages.format(LEVEL_FILE, levelName);
@@ -81,24 +95,42 @@ public class GamesInProgress {
 		return -1;
 	}
 	
-	public static ArrayList<Info> checkAll(){
+	public static synchronized ArrayList<Info> checkAll(){
+		FileHandle dir = FileUtils.getFileHandle( FOLDER );
 		ArrayList<Info> result = new ArrayList<>();
-		for (int i = 1; i <= MAX_SLOTS; i++){
-			Info curr = check(i);
-			if (curr != null) result.add(curr);
+		
+		if (dir != null && dir.isDirectory()){
+			for (FileHandle file : dir.list()){
+				try {
+					String name = file.name();
+					if (name.length() > 4) {//'game' has 4 letters
+						Info curr = check(file, Integer.parseInt(name.substring(4)));
+						if (curr != null) result.add(curr);
+					}
+				} catch (NumberFormatException ignored) {
+					//there should be no files that could cause this exception
+				}
+			}
 		}
+		
 		Collections.sort(result, scoreComparator);
+		
 		return result;
 	}
 	
 	public static Info check( int slot ) {
+		return check(FileUtils.getFileHandle( gameFolder(slot) ), slot);
+	}
+	
+	public static Info check( FileHandle gameFolder, int slot ) {
 		
 		if (slotStates.containsKey( slot )) {
 
 			if (slotStates.get(slot) != null && slotStates.get(slot).testGame) return null;
 			return slotStates.get( slot );
 			
-		} else if (!gameExists( slot )) {
+		} else
+			if (!gameExists( gameFolder )) {
 			
 			slotStates.put(slot, null);
 			return null;
@@ -108,7 +140,7 @@ public class GamesInProgress {
 			Info info;
 			try {
 				
-				Bundle bundle = FileUtils.bundleFromFile(gameFile(slot));
+				Bundle bundle = FileUtils.bundleFromFile(gameFile(gameFolder));
 
 				//saves from before v1.4.3 are not supported
 				if (bundle.getInt( "version" ) < SandboxPixelDungeon.v1_4_3) {
@@ -219,4 +251,17 @@ public class GamesInProgress {
 			return (int)Math.signum( rScore - lScore );
 		}
 	};
+	
+	public static void moveOldSavesToNewLocation() {
+		for (int slot = 1; slot <= 5; slot++) {
+			FileHandle dir = FileUtils.getFileHandle( Messages.format("game%d", slot) );
+			if (dir.exists() && dir.isDirectory()) {
+				FileHandle old = dir;
+				FileHandle neu = FileUtils.getFileHandle( gameFolder(slot) );
+				old.moveTo(neu);
+			}
+		}
+		FileHandle testGame = FileUtils.getFileHandle( Messages.format("game%d", 99) );
+		testGame.deleteDirectory();
+	}
 }
