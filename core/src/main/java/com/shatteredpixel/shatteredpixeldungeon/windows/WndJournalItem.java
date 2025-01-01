@@ -26,7 +26,7 @@ import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
 
-public class WndJournalItem extends WndTitledMessage {
+public class WndJournalItem extends OriginalWndTitledMessage {
 
 	public WndJournalItem(Image icon, String title, String message ) {
 		super( icon, title, message);
