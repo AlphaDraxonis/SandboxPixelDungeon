@@ -645,6 +645,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             }
 
         } else {
+            rename.setVisible(false);
             randomItem = new Component() {
                 private RandomItemDistrComp distr = new RandomItemDistrComp((RandomItem<?>) item) {
                     @Override
@@ -689,7 +690,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             if (c != null) c.visible = c.active = !flag;
         }
 
-        if (rename != null) rename.setVisible(!flag);
+        if (rename != null) rename.setVisible(!flag && !(obj instanceof RandomItem));
 
         ((CustomGameObjectClass) obj).setInheritStats(flag);
 //        if (viewScript != null) viewScript.visible = viewScript.active = true;
