@@ -1,6 +1,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.editcomps.CustomObjectEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
@@ -11,7 +16,14 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ArrowCellActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.CheckpointActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.HeapActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlantActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TileModify;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TrapActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -20,12 +32,12 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.editcomps.CustomObjectEditor;
+import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
@@ -140,7 +152,7 @@ public abstract class DefaultEditComp<T> extends Component {
         }
 
         if (obj instanceof CustomObjectClass) {
-            CustomObject customObject = UserContentManager.getUserContent(((CustomObjectClass) obj).getIdentifier(), null);
+            CustomObject customObject = CustomObjectManager.getUserContent(((CustomObjectClass) obj).getIdentifier(), null);
             customObjectEditor = customObject == null ? null : customObject.createCustomObjectEditor(this::updateObj);
         } else if (obj instanceof CustomObject) {
             customObjectEditor = ((CustomObject) obj).createCustomObjectEditor(this::updateObj);

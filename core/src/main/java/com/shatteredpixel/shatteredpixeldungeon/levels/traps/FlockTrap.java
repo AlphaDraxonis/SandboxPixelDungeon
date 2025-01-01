@@ -45,7 +45,7 @@ public class FlockTrap extends Trap {
 
 	@Override
 	public void activate() {
-		PathFinder.buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 2 );
+		PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.solid, null ), 2, true );
 		ArrayList<Integer> spawnPoints = new ArrayList<>();
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE) {

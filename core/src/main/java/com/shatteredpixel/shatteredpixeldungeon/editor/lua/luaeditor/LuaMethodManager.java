@@ -37,9 +37,24 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbili
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
-import com.shatteredpixel.shatteredpixeldungeon.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
+import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.KingsCrown;
+import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
+import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
+import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.EtherealChains;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SandalsOfNature;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
@@ -64,7 +79,12 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.RageTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.MimicSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.NecromancerSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.WardSprite;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
@@ -74,7 +94,15 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.Point;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 @NotAllowedInLua
 public final class LuaMethodManager implements Comparable<LuaMethodManager> {
@@ -191,24 +219,24 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(204, CharSprite.class.getMethod("link", Char.class), "ch");
 			addMethod(205, CharSprite.class.getMethod("worldToCamera", int.class), "cell");
 			addMethod(206, CharSprite.class.getMethod("showStatusWithIcon", boolean.class, int.class, String.class, int.class, Object[].class), "ignoreVisibility", "color", "text", "icon", "args");
-			addMethod(205, CharSprite.class.getMethod("attack", int.class, Callback.class), "cell", "callback");
-			addMethod(205, CharSprite.class.getMethod("operate", int.class, Callback.class), "cell", "callback");
-			addMethod(205, CharSprite.class.getMethod("jump", int.class, int.class, Callback.class), "from", "to", "callback");
-			addMethod(205, CharSprite.class.getMethod("zap", int.class, Callback.class), "cell", "callback");
-			addMethod(205, CharSprite.class.getMethod("hasOwnZapAnimation"));
-			addMethod(205, CharSprite.class.getMethod("instantZapDamage"));
-			addMethod(205, CharSprite.class.getMethod("turnTo", int.class, int.class), "from", "to");
-			addMethod(205, CharSprite.class.getMethod("die"));
-			addMethod(205, CharSprite.class.getMethod("blood"));
+			addMethod(207, CharSprite.class.getMethod("attack", int.class, Callback.class), "cell", "callback");
+			addMethod(208, CharSprite.class.getMethod("operate", int.class, Callback.class), "cell", "callback");
+			addMethod(209, CharSprite.class.getMethod("jump", int.class, int.class, Callback.class), "from", "to", "callback");
+			addMethod(210, CharSprite.class.getMethod("zap", int.class, Callback.class), "cell", "callback");
+			addMethod(211, CharSprite.class.getMethod("hasOwnZapAnimation"));
+			addMethod(212, CharSprite.class.getMethod("instantZapDamage"));
+			addMethod(213, CharSprite.class.getMethod("turnTo", int.class, int.class), "from", "to");
+			addMethod(214, CharSprite.class.getMethod("die"));
+			addMethod(215, CharSprite.class.getMethod("blood"));
 
-			addMethod(205, MimicSprite.class.getDeclaredMethod("hideMimicSprite"));
-			addMethod(205, NecromancerSprite.class.getMethod("charge"));
+			addMethod(231, MimicSprite.class.getDeclaredMethod("hideMimicSprite", Char.class), "ch");
+			addMethod(232, NecromancerSprite.class.getMethod("charge"));
 
-			addMethod(205, PylonSprite.class.getMethod("activate"));
-			addMethod(205, PylonSprite.class.getMethod("deactivate"));
+			addMethod(241, PylonSprite.class.getMethod("activate"));
+			addMethod(242, PylonSprite.class.getMethod("deactivate"));
 
-			addMethod(205, StatueSprite.class.getMethod("armorTier"));
-			addMethod(205, WardSprite.class.getMethod("updateTier", int.class), "tier");
+			addMethod(251, StatueSprite.class.getMethod("armorTier"));
+			addMethod(252, WardSprite.class.getMethod("updateTier", int.class), "tier");
 
 
 

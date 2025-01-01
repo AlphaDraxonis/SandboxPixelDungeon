@@ -1,12 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.services.server;
 
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+@NotAllowedInLua
 public class DungeonPreview implements Bundlable {
 
     //entered by uploader

@@ -83,7 +83,7 @@ public class MirrorSprite extends MobSprite {
 
 			texture( hero != null ? hero.heroClass.spritesheet() : HeroClass.WARRIOR.spritesheet());
 
-			TextureFilm film = new TextureFilm( HeroSprite.tiers(), hero != null ? hero.tier() : 0, FRAME_WIDTH, FRAME_HEIGHT );
+			TextureFilm film = new TextureFilm( HeroSprite.tiers(), hero != null ? hero.tier() : 1, FRAME_WIDTH, FRAME_HEIGHT );
 
 			idle = new Animation( 1, true );
 			idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );

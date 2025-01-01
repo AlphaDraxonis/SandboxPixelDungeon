@@ -74,9 +74,8 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 		}
 
 		Zone.GrassType grassType = Zone.getGrassType(Dungeon.level, pos);
-		if (grassType == Zone.GrassType.NONE
-				&& CustomDungeon.isEditing()
-				&& CustomTileItem.findAnyCustomTileAt(pos) == null) return -1;
+		if (CustomDungeon.isEditing()
+				|| CustomTileItem.findAnyCustomTileAt(pos) == null) return -1;
 
 		int stage = Dungeon.level.visualRegions[pos];
 		if(stage == 0) stage = Dungeon.curLvlScheme().getVisualRegion() - 1;

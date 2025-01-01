@@ -38,8 +38,29 @@ import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnchantmentLike;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.*;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.AntiEntropy;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Bulk;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Corrosion;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Displacement;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Metabolism;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Multiplicity;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Overgrowth;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.RandomCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Stench;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Affection;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Camouflage;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Entanglement;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Flow;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Obfuscation;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Potential;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.RandomGlyph;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Repulsion;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Stone;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Swiftness;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Thorns;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfArcana;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
@@ -52,7 +73,12 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -385,7 +411,7 @@ public class Armor extends EquipableItem {
 		if (hasGlyph(Swiftness.class, owner)) {
 			boolean enemyNear = false;
 			//for each enemy, check if they are adjacent, or within 2 tiles and an adjacent cell is open
-			PathFinder.buildDistanceMap(owner.pos, Dungeon.level.getPassableVar(), 2);
+			PathFinder.buildDistanceMapForEnvironmentals(owner.pos, Dungeon.level.getPassableVar(), 2, true);
 			for (Char ch : Actor.chars()){
 				if ( Dungeon.level.distance(ch.pos, owner.pos) <= 2 && owner.alignment != ch.alignment && ch.alignment != Char.Alignment.NEUTRAL){
 					if (Dungeon.level.adjacent(ch.pos, owner.pos)){

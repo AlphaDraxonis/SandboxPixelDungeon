@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewSce
 import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
@@ -213,7 +214,7 @@ public class WndSelectDungeon extends Window {
         public ListItem(CustomDungeonSaves.Info info) {
             super(Chrome.Type.GREY_BUTTON_TR, info.name, 9);
 
-            depthIcon = Icons.get(Icons.DEPTH);
+            depthIcon = Icons.getWithNoOffset(Level.Feeling.NONE);
             depthIcon.scale.set(1.2f);
             add(depthIcon);
             depthText = PixelScene.renderTextBlock(Integer.toString(info.numLevels), 7);
@@ -625,6 +626,7 @@ public class WndSelectDungeon extends Window {
             e.showExceptionWindow();
             return;
         }
+        EditorScene.isEditing = true;
         CustomTileLoader.loadTiles(EditorScene.openDifferentLevel);
         String lastEditedFloor = Dungeon.customDungeon.getLastEditedFloor();
         LevelScheme l;

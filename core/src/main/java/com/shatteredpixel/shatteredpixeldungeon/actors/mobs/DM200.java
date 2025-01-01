@@ -155,7 +155,7 @@ public class DM200 extends DMMob {
 
 	protected boolean canVent(int target){
 		if (ventCooldown > 0) return false;
-		PathFinder.buildDistanceMap(target, BArray.not(Dungeon.level.solid, null), Dungeon.level.distance(pos, target)+1);
+		PathFinder.buildDistanceMapForEnvironmentals(target, BArray.not(Dungeon.level.solid, null), Dungeon.level.distance(pos, target)+1, true);
 		//vent can go around blocking terrain, but not through it
 		if (PathFinder.distance[pos] == Integer.MAX_VALUE){
 			return false;

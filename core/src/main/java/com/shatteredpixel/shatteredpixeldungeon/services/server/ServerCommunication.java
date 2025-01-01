@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.DeviceCompat;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+@NotAllowedInLua
 public final class ServerCommunication {
 
     private static String URL = null;
@@ -86,7 +88,8 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return URL == null ? "https://script.google.com/macros/s/AKfycbz3TNz5F57DZmfIHplSko_VuPnVTVV6ym5cR2ZzB0PqaZBfn7UAikdM9FPG0F2XLNqFzQ/exec" : URL;
+        //tzz change url in server file!!!! SEEEEEEHHHRRR WICHTIG!
+        return URL == null||true ? "https://script.google.com/macros/s/AKfycbzhOKXc0vMbNxZQdBoAr3QLJ7WSFlJDLFqDSx2GThzVwfFuQbdr1jam9zTxxmnYFCMlsw/exec" : URL;
     }
 
     static String getUUID() {
@@ -249,7 +252,7 @@ public final class ServerCommunication {
                             dungeons.add(preview);
                         }
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Game.runOnRenderThread(() -> callback.failed(e.getMessage() == null ? new IOException(String.valueOf(httpResponse.getStatus().getStatusCode())) : e));
                     return;
                 }

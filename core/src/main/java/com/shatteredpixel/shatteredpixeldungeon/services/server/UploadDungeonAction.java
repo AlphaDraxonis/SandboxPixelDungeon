@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.server.ServerDungeonList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 
 import java.io.FileNotFoundException;
@@ -40,6 +41,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+@NotAllowedInLua
 public class UploadDungeonAction {
 
 	private final ServerCommunication.UploadCallback callback;
@@ -52,7 +54,7 @@ public class UploadDungeonAction {
 
 	private String folderID;
 
-	//TODO tzz ask if want to include a dungeon before!
+	//TODO maybe ask if want to include a dungeon before!
 	public UploadDungeonAction(String dungeonName, String description, String userName, int difficulty, ServerCommunication.UploadCallback callback) {
 		this.callback = callback;
 		try {

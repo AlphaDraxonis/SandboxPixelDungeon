@@ -1,6 +1,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomBuff;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndNewCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfFeatherFall;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCleansing;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
@@ -9,8 +11,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.CustomBuff;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.WndNewCustomObject;
 import com.watabou.noosa.Image;
 
 import java.util.Locale;

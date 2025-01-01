@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
@@ -128,9 +129,8 @@ public class CeremonialCandle extends Item {
 		}
 
 		for (CustomTilemap ritualMarker : Dungeon.level.customTiles) {
-			if (ritualMarker instanceof RitualSiteRoom.RitualMarker && !((RitualSiteRoom.RitualMarker) ritualMarker).used) {
-				((RitualSiteRoom.RitualMarker) ritualMarker).used =
-						checkRitualPosition((ritualMarker.tileX + 1) + (ritualMarker.tileY + 1) * Dungeon.level.width());
+			if (ritualMarker instanceof RitualSiteRoom.RitualMarker && ((RitualSiteRoom.RitualMarker) ritualMarker).canSummonMobs()) {
+				checkRitualPosition((ritualMarker.tileX + 1) + (ritualMarker.tileY + 1) * Dungeon.level.width(), (RitualSiteRoom.RitualMarker) ritualMarker);
 			}
 		}
 
@@ -138,7 +138,7 @@ public class CeremonialCandle extends Item {
 
 	}
 
-	private static boolean checkRitualPosition(int ritualPos){
+	private static boolean checkRitualPosition(int ritualPos, RitualSiteRoom.RitualMarker ritualMarker){
 		Heap[] candleHeaps = new Heap[4];
 
 		candleHeaps[0] = Dungeon.level.heaps.get(ritualPos - Dungeon.level.width());
@@ -182,8 +182,9 @@ public class CeremonialCandle extends Item {
 				}
 			}
 
-			Elemental.NewbornFireElemental elemental = new Elemental.NewbornFireElemental();
-			elemental.spawnedByQuest = true;
+			Mob elemental = ritualMarker.getMobToSummon();
+			if (elemental instanceof Elemental.NewbornFireElemental)
+				((Elemental.NewbornFireElemental) elemental).spawnedByQuest = true;
 
 			Char ch = Actor.findChar( ritualPos );
 			if (ch != null) {
@@ -202,7 +203,6 @@ public class CeremonialCandle extends Item {
 			} else {
 				elemental.pos = ritualPos;
 			}
-			elemental.state = elemental.HUNTING;
 			GameScene.add(elemental, 1);
 
 			WandmakerQuest.questsActive[WandmakerQuest.CANDLE]++;

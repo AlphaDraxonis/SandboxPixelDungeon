@@ -27,9 +27,18 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.CustomObjSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Buffs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
@@ -44,12 +53,13 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.LuaCustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ResourcePath;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.CustomObjSelector;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPaneWithScrollbar;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
@@ -336,7 +346,7 @@ public class IDEWindow extends Component {
 	private void compile() {
 		String result = CodeInputPanelInterface.compileResult(codeInputPanels);
 		if (result != null) {
-			EditorScene.show(new WndError(result));
+			EditorScene.show(new WndError(result) {{setHighlightingEnabled(false);}});
 		} else {
 			RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(IDEWindow.class, "compile_no_error_title"), 9);
 			title.hardlight(Window.TITLE_COLOR);
@@ -390,8 +400,8 @@ public class IDEWindow extends Component {
 		}
 
 		if (newPath != null && !newPath.equals(scriptPath)) {
-			//save location has changed!
-			//fragen, ob alter pfad gelöscht werden soll, warnung, dass alle anderen die denselben pfad verwenden neu konfiguriert werden müssen
+			//tzz save location has changed!
+			//tzz fragen, ob alter pfad gelöscht werden soll, warnung, dass alle anderen die denselben pfad verwenden neu konfiguriert werden müssen
 			return false;
 		} else {
 			FileHandle saveTo = CustomObject.getResourceFile(scriptPath, false);

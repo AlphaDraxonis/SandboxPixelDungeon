@@ -252,10 +252,11 @@ public class Zone implements Bundlable {
 
         for (Buff buff : buffs) {
             Buff b;
+            Buff buffBefore = ch.buff((buff.getClass()));
             if (buff instanceof FlavourBuff) {
-                b = Buff.affect(ch, (Class<? extends FlavourBuff>) buff.getClass(), 0);
+                b = Buff.affect(ch, ((FlavourBuff) buff), 0);
             } else {
-                b = Buff.affect(ch, buff.getClass());
+                b = Buff.affect(ch, buff);
             }
             if (b instanceof BuffWithDuration) {
                 ((BuffWithDuration) b).set((BuffWithDuration) buff, getClass());

@@ -21,10 +21,16 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
-import com.shatteredpixel.shatteredpixeldungeon.*;
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -38,7 +44,11 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.GameLog;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
 import com.watabou.gltextures.TextureCache;
@@ -47,7 +57,11 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.tweeners.Tweener;
-import com.watabou.utils.*;
+import com.watabou.utils.BArray;
+import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.Random;
+import com.watabou.utils.Signal;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -397,7 +411,7 @@ public class InterlevelScene extends PixelScene {
 
 		phase = Phase.FADE_IN;
 		timeLeft = fadeTime;
-		
+
 		if (thread == null) {
 			thread = new Thread() {
 				@Override
@@ -440,9 +454,11 @@ public class InterlevelScene extends PixelScene {
 						
 					}
 
-					synchronized (thread) {
-						if (phase == Phase.STATIC && error == null) {
-							afterLoading();
+					if (thread != null) {
+						synchronized (thread) {
+							if (phase == Phase.STATIC && error == null) {
+								afterLoading();
+							}
 						}
 					}
 				}
@@ -563,11 +579,12 @@ public class InterlevelScene extends PixelScene {
 					}
 					public void onBackPressed() {
 						super.onBackPressed();
+						CustomObjectManager.loadUserContentFromFiles();
 						Game.switchScene( StartScene.class );
+						thread = null;
+						error = null;
 					}
 				} );
-				thread = null;
-				error = null;
 			} else if (thread != null && (int)waitingTime == 10){
 				waitingTime = 11f;
 				String s = "";
@@ -584,7 +601,9 @@ public class InterlevelScene extends PixelScene {
 					add(new WndError(Messages.get(InterlevelScene.class,"could_not_generate", Dungeon.seed)) {
 						public void onBackPressed() {
 							super.onBackPressed();
+							CustomObjectManager.loadUserContentFromFiles();
 							Game.switchScene(StartScene.class);
+							thread = null;
 						}
 					});
 				}

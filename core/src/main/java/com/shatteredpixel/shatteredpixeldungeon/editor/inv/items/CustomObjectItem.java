@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
@@ -9,7 +10,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
 import com.watabou.noosa.Image;
 
 public class CustomObjectItem extends EditorItem<CustomObject> {
@@ -71,6 +71,6 @@ public class CustomObjectItem extends EditorItem<CustomObject> {
     @Override
     public void doAction(Action action) {
         if (action == Action.REMOVE)
-            CustomDungeonSaves.deleteUserContent(getObject());
+            CustomDungeonSaves.deleteCustomObject(getObject());
     }
 }

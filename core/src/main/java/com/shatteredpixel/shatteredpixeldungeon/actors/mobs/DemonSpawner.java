@@ -116,24 +116,27 @@ public class DemonSpawner extends SpawnerMob implements MobBasedOnDepth {
 
 			Mob spawn = createSummonedMob();
 
-			ArrayList<Integer> candidates = new ArrayList<>();
-			for (int n : PathFinder.NEIGHBOURS8) {
-				if (Barrier.canEnterCell(pos+n, spawn, false, true)) {
-					candidates.add( pos+n );
-				}
-			}
+			if (spawn != null) {
 
-			if (!candidates.isEmpty()) {
-				spawn.pos = Random.element( candidates );
-
-				GameScene.add( spawn, 1 );
-				Dungeon.level.occupyCell(spawn);
-
-				if (sprite.visible) {
-					Actor.add(new Pushing(spawn, pos, spawn.pos));
+				ArrayList<Integer> candidates = new ArrayList<>();
+				for (int n : PathFinder.NEIGHBOURS8) {
+					if (Barrier.canEnterCell(pos + n, spawn, false, true)) {
+						candidates.add(pos + n);
+					}
 				}
 
-				spawnCooldown += maxSpawnCooldown;
+				if (!candidates.isEmpty()) {
+					spawn.pos = Random.element(candidates);
+
+					GameScene.add(spawn, 1);
+					Dungeon.level.occupyCell(spawn);
+
+					if (sprite.visible) {
+						Actor.add(new Pushing(spawn, pos, spawn.pos));
+					}
+
+					spawnCooldown += maxSpawnCooldown;
+				}
 			}
 		}
 		alerted = false;

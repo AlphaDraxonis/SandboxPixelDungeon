@@ -58,6 +58,8 @@ abstract public class ClassArmor extends Armor {
 		defaultAction = AC_ABILITY;
 
 		bones = false;
+
+		charge = 50;
 	}
 
 	private Charger charger;

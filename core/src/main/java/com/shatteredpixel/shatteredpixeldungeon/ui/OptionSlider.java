@@ -32,104 +32,104 @@ import com.watabou.utils.GameMath;
 import com.watabou.utils.PointF;
 
 public abstract class OptionSlider extends Component {
-
+    
     private PointerArea pointerArea;
-
+    
     private RenderedTextBlock title;
     private RenderedTextBlock minTxt;
     private RenderedTextBlock maxTxt;
-
+    
     //values are expressed internally as ints, but they can easily be interpreted as something else externally.
     private int minVal;
     private int maxVal;
     private int selectedVal;
-
+    
     private NinePatch sliderNode;
     private NinePatch BG;
     private ColorBlock sliderBG;
     private ColorBlock[] sliderTicks;
     private float tickDist;
     private final int maxNumSliderTicks;
-
-
-    public OptionSlider(String title, String minTxt, String maxTxt, int minVal, int maxVal) {
+    
+    
+    public OptionSlider(String title, String minTxt, String maxTxt, int minVal, int maxVal){
         this(title, minTxt, maxTxt, minVal, maxVal, Integer.MAX_VALUE);
     }
-
-    public OptionSlider(String title, String minTxt, String maxTxt, int minVal, int maxVal, int maxNumSliderTicks) {
+    
+    public OptionSlider(String title, String minTxt, String maxTxt, int minVal, int maxVal, int maxNumSliderTicks){
         super();
-
+        
         //shouldn't function if this happens.
-        if (minVal > maxVal) {
+        if (minVal > maxVal){
             minVal = maxVal;
             active = false;
         }
-
+        
         this.title.text(title);
         this.minTxt.text(minTxt);
         this.maxTxt.text(maxTxt);
-
+        
         this.minVal = minVal;
         this.maxVal = maxVal;
-
+        
         this.maxNumSliderTicks = maxNumSliderTicks;
-
+        
         sliderTicks = new ColorBlock[Math.min((maxVal - minVal) + 1, maxNumSliderTicks)];
-        for (int i = 0; i < sliderTicks.length; i++) {
+        for (int i = 0; i < sliderTicks.length; i++){
             add(sliderTicks[i] = new ColorBlock(1, 9, ColorBlock.SEPARATOR_COLOR));
         }
         add(sliderNode);
     }
-
+    
     protected abstract void onChange();
-
+    
     protected void immediatelyOnChange(int currentVal) {
     }
-
-    public int getSelectedValue() {
+    
+    public int getSelectedValue(){
         return selectedVal;
     }
-
+    
     public void setSelectedValue(int val) {
         this.selectedVal = val;
-        sliderNode.x = (int) (x + tickDist * (selectedVal - minVal)) + 0.5f;
-        sliderNode.y = sliderBG.y - 4;
+        sliderNode.x = (int)(x + tickDist*(selectedVal-minVal)) + 0.5f;
+        sliderNode.y = sliderBG.y-4;
         PixelScene.align(sliderNode);
     }
-
+    
     @Override
     protected void createChildren() {
         super.createChildren();
-
-        add(BG = Chrome.get(Chrome.Type.RED_BUTTON));
+        
+        add( BG = Chrome.get(Chrome.Type.RED_BUTTON));
         BG.alpha(0.5f);
-
+        
         add(title = PixelScene.renderTextBlock(9));
         add(this.minTxt = PixelScene.renderTextBlock(6));
         add(this.maxTxt = PixelScene.renderTextBlock(6));
-
+        
         add(sliderBG = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR));
         sliderNode = Chrome.get(Chrome.Type.RED_BUTTON);
         sliderNode.size(4, 7);
-
-        pointerArea = new PointerArea(0, 0, 0, 0) {
+        
+        pointerArea = new PointerArea(0, 0, 0, 0){
             boolean pressed = false;
-
+            
             @Override
-            protected void onPointerDown(PointerEvent event) {
+            protected void onPointerDown( PointerEvent event ) {
                 pressed = true;
                 PointF p = camera().screenToCamera((int) event.current.x, (int) event.current.y);
-                sliderNode.x = GameMath.gate(sliderBG.x - 2, p.x - sliderNode.width() / 2, sliderBG.x + sliderBG.width() - 2);
+                sliderNode.x = GameMath.gate(sliderBG.x-2, p.x - sliderNode.width()/2, sliderBG.x+sliderBG.width()-2);
                 sliderNode.brightness(1.5f);
             }
-
+            
             @Override
-            protected void onPointerUp(PointerEvent event) {
+            protected void onPointerUp( PointerEvent event ) {
                 if (pressed) {
                     PointF p = camera().screenToCamera((int) event.current.x, (int) event.current.y);
-                    sliderNode.x = GameMath.gate(sliderBG.x - 2, p.x - sliderNode.width() / 2, sliderBG.x + sliderBG.width() - 2);
+                    sliderNode.x = GameMath.gate(sliderBG.x - 2, p.x - sliderNode.width()/2, sliderBG.x + sliderBG.width() - 2);
                     sliderNode.resetColor();
-
+                    
                     //sets the selected value
                     selectedVal = minVal + Math.round((sliderNode.x - x) / tickDist);
                     sliderNode.x = x + tickDist * (selectedVal - minVal) + 0.5f;
@@ -138,96 +138,95 @@ public abstract class OptionSlider extends Component {
                     pressed = false;
                 }
             }
-
+            
             @Override
-            protected void onDrag(PointerEvent event) {
+            protected void onDrag( PointerEvent event ) {
                 if (pressed) {
                     PointF p = camera().screenToCamera((int) event.current.x, (int) event.current.y);
-                    sliderNode.x = GameMath.gate(sliderBG.x - 2, p.x - sliderNode.width() / 2, sliderBG.x + sliderBG.width() - 2);
-
+                    sliderNode.x = GameMath.gate(sliderBG.x - 2, p.x - sliderNode.width()/2, sliderBG.x + sliderBG.width() - 2);
+                    
                     immediatelyOnChange(minVal + Math.round((sliderNode.x - x) / tickDist));
                 }
             }
         };
         add(pointerArea);
-
+        
     }
-
+    
     @Override
     protected void layout() {
-
-        if (title.width() > 0.7f * width) {
+        
+        if (title.width() > 0.7f*width){
             String titleText = title.text;
             remove(title);
             title = PixelScene.renderTextBlock(6);
             add(title);
             title.text(titleText);
         }
-
+        
         title.setPos(
-                x + (width - title.width()) / 2,
-                y + 2
+                x + (width-title.width())/2,
+                y+2
         );
         PixelScene.align(title);
         sliderBG.y = y + height() - 7;
-        sliderBG.x = x + 2;
-        sliderBG.size(width - 5, 1);
-
-        tickDist = sliderBG.width() / (maxVal - minVal);
+        sliderBG.x = x+2;
+        sliderBG.size(width-5, 1);
+        tickDist = sliderBG.width()/(maxVal - minVal);
         int numValues = (maxVal - minVal) + 1;
         float ticksLeftOutPerTick = (numValues - sliderTicks.length) / (float)(sliderTicks.length-2);
         float posNextSliderTick = x + 2;
         int indexNextSliderTick = 0;
-        for (int i = 0; i < numValues; i++) {
-            float xPos = x + 2 + (tickDist * i);
+        for (int i = 0; i < numValues; i++){
+            float xPos = x + 2 + (tickDist*i);
             if (xPos >= posNextSliderTick) {
-                sliderTicks[indexNextSliderTick].y = sliderBG.y - 4;
+                sliderTicks[indexNextSliderTick].y = sliderBG.y-4;
                 sliderTicks[indexNextSliderTick].x = xPos;
                 PixelScene.align(sliderTicks[indexNextSliderTick]);
                 indexNextSliderTick++;
-                posNextSliderTick += tickDist * ticksLeftOutPerTick;
+                posNextSliderTick += tickDist*ticksLeftOutPerTick;
             }
         }
-        sliderTicks[sliderTicks.length-1].y = sliderBG.y - 4;
-        sliderTicks[sliderTicks.length-1].x = x + 2 + (tickDist * (numValues-1));;
+        sliderTicks[sliderTicks.length-1].y = sliderBG.y-4;
+        sliderTicks[sliderTicks.length-1].x = x + 2 + (tickDist * (numValues-1) );
         PixelScene.align(sliderTicks[sliderTicks.length-1]);
-
-
+        
+        
         minTxt.setPos(
-                x + 1,
-                sliderBG.y - 5 - minTxt.height()
+                x+1,
+                sliderBG.y-5-minTxt.height()
         );
         maxTxt.setPos(
-                x + width() - maxTxt.width() - 1,
-                sliderBG.y - 5 - minTxt.height()
+                x+width()-maxTxt.width()-1,
+                sliderBG.y-5-minTxt.height()
         );
-
-        sliderNode.x = x + tickDist * (selectedVal - minVal) + 0.5f;
-        sliderNode.y = sliderBG.y - 3;
+        
+        sliderNode.x = x + tickDist*(selectedVal-minVal) + 0.5f;
+        sliderNode.y = sliderBG.y-3;
         PixelScene.align(sliderNode);
-
+        
         pointerArea.x = x;
         pointerArea.y = y;
         pointerArea.width = width();
         pointerArea.height = height();
-
+        
         BG.size(width(), height());
         BG.x = x;
         BG.y = y;
-
+        
     }
-
+    
     @Override
     public void redirectPointerEvent(PointerEvent event) {
         super.redirectPointerEvent(event);
         if (pointerArea.onSignal(event)) event.handled = true;
     }
-
+    
     @Override
     public void cancelClick() {
         pointerArea.reset();
         sliderNode.resetColor();
-
+        
         //sets the selected value
         int curVal = getSelectedValue();
         selectedVal = minVal + Math.round((sliderNode.x - x) / tickDist);

@@ -265,8 +265,12 @@ public class PathFinder {
 		return pathFound;
 	}
 	
-	public static void buildDistanceMap( int to, boolean[] passable, int limit ) {
-		
+	public static void buildDistanceMapForCharacters(int to, boolean[] passable, int limit ) {
+		buildDistanceMapForEnvironmentals(to, passable, limit, false);
+	}
+
+	public static void buildDistanceMapForEnvironmentals(int to, boolean[] passable, int limit, boolean ignoreArrowCells ) {
+
 		System.arraycopy(maxVal, 0, distance, 0, maxVal.length);
 		
 		int head = 0;
@@ -286,7 +290,7 @@ public class PathFinder {
 				return;
 			}
 
-			ArrowCellInterface arrowCellFrom = getArrowCellAt.apply(step);
+			ArrowCellInterface arrowCellFrom = ignoreArrowCells ? null : getArrowCellAt.apply(step);
 			
 			int start = (step % width == 0 ? 3 : 0);
 			int end   = ((step+1) % width == 0 ? 3 : 0);
@@ -296,7 +300,7 @@ public class PathFinder {
 
 				int n = step + dirLR[i];
 				if (n >= 0 && n < size && passable[n] && (distance[n] > nextDistance)) {
-					ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
+					ArrowCellInterface arrowCell = ignoreArrowCells ? null : getArrowCellAt.apply(n);
 					if (arrowCell != null && !arrowCell.allowsDirectionLeaving(-dirLR[i])) continue;
 					// Add to queue
 					queue[tail++] = n;

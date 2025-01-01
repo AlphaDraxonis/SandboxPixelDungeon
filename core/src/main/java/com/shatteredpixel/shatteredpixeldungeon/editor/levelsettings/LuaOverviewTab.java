@@ -39,7 +39,12 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptionsCondensed;
 import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.LuaScript;
@@ -174,6 +179,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 			scrollingListPane.addItemNoLayouting(new RedButton(Messages.get(LuaOverviewTab.class, "open_dungeon_script")) {
 				@Override
 				protected void onClick() {
+					//tzz add dungeon script!
 //					if (Dungeon.dungeonScript.pathToScript == null) Dungeon.dungeonScript.pathToScript = "";
 //					IDEWindow.showWindow(Dungeon.dungeonScript);
 				}
@@ -192,7 +198,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 		protected IconButton delete;
 
 		public ScriptItem(LuaScript script) {
-			super(createIcon(script), "pathFromRoot");
+			super(createIcon(script), script.getPath());
 			title.setHighlighting(false);
 
 			this.script = script;
@@ -203,7 +209,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 			add(description);
 
 			StringBuilder builder = new StringBuilder();
-			//tzz
+			//tzz wichtig!!!!!!!!!
 //			for (LuaUserContent obj : UserContentManager.customObjects.values()) {
 //				if (script.pathFromRoot.equals(obj.pathToScript)) builder.append(obj.name).append('\n');
 //			}
@@ -248,6 +254,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
 		@Override
 		protected void onClick() {
+//			tzz machen!
 //			IDEWindow.showWindow(new LuaCodeHolder(script));
 		}
 

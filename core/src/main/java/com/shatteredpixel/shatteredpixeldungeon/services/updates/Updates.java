@@ -21,11 +21,17 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.services.updates;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Net;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
+import com.watabou.NotAllowedInLua;
+import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
 
 import java.util.Date;
 
+@NotAllowedInLua
 public class Updates {
 
 	public static UpdateService service;
@@ -115,4 +121,61 @@ public class Updates {
 		}
 	}
 
+
+	private static Date lastDungeonsCheck = null;
+	private static boolean newDungeonsAvailable = false;
+
+	public static boolean newDungeonsAvailable() {
+		return newDungeonsAvailable;
+	}
+
+	public static void dungeonsSeen() {
+		newDungeonsAvailable = false;
+	}
+
+	public static void checkForNewCommunityDungeons(){
+
+		if (SPDSettings.WiFi() && !Game.platform.connectedToUnmeteredNetwork()) {
+			return;
+		}
+
+		if (lastDungeonsCheck != null && (new Date().getTime() - lastDungeonsCheck.getTime()) < 60_000) {
+			//one-minute delay
+			return;
+		}
+
+		Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
+		httpRequest.setUrl(ServerCommunication.getURL() + "?action=getLatestUploadTime");
+
+		Gdx.net.sendHttpRequest(httpRequest, new com.badlogic.gdx.Net.HttpResponseListener() {
+			@Override
+			public void handleHttpResponse(com.badlogic.gdx.Net.HttpResponse httpResponse) {
+
+				int statusCode = httpResponse.getStatus().getStatusCode();
+				if (statusCode == 200) {
+					lastCheck = new Date();
+					String result = httpResponse.getResultAsString();
+					try {
+						long time = Long.parseLong(result);
+						newDungeonsAvailable = SPDSettings.lastCheckedServer() < time;
+					} catch (NumberFormatException e) {
+						failed(e);
+					}
+				} else {
+					//fail
+					lastCheck = null;
+				}
+			}
+
+			@Override
+			public void failed(Throwable t) {
+				lastCheck = null;
+			}
+
+			@Override
+			public void cancelled() {
+				lastCheck = null;
+			}
+		});
+	}
 }

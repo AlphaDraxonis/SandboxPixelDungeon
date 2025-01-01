@@ -146,7 +146,6 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	@Override
 	public CharSprite sprite() {
 		CharSprite sprite = super.sprite();
-		//TODO tzz seeehr wichtig check if armor is null in atalog, should be t3 in that case
 		StatueSprite.setArmor(sprite, armor == null ? 0 : armor.tier);
 		return sprite;
 	}

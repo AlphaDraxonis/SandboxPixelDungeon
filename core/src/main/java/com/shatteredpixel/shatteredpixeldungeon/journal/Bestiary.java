@@ -27,7 +27,16 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.S
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.ShadowClone;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.SmokeBomb;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaCustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
@@ -37,8 +46,20 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.plants.*;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaCustomObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.plants.BlandfruitBush;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Fadeleaf;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Firebloom;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Icecap;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Mageroyal;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Rotberry;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Sorrowmoss;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Starflower;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Stormvine;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Sungrass;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
+import com.watabou.NotAllowedInLua;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
@@ -169,6 +190,7 @@ public enum Bestiary {
 		return false;
 	}
 
+	@NotAllowedInLua
 	public static void setSeen(Class<?> cls){
 		if (classConversions.containsKey(cls)){
 			cls = classConversions.get(cls);
@@ -194,10 +216,12 @@ public enum Bestiary {
 	//used primarily when bosses are killed and need to clean up their minions
 	public static boolean skipCountingEncounters = false;
 
+	@NotAllowedInLua
 	public static void countEncounter(Class<?> cls){
 		countEncounters(cls, 1);
 	}
 
+	@NotAllowedInLua
 	public static void countEncounters(Class<?> cls, int encounters){
 		if (skipCountingEncounters || CustomDungeon.isEditing() || Dungeon.isLevelTesting()){
 			return;
@@ -221,6 +245,7 @@ public enum Bestiary {
 	private static final String BESTIARY_SEEN       = "bestiary_seen";
 	private static final String BESTIARY_ENCOUNTERS = "bestiary_encounters";
 
+	@NotAllowedInLua
 	public static void store( Bundle bundle ){
 
 		ArrayList<Class<?>> classes = new ArrayList<>();
@@ -253,6 +278,7 @@ public enum Bestiary {
 
 	}
 
+	@NotAllowedInLua
 	public static void restore( Bundle bundle ){
 
 		if (bundle.contains(BESTIARY_CLASSES)

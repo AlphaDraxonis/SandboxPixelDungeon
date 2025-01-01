@@ -11,13 +11,7 @@ public class Backpack extends Bag {
 
     @Override
     public int capacity() {
-        int cap = super.capacity();
-        for (Item item : items){
-            if (item instanceof Bag){
-                cap++;
-            }
-        }
-        return cap;
+        return 19;
     }
 
     @Override

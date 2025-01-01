@@ -253,9 +253,12 @@ public class Necromancer extends SpawnerMob {
 		summoning = firstSummon = false;
 
 		mySummon = convertToSummonedMob(createSummonedMob());
+		if (mySummon == null) return null;
+
 		mySummon.pos = summoningPos;
 		GameScene.add(mySummon);
 		Dungeon.level.occupyCell(mySummon);
+
 		if (sprite.extraCode instanceof NecromancerSprite.SummoningParticle)
 			((NecromancerSprite.SummoningParticle) sprite.extraCode).finishSummoning(sprite);
 
@@ -311,7 +314,7 @@ public class Necromancer extends SpawnerMob {
 
 				//we can summon around blocking terrain, but not through it, except unlocked doors
 				boolean[] passable = Dungeon.level.getPassableAndAnyVarForBoth(Necromancer.this, null, BArray.not(Dungeon.level.solid, null));
-				PathFinder.buildDistanceMap(pos, passable, Dungeon.level.distance(pos, enemy.pos)+3);
+				PathFinder.buildDistanceMapForCharacters(pos, passable, Dungeon.level.distance(pos, enemy.pos)+3);
 
 				for (int c : PathFinder.NEIGHBOURS8){
 					if (Actor.findChar(enemy.pos+c) == null

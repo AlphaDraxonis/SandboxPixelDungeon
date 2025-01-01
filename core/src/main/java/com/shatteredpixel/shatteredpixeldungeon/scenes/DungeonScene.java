@@ -51,7 +51,13 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.DiscardedItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.*;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.ArrowCellTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.BarrierTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.GridTileMap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Banner;
 import com.shatteredpixel.shatteredpixeldungeon.ui.InventoryPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
@@ -60,13 +66,25 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.watabou.NotAllowedInLua;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.PointerEvent;
-import com.watabou.noosa.*;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Gizmo;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.NoosaScript;
+import com.watabou.noosa.NoosaScriptNoLighting;
+import com.watabou.noosa.PointerArea;
+import com.watabou.noosa.SkinnedBlock;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @NotAllowedInLua
 public abstract class DungeonScene extends PixelScene {
@@ -149,7 +167,7 @@ public abstract class DungeonScene extends PixelScene {
 		ripples = new Group();
 		terrain.add( ripples );
 
-		DungeonTileSheet.setupVariance(Dungeon.level.map.length, Dungeon.seedCurLevel());
+		DungeonTileSheet.setupVariance(Dungeon.level.tileVariance, Dungeon.level.map.length, Dungeon.seedCurLevel());
 
 		initAndAddDungeonTilemap();
 

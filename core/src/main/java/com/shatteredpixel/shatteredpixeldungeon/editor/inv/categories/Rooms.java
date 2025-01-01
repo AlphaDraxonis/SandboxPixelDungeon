@@ -1,6 +1,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomRoom;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndNewCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
@@ -10,7 +12,19 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoo
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RotGardenRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.RatKingRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretArtilleryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretChestChasmRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretGardenRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretHoardRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretHoneypotRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretLaboratoryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretLarderRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretLibraryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretMazeRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRunestoneRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretSummoningRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretWellRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.DiamondGooRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.ThickPillarsGooRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.ThinPillarsGooRoom;
@@ -23,8 +37,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.CustomRoom;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.WndNewCustomObject;
 import com.watabou.noosa.Image;
 
 import java.util.Locale;

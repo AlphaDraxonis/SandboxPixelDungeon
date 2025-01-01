@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PitfallParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfFeatherFall;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -120,7 +121,7 @@ public class PitfallTrap extends Trap {
 
 					Char ch = Actor.findChar(cell);
 					//don't trigger on flying chars, or immovable neutral chars
-					if (ch != null && !ch.isFlying()
+					if (ch != null && !ch.isFlying() && ch.buff(ElixirOfFeatherFall.FeatherBuff.class) == null
 							&& !(ch.alignment == Char.Alignment.NEUTRAL && Char.hasProp(ch, Char.Property.IMMOVABLE))
 							&& !(ch.alignment == Char.Alignment.ALLY && ignoreAllies)) {
 						if (ch == Dungeon.hero) {

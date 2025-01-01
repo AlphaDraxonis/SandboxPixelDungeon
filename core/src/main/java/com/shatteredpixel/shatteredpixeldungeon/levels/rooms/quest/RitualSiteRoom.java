@@ -22,6 +22,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -30,8 +33,14 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRo
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Tilemap;
+import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Point;
+import com.watabou.utils.Reflection;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RitualSiteRoom extends StandardRoom {
 
@@ -85,7 +94,10 @@ public class RitualSiteRoom extends StandardRoom {
 	}
 
 	public static class RitualMarker extends CustomTilemap {
-		
+
+		protected Class<? extends Mob> defaultTemplateClass;
+		public List<Mob> summons = new ArrayList<>();
+
 		{
 			texture = Assets.Environment.PRISON_QUEST;
 			
@@ -93,10 +105,17 @@ public class RitualSiteRoom extends StandardRoom {
 
 			offsetCenterX = offsetCenterY = 1;
 		}
+
+		{
+			defaultTemplateClass = Elemental.NewbornFireElemental.class;
+			Mob summon = Reflection.newInstance(defaultTemplateClass);
+			summon.state = summon.HUNTING;
+			summons.clear();
+			summons.add(summon);
+		}
 		
 		final int TEX_WIDTH = 64;
 
-		public boolean used;//only one summon per ritual site
 
 		@Override
 		public Tilemap create() {
@@ -115,18 +134,40 @@ public class RitualSiteRoom extends StandardRoom {
 			return Messages.get(this, "desc");
 		}
 
-		private static final String USED = "used";
+		@Override
+		public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+			return super.doOnAllGameObjects(whatToDo)
+					| doOnAllGameObjectsList(summons, whatToDo);
+		}
+
+		private static final String SUMMONS = "summons";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
-			bundle.put(USED, used);
+			bundle.put(SUMMONS, summons);
 		}
 
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			used = bundle.getBoolean(USED);
+			if (bundle.getBoolean("used")) {
+				summons.clear();
+			} else {
+				if (bundle.contains(SUMMONS)) {
+					summons.clear();
+					for (Bundlable mob : bundle.getCollection(SUMMONS))
+						summons.add((Mob) mob);
+				}
+			}
+		}
+
+		public Mob getMobToSummon() {
+			return canSummonMobs() ? summons.remove(0) : null;
+		}
+
+		public boolean canSummonMobs() {
+			return !summons.isEmpty();
 		}
 	}
 

@@ -113,12 +113,6 @@ public class Ghost extends QuestNPC<GhostQuest> {
 			Notes.remove( landmark() );
 			return true;
 		}
-		//tzz wieso hat Evan das entfernt!??
-//		if (quest != null && quest.type() >= 0) {
-//			if (Dungeon.level.heroFOV[pos] && !quest.completed()){
-//				Notes.add( Notes.Landmark.GHOST );
-//			}
-//		}
 		return super.act();
 	}
 	

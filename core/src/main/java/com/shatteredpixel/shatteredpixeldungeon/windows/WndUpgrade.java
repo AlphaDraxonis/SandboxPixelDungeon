@@ -162,12 +162,22 @@ public class WndUpgrade extends Window {
 		if (toUpgrade.isIdentified()){
 			if (levelFrom > 0){
 				t1.text("+" + levelFrom);
+				t1.hardlight(ItemSlot.UPGRADED);
+			} else if (levelFrom < 0) {
+				t1.text("-" + levelFrom);
+				t1.hardlight(ItemSlot.DEGRADED);
 			} else {
 				t1.text("");
 			}
-			t1.hardlight(ItemSlot.UPGRADED);
-			t2.text("+" + levelTo);
-			t2.hardlight(ItemSlot.UPGRADED);
+			if (levelFrom > 0){
+				t2.text("+" + levelTo);
+				t2.hardlight(ItemSlot.UPGRADED);
+			} else if (levelFrom < 0) {
+				t2.text("-" + levelTo);
+				t2.hardlight(ItemSlot.DEGRADED);
+			} else {
+				t2.text("");
+			}
 
 			if (curseInfused){
 				t1.hardlight(ItemSlot.CURSE_INFUSED);
@@ -285,8 +295,8 @@ public class WndUpgrade extends Window {
 		if (wand instanceof Wand){
 			int chargeboost = levelFrom + (toUpgrade instanceof MagesStaff ? 1 : 0);
 			bottom = fillFields(Messages.get(this, "charges"),
-					Integer.toString(Math.min(10, ((Wand) wand).initialCharges() + chargeboost)),
-					Integer.toString(Math.min(10, ((Wand) wand).initialCharges() + chargeboost + 1)),
+					Integer.toString(Math.max(1, Math.min(10, ((Wand) wand).initialCharges() + chargeboost))),
+					Integer.toString(Math.max(1, Math.min(10, ((Wand) wand).initialCharges() + chargeboost + 1))),
 					bottom);
 		}
 

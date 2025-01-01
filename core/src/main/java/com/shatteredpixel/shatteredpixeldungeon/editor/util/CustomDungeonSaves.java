@@ -6,6 +6,13 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomGameObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaClassGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -17,26 +24,29 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomLayoutLevel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ResourcePath;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.CustomGameObject;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaClassGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.idewindowactions.LuaScript;
 import com.watabou.noosa.Game;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.FileUtils;
+import com.watabou.utils.Function;
+import com.watabou.utils.Reflection;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.Normalizer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class CustomDungeonSaves {
@@ -227,7 +237,7 @@ public class CustomDungeonSaves {
                 }
             }
 
-            for (CustomGameObjectClass template : UserContentManager.getAllCustomObjects(CustomGameObjectClass.class)) {
+            for (CustomGameObjectClass template : CustomObjectManager.getAllCustomObjects(CustomGameObjectClass.class)) {
                 template.updateInheritStats(customLevel);
             }
             //look for all custom game objects on the map that don't have an associated custom object, and tzz ??
@@ -263,7 +273,7 @@ public class CustomDungeonSaves {
         bundle.put(FLOOR, level);
         Dungeon.level = before;
         if (level instanceof RoomLayoutLevel) {
-            //tzz hstrrdfhg, keep in mind that the LevelScheme is never saved!
+            throw new RuntimeException("You are supposed to save the room layout here!");
         }
         else {
             FileUtils.bundleToFile(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, level.name.replace(' ', '_')), bundle);
@@ -441,10 +451,10 @@ public class CustomDungeonSaves {
     }
 
     public static void loadAllCustomResourceFiles() {
-        UserContentManager.allResourcePaths.clear();
+        CustomObjectManager.allResourcePaths.clear();
 
         FileHandle localCustomObjectDir = FileUtils.getFileHandle(getCurrentCustomObjectsPath());
-        putResourceFilesInMap(localCustomObjectDir, UserContentManager.allResourcePaths, Pattern.quote(localCustomObjectDir.path() + "/"));
+        putResourceFilesInMap(localCustomObjectDir, CustomObjectManager.allResourcePaths, Pattern.quote(localCustomObjectDir.path() + "/"));
 
     }
 
@@ -462,23 +472,23 @@ public class CustomDungeonSaves {
 
     public static void loadAllCustomObjectsFromFiles() {
 
-        UserContentManager.allUserContents.clear();
+        CustomObjectManager.allUserContents.clear();
         String errors = null;
 
         FileHandle localCustomObjectDir = FileUtils.getFileHandle(getCurrentCustomObjectsPath());
-        errors = readUserContentFile(localCustomObjectDir, null, Pattern.quote(localCustomObjectDir.path() + "/"));
+        errors = readCustomObjectFile(localCustomObjectDir, null, Pattern.quote(localCustomObjectDir.path() + "/"));
 
-        for (CustomObject obj : new HashSet<>(UserContentManager.allUserContents.values())) {
+        for (CustomObject obj : new HashSet<>(CustomObjectManager.allUserContents.values())) {
             obj.restoreIDs();
         }
 
         if (errors != null) DungeonScene.show(new WndError(errors));
     }
 
-    private static String readUserContentFile(FileHandle file, String errors, String quotedRootPath) {
+    private static String readCustomObjectFile(FileHandle file, String errors, String quotedRootPath) {
         if (file.isDirectory()) {
             for (FileHandle f : file.list()) {
-                errors = readUserContentFile(f, errors, quotedRootPath);
+                errors = readCustomObjectFile(f, errors, quotedRootPath);
             }
         }
         else if (ResourcePath.isCustomObject(file.extension())) {
@@ -486,7 +496,7 @@ public class CustomDungeonSaves {
                 Bundle bundle = FileUtils.bundleFromStream(file.read());
                 CustomObject customObject = (CustomObject) bundle.get(CustomObject.BUNDLE_KEY);
                 customObject.saveDirPath = file.path().replaceFirst(quotedRootPath, "");
-                UserContentManager.allUserContents.put(customObject.getIdentifier(), customObject);
+                CustomObjectManager.allUserContents.put(customObject.getIdentifier(), customObject);
             } catch (IOException e) {
                 if (errors == null) errors = "";
                 else errors += "\n";
@@ -496,11 +506,11 @@ public class CustomDungeonSaves {
         return errors;
     }
 
-    public static void storeUserContent(Collection<CustomObject> customObjects) {
+    public static void storeCustomObject(Collection<CustomObject> customObjects) {
         String errors = null;
         for (CustomObject customObject : customObjects) {
 			try {
-				storeUserContent(customObject);
+				storeCustomObject(customObject);
 			} catch (IOException e) {
                 if (errors == null) errors = "";
                 else errors += "\n";
@@ -512,7 +522,7 @@ public class CustomDungeonSaves {
         }
     }
 
-    public static void storeUserContent(CustomObject customObject) throws IOException {
+    public static void storeCustomObject(CustomObject customObject) throws IOException {
         if (customObject == null) return;
 
         Bundle bundle = new Bundle();
@@ -529,7 +539,7 @@ public class CustomDungeonSaves {
         FileUtils.bundleToFile(fileName, bundle);
     }
 
-    public static void deleteUserContent(CustomObject customObject) {
+    public static void deleteCustomObject(CustomObject customObject) {
         if (customObject == null) return;
 
         if (customObject instanceof CustomGameObject<?>) {
@@ -546,25 +556,23 @@ public class CustomDungeonSaves {
                 return GameObject.ModifyResult.noChange();
             };
 
-            for (LevelScheme ls : Dungeon.customDungeon.levelSchemes()) {
-				try {
-					CustomDungeon.doOnEverything(ls, true, whatToDo, true, null, null);
-				} catch (IOException e) {
-					Game.reportException(e);
-				}
+			try {
+				Dungeon.customDungeon.doOnEverything(true, whatToDo, true, null, null);
+			} catch (IOException e) {
+				Game.reportException(e);
 			}
-            QuickSlotButton.doOnAll(whatToDo);
+
         }
         String fileName = getCurrentCustomObjectsPath() + customObject.saveDirPath;
         FileUtils.deleteFile(fileName);
 
-        UserContentManager.allUserContents.remove(customObject.getIdentifier());
+        CustomObjectManager.allUserContents.remove(customObject.getIdentifier());
 
         if (customObject instanceof CustomGameObject)
             ((CustomGameObject<?>) customObject).inventoryCategory().updateCustomObjects();
 
         customObject.reloadSprite();
-    }
+	}
 
     public static String fileName(CustomObject customObject) {
         return Normalizer.normalize(customObject.getName().trim(), Normalizer.Form.NFD).replaceAll("[^a-zA-Z0-9]", "")

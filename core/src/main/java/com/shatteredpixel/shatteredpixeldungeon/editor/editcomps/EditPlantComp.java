@@ -1,5 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PlantItem;
@@ -11,8 +13,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -75,7 +75,7 @@ public class EditPlantComp extends DefaultEditComp<Plant> {
     @Override
     protected void onInheritStatsClicked(boolean flag, boolean initializing) {
         if (flag && !initializing) {
-            obj.copyStats((Plant) UserContentManager.getLuaClass(((CustomGameObjectClass) obj).getIdentifier()));
+            obj.copyStats((Plant) CustomObjectManager.getLuaClass(((CustomGameObjectClass) obj).getIdentifier()));
         }
 
         for (Component c : comps) {

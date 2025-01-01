@@ -130,7 +130,7 @@ public class ScrollOfChallenge extends ExoticScroll {
 				}
 			}
 
-			PathFinder.buildDistanceMap( pos, Dungeon.level.getPassableAndAvoidVar(null), dist );
+			PathFinder.buildDistanceMapForEnvironmentals( pos, Dungeon.level.getPassableAndAvoidVar(null), dist, true );
 			for (int i = 0; i < PathFinder.distance.length; i++) {
 				if (PathFinder.distance[i] < Integer.MAX_VALUE && !arenaPositions.contains(i)) {
 					arenaPositions.add(i);

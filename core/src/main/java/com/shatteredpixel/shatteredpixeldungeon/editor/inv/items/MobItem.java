@@ -5,14 +5,14 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.EbonyMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
@@ -36,7 +36,7 @@ public class MobItem extends EditorItem<Mob> {
         Mob mob = getObject();
 
         if (mob instanceof CustomObjectClass) {
-            return UserContentManager.getName(((CustomObjectClass) mob).getIdentifier());
+            return CustomObjectManager.getName(((CustomObjectClass) mob).getIdentifier());
         }
 
         if (MobSpriteItem.canChangeSprite(mob)) {

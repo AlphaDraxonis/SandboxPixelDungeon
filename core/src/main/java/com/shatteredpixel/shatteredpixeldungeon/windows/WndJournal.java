@@ -32,12 +32,14 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AbstractCategoryScroller;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.CategoryScroller;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.journal.CustomDocumentPage;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
@@ -266,9 +268,6 @@ public class WndJournal extends WndTabbed {
 
 	public static class AlchemyTab extends Component {
 
-		private RedButton[] pageButtons;
-		private static final int NUM_BUTTONS = 9;
-
 		private static final int[] sprites = {
 				ItemSpriteSheet.SEED_HOLDER,
 				ItemSpriteSheet.STONE_HOLDER,
@@ -278,37 +277,25 @@ public class WndJournal extends WndTabbed {
 				ItemSpriteSheet.BOMB_HOLDER,
 				ItemSpriteSheet.MISSILE_HOLDER,
 				ItemSpriteSheet.ELIXIR_HOLDER,
-				ItemSpriteSheet.SPELL_HOLDER
+				ItemSpriteSheet.SPELL_HOLDER,
+				ItemSpriteSheet.SOMETHING
 		};
 
 		public static int currentPageIdx   = 0;
 
+		protected AbstractCategoryScroller<?> categoryScroller;
+
 		private IconTitle title;
 		private RenderedTextBlock body;
 
-		private ScrollPane list;
-		private ArrayList<QuickRecipe> recipes = new ArrayList<>();
+		private ArrayList<QuickRecipe> recipes;
+
+		private boolean skipPageLayouting;
 
 		@Override
 		protected void createChildren() {
-			pageButtons = new RedButton[NUM_BUTTONS];
-			for (int i = 0; i < NUM_BUTTONS; i++){
-				final int idx = i;
-				pageButtons[i] = new RedButton( "" ){
-					@Override
-					protected void onClick() {
-						currentPageIdx = idx;
-						updateList();
-					}
-				};
-				if (Document.ALCHEMY_GUIDE.isPageFound(i)) {
-					pageButtons[i].icon(new ItemSprite(sprites[i], null));
-				} else {
-					pageButtons[i].icon(new ItemSprite(ItemSpriteSheet.SOMETHING, null));
-					pageButtons[i].enable(false);
-				}
-				add( pageButtons[i] );
-			}
+
+			recipes = new ArrayList<>();
 
 			title = new IconTitle();
 			title.icon( new ItemSprite(ItemSpriteSheet.ALCH_PAGE));
@@ -316,138 +303,155 @@ public class WndJournal extends WndTabbed {
 
 			body = PixelScene.renderTextBlock(6);
 
-			list = new ScrollPane(new Component());
-			add(list);
+
+			AbstractCategoryScroller.Category[] cats = new AbstractCategoryScroller.Category[10];
+			for (int i = 0; i < cats.length; i++) {
+				final int idx = i;
+				cats[idx] = new AbstractCategoryScroller.Category() {
+					@Override
+					public List<?> createItems(boolean required) {
+						return QuickRecipe.getRecipes(idx);
+					}
+
+					@Override
+					public Image getImage() {
+						return new ItemSprite(sprites[idx], null);
+					}
+
+					@Override
+					public String getName() {
+						return Document.ALCHEMY_GUIDE.pageTitle(idx);
+					}
+				};
+			}
+
+			categoryScroller = new CategoryScroller(cats, null) {
+
+				@Override
+				protected ScrollPane createSp() {
+					return new ScrollPane(new Component());
+				}
+
+				@Override
+				protected RedButton createCategoryComp(int index, Category category) {
+					RedButton btn = super.createCategoryComp(index, category);
+
+					if (!Document.ALCHEMY_GUIDE.isPageFound(index)) {
+						btn.icon(new ItemSprite(ItemSpriteSheet.SOMETHING, null));
+						btn.enable(false);
+					}
+
+					return btn;
+				}
+
+				@Override
+				protected void updateList(int selectedCatIndex) {
+
+					if (skipPageLayouting) return;
+
+					currentPageIdx = selectedCatIndex;
+
+					if (currentPageIdx != -1 && !Document.ALCHEMY_GUIDE.isPageFound(currentPageIdx)){
+						currentPageIdx = -1;
+					}
+
+					if (currentPageIdx == -1){
+						return;
+					}
+
+					for (QuickRecipe r : recipes){
+						if (r != null) {
+							r.killAndErase();
+							r.destroy();
+						}
+					}
+					recipes.clear();
+
+					Component content = sp.content();
+
+					content.clear();
+
+					title.visible = true;
+					title.label(cats[currentPageIdx].getName());
+					title.setRect(0, 0, width(), 10);
+					content.add(title);
+
+					body.maxWidth((int)width());
+					body.text(Document.ALCHEMY_GUIDE.pageBody(currentPageIdx));
+					body.setPos(0, title.bottom());
+					content.add(body);
+
+					Document.ALCHEMY_GUIDE.readPage(currentPageIdx);
+
+					ArrayList<QuickRecipe> toAdd = (ArrayList<QuickRecipe>) cats[currentPageIdx].createItems(true);
+
+					float left;
+					float top = body.bottom()+2;
+					int w;
+					ArrayList<QuickRecipe> toAddThisRow = new ArrayList<>();
+					while (!toAdd.isEmpty()){
+						if (toAdd.get(0) == null){
+							toAdd.remove(0);
+							top += 6;
+						}
+
+						w = 0;
+						while(!toAdd.isEmpty() && toAdd.get(0) != null
+								&& w + toAdd.get(0).width() <= width()){
+							toAddThisRow.add(toAdd.remove(0));
+							w += toAddThisRow.get(0).width();
+						}
+
+						float spacing = (width() - w)/(toAddThisRow.size() + 1);
+						left = spacing;
+						while (!toAddThisRow.isEmpty()){
+							QuickRecipe r = toAddThisRow.remove(0);
+							r.setPos(left, top);
+							left += r.width() + spacing;
+							if (!toAddThisRow.isEmpty()) {
+								ColorBlock spacer = new ColorBlock(1, 16, ColorBlock.SEPARATOR_COLOR);
+								spacer.y = top;
+								spacer.x = left - spacing / 2 - 0.5f;
+								PixelScene.align(spacer);
+								content.add(spacer);
+							}
+							recipes.add(r);
+							content.add(r);
+						}
+
+						if (!toAdd.isEmpty() && toAdd.get(0) == null){
+							toAdd.remove(0);
+						}
+
+						if (!toAdd.isEmpty() && toAdd.get(0) != null) {
+							ColorBlock spacer = new ColorBlock(width(), 1, ColorBlock.SEPARATOR_COLOR);
+							spacer.y = top + 16;
+							spacer.x = 0;
+							content.add(spacer);
+						}
+						top += 17;
+						toAddThisRow.clear();
+					}
+					top -= 1;
+					content.setSize(width(), top);
+					sp.givePointerPriority();
+				}
+			};
+			add(categoryScroller);
+
 		}
 
 		@Override
 		protected void layout() {
 			super.layout();
-
-			if (width() >= 180){
-				float buttonWidth = width()/pageButtons.length;
-				for (int i = 0; i < NUM_BUTTONS; i++) {
-					pageButtons[i].setRect(x + i*buttonWidth, y, buttonWidth, ITEM_HEIGHT);
-					PixelScene.align(pageButtons[i]);
-				}
-			} else {
-				//for first row
-				float buttonWidth = width()/5;
-				float y = 0;
-				float x = 0;
-				for (int i = 0; i < NUM_BUTTONS; i++) {
-					pageButtons[i].setRect(this.x + x, this.y + y, buttonWidth, ITEM_HEIGHT);
-					PixelScene.align(pageButtons[i]);
-					x += buttonWidth;
-					if (i == 4){
-						y += ITEM_HEIGHT;
-						x = 0;
-						buttonWidth = width()/4;
-					}
-				}
-			}
-
-			list.setRect(x, pageButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - pageButtons[NUM_BUTTONS-1].bottom() + y - 1);
-
+			skipPageLayouting = true;
+			categoryScroller.setRect(x, y, width, height);
+			skipPageLayouting = false;
 			updateList();
 		}
 
 		public void updateList() {
-
-			if (currentPageIdx != -1 && !Document.ALCHEMY_GUIDE.isPageFound(currentPageIdx)){
-				currentPageIdx = -1;
-			}
-
-			for (int i = 0; i < NUM_BUTTONS; i++) {
-				if (i == currentPageIdx) {
-					pageButtons[i].icon().color(TITLE_COLOR);
-				} else {
-					pageButtons[i].icon().resetColor();
-				}
-			}
-
-			if (currentPageIdx == -1){
-				return;
-			}
-
-			for (QuickRecipe r : recipes){
-				if (r != null) {
-					r.killAndErase();
-					r.destroy();
-				}
-			}
-			recipes.clear();
-
-			Component content = list.content();
-
-			content.clear();
-
-			title.visible = true;
-			title.label(Document.ALCHEMY_GUIDE.pageTitle(currentPageIdx));
-			title.setRect(0, 0, width(), 10);
-			content.add(title);
-
-			body.maxWidth((int)width());
-			body.text(Document.ALCHEMY_GUIDE.pageBody(currentPageIdx));
-			body.setPos(0, title.bottom());
-			content.add(body);
-
-			Document.ALCHEMY_GUIDE.readPage(currentPageIdx);
-
-			ArrayList<QuickRecipe> toAdd = QuickRecipe.getRecipes(currentPageIdx);
-
-			float left;
-			float top = body.bottom()+2;
-			int w;
-			ArrayList<QuickRecipe> toAddThisRow = new ArrayList<>();
-			while (!toAdd.isEmpty()){
-				if (toAdd.get(0) == null){
-					toAdd.remove(0);
-					top += 6;
-				}
-
-				w = 0;
-				while(!toAdd.isEmpty() && toAdd.get(0) != null
-						&& w + toAdd.get(0).width() <= width()){
-					toAddThisRow.add(toAdd.remove(0));
-					w += toAddThisRow.get(0).width();
-				}
-
-				float spacing = (width() - w)/(toAddThisRow.size() + 1);
-				left = spacing;
-				while (!toAddThisRow.isEmpty()){
-					QuickRecipe r = toAddThisRow.remove(0);
-					r.setPos(left, top);
-					left += r.width() + spacing;
-					if (!toAddThisRow.isEmpty()) {
-						ColorBlock spacer = new ColorBlock(1, 16, 0xFF222222);
-						spacer.y = top;
-						spacer.x = left - spacing / 2 - 0.5f;
-						PixelScene.align(spacer);
-						content.add(spacer);
-					}
-					recipes.add(r);
-					content.add(r);
-				}
-
-				if (!toAdd.isEmpty() && toAdd.get(0) == null){
-					toAdd.remove(0);
-				}
-
-				if (!toAdd.isEmpty() && toAdd.get(0) != null) {
-					ColorBlock spacer = new ColorBlock(width(), 1, 0xFF222222);
-					spacer.y = top + 16;
-					spacer.x = 0;
-					content.add(spacer);
-				}
-				top += 17;
-				toAddThisRow.clear();
-			}
-			top -= 1;
-			content.setSize(width(), top);
-			list.setSize(list.width(), list.height());
-			list.scrollTo(0, 0);
+			categoryScroller.selectCategory(currentPageIdx);
 		}
 	}
 
@@ -566,32 +570,31 @@ public class WndJournal extends WndTabbed {
 	public static class CatalogTab extends Component {
 
 		private RedButton[] itemButtons;
-		private static final int NUM_BUTTONS = 4;
+		private static final int MAX_NUM_BUTTONS = 4;
 
 		public static int currentItemIdx   = 0;
-		private static float[] scrollPositions = new float[NUM_BUTTONS];
+		private static float[] scrollPositions = new float[MAX_NUM_BUTTONS];
 
 		//sprite locations
-		private static final int EQUIP_IDX = 0;
-		private static final int CONSUM_IDX = 1;
-		private static final int BESTIARY_IDX = 2;
-		private static final int LORE_IDX = 3;
+		public static final int EQUIP_IDX = 0;
+		public static final int CONSUM_IDX = 1;
+		public static final int BESTIARY_IDX = 2;
+		public static final int LORE_IDX = 3;
+
+		private int numButtons;
 
 		private ScrollingGridPane grid;
 
 		@Override
 		protected void createChildren() {
 
-			AbstractCategoryScroller.Category[] categories = new AbstractCategoryScroller.Category[4];
-			categories[0] = new AbstractCategoryScroller.Category() {
-				@Override
-				protected List<?> createItems(boolean required) {
-					return List.of();
-				}
-			};
+			numButtons = MAX_NUM_BUTTONS;
 
-			itemButtons = new RedButton[NUM_BUTTONS];
-			for (int i = 0; i < NUM_BUTTONS; i++){
+			if (Dungeon.customDungeon == null || Dungeon.customDungeon.foundPages.isEmpty())
+				numButtons--;
+
+			itemButtons = new RedButton[numButtons];
+			for (int i = 0; i < itemButtons.length; i++){
 				final int idx = i;
 				itemButtons[i] = new RedButton( "" ){
 					@Override
@@ -605,7 +608,7 @@ public class WndJournal extends WndTabbed {
 			itemButtons[EQUIP_IDX].icon(new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER));
 			itemButtons[CONSUM_IDX].icon(new ItemSprite(ItemSpriteSheet.POTION_HOLDER));
 			itemButtons[BESTIARY_IDX].icon(new ItemSprite(ItemSpriteSheet.MOB_HOLDER));
-			itemButtons[LORE_IDX].icon(new ItemSprite(ItemSpriteSheet.DOCUMENT_HOLDER));
+			if (itemButtons.length > LORE_IDX) itemButtons[LORE_IDX].icon(new ItemSprite(ItemSpriteSheet.DOCUMENT_HOLDER));
 
 			grid = new ScrollingGridPane(){
 				@Override
@@ -621,10 +624,10 @@ public class WndJournal extends WndTabbed {
 		protected void layout() {
 			super.layout();
 
-			int perRow = NUM_BUTTONS;
+			int perRow = itemButtons.length;
 			float buttonWidth = width()/perRow;
 
-			for (int i = 0; i < NUM_BUTTONS; i++) {
+			for (int i = 0; i < itemButtons.length; i++) {
 				itemButtons[i].setRect(x +(i%perRow) * (buttonWidth),
 						y + (i/perRow) * (ITEM_HEIGHT ),
 						buttonWidth, ITEM_HEIGHT);
@@ -632,16 +635,16 @@ public class WndJournal extends WndTabbed {
 			}
 
 			grid.setRect(x,
-					itemButtons[NUM_BUTTONS-1].bottom() + 1,
+					itemButtons[itemButtons.length -1].bottom() + 1,
 					width,
-					height - itemButtons[NUM_BUTTONS-1].height() - 1);
+					height - itemButtons[itemButtons.length -1].height() - 1);
 		}
 
 		public void updateList() {
 
 			grid.clear();
 
-			for (int i = 0; i < NUM_BUTTONS; i++){
+			for (int i = 0; i < itemButtons.length; i++){
 				if (i == currentItemIdx){
 					itemButtons[i].icon().color(TITLE_COLOR);
 				} else {
@@ -694,55 +697,15 @@ public class WndJournal extends WndTabbed {
 				}
 
 			} else {
-				int totalItems = 0;
-				int totalSeen = 0;
-				for (Document doc : Document.values()){
-					if (!doc.isLoreDoc()){
-						continue;
-					}
-					for (String page : doc.pageNames()){
-						totalItems++;
-						if (doc.isPageFound(page)){
-							totalSeen++;
-						}
-					}
-				}
-				grid.addHeader("_" + Messages.get(this, "title_lore") + "_ (" + totalSeen + "/" + totalItems + ")", 9, true);
+				grid.addHeader(Messages.get(this, "title_lore"), 9, true);
 
-				for (Document doc : Document.values()){
-					if (!doc.isLoreDoc()){
-						continue;
-					}
-
-					for (String page : doc.pageNames()){
-						totalItems++;
-						if (doc.isPageFound(page)){
-							totalSeen++;
-						}
-					}
-				}
-				for (Document doc : Document.values()){
-					if (!doc.isLoreDoc()){
-						continue;
-					}
-					totalItems = totalSeen = 0;
-					for (String page : doc.pageNames()){
-						totalItems++;
-						if (doc.isPageFound(page)){
-							totalSeen++;
-						}
-					}
-					if (!doc.anyPagesFound()){
-						grid.addHeader("_???_ (" + totalSeen + "/" + totalItems + "):");
-					} else {
-						grid.addHeader("_" + Messages.titleCase(doc.title()) + "_ (" + totalSeen + "/" + totalItems + "):");
-					}
-					addGridDocuments(grid, doc);
+				if (Dungeon.customDungeon != null) {
+					addGridDocuments(grid, Dungeon.customDungeon.foundPages);
 				}
 			}
 
-			grid.setRect(x, itemButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - itemButtons[NUM_BUTTONS-1].height() - 1);
+			grid.setRect(x, itemButtons[numButtons -1].bottom() + 1, width,
+					height - itemButtons[numButtons -1].height() - 1);
 
 			grid.scrollTo(0, scrollPositions[currentItemIdx]);
 		}
@@ -874,7 +837,7 @@ public class WndJournal extends WndTabbed {
 	private static void addGridEntities(ScrollingGridPane grid, Collection<Class<?>> classes) {
 		for (Class<?> entityCls : classes){
 
-			boolean seen = Bestiary.isSeen(entityCls);
+			boolean seen = Bestiary.isSeen(entityCls)||true;
 			Mob mob = null;
 			Image icon = null;
 			String title = null;
@@ -995,13 +958,13 @@ public class WndJournal extends WndTabbed {
 		}
 	};
 
-	private static void addGridDocuments( ScrollingGridPane grid, Document doc ){
-		for (String page : doc.pageNames()){
+	private static void addGridDocuments( ScrollingGridPane grid, List<CustomDocumentPage> docs ){
+		for (CustomDocumentPage doc : docs){
 
-			Image sprite = doc.pageSprite(page);
+			Image sprite = new ItemSprite(doc.image());
 
-			boolean seen = doc.isPageFound(page);
-			boolean read = doc.isPageRead(page);
+			boolean read = doc.isPageRead();
+			boolean seen = true;
 
 			if (!seen){
 				sprite.lightness(0f);
@@ -1013,9 +976,9 @@ public class WndJournal extends WndTabbed {
 					if (inside(x, y)) {
 						Image sprite = new Image(icon);
 						if (seen) {
-							DungeonScene.show(new WndStory(sprite, doc.pageTitle(page), doc.pageBody(page)));
+							DungeonScene.show(new WndStory(sprite, doc.pageTitle(), doc.pageBody()));
 
-							doc.readPage(page);
+							doc.readPage();
 							hardLightBG(1, 1, 1);
 						} else {
 							DungeonScene.show(new WndJournalItem(sprite, "???", Messages.get(CatalogTab.class, "not_seen_lore")));
@@ -1028,8 +991,8 @@ public class WndJournal extends WndTabbed {
 				}
 			};
 
-			if (seen){
-				BitmapText text = new BitmapText(Integer.toString(doc.pageIdx(page)+1), PixelScene.pixelFont);
+			if (seen && doc.quantity() != 1){
+				BitmapText text = new BitmapText(Integer.toString(doc.quantity()), PixelScene.pixelFont);
 				text.measure();
 				gridItem.addSecondIcon( text );
 				if (!read) {

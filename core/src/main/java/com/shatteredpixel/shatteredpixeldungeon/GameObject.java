@@ -24,13 +24,16 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
+import com.watabou.utils.IntFunction;
+import com.watabou.utils.SparseArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,11 +93,6 @@ public abstract class GameObject implements Bundlable {
 	}
 
 	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-	}
-
-	public <T extends Bundlable> ModifyResult onDeleteUserContent(CustomObject toDelete, int identifier, boolean alwaysReplace) {
-//		return ModifyResult.singeReplacement(CustomObject.returnReplacementOnDeleteCustomObj(this, identifier, alwaysReplace)); //tzz tzz wictig
-		return ModifyResult.noChange();
 	}
 
 	public ModifyResult initRandoms() {

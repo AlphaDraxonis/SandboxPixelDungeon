@@ -6,10 +6,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomTerrain;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -24,6 +26,8 @@ public class EditCustomTileComp extends EditTileComp {
 
     private Spinner terrain;
     private RedButton editSimpleCustomTile;
+
+    private ContainerWithLabel.ForMobs summonMobs;
 
     private final Component[] comps;
 
@@ -49,6 +53,12 @@ public class EditCustomTileComp extends EditTileComp {
             };
             add(editSimpleCustomTile);
         } else {
+            if (customTile instanceof RitualSiteRoom.RitualMarker) {
+                RitualSiteRoom.RitualMarker marker = (RitualSiteRoom.RitualMarker) customTile;
+                summonMobs = new ContainerWithLabel.ForMobs(marker.summons, this, EditMobComp.label("summon_mob"));
+                add(summonMobs);
+            }
+
             if (!(customTile instanceof CustomTerrain)) {
                 terrain = createTerrainSpinner(customTile.terrain, " " + Messages.get(this, "terrain") + ":", value -> {
                     getObj().setTerrainType((Integer) value);
@@ -61,13 +71,14 @@ public class EditCustomTileComp extends EditTileComp {
 
         updateObj();
 
-        comps = new Component[]{terrain, editSimpleCustomTile};
+        comps = new Component[]{terrain, editSimpleCustomTile, summonMobs};
     }
 
     @Override
     protected void updateStates() {
         super.updateStates();
         if (terrain != null) terrain.setValue(customTile.terrain);
+        if (summonMobs != null) summonMobs.updateState(((RitualSiteRoom.RitualMarker) obj.getObject()).summons);
     }
 
     public static Spinner createTerrainSpinner(int currentTerrain, String label, Function<Object, Image> getIcon){
@@ -81,7 +92,7 @@ public class EditCustomTileComp extends EditTileComp {
         }
         return new Spinner(new SpinnerTextIconModel(true, curIndex, createTerrainDataForSpinner()) {
             @Override
-            protected Image getIcon(Object value) {
+            protected Image displayIcon(Object value) {
                 return getIcon.apply(value);
             }
 
@@ -193,6 +204,9 @@ public class EditCustomTileComp extends EditTileComp {
 //            if (((CustomTileLoader.SimpleCustomTile) a).region != ((CustomTileLoader.SimpleCustomTile) b).region) return false;
 //            if (((CustomTileLoader.SimpleCustomTile) a).imageTerrain != ((CustomTileLoader.SimpleCustomTile) b).imageTerrain) return false;
 //        }
+        if (a instanceof RitualSiteRoom.RitualMarker) {
+            if (!EditMobComp.isMobListEqual(((RitualSiteRoom.RitualMarker) a).summons, ((RitualSiteRoom.RitualMarker) b).summons)) return false;
+        }
         return !(a instanceof CustomTileLoader.UserCustomTile)
                 || ((CustomTileLoader.UserCustomTile) a).identifier.equals(((CustomTileLoader.UserCustomTile) b).identifier);
     }

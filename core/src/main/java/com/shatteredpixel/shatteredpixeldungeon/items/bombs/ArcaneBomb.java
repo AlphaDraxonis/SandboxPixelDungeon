@@ -57,7 +57,7 @@ public class ArcaneBomb extends Bomb {
 	protected void onThrow(int cell) {
 		super.onThrow(cell);
 		if (fuse != null){
-			PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), explosionRange() );
+			PathFinder.buildDistanceMapForEnvironmentals( cell, BArray.not( Dungeon.level.solid, null ), explosionRange(), true );
 			for (int i = 0; i < PathFinder.distance.length; i++) {
 				if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 					GameScene.add(Blob.seed(i, 3, GooWarn.class));
@@ -72,7 +72,7 @@ public class ArcaneBomb extends Bomb {
 		
 		ArrayList<Char> affected = new ArrayList<>();
 		
-		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), explosionRange() );
+		PathFinder.buildDistanceMapForEnvironmentals( cell, BArray.not( Dungeon.level.solid, null ), explosionRange(), true );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 				if (Dungeon.level.heroFOV[i]) {

@@ -8,6 +8,10 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.LuaLevelScript;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaClassGenerator;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
@@ -18,24 +22,42 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.levels.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CavesLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CityLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.DeadEndLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.HallsBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.HallsLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomLayoutLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.LuaLevelScript;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaClassGenerator;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaLevel;
 import com.watabou.NotAllowedInLua;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.*;
+import com.watabou.utils.Reflection;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
-@NotAllowedInLua
 public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSchemeLike {
 
     public static final LevelScheme SURFACE_LEVEL_SCHEME = new LevelScheme();//Placeholder for selecting levels
@@ -84,7 +106,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public float floorAlpha = 0f, wallAlpha = 0f, waterAlpha = 0f;
 
     public List<Mob> mobsToSpawn;
-    public List<Room> roomsToSpawn;//TODO also choose builder
+    public List<Room> roomsToSpawn;
+    public Builder builder;
     public List<Item> itemsToSpawn, prizeItemsToSpawn;
 
     public boolean spawnStandardRooms = true, spawnSecretRooms = true, spawnSpecialRooms = true;
@@ -94,8 +117,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public boolean allowPickaxeMining = false;
     public boolean rememberLayout = true;
     public boolean magicMappingDisabled = false;
-
-    public Class<? extends Builder> builder;
 
     //Challenge stuff
     public boolean reduceViewDistanceIfDarkness = true,
@@ -145,6 +166,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         shopPriceMultiplier = Dungeon.getSimulatedDepth(this) / 5 + 1;
     }
 
+    @NotAllowedInLua
     public void initNewLevelScheme(String name, Class<? extends Level> levelTemplate) {
         this.name = name;
 
@@ -168,6 +190,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     }
 
     //These setters are ONLY for NewFloorComp
+    @NotAllowedInLua
     public void setType(Class<? extends Level> type) {
         if (type.getSimpleName().endsWith("_lua")) type = (Class<? extends Level>) type.getSuperclass();
         if (CustomLevel.class.isAssignableFrom(type)) type = CustomLevel.class;
@@ -452,6 +475,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         this.exitTransitionRegular = exitTransitionRegular;
     }
 
+    @NotAllowedInLua
     public void setLevel(Level level) {
         this.level = level;
         setType(level.getClass());
@@ -466,6 +490,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         this.depth = depth;
     }
 
+    @NotAllowedInLua
     public Level initLevel() {
         int oldHeroPos = Dungeon.hero.pos;
         Dungeon.hero.pos = -1;
@@ -580,11 +605,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         return level;
     }
 
+    @NotAllowedInLua
     private void initRandomStats(long seed) {
         Random.pushGenerator(seed);
 
 		try {
-			CustomDungeon.doOnEverything(this, true, GameObject::initRandoms, false, null, null);
+			CustomDungeon.doOnEverythingInLevelScheme(this, true, GameObject::initRandoms, false, null, null);
 		} catch (IOException e) {
 			//should already be loaded
 		}
@@ -592,6 +618,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         Random.popGenerator();
     }
 
+    @NotAllowedInLua
     private void spawnItemsAndMobs(long seed) {
         Random.pushGenerator(seed);
 
@@ -704,6 +731,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String SCRIPT_ID = "script_id";
 
     @Override
+    @NotAllowedInLua
     public void storeInBundle(Bundle bundle) {
         bundle.put(NAME, name);
         if (chasm != null) bundle.put(CHASM, chasm);
@@ -770,6 +798,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     }
 
     @Override
+    @NotAllowedInLua
     public void restoreFromBundle(Bundle bundle) {
         name = bundle.getString(NAME);
         if (bundle.contains(CHASM)) chasm = bundle.getString(CHASM);
@@ -856,7 +885,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         spawnSpecialRooms = bundle.getBoolean(SPAWN_SPECIAL_ROOMS);
         spawnMobs = bundle.getBoolean(SPAWN_MOBS);
         spawnItems = bundle.getBoolean(SPAWN_ITEMS);
-        builder = bundle.getClass(BUILDER);
+        builder = (Builder) bundle.get(BUILDER);
         if (bundle.contains(NATURAL_REGEN_SPEED)) {
             if (bundle.contains("natural_regen")) naturalRegenSpeed = bundle.getBoolean("natural_regen") ? 1f: 0f;
             else naturalRegenSpeed = bundle.getFloat(NATURAL_REGEN_SPEED);
@@ -865,13 +894,14 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         }
 
         if (bundle.contains("lua_script")) {
-            LuaLevelScript lco = UserContentManager.createNewCustomObject(LuaLevelScript.class, "", getType().getName());
+            LuaLevelScript lco = CustomObjectManager.createNewCustomObject(LuaLevelScript.class, "", getType().getName());
             lco.setLuaScriptPath(bundle.getBundle("lua_script").getString("path_to_script"));
             luaScriptID = lco.getIdentifier();
         }
         else luaScriptID = bundle.getInt(SCRIPT_ID);
     }
 
+    @NotAllowedInLua
     public Point getSizeIfUnloaded() {
         boolean unloadLevel = level == null;
         if (unloadLevel) loadLevel();
@@ -886,10 +916,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     public Exception levelLoadingException;
 
+    @NotAllowedInLua
     public Level loadLevel() {
         return loadLevel(true);
     }
 
+    @NotAllowedInLua
     public Level loadLevel(boolean removeInvalidTransitions) {
         if (type == CustomLevel.class) {
             try {
@@ -916,10 +948,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         return level;
     }
 
+    @NotAllowedInLua
     public void saveLevel() throws IOException {
         if (type == CustomLevel.class) CustomDungeonSaves.saveLevel(level);
     }
 
+    @NotAllowedInLua
     public void unloadLevel() {
         level = null;
     }

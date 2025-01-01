@@ -41,7 +41,7 @@ public final class EditorInventory {
 	public static void callStaticInitializers() {
 	}
 
-	private EditorInventory() {}
+	public EditorInventory() {}//tzz make private, and add clas statics to LuaGlobals!!!!!!!!!!!
 
 	static Set<GameObjectCategory<?>> allCategories = new HashSet<>();
 

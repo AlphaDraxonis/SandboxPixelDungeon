@@ -492,7 +492,7 @@ public class WndBag extends WndTabbed {
 
         Class<? extends Bag> preferredBag();
 
-		default boolean hideAfterSelecting(){//toDO tzz check where we should use this!!!
+		default boolean hideAfterSelecting(){
 			return true; //defaults to hiding the window when an item is picked
 		}
 

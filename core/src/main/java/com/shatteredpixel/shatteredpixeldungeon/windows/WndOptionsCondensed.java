@@ -29,33 +29,33 @@ import java.util.LinkedList;
 
 //similar to WndOptions, but tries to place multiple buttons per row
 public class WndOptionsCondensed extends WndOptions {
-
+	
 	public WndOptionsCondensed(Image icon, String title, String message, String... options) {
 		super(icon, title, message, options);
 	}
-
+	
 	public WndOptionsCondensed( String title, String message, String... options ) {
 		super(title, message, options);
 	}
-
+	
 	@Override
 	protected float layoutButtons(int width) {
-
+		
 		float pos = 0;
-
+		
 		LinkedList<RedButton> buttonsToDistribute = new LinkedList<>();
-
+		
 		for (int i=0; i < buttons.length; i++) {
 			buttons[i].setSize(buttons[i].reqWidth(), BUTTON_HEIGHT);
 			buttonsToDistribute.add(buttons[i]);
 		}
-
+		
 		ArrayList<RedButton> curRow = new ArrayList<>();
 		float widthLeftThisRow = width;
-
+		
 		while( !buttonsToDistribute.isEmpty() ){
 			RedButton btn = buttonsToDistribute.getFirst();
-
+			
 			widthLeftThisRow -= btn.width();
 			if (curRow.isEmpty()) {
 				curRow.add(btn);
@@ -67,22 +67,22 @@ public class WndOptionsCondensed extends WndOptions {
 					buttonsToDistribute.remove(btn);
 				}
 			}
-
+			
 			//layout current row. Currently forces a max of 5 buttons but can work with more
 			if (buttonsToDistribute.isEmpty() || widthLeftThisRow <= 0 || curRow.size() >= 5){
-
+				
 				//re-use this variable for laying out the buttons
 				widthLeftThisRow = width - (curRow.size()-1);
 				for (RedButton b : curRow){
 					widthLeftThisRow -= b.width();
 				}
-
+				
 				//while we still have space in this row, find the shortest button(s) and extend them
 				while (widthLeftThisRow > 0){
-
+					
 					ArrayList<RedButton> shortest = new ArrayList<>();
 					RedButton secondShortest = null;
-
+					
 					for (RedButton b : curRow) {
 						if (shortest.isEmpty()) {
 							shortest.add(b);
@@ -98,9 +98,9 @@ public class WndOptionsCondensed extends WndOptions {
 							}
 						}
 					}
-
+					
 					float widthToGrow;
-
+					
 					if (secondShortest == null){
 						widthToGrow = widthLeftThisRow / shortest.size();
 						widthLeftThisRow = 0;
@@ -113,31 +113,31 @@ public class WndOptionsCondensed extends WndOptions {
 							widthLeftThisRow -= widthToGrow * shortest.size();
 						}
 					}
-
+					
 					for (RedButton toGrow : shortest){
 						toGrow.setRect(0, 0, toGrow.width()+widthToGrow, toGrow.height());
 					}
 				}
-
+				
 				//finally set positions
 				float x = 0;
 				for (RedButton b : curRow){
 					b.setRect(x, pos, b.width(), b.height());
 					x += b.width() + 1;
 				}
-
+				
 				//move to next line and reset variables
 				pos += BUTTON_HEIGHT+MARGIN;
 				widthLeftThisRow = width;
 				curRow.clear();
-
+				
 			}
-
+			
 		}
-
+		
 		return pos;
 	}
-
+	
 	@Override
 	protected boolean hasInfo(int index) {
 		return false; //does nothing here, no room

@@ -254,31 +254,28 @@ public enum Icons {
 				icon.frame(icon.texture.uvRectBySize(0, 32, 11, 11));
 				break;
 			case FOLD:
-				icon.frame(icon.texture.uvRectBySize(0, 32, 11, 11));
-				icon.angle = 180;
-				break;
-			case LEFT:
-				icon.frame(icon.texture.uvRectBySize(0, 32, 11, 11));
-				icon.angle = 90;
-				break;
-			case RIGHT:
-				icon.frame(icon.texture.uvRectBySize(0, 32, 11, 11));
-				icon.angle = 270;
-				break;
-			case EDIT:
 				icon.frame(icon.texture.uvRectBySize(11, 32, 11, 11));
 				break;
-			case TRASH:
+			case LEFT:
 				icon.frame(icon.texture.uvRectBySize(22, 32, 11, 11));
 				break;
-			case BOOKMARK:
+			case RIGHT:
 				icon.frame(icon.texture.uvRectBySize(33, 32, 11, 11));
 				break;
-			case MORE:
+			case EDIT:
 				icon.frame(icon.texture.uvRectBySize(44, 32, 11, 11));
 				break;
-			case SORT:
+			case TRASH:
 				icon.frame(icon.texture.uvRectBySize(55, 32, 11, 11));
+				break;
+			case BOOKMARK:
+				icon.frame(icon.texture.uvRectBySize(66, 32, 11, 11));
+				break;
+			case MORE:
+				icon.frame(icon.texture.uvRectBySize(77, 32, 11, 11));
+				break;
+			case SORT:
+				icon.frame(icon.texture.uvRectBySize(88, 32, 11, 11));
 				break;
 
 			case BACK:

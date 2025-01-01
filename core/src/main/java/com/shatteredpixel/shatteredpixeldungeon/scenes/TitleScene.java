@@ -181,9 +181,29 @@ public class TitleScene extends PixelScene {
 		Dungeon.daily = Dungeon.dailyReplay = false;
 
 		StyledButton btnDiscover = new StyledButton(GREY_TR, Messages.get(this, "discover")) {
+
+			{
+				if (SPDSettings.updates()) Updates.checkForNewCommunityDungeons();
+			}
+
 			@Override
 			protected void onClick() {
 				Game.scene().addToFront(new ServerDungeonList.WndServerDungeonList());
+			}
+
+			private boolean isInterpolatingColor = false;
+
+			@Override
+			public void update() {
+				super.update();
+
+				if (Updates.newDungeonsAvailable()) {
+					isInterpolatingColor = true;
+					textColor(ColorMath.interpolate( 0xFFFFFF, 0xF68334, 0.5f + (float)Math.sin(Game.timeTotal*5)/2f));
+				} else if (isInterpolatingColor) {
+					isInterpolatingColor = false;
+					textColor(0xFFFFFF);
+				}
 			}
 		};
 		btnDiscover.icon(Icons.get(Icons.DOWNLOAD));

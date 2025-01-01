@@ -37,12 +37,14 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import org.luaj.vm2.*;
 
 import java.util.Locale;
 
+@NotAllowedInLua
 public final class WndCreator {
 
 	private WndCreator(){}

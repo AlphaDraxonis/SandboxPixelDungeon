@@ -21,7 +21,12 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.*;
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
@@ -35,6 +40,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.Shad
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomMob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomMobClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -83,18 +92,25 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.CustomMob;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomMobClass;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuest;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
+import com.watabou.utils.IntFunction;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
-import com.watabou.utils.*;
+import com.watabou.utils.Reflection;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public abstract class Mob extends Char implements Customizable {
 
@@ -120,7 +136,6 @@ public abstract class Mob extends Char implements Customizable {
 	public int attackSkill = 0;//accuracy
 	public int damageRollMin = 0, damageRollMax = 0;
 	public int specialDamageRollMin = 0, specialDamageRollMax = 0;
-	public float attackSpeed = 1f;
 	public float statsScale = 1f;//only used in subclasses!
 	public int tilesBeforeWakingUp = 100;
 
@@ -216,7 +231,6 @@ public abstract class Mob extends Char implements Customizable {
 	private static final String DAMAGE_ROLL_MAX = "damage_roll_max";
 	private static final String SPECIAL_DAMAGE_ROLL_MIN = "special_damage_roll_min";
 	private static final String SPECIAL_DAMAGE_ROLL_MAX = "special_damage_roll_max";
-	private static final String ATTACK_SPEED = "attack_speed";
 	private static final String TILES_BEFORE_WAKING_UP = "tiles_before_waking_up";
 	private static final String GLYPH_ARMOR = "glyph_armor";
 	private static final String ENCHANT_WEAPON = "enchant_weapon";
@@ -268,7 +282,6 @@ public abstract class Mob extends Char implements Customizable {
             if (defaultMob.damageRollMax != damageRollMax) bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
             if (defaultMob.specialDamageRollMin != specialDamageRollMin) bundle.put(SPECIAL_DAMAGE_ROLL_MIN, specialDamageRollMin);
             if (defaultMob.specialDamageRollMax != specialDamageRollMax) bundle.put(SPECIAL_DAMAGE_ROLL_MAX, specialDamageRollMax);
-			if (defaultMob.attackSpeed != attackSpeed) bundle.put(ATTACK_SPEED, attackSpeed);
             if (defaultMob.tilesBeforeWakingUp != tilesBeforeWakingUp) bundle.put(TILES_BEFORE_WAKING_UP, tilesBeforeWakingUp);
             if (defaultMob.EXP != EXP) bundle.put(XP, EXP);
             if (defaultMob.statsScale != statsScale) bundle.put(STATS_SCALE, statsScale);
@@ -340,7 +353,6 @@ public abstract class Mob extends Char implements Customizable {
 		if (bundle.contains(DAMAGE_ROLL_MAX)) damageRollMax = bundle.getInt(DAMAGE_ROLL_MAX);
 		if (bundle.contains(SPECIAL_DAMAGE_ROLL_MIN)) specialDamageRollMin = bundle.getInt(SPECIAL_DAMAGE_ROLL_MIN);
 		if (bundle.contains(SPECIAL_DAMAGE_ROLL_MAX)) specialDamageRollMax = bundle.getInt(SPECIAL_DAMAGE_ROLL_MAX);
-		if (bundle.contains(ATTACK_SPEED)) attackSpeed = bundle.getFloat(ATTACK_SPEED);
 		if (bundle.contains(TILES_BEFORE_WAKING_UP)) tilesBeforeWakingUp = bundle.getInt(TILES_BEFORE_WAKING_UP);
 		if (bundle.contains(XP)) EXP = bundle.getInt(XP);
 		if (bundle.contains(STATS_SCALE)) statsScale = bundle.getFloat(STATS_SCALE);
@@ -417,7 +429,7 @@ public abstract class Mob extends Char implements Customizable {
 	
 	public CharSprite sprite() {
 		if (this instanceof CustomMobClass) {
-			CustomMob customMob = (CustomMob) UserContentManager.getUserContent(((CustomMobClass) this).getIdentifier(), CustomMob.class);
+			CustomMob customMob = (CustomMob) CustomObjectManager.getUserContent(((CustomMobClass) this).getIdentifier(), CustomMob.class);
 			if (customMob.sprite != null) {
 				CharSprite result = customMob.sprite.getActualCustomCharSpriteOrNull();
 				if (result != null) return result;
@@ -933,12 +945,6 @@ public abstract class Mob extends Char implements Customizable {
 
 	public void playZapAnim(int target) {
 		onZapComplete();
-	}
-
-	public float attackDelay() {
-		float delay = 1f / attackSpeed;
-		if ( buff(Adrenaline.class) != null) delay /= 1.5f;
-		return delay;
 	}
 	
 	protected boolean doAttack( Char enemy ) {

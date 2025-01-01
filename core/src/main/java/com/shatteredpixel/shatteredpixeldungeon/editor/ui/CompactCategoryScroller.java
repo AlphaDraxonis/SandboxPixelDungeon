@@ -33,17 +33,25 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.Supplier;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptionsCondensed;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CompactCategoryScroller extends AbstractCategoryScroller<CompactCategoryScroller.CategoryComp> {
 
-	private Component content;
+	protected Component content;
 	private EditorInventoryWindow selectorWindow;
 
 	public CompactCategoryScroller(Category[] categories) {
@@ -62,7 +70,11 @@ public class CompactCategoryScroller extends AbstractCategoryScroller<CompactCat
 
 	@Override
 	protected ScrollPane createSp() {
-		return new ScrollPane(content = new Component() {
+		return new ScrollPane(createSpContent());
+	}
+
+	protected Component createSpContent() {
+		return content = new Component() {
 			@Override
 			protected void layout() {
 				height = 0;
@@ -70,7 +82,12 @@ public class CompactCategoryScroller extends AbstractCategoryScroller<CompactCat
 					height = EditorUtilities.layoutCompsLinear(2, this, categoryComps);
 				}
 			}
-		});
+		};
+	}
+
+	@Override
+	protected boolean processKey() {
+		return false;
 	}
 
 	@Override

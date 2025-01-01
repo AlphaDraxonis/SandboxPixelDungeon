@@ -1,12 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.RoomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -65,7 +65,7 @@ public class EditRoomComp extends DefaultEditComp<Room> {
     @Override
     protected void onInheritStatsClicked(boolean flag, boolean initializing) {
         if (flag && !initializing) {
-            obj.copyStats((Room) UserContentManager.getLuaClass(((CustomGameObjectClass) obj).getIdentifier()));
+            obj.copyStats((Room) CustomObjectManager.getLuaClass(((CustomGameObjectClass) obj).getIdentifier()));
         }
 
         for (Component c : comps) {

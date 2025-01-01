@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.server;
 
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
@@ -10,7 +11,11 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.DungeonPreview;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
@@ -113,7 +118,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 				super.layout();
 			}
 		};
-		outsideSp.visible = outsideSp.active = numPages > 1;
+		outsideSp.setVisible(numPages > 1);
 
 		outsideSp.addChangeListener(() -> {
 			hidePage(page);
@@ -142,10 +147,11 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			dungeons = new DungeonPreview[numPages][];
 		}
 		if (instance != null) {
-			instance.outsideSp.visible = instance.outsideSp.active = numPages > 1;
-			((SpinnerIntegerModel) instance.outsideSp.getModel()).setMaximum(numPages);
-			((SpinnerIntegerModel) instance.outsideSp.getModel()).setAbsoluteMaximum(numPages);
-			Game.runOnRenderThread(() -> instance.outsideSp.setValue(instance.outsideSp.getValue()));
+			Spinner outsideSp = instance.outsideSp;
+			outsideSp.setVisible(instance.layoutOwnMenu() && numPages > 1);
+			((SpinnerIntegerModel) outsideSp.getModel()).setMaximum(numPages);
+			((SpinnerIntegerModel) outsideSp.getModel()).setAbsoluteMaximum(numPages);
+			Game.runOnRenderThread(() -> outsideSp.setValue(outsideSp.getValue()));
 			((WndServerDungeonList) EditorUtilities.getParentWindow(instance)).updateLayout();
 		}
 	}
@@ -249,10 +255,10 @@ public class ServerDungeonList extends MultiWindowTabComp {
 	}
 
 	@Override
-	public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
+	public void changeContent(SubMenuComp subMenuComp) {
 		upload.setVisible(false);
 		refresh.setVisible(false);
-		super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
+		super.changeContent(subMenuComp);
 	}
 
 	@Override
@@ -330,6 +336,10 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			creator.text("_" + preview.uploader + "_");
 
 			desc.text(preview.description);
+
+			if (preview.uploadTime > SPDSettings.lastCheckedServer()) {
+				//TODO tzz show that its new
+			}
 		}
 
 		@Override
@@ -437,8 +447,8 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
 			add(serverDungeonList = new ServerDungeonList() {
 				@Override
-				public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
-					super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
+				public void changeContent(SubMenuComp subMenuComp) {
+					super.changeContent(subMenuComp);
 					if (WndServerDungeonList.this.outsideSp != null) {
 						WndServerDungeonList.this.outsideSp.setVisible(false);
 						serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - 2);
@@ -473,6 +483,12 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			}
 			serverDungeonList.sp.givePointerPriority();
 			serverDungeonList.upload.givePointerPriority();
+		}
+
+		@Override
+		public void hide() {
+			super.hide();
+			SPDSettings.checkedServerNow();
 		}
 	}
 

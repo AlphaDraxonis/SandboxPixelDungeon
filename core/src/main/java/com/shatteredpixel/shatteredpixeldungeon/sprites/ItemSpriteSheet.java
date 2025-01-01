@@ -152,6 +152,7 @@ public class ItemSpriteSheet {
 	public static final int BOW_FRAGMENT    = MISC_CONSUMABLE +19;
 	public static final int BROKEN_HILT     = MISC_CONSUMABLE +20;
 	public static final int TRINKET_CATA    = MISC_CONSUMABLE +21;
+	public static final int RANDOM_ITEM     = xy(16, 31);
 
 	static{
 		assignItemRect(ANKH,            10, 16);
@@ -180,6 +181,8 @@ public class ItemSpriteSheet {
 		assignItemRect(BROKEN_HILT,      9,  9);
 
 		assignItemRect(TRINKET_CATA,    12, 11);
+
+		assignItemRect(RANDOM_ITEM,    12, 13);
 	}
 	
 	private static final int BOMBS          =                               xy(1, 6);   //16 slots

@@ -2,10 +2,10 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomMobClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditBuffComp;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomMobClass;
 
 public class BuffIndicatorEditor extends BuffIndicator {
 

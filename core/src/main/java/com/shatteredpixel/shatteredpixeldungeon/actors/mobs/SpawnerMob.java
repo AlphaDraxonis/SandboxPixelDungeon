@@ -46,7 +46,7 @@ public abstract class SpawnerMob extends Mob {
         if (summonRotation.isEmpty()) summonRotation.addAll(summonTemplate);
         Mob m = Random.element(summonRotation);
         summonRotation.remove(m);
-        return (Mob) m.getCopy();
+        return m == null ? null : (Mob) m.getCopy();
     }
 
 

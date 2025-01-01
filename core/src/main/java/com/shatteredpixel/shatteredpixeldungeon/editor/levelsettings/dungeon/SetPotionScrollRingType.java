@@ -199,7 +199,7 @@ public class SetPotionScrollRingType extends Component {
         }
 
         @Override
-        protected Image getIcon(Object value) {
+        protected Image displayIcon(Object value) {
             //noinspection SuspiciousMethodCalls
             return new ItemSprite(keyAndItemSprite.get(value));
         }

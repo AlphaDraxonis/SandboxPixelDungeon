@@ -36,12 +36,17 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.android.AndroidLauncher;
 import com.shatteredpixel.shatteredpixeldungeon.android.R;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.rawresourcefiles.RawLuaScript;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.LuaMethodManager;
@@ -49,7 +54,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.LuaTemplate
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.NewInstanceButton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.rawresourcefiles.RawLuaScript;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.idewindowactions.LuaScript;
@@ -132,7 +136,6 @@ public class AndroidIDEWindow extends Activity {
 			pathInput.setWidth(((View) pathInput.getParent()).getWidth() - pathLabel.getWidth() - btnChange.getWidth() - dpToPx(this, 20));
 		});
 
-		//tzz show value of scriptPath
 		pathInput.setOnFocusChangeListener((v, hasFocus) -> {
 			if (!hasFocus && !pathInput.getText().toString().endsWith(".lua")) {
 				pathInput.getText().append(".lua");

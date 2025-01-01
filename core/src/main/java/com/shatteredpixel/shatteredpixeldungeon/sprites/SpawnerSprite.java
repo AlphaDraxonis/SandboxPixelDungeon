@@ -62,16 +62,11 @@ public class SpawnerSprite extends MobSprite {
 	private float baseY = Float.NaN;
 
 	@Override
-	public void place(int cell) {
-		super.place(cell);
-		baseY = y;
-	}
-
-	@Override
 	public void update() {
 		super.update();
 		if (!paused){
-			if (Float.isNaN(baseY)) baseY = y;
+			//if baseY is not set or y has changed more than what's possible here
+			if (Float.isNaN(baseY)|| y < baseY - 1/3f || y > baseY + 1/3f) baseY = y;
 			y = baseY + (float)(Math.sin(Game.timeTotal)/3f);
 			shadowOffset = 1.25f - 0.6f*(float)(Math.sin(Game.timeTotal)/3f);
 		}

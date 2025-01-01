@@ -21,11 +21,21 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
-import com.shatteredpixel.shatteredpixeldungeon.*;
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
-import com.shatteredpixel.shatteredpixeldungeon.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.LiquidMetal;
+import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
@@ -35,15 +45,38 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RadialMenu;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StatusPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Toolbar;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndEnergizeItem;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoItem;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.watabou.NotAllowedInLua;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
-import com.watabou.noosa.*;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.NinePatch;
+import com.watabou.noosa.NoosaScript;
+import com.watabou.noosa.NoosaScriptNoLighting;
+import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
@@ -58,6 +91,8 @@ public class AlchemyScene extends PixelScene {
 	private static final InputButton[] inputs = new InputButton[3];
 	private static final CombineButton[] combines = new CombineButton[3];
 	private static final OutputSlot[] outputs = new OutputSlot[3];
+	private static IconButton nextOutputPage, prevOutputPage;
+	private static int outputPage = 0;
 
 	private IconButton cancel;
 	private IconButton repeat;
@@ -121,6 +156,7 @@ public class AlchemyScene extends PixelScene {
 			@Override
 			protected void onClick() {
 				Game.switchScene(GameScene.class);
+				outputPage = 0;
 			}
 		};
 		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
@@ -358,6 +394,26 @@ public class AlchemyScene extends PixelScene {
 		smokeEmitter.pos(outputs[0].left() + (BTN_SIZE-16)/2f, outputs[0].top() + (BTN_SIZE-16)/2f, 16, 16);
 		smokeEmitter.autoKill = false;
 		add(smokeEmitter);
+
+		prevOutputPage = new IconButton(Icons.LEFT.get()) {
+			@Override
+			protected void onClick() {
+				goToOutputPage(Math.max(0, outputPage - 1));
+			}
+		};
+		prevOutputPage.setRect(outputs[0].left()-2, pos + 2, 16, 16);
+		prevOutputPage.setVisible(false);
+		add(prevOutputPage);
+
+		nextOutputPage = new IconButton(Icons.RIGHT.get()) {
+			@Override
+			protected void onClick() {
+				goToOutputPage(outputPage + 1);
+			}
+		};
+		nextOutputPage.setRect(outputs[0].left()-2 + 16, pos + 2, 16, 16);
+		nextOutputPage.setVisible(false);
+		add(nextOutputPage);
 		
 		pos += 10;
 
@@ -432,16 +488,16 @@ public class AlchemyScene extends PixelScene {
 		energyAdd.setRect(energyLeft.right(), energyLeft.top() - (16 - energyLeft.height())/2, 16, 16);
 		align(energyAdd);
 		add(energyAdd);
-
-		sparkEmitter = new Emitter();
-		sparkEmitter.pos(energyLeft.left(), energyLeft.top(), energyLeft.width(), energyLeft.height());
-		sparkEmitter.autoKill = false;
-		add(sparkEmitter);
-
 		StyledButton btnGuide = new StyledButton( Chrome.Type.TOAST_TR, "Guide"){
 			@Override
 			protected void onClick() {
 				super.onClick();
+
+				sparkEmitter = new Emitter();
+				sparkEmitter.pos(energyLeft.left(), energyLeft.top(), energyLeft.width(), energyLeft.height());
+				sparkEmitter.autoKill = false;
+				add(sparkEmitter);
+
 				if (Camera.main.width >= 300 && Camera.main.height >= PixelScene.MIN_HEIGHT_FULL){
 					splitAlchGuide = !splitAlchGuide;
 					SandboxPixelDungeon.seamlessResetScene();
@@ -510,6 +566,7 @@ public class AlchemyScene extends PixelScene {
 	@Override
 	protected void onBackPressed() {
 		Game.switchScene(GameScene.class);
+		outputPage = 0;
 	}
 	
 	protected WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {
@@ -554,6 +611,11 @@ public class AlchemyScene extends PixelScene {
 		}
 		return filtered;
 	}
+
+	private void goToOutputPage(int page) {
+		AlchemyScene.outputPage = page;
+		updateState();
+	}
 	
 	private void updateState(){
 
@@ -562,14 +624,43 @@ public class AlchemyScene extends PixelScene {
 		ArrayList<Item> ingredients = filterInput(Item.class);
 		ArrayList<Recipe> recipes = Recipe.findRecipes(ingredients);
 
+		int numRecipes = recipes.size();
+
+		if (outputPage > (numRecipes-1) / outputs.length || outputPage < 0)
+			outputPage = 0;
+
+		int indexFirstRecipeOnPage = outputPage * outputs.length;
+		int indexLastRecipeOnPage = Math.min(numRecipes-1, indexFirstRecipeOnPage + outputs.length-1);
+
+		//positions active buttons
+		int recipesOnPage = indexLastRecipeOnPage-indexFirstRecipeOnPage +1;//!!! off-by-one error
+
 		//disables / hides unneeded buttons
-		for (int i = recipes.size(); i < combines.length; i++){
+		for (int i = recipesOnPage; i < combines.length; i++){
 			combines[i].enable(false);
 			outputs[i].item(null);
 
 			if (i != 0){
 				combines[i].visible = false;
 				outputs[i].visible = false;
+			}
+		}
+
+		cancel.enable(!ingredients.isEmpty());
+
+		nextOutputPage.enable((numRecipes-1) / outputs.length > outputPage);
+		prevOutputPage.enable(0 < outputPage);
+		nextOutputPage.visible = prevOutputPage.visible = nextOutputPage.active || prevOutputPage.active;
+
+		if (numRecipes == 0){
+			for (int i = 0; i < combines.length; i++) {
+				combines[i].enable(false);
+				outputs[i].item(null);
+
+				if (i != 0) {
+					combines[i].visible = false;
+					outputs[i].visible = false;
+				}
 			}
 		}
 
@@ -582,18 +673,19 @@ public class AlchemyScene extends PixelScene {
 			return;
 		}
 
-		//positions active buttons
-		float gap = recipes.size() == 2 ? 6 : 2;
+		float gap = recipesOnPage == 2 ? 6 : 2;
 
 		float height = inputs[2].bottom() - inputs[0].top();
-		height -= recipes.size()*BTN_SIZE + (recipes.size()-1)*gap;
+		height -= recipesOnPage*BTN_SIZE + (recipesOnPage-1)*gap;
 		float top = inputs[0].top() + height/2;
 
 		//positions and enables active buttons
 		boolean promptToAddEnergy = false;
-		for (int i = 0; i < recipes.size(); i++){
+		for (int recipeIndex = indexFirstRecipeOnPage; recipeIndex <= indexLastRecipeOnPage; recipeIndex++){
 
-			Recipe recipe = recipes.get(i);
+			Recipe recipe = recipes.get(recipeIndex);
+
+			int i = recipeIndex - indexFirstRecipeOnPage;
 
 			int cost = recipe.cost(ingredients);
 
@@ -1024,7 +1116,7 @@ public class AlchemyScene extends PixelScene {
 				@Override
 				protected void onClick() {
 					super.onClick();
-					combine(slot);
+					combine(slot + combines.length * outputPage );
 				}
 
 				@Override

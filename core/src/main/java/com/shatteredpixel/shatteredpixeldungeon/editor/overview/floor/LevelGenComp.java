@@ -19,11 +19,18 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableCompWithAdd;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerEnumModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerLikeButton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.BranchesBuilder;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.FigureEightBuilder;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.LineBuilder;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.LoopBuilder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -31,15 +38,24 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.MARGIN;
 
@@ -53,6 +69,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
     protected StyledButton seed;
     protected FeelingSpinner feelingSpinner;
+    protected BuilderSpinner builderSpinner;
     private String currentSeed;
 
     protected FoldableComp challengeSettings;
@@ -209,6 +226,10 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         content.add(challengeSettings);
 
         if (newLevelScheme.getName() == null || newLevelScheme.getType() != CustomLevel.class) {
+
+            builderSpinner = new BuilderSpinner(newLevelScheme);
+            content.add(builderSpinner);
+
             sectionItems = new SpawnSectionMore<Item>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn) {
 
                 @Override
@@ -413,7 +434,11 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
         content.setSize(width, title.bottom() + 4 * MARGIN);
 
-        content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(MARGIN * 2, width, 2, content, seed, feelingSpinner) + 2);
+        if (builderSpinner == null) {
+            content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(MARGIN * 2, width, 2 , content, seed, feelingSpinner, builderSpinner) + 2);
+        } else {
+            content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(MARGIN * 2, width, content, seed, feelingSpinner, builderSpinner) + 2);
+        }
 
         content.setSize(width, EditorUtilities.layoutCompsLinear(MARGIN * 2, content, challengeSettings, sectionItems, sectionMobs, sectionRooms));
 
@@ -609,5 +634,40 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
         protected abstract void finish();
 
+    }
+
+    public static class BuilderSpinner extends SpinnerLikeButton {
+        public BuilderSpinner(LevelScheme levelScheme) {
+            super(
+                    new SpinnerEnumModel<>(
+                            Values.class,
+                            Values.builderToEnumValue.get(levelScheme.builder == null ? null : levelScheme.builder.getClass()),
+                    v -> levelScheme.builder = v.newBuilderInstance()),
+                    Messages.get(BuilderSpinner.class, "label"));
+        }
+
+        private enum Values {
+            DEFAULT(null),
+            LINE(LineBuilder.class),
+            LOOP(LoopBuilder.class),
+            FIGURE_EIGHT(FigureEightBuilder.class),
+            BRANCHES(BranchesBuilder.class);
+
+            private final Class<? extends Builder> type;
+
+            private static final Map<Class<? extends Builder>, Values> builderToEnumValue = new HashMap<>();
+            static {
+               for (Values v : values())
+                   builderToEnumValue.put(v.type, v);
+            }
+
+			Values(Class<? extends Builder> type) {
+				this.type = type;
+			}
+
+            public Builder newBuilderInstance() {
+                return type == null ? null : Reflection.newInstance(type);
+            }
+        }
     }
 }

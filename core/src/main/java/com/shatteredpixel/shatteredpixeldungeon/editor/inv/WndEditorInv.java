@@ -28,6 +28,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPaneWithScrollbar;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
@@ -130,7 +132,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
             cats[i] = new CategoryScroller.Category() {
 
                 @Override
-                protected List<?> createItems(boolean required) {
+                public List<?> createItems(boolean required) {
                     if (selector == null && !required) return null;
 
                     List<Object> ret = new ArrayList<>(b.items);
@@ -167,19 +169,24 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                 }
 
                 @Override
-                protected Image getImage() {
+                public Image getImage() {
                     return b.getCategoryImage();
                 }
 
                 @Override
-                protected String getName() {
-                    return b.name();
+                public String getName() {
+                    return Messages.titleCase(b.name());
                 }
             };
             i++;
         }
         return USE_COMPACT_UI ?
-                new CompactCategoryScroller(cats, this)
+                new CompactCategoryScroller(cats, this) {
+                    @Override
+                    protected ScrollPane createSp() {
+                        return new ScrollPaneWithScrollbar(createSpContent());
+                    }
+                }
                 : new CategoryScroller(cats, this);
     }
 

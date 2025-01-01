@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
 import java.io.Serializable;
@@ -62,6 +63,10 @@ public abstract class AbstractSpinnerModel implements SpinnerModel, Serializable
 
     protected String displayString(Object value) {
         return value == null ? "null" : value.toString();
+    }
+
+    protected Image displayIcon(Object value) {
+        return null;
     }
 
     @Override

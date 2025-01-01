@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -45,7 +46,9 @@ public class ElixirOfFeatherFall extends Elixir {
 		Buff.append(hero, FeatherBuff.class, FeatherBuff.DURATION);
 
 		hero.sprite.emitter().burst(Speck.factory(Speck.JET), 20);
-		GLog.p(Messages.get(this, "light"));
+		if (hero == Dungeon.hero) {
+			GLog.p(Messages.get(this, "light"));
+		}
 	}
 
 	public static class FeatherBuff extends FlavourBuff {

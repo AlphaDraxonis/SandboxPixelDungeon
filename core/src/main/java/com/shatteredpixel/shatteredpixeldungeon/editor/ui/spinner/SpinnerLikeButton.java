@@ -28,12 +28,14 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.watabou.noosa.Image;
 
 public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 
 	private final AbstractSpinnerModel model;
 
-	protected RenderedTextBlock value;
+	protected RenderedTextBlock valueText;
+	protected Image valueIcon;
 
 	public SpinnerLikeButton(AbstractSpinnerModel model, String label) {
 		this(model, label, -1);
@@ -44,15 +46,30 @@ public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 
 		this.model = model;
 
-		value = PixelScene.renderTextBlock(model.displayString(model.getValue()), Math.max((size == -1 ? textSize() : size)-2, 6));
-		add(value);
+		valueText = PixelScene.renderTextBlock(model.displayString(model.getValue()), Math.max((size == -1 ? textSize() : size)-2, 6));
+		add(valueText);
+
+		valueIcon = model.displayIcon(model.getValue());
+		if (valueIcon != null) {
+			add(valueIcon);
+		}
 
 		model.setValue(model.getValue());
 
 		model.valueDisplay = new AbstractSpinnerModel.ValueDisplay() {
 			@Override
 			public void showValue(Object value) {
-				SpinnerLikeButton.this.value.text(model.displayString(value));
+				SpinnerLikeButton.this.valueText.text(model.displayString(value));
+
+				if (valueIcon != null) {
+					valueIcon.remove();
+					valueIcon.destroy();
+				}
+				valueIcon = model.displayIcon(value);
+				if (valueIcon != null) {
+					SpinnerLikeButton.this.add(valueIcon);
+				}
+
 				SpinnerLikeButton.this.layout();
 			}
 
@@ -73,27 +90,30 @@ public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 
 		float contentHeight = height();
 
+		float spaceForValueIcon = valueIcon == null ? 0 : getValueIconHeight() + 3;
+
 		boolean layoutLabel = text != null && !text.text().equals("");
 		if (layoutLabel) {
 			if (multiline) text.maxWidth((int) width() - bg.marginHor());
 			text.setPos(
 					x + (width() + text.width()) / 2f - text.width(),
-					(icon == null ? y + (contentHeight - text.height() - value.height()) / 2f :
-							y + (contentHeight - icon.height() - text.height() - value.height()) / 2f + 1 + icon.height())
+					(icon == null ? y + (contentHeight - text.height() - valueText.height() - spaceForValueIcon) / 2f :
+							y + (contentHeight - icon.height() - text.height() - valueText.height() - spaceForValueIcon) / 2f + 1 + icon.height())
 			);
 			PixelScene.align(text);
 
 		}
 
-		if (value != null && !value.text().equals("")) {
-			if (multiline) value.maxWidth((int) width() - bg.marginHor());
-			value.setPos(
-					x + (width() + value.width()) / 2f - value.width(),
-					(layoutLabel ? text.bottom() + 4
-							: (icon == null ? y + (contentHeight - value.height()) / 2f :
-							y + (contentHeight - icon.height() - value.height()) / 2f + 1 + icon.height()))
+		if (valueText != null && !valueText.text().equals("")) {
+			if (multiline) valueText.maxWidth((int) width() - bg.marginHor());
+			valueText.setPos(
+					x + (width() + valueText.width()) / 2f - valueText.width(),
+					spaceForValueIcon
+							+ (layoutLabel ? text.bottom() + 4
+							: (icon == null ? y + (contentHeight - valueText.height()) / 2f :
+							y + (contentHeight - icon.height() - valueText.height()) / 2f + 1 + icon.height()))
 			);
-			PixelScene.align(value);
+			PixelScene.align(valueText);
 
 		}
 
@@ -103,6 +123,12 @@ public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 			PixelScene.align(icon);
 		}
 
+		if (valueIcon != null) {
+			valueIcon.x = x + (width() - valueIcon.width()) / 2f + 1;
+			valueIcon.y = valueText.top() - 2 - getValueIconHeight();
+			PixelScene.align(valueIcon);
+		}
+
 		if (leftJustify) throw new IllegalArgumentException("leftJustify not supported!");
 	}
 
@@ -110,10 +136,15 @@ public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 	public float getMinimumHeight(float width) {
 		if (multiline) {
 			text.maxWidth((int) width - bg.marginHor());
-			value.maxWidth((int) width - bg.marginHor());
+			valueText.maxWidth((int) width - bg.marginHor());
 		}
-		if (icon == null) return text.height() + 4 + value.height() + bg.marginVer() + 4;
-		return icon.height() + text.height() + 4 + value.height() + 3 + bg.marginVer() + 4;
+		return text.height() + 4 + valueText.height() + bg.marginVer() + 4
+				+ (icon == null ? 0 : icon.height() + 3)
+				+ (valueIcon == null ? 0 : getValueIconHeight() + 3);
+	}
+
+	protected float getValueIconHeight() {
+		return valueIcon == null ? 0 : valueIcon.height();
 	}
 
 	public void setValue(Object value) {

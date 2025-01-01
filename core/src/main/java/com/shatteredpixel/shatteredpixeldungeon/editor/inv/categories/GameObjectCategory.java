@@ -30,6 +30,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BuffItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
@@ -44,10 +48,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -103,13 +103,13 @@ public abstract class GameObjectCategory<T> {
         if (Undo.canUndo() || Undo.canRedo()) {
             ArrayList<Item> newItems = new ArrayList<>();
             oneObj:
-            for (GameObject obj : UserContentManager.getAllCustomObjects(type)) {
+            for (GameObject obj : CustomObjectManager.getAllCustomObjects(type)) {
                 int ident = ((CustomObjectClass) obj).getIdentifier();
                 for (Item i : customObjectBag.items) {
                     EditorItem<?> item = (EditorItem<?>) i;
                     if (((CustomObjectClass) item.getObject()).getIdentifier() == ident) {
                         newItems.add(item);
-                        UserContentManager.overrideOriginal((CustomObjectClass) item.getObject());
+                        CustomObjectManager.overrideOriginal((CustomObjectClass) item.getObject());
                         continue oneObj;
                     }
                 }
@@ -118,7 +118,7 @@ public abstract class GameObjectCategory<T> {
             customObjectBag.items = newItems;
         } else {
             customObjectBag.clear();
-            for (GameObject obj : UserContentManager.getAllCustomObjects(type)) {
+            for (GameObject obj : CustomObjectManager.getAllCustomObjects(type)) {
                 customObjectBag.items.add(EditorItem.wrapObject(obj));
             }
         }

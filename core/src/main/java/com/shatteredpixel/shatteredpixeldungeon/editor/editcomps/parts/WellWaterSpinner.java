@@ -82,7 +82,7 @@ public class WellWaterSpinner extends Spinner {
         }
 
         @Override
-        protected Image getIcon(Object value) {
+        protected Image displayIcon(Object value) {
             switch ((WellWaters) value) {
                 default:
                 case NONE:

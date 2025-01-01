@@ -5,25 +5,62 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomMob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomMobClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaCustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeMobCustomizable;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BtnSelectBossMusic;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffListContainer;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.FistSelector;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.HeroClassSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.LotusLevelSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.MobStateSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.QuestSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.DestCellSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.WndEditStats;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BuffItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ContainerWithLabel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelectorList;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -51,23 +88,39 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.MimicSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SpawnerSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.LuaCustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.CustomMob;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomMobClass;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.LuaCustomObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.idewindowactions.LuaScript;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class EditMobComp extends DefaultEditComp<Mob> {
 
@@ -92,7 +145,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private StyledCheckBox mimicSuperHidden;
     private StyledSpinner sentryRange, sentryDelay;
     private StyledSpinner abilityCooldown;
-    private ItemContainer<MobItem> summonMobs;
+    private ContainerWithLabel.ForMobs summonMobs;
     private StyledSpinner tenguPhase, tenguRange, dm300pylonsNeeded, yogSpawnersAlive;
     private ItemSelectorList<MobItem> yogNormalFists, yogChallengeFists;
     private StyledCheckBox dm300destroyWalls, pylonAlwaysActive, showBossBar;
@@ -586,39 +639,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof SpawnerMob) {
-            List<MobItem> asMobItems = new ArrayList<>();
-            if (((SpawnerMob) mob).summonTemplate != null) {
-                for (Mob m : ((SpawnerMob) mob).summonTemplate) {
-                    asMobItems.add(new MobItem(m));
-                }
-            }
-            summonMobs = new ItemContainerWithLabel<MobItem>(asMobItems, this, label("summon_mob")) {
-                @Override
-                public boolean itemSelectable(Item item) {
-                    return item instanceof MobItem;
-                }
-
-                @Override
-                protected void doAddItem(MobItem item) {
-                    item = (MobItem) item.getCopy();
-                    super.doAddItem(item);
-                    ((SpawnerMob) mob).summonTemplate.add(item.mob());
-                }
-
-                @Override
-                protected boolean removeSlot(ItemContainer<MobItem>.Slot slot) {
-                    if (super.removeSlot(slot)) {
-                        ((SpawnerMob) mob).summonTemplate.remove(((MobItem) slot.item()).mob());
-                        return true;
-                    }
-                    return false;
-                }
-
-                @Override
-                public Class<? extends Bag> preferredBag() {
-                    return Mobs.bag().getClass();
-                }
-            };
+            summonMobs = new ContainerWithLabel.ForMobs(((SpawnerMob) mob).summonTemplate, this, label("summon_mob"));
             add(summonMobs);
         }
 
@@ -847,7 +868,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 @Override
                 protected void onClick() {
                     int identifier = ((LuaCustomObjectClass) mob).getIdentifier();
-                    LuaCustomObject customObject = UserContentManager.getUserContent(identifier, CustomMob.class);
+                    LuaCustomObject customObject = CustomObjectManager.getUserContent(identifier, CustomMob.class);
                     LuaScript script = CustomDungeonSaves.readLuaFile(customObject.getLuaScriptPath());
                     DungeonScene.show(
                             script == null
@@ -914,7 +935,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     @Override
     protected void onInheritStatsClicked(boolean flag, boolean initializing) {
         if (flag && !initializing) {
-            obj.copyStats((Mob) UserContentManager.getLuaClass(((CustomGameObjectClass) obj).getIdentifier()));
+            obj.copyStats((Mob) CustomObjectManager.getLuaClass(((CustomGameObjectClass) obj).getIdentifier()));
         }
 
         for (Component c : rectComps) {
@@ -953,8 +974,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
          if (tenguRange != null) tenguRange.setValue(((Tengu) obj).arenaRadius);
          if (dm300pylonsNeeded != null) dm300pylonsNeeded.setValue(((DM300) obj).pylonsNeeded);
          if (yogSpawnersAlive != null) yogSpawnersAlive.setValue(((YogDzewa) obj).spawnersAlive);
-         if (yogNormalFists != null) yogNormalFists.setList(FistSelector.createMobItems(((YogDzewa) obj).fistSummons));
-         if (yogChallengeFists != null) yogChallengeFists.setList(FistSelector.createMobItems(((YogDzewa) obj).challengeSummons));
+         if (yogNormalFists != null) yogNormalFists.setList(ContainerWithLabel.ForMobs.toMobTypeList(((YogDzewa) obj).fistSummons));
+         if (yogChallengeFists != null) yogChallengeFists.setList(ContainerWithLabel.ForMobs.toMobTypeList(((YogDzewa) obj).challengeSummons));
          if (dm300destroyWalls != null) dm300destroyWalls.checked(((DM300) obj).destroyWalls);
          if (pylonAlwaysActive != null) pylonAlwaysActive.checked(((Pylon) obj).alwaysActive);
          if (showBossBar != null) showBossBar.checked(obj.showBossBar);
@@ -1010,18 +1031,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             }
             buffs.setItemList(asBuffItems);
         }
-        if (summonMobs != null) {
-            List<MobItem> asMobItems = new ArrayList<>();
-            if (((SpawnerMob) obj).summonTemplate != null) {
-                for (Mob m : ((SpawnerMob) obj).summonTemplate) {
-                    asMobItems.add(new MobItem(m));
-                }
-            }
-            summonMobs.setItemList(asMobItems);
-        }
+        if (summonMobs != null) summonMobs.updateState(((SpawnerMob) obj).summonTemplate);
     }
 
-    private static String label(String key) {
+    static String label(String key) {
         return Messages.get(EditMobComp.class, key);
     }
 

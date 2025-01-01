@@ -15,6 +15,8 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndE
 
 public class CategoryScroller extends AbstractCategoryScroller<RedButton> {
 
+    private static final int MIN_WIDTH_PER_BUTTON = 20;
+
     public CategoryScroller(Category[] categories, EditorInventoryWindow window) {
         super(categories, new RedButton[categories.length], window);
     }
@@ -52,19 +54,65 @@ public class CategoryScroller extends AbstractCategoryScroller<RedButton> {
             return true;
         }
 
-        if (indicesWithNonEmptyCats.length > maxButtonsPerRow()) {
+        int numRows = numVisibleRows();
+        if (numRows > 1 && (curAction == SPDAction.S || curAction == SPDAction.N)) {
+
+            float ownLeft = categoryComps[indicesWithNonEmptyCats[selectedVisIndex]].left();
+            float ownRight = categoryComps[indicesWithNonEmptyCats[selectedVisIndex]].right();
+
+            int compsPerRow = (int) Math.ceil((float) indicesWithNonEmptyCats.length / numRows);
+            int currentRow = (int) Math.ceil((float) (selectedVisIndex + 1) / compsPerRow);
+
+            int indexInTargetRow;
+            Component c;
+
             if (curAction == SPDAction.S) {
-                int index = (int) (selectedVisIndex + Math.ceil(indicesWithNonEmptyCats.length / 2f)) % indicesWithNonEmptyCats.length;
-                selectVisibleCategory(index);
+                //suche den ersten btn der nächsten Zeile, dessen right() >= eigenes right() ist
+
+                indexInTargetRow = currentRow * compsPerRow;//first index
+                if (indexInTargetRow >= indicesWithNonEmptyCats.length) {
+                    //go from last row to first row
+                    indexInTargetRow = compsPerRow;
+                    do {
+                        indexInTargetRow--;
+                        c = categoryComps[indicesWithNonEmptyCats[indexInTargetRow]];
+                    } while (c.right() > ownRight);
+                    if (c.left() < ownLeft) indexInTargetRow++;
+                } else {
+                    indexInTargetRow--;
+                    do {
+                        indexInTargetRow++;
+                        c = categoryComps[indicesWithNonEmptyCats[indexInTargetRow]];
+                    } while (c.right() < ownRight);
+                    if (c.left() > ownLeft) indexInTargetRow--;
+                }
+                selectVisibleCategory(indexInTargetRow);
                 return true;
             }
             if (curAction == SPDAction.N) {
-                int index = (int) (selectedVisIndex - Math.ceil(indicesWithNonEmptyCats.length / 2f)) % indicesWithNonEmptyCats.length;
-                if (index < 0) index += Math.ceil(indicesWithNonEmptyCats.length / 2f) * 2;
-                selectVisibleCategory(index);
+
+                indexInTargetRow = (currentRow - 2) * compsPerRow;//first index
+
+                if (indexInTargetRow < 0) {
+                    //go from first row to last row
+                    indexInTargetRow = indicesWithNonEmptyCats.length;
+                    do {
+                        indexInTargetRow--;
+                        c = categoryComps[indicesWithNonEmptyCats[indexInTargetRow]];
+                    } while (c.left() > ownLeft);
+                    if (c.right() < ownRight) indexInTargetRow++;
+                } else {
+                    indexInTargetRow--;
+                    do {
+                        indexInTargetRow++;
+                        c = categoryComps[indicesWithNonEmptyCats[indexInTargetRow]];
+                    } while (c.left() < ownLeft);
+                    if (c.right() > ownRight) indexInTargetRow--;
+                }
+                selectVisibleCategory(indexInTargetRow);
                 return true;
             }
-        }
+		}
         return false;
     }
 
@@ -72,41 +120,45 @@ public class CategoryScroller extends AbstractCategoryScroller<RedButton> {
     protected void layout() {
 
         if (categoryComps != null) {
-            if (indicesWithNonEmptyCats.length <= maxButtonsPerRow()) {
-                float buttonWidth = width() / indicesWithNonEmptyCats.length;
-                for (int i = 0; i < indicesWithNonEmptyCats.length; i++) {
-                    int catIndex = indicesWithNonEmptyCats[i];
-                    categoryComps[catIndex].setRect(i * buttonWidth, 0, buttonWidth, ITEM_HEIGHT);
-                    PixelScene.align(categoryComps[catIndex]);
-                }
-            } else {
-                //for first row
-                float buttonWidth = (float) (width() / Math.ceil(indicesWithNonEmptyCats.length / 2f));
-                float y = 0;
-                float x = 0;
-                for (int i = 0; i < indicesWithNonEmptyCats.length; i++) {
-                    int catIndex = indicesWithNonEmptyCats[i];
-                    categoryComps[catIndex].setRect(x, y, buttonWidth, ITEM_HEIGHT);
-                    PixelScene.align(categoryComps[catIndex]);
-                    x += buttonWidth;
-                    if (i == Math.ceil(indicesWithNonEmptyCats.length / 2f) - 1) {
-                        y += ITEM_HEIGHT;
-                        x = 0;
+            int numRows = numVisibleRows();
+            int compsPerRow = (int) Math.ceil((float) indicesWithNonEmptyCats.length / numRows);
+
+            float compWidth = width() / compsPerRow;
+            float y = this.y;
+            float x = this.x;
+            int i = 0;
+            int indexRow = 0;
+			while (i < indicesWithNonEmptyCats.length) {
+				int catIndex = indicesWithNonEmptyCats[i];
+				categoryComps[catIndex].setRect(x, y, compWidth, ITEM_HEIGHT);
+				PixelScene.align(categoryComps[catIndex]);
+                i++;
+				if (i % compsPerRow == 0) {
+                    indexRow++;
+					y += ITEM_HEIGHT;
+					x = this.x;
+                    if (indexRow == numRows-1) {
+                        //last row
+                        compWidth = width() / (indicesWithNonEmptyCats.length - i);
                     }
+				} else {
+                    x += compWidth;
                 }
-            }
+			}
         }
 
         selectVisibleCategory(selectedVisIndex);
     }
 
-    private static int maxButtonsPerRow() {
-        return PixelScene.landscape() ? 9 : 7;
+    private int numVisibleRows() {
+        return (int) Math.ceil(indicesWithNonEmptyCats.length * MIN_WIDTH_PER_BUTTON / width());
     }
 
     @Override
     protected void doSelectCategory(int selectedVisIndex, int selectedCatIndex) {
-        sp.clear();
+
+        if (sp instanceof ScrollingListPane)
+            sp.clear();
 
         if (categoryComps != null) {
             for (int i = 0; i < indicesWithNonEmptyCats.length; i++) {
@@ -119,16 +171,11 @@ public class CategoryScroller extends AbstractCategoryScroller<RedButton> {
         sp.scrollTo(0, 0);
 
 
-        for (Object o : categories[selectedCatIndex].items(false, true)) {
-            //TODO maybe some titles here as well?
-            if (o instanceof ScrollingListPane.ListButton) {
-                if (((ScrollingListPane.ListButton) o).isDestroyed()) o = Reflection.newInstance(o.getClass());
-            }
-            ((ScrollingListPane) sp).addItem(categories[selectedCatIndex].createListItem(o, window));
-        }
+        updateList(selectedCatIndex);
+        sp.givePointerPriority();
 
         float bottom = categoryComps == null ? 0 : categoryComps[indicesWithNonEmptyCats[indicesWithNonEmptyCats.length - 1]].bottom() + 1;
-        sp.setRect(x, bottom, width,height - bottom);
+        sp.setRect(x, bottom, width,height - bottom + y);
     }
 
     @Override
@@ -137,4 +184,15 @@ public class CategoryScroller extends AbstractCategoryScroller<RedButton> {
             if (i instanceof AdvancedListPaneItem) ((AdvancedListPaneItem) i).onUpdate();
         }
     }
+
+    protected void updateList(int selectedCatIndex) {
+        for (Object o : categories[selectedCatIndex].items(false, true)) {
+            //TODO maybe some titles here as well?
+            if (o instanceof ScrollingListPane.ListButton) {
+                if (((ScrollingListPane.ListButton) o).isDestroyed()) o = Reflection.newInstance(o.getClass());
+            }
+            ((ScrollingListPane) sp).addItem(categories[selectedCatIndex].createListItem(o, window));
+        }
+    }
+
 }

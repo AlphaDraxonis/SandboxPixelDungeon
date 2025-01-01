@@ -56,7 +56,7 @@ public class GeyserTrap extends Trap {
 		Sample.INSTANCE.play(Assets.Sounds.GAS, 1f, 0.75f);
 
 		Blob[] fires = Dungeon.level.blobs.get(Fire.class);
-		PathFinder.buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 2 );
+		PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.solid, null ), 2, true );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] == 2 && Random.Int(3) > 0){
 				Dungeon.level.setCellToWater(true, i);

@@ -56,7 +56,7 @@ public abstract class WndSelectLevelType extends WndChooseOneInCategories {
     private static Object[][] createCategories(boolean includeNull) {
         if (includeNull) {
             return new Object[][]{
-                    {null, LastLevel.class, DeadEndLevel.class, MiningLevel.class},
+                    {null, LastLevel.class, DeadEndLevel.class},
                     {SewerLevel.class, PrisonLevel.class, CavesLevel.class, CityLevel.class, HallsLevel.class},
                     {SewerBossLevel.class, PrisonBossLevel.class, CavesBossLevel.class, CityBossLevel.class, HallsBossLevel.class},
                     {MiningLevel.CrystalMiningLevel.class, MiningLevel.GnollMiningLevel.class, MiningLevel.FungiMiningLevel.class}

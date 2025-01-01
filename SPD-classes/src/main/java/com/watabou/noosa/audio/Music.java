@@ -37,7 +37,8 @@ import java.util.Collections;
 @NotAllowedInLua
 public enum Music {
 	
-	INSTANCE;
+	INSTANCE,
+	SOUND_FILE_PREVIEW_PLAYER;
 	
 	private com.badlogic.gdx.audio.Music player;
 	
@@ -304,5 +305,4 @@ public enum Music {
 	public synchronized boolean isEnabled() {
 		return enabled;
 	}
-	
 }

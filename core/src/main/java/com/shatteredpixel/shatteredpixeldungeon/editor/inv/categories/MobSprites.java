@@ -1,6 +1,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomCharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndNewCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
@@ -8,8 +10,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MobSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.CustomCharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.WndNewCustomObject;
 import com.watabou.noosa.Image;
 
 public final class MobSprites extends GameObjectCategory<MobSprite> {

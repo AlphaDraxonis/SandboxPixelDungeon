@@ -167,7 +167,7 @@ public abstract class ChampionEnemy extends Buff {
 					passable[ch.pos] = ch == target;
 				}
 
-				PathFinder.buildDistanceMap(enemy.pos, passable, 4);
+				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, passable, 4, true);
 
 				return PathFinder.distance[target.pos] <= 4;
 			}
@@ -214,7 +214,7 @@ public abstract class ChampionEnemy extends Buff {
 					passable[ch.pos] = ch == target;
 				}
 
-				PathFinder.buildDistanceMap(enemy.pos, passable, 2);
+				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, passable, 2, true);
 
 				return PathFinder.distance[target.pos] <= 2;
 			}

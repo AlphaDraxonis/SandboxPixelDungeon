@@ -60,7 +60,7 @@ public class FlashBangBomb extends Bomb {
 		super.explode(cell);
 
 		ArrayList<Char> affected = new ArrayList<>();
-		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), explosionRange() );
+		PathFinder.buildDistanceMapForEnvironmentals( cell, BArray.not( Dungeon.level.solid, null ), explosionRange(), true );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE && Actor.findChar(i) != null) {
 				affected.add(Actor.findChar(i));

@@ -55,6 +55,7 @@ public class LuaRestrictionProxy extends LuaValue {
 			Class<?> clazz = javaObject.getClass();
 			do {
 				for (Method m : clazz.getDeclaredMethods()) {
+					if (m.isAnnotationPresent(NotAllowedInLua.class)) continue;
 					int mods = m.getModifiers();
 					if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
 						Method existingMethod = (Method) methods.get(m.getName());
@@ -93,7 +94,7 @@ public class LuaRestrictionProxy extends LuaValue {
 							try {
 								Object[] javaArgs = new Object[method.getParameterTypes().length];
 								for (int i = 0; i < javaArgs.length; i++) {
-									javaArgs[i] = coerceLuaToJava(arg(i + 1), method.getParameterTypes()[i]);
+									javaArgs[i] = coerceLuaToJava(varargs.arg(i + 2), method.getParameterTypes()[i]);
 								}
 								return wrapObject(method.invoke(javaObject, javaArgs));
 							} catch (Exception e) {
@@ -192,25 +193,39 @@ public class LuaRestrictionProxy extends LuaValue {
 		return CoerceLuaToJava.coerce(luaValue, aClass);
 	}
 
+	//WARNING! use carefully or else this is a security leak!
+	public static Varargs unwrapRestrictionProxies(Varargs varargs) {
+		LuaValue[] result = new LuaValue[varargs.narg()];
+		for (int i = 0; i < result.length; i++) {
+			LuaValue v = varargs.arg(i+1);
+			if (v instanceof LuaRestrictionProxy) result[i] = LuaValue.userdataOf(coerceLuaToJava(v));
+			else result[i] = v;
+		}
+		return LuaValue.varargsOf(result);
+	}
+
 
 	public static boolean isFieldRestricted(Field field) {
-		Class<?> fieldType = field.getType();
-		return isRestricted(fieldType);
+//		Class<?> fieldType = field.getType();
+//		return isRestricted(fieldType);
+		return false;//tzz test if this is enough!
 	}
 
 	public static boolean isRestricted(Object obj) {
 		if (obj == null) return false;
 		Class<?> clazz = obj instanceof Class<?> ? (Class<?>) obj : obj.getClass();
-		while (clazz != null) {
-			if (clazz.isAnnotationPresent(NotAllowedInLua.class)) {
+		Class<?> superclass = clazz;
+		do {
+			if (superclass.isAnnotationPresent(NotAllowedInLua.class)) {
 				return true;
 			}
-			clazz = clazz.getSuperclass();
-		}
-		return obj instanceof FileHandle
-				|| obj instanceof File
-				|| obj instanceof OutputStream
-				|| obj instanceof InputStream;
+			superclass = superclass.getSuperclass();
+		} while (superclass != null);
+
+		return FileHandle.class.isAssignableFrom(clazz)
+				|| File.class.isAssignableFrom(clazz)
+				|| OutputStream.class.isAssignableFrom(clazz)
+				|| InputStream.class.isAssignableFrom(clazz);
 	}
 
 	@Override
@@ -228,4 +243,25 @@ public class LuaRestrictionProxy extends LuaValue {
 		return javaObject;
 	}
 
+	@Override
+	public Object touserdata(Class c) {
+		return c.isAssignableFrom(javaObject.getClass()) ? javaObject : null;
+	}
+
+	@Override
+	public boolean isuserdata() {
+		return true;
+	}
+
+	@Override
+	public LuaValue arg(int index) {
+		if (index == 0) return this;
+		return super.arg(index);
+	}
+
+	@Override
+	public String toString() {
+		if (javaObject instanceof Exception) return javaObject.getClass().getSimpleName() + ": " + ((Exception) javaObject).getMessage();
+		else return javaObject.toString();
+	}
 }

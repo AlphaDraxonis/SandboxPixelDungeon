@@ -54,7 +54,11 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.*;
+import com.watabou.utils.BArray;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -176,7 +180,7 @@ public class Bomb extends Item {
 			boolean[] explodable = new boolean[Dungeon.level.length()];
 			BArray.not( Dungeon.level.solid, explodable);
 			BArray.or( Dungeon.level.getFlamable(), explodable, explodable);
-			PathFinder.buildDistanceMap( cell, explodable, explosionRange() );
+			PathFinder.buildDistanceMapForEnvironmentals( cell, explodable, explosionRange(), true );
 			for (int i = 0; i < PathFinder.distance.length; i++) {
 				if (PathFinder.distance[i] != Integer.MAX_VALUE) {
 					if (Dungeon.level.heroFOV[i]) {

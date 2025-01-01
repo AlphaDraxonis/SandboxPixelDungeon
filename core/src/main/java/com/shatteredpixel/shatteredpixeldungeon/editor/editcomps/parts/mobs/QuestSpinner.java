@@ -33,7 +33,7 @@ public class QuestSpinner extends StyledSpinner {
         }
 
         @Override
-        protected Image getIcon(Object value) {
+        protected Image displayIcon(Object value) {
             int index = getCurrentIndex();
             quest.setType(index-3);
             Image icon = quest.getIcon();

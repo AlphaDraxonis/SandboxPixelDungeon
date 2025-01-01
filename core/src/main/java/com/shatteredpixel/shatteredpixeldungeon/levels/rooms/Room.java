@@ -28,7 +28,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
+import com.watabou.utils.Graph;
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -575,20 +580,6 @@ public abstract class Room extends RoomRect implements Graph.Node, Bundlable, Co
 			typeLocked = bundle.getBoolean("type_locked");
 		}
 	}
-
-
-	//****************************************//
-	//*************Rect-Class*****************//
-	//****************************************//
-
-
-
-
-	//****************************************//
-	//*************Rect-Class*****************//
-	//****************************************//
-
-
 
 
 

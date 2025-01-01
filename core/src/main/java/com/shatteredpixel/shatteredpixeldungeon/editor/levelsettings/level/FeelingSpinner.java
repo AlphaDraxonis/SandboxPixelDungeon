@@ -40,7 +40,7 @@ public class FeelingSpinner extends StyledSpinner {
             return Messages.titleCase(text);
         }
 
-        public Image getIcon(Object feeling) {
+        public Image displayIcon(Object feeling) {
             return Icons.get((Level.Feeling) feeling);
         }
 

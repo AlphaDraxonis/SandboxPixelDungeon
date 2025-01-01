@@ -21,7 +21,12 @@ import com.watabou.utils.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class CustomTileLoader {
 
@@ -320,7 +325,7 @@ public final class CustomTileLoader {
 
         @Override
         public Image image(int tileX, int tileY) {
-            int cell = tileX + tileY * Dungeon.level.width();
+            int cell = this.tileX + this.tileY * Dungeon.level.width();
             return DungeonTerrainTilemap.tile(cell, imageTerrain, Dungeon.level.visualRegions[cell]);
         }
     }

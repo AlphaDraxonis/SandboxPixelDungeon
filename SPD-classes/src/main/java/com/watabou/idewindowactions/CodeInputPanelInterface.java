@@ -116,7 +116,7 @@ public interface CodeInputPanelInterface {
 			String msg = inputPanel.compile();
 			if (msg != null) {
 				if (b.length() > 0) b.append("\n\n");
-				b.append('_').append(inputPanel.getLabel()).append("_:\n");
+				b.append(' ').append(inputPanel.getLabel()).append(" :\n");
 				b.append(msg);
 			}
 		}

@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
@@ -19,10 +20,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMappi
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.*;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndScrollOfDebug;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -169,7 +173,7 @@ public class SideControlPane extends Component {
 
         @Override
         protected String hoverText() {
-            return Messages.titleCase(Messages.get(this, "label"));//tzz
+            return Messages.titleCase(Messages.get(this, "label"));
         }
     }
 
@@ -261,7 +265,7 @@ public class SideControlPane extends Component {
         protected void onClick() {
 //          GameScene.scene.destroy(); ???
 
-            UserContentManager.loadUserContentFromFiles();
+            CustomObjectManager.loadUserContentFromFiles();
 
             EditorScene.start();
             EditorScene.openDifferentLevel = false;
@@ -336,6 +340,7 @@ public class SideControlPane extends Component {
             else {
                 Buff b = Dungeon.hero.buff(Invisibility.class);
                 if (b != null) b.detach();
+                Dungeon.hero.invisible = 0;
             }
         }
     }

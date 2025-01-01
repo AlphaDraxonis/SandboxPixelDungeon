@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 
@@ -33,6 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+@NotAllowedInLua
 public class GamesInProgress {
 
     public static final int TEST_SLOT = 99;//should always be larger than MAX_SLOTS !!!

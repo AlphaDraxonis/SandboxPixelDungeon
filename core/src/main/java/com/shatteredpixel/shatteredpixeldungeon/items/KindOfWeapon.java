@@ -262,7 +262,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 				if (ch != owner) passable[ch.pos] = false;
 			}
 			
-			PathFinder.buildDistanceMap(target, passable, reach);
+			PathFinder.buildDistanceMapForEnvironmentals(target, passable, reach, true);
 			
 			return PathFinder.distance[owner.pos] <= reach;
 		}

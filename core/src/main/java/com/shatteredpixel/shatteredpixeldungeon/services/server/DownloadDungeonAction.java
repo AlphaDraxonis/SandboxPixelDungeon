@@ -31,6 +31,7 @@ import com.badlogic.gdx.utils.Base64Coder;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
@@ -40,6 +41,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+@NotAllowedInLua
 public class DownloadDungeonAction {
 
 	private final ServerCommunication.OnDungeonReceive callback;

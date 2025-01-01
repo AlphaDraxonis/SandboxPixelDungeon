@@ -21,7 +21,11 @@ import com.watabou.noosa.ui.Component;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class ItemContainer<T extends Item> extends Component implements WndBag.ItemSelectorInterface { // needs access to protected methods
 
@@ -140,7 +144,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
     public void onSelect(Item item) {
         if (item == null || typeParameterClass != null &&
                 (!typeParameterClass.isAssignableFrom(item.getClass())
-                        && (!(item instanceof ItemItem) ||!typeParameterClass.isAssignableFrom(((ItemItem) item).item().getClass())  )))
+                        && (!(item instanceof EditorItem) ||!typeParameterClass.isAssignableFrom(((EditorItem<?>) item).getObject().getClass())  )))
             return;
         if (item instanceof ItemItem) item = ((ItemItem) item).item();
         item = item.getCopy();

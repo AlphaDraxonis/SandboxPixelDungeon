@@ -24,6 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
@@ -33,6 +35,7 @@ import com.watabou.utils.Point;
 
 import java.util.Locale;
 
+@NotAllowedInLua
 public class SPDSettings extends GameSettings {
 	
 	//Version info
@@ -43,6 +46,7 @@ public class SPDSettings extends GameSettings {
 	public static final String KEY_LAST_UPLOADED_TO_SERVER_TIMER = "last_uploaded_to_server_timer";
 	public static final String KEY_LAST_UPDATED_TO_SERVER_TIMER = "last_updated_to_server_timer";
 	public static final String KEY_UUID = "uuid";
+	public static final String KEY_LAST_CHECKED_SERVER = "last_checked_server";
 
 	public static void version( int value)  {
 		put( KEY_VERSION, value );
@@ -90,6 +94,15 @@ public class SPDSettings extends GameSettings {
 
 	public static void uuid(String uuid) {
 		put( KEY_UUID, uuid );
+	}
+
+	public static long lastCheckedServer() {
+		return getLong( KEY_LAST_UPLOADED_TO_SERVER_TIMER, System.currentTimeMillis()) + 200;
+	}
+
+	public static void checkedServerNow() {
+		put( KEY_LAST_UPLOADED_TO_SERVER_TIMER, System.currentTimeMillis() + 200 );
+		Updates.dungeonsSeen();
 	}
 
 	//Display

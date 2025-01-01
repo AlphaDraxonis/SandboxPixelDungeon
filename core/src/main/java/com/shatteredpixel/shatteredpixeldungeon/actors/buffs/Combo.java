@@ -398,7 +398,7 @@ public class Combo extends HeroSubclassAbilityBuff {
 					break;
 				case CRUSH:
 					WandOfBlastWave.BlastWave.blast(enemy.pos);
-					PathFinder.buildDistanceMap(target.pos, BArray.not(Dungeon.level.solid, null), 3);
+					PathFinder.buildDistanceMapForEnvironmentals(target.pos, BArray.not(Dungeon.level.solid, null), 3, true);
 					for (Char ch : Actor.chars()) {
 						if (ch != enemy && ch.alignment == Char.Alignment.ENEMY
 								&& PathFinder.distance[ch.pos] < Integer.MAX_VALUE) {

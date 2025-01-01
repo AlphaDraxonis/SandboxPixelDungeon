@@ -403,7 +403,7 @@ public class DungeonTileSheet {
 	public static final int DOOR_OVERHANG_OPEN          = DOOR_OVERHANG+1;
 	public static final int DOOR_OVERHANG_CRYSTAL       = DOOR_OVERHANG+4;
 	public static final int DOOR_OVERHANG_SECRET        = DOOR_OVERHANG+5;
-	public static final int DOOR_OVERHANG_CRYSTAL_SECRET= DOOR_OVERHANG+7;//tzz
+	public static final int DOOR_OVERHANG_CRYSTAL_SECRET= DOOR_OVERHANG+7;
 	public static final int DOOR_SIDEWAYS               = DOOR_OVERHANG+9;
 	public static final int DOOR_SIDEWAYS_COIN		    = DOOR_OVERHANG+10;
 	public static final int DOOR_SIDEWAYS_LOCKED        = DOOR_OVERHANG+11;
@@ -508,12 +508,20 @@ public class DungeonTileSheet {
 
 	public static byte[] tileVariance;
 
-	public static void setupVariance(int size, long seed){
+	public static void setupVariance(byte[] fixedTileVariance, int size, long seed){
 		Random.pushGenerator( seed );
 
 			tileVariance = new byte[size];
-			for (int i = 0; i < tileVariance.length; i++) {
-				tileVariance[i] = (byte) Random.Int(100);
+
+			if (fixedTileVariance == null) {
+				for (int i = 0; i < tileVariance.length; i++) {
+					tileVariance[i] = (byte) Random.Int(100);
+				}
+			} else {
+				for (int i = 0; i < tileVariance.length; i++) {
+					tileVariance[i] = (byte) Random.Int(100);
+					if (fixedTileVariance[i] > 0) tileVariance[i] = fixedTileVariance[i];
+				}
 			}
 
 		Random.popGenerator();

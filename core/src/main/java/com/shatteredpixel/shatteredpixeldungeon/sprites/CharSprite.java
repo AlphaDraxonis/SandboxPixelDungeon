@@ -27,7 +27,16 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.effects.*;
+import com.shatteredpixel.shatteredpixeldungeon.effects.DarkBlock;
+import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
+import com.shatteredpixel.shatteredpixeldungeon.effects.IceBlock;
+import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+import com.shatteredpixel.shatteredpixeldungeon.effects.ShieldHalo;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
+import com.shatteredpixel.shatteredpixeldungeon.effects.TorchHalo;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SnowParticle;
@@ -38,7 +47,12 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CharHealthIndicator;
 import com.watabou.glwrap.Matrix;
 import com.watabou.glwrap.Vertexbuffer;
-import com.watabou.noosa.*;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.MovieClip;
+import com.watabou.noosa.NoosaScript;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.tweeners.AlphaTweener;
@@ -444,6 +458,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 				levitation.pour( Speck.factory( Speck.JET ), 0.02f );
 				break;
 			case INVISIBLE:
+			case HALF_INVISIBLE:
 				if (invisible != null) {
 					invisible.killAndErase();
 				}
@@ -452,15 +467,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					parent.add(invisible);
 				} else
 					alpha( 0.4f );
-				visible = !(this instanceof MobSprite) || CustomDungeon.isEditing();
-				break;
-			case HALF_INVISIBLE:
-				if (invisible != null) {
-					invisible.killAndErase();
-				}
-				invisible = new AlphaTweener( this, 0.4f, 0.4f );
-				if (parent != null) parent.add(invisible);
-				else alpha( 0.4f );
+				visible = state == State.HALF_INVISIBLE || !(this instanceof MobSprite) || CustomDungeon.isEditing();
 				break;
 			case PARALYSED:
 				paused = true;

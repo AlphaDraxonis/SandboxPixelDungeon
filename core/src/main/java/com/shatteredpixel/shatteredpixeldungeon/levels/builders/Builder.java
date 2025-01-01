@@ -22,12 +22,18 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.builders;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.Point;
+import com.watabou.utils.PointF;
+import com.watabou.utils.Random;
+import com.watabou.utils.WatabouRect;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public abstract class Builder {
+public abstract class Builder implements Bundlable {
 	
 	//If builders require additional parameters, they should
 	// request them in their constructor or other methods
@@ -250,5 +256,15 @@ public abstract class Builder {
 		} else {
 			return -1;
 		}
+	}
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		//subclasses may override it
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		//subclasses may override it
 	}
 }

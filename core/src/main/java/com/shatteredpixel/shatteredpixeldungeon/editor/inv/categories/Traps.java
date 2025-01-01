@@ -6,8 +6,8 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.CustomTrap;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.WndNewCustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomTrap;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndNewCustomObject;
 import com.watabou.noosa.Image;
 
 import java.util.Locale;

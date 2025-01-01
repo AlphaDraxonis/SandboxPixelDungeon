@@ -15,11 +15,20 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Consumer;
+import com.watabou.utils.Function;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -468,7 +477,10 @@ public abstract class ItemsWithChanceDistrComp extends Component {
             sum = 0;
             for (ItemWithCount item : distrSlots) {
                 sum += item.getCount();
-                if (sum > get) return item.items;
+                if (sum > get) {
+                    GameObject.doOnAllGameObjectsList(item.items, GameObject::initRandoms);
+                    return item.items;
+                }
             }
             return null;
         }

@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon;
 
 import com.badlogic.gdx.Input;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
@@ -31,6 +32,7 @@ import com.watabou.utils.FileUtils;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+@NotAllowedInLua
 public class SPDAction extends GameAction {
 
 	protected SPDAction( String name ){

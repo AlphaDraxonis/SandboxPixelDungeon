@@ -57,7 +57,9 @@ public class ElixirOfMight extends Elixir {
 		boost.reset();
 		
 		hero.updateHT( true );
-		GLog.p( Messages.get(this, "msg", hero.STR()) );
+		if (hero == Dungeon.hero) {
+			GLog.p( Messages.get(this, "msg", hero.STR()) );
+		}
 
 		Badges.validateStrengthAttained();
 		Badges.validateDuelistUnlock();

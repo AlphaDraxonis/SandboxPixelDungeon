@@ -187,9 +187,9 @@ public class MirrorImage extends NPC {
 		
 		hero = (Hero)Actor.findById(heroID);
 		if (hero != null) {
-			armTier = hero.tier();//TODO tzz seehr wichtig if no hero, it might use armTier = 1; in catalog!
-			((MirrorSprite)s).updateArmor( hero );
+			armTier = hero.tier();
 		}
+		((MirrorSprite)s).updateArmor( hero );
 		return s;
 	}
 

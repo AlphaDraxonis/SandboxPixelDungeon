@@ -21,7 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.VialOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -91,9 +93,10 @@ public class Healing extends Buff {
 	}
 
 	public void applyVialEffect(){
-		healingLimited = VialOfBlood.delayBurstHealing(((Hero) target));
+		Hero hero = target instanceof HeroMob ? ((HeroMob) target).hero() : target instanceof Hero ? (Hero) target : Dungeon.hero;
+		healingLimited = VialOfBlood.delayBurstHealing(hero);
 		if (healingLimited){
-			healingLeft = Math.round(healingLeft*VialOfBlood.totalHealMultiplier());
+			healingLeft = Math.round(healingLeft*VialOfBlood.totalHealMultiplier(hero));
 		}
 	}
 	

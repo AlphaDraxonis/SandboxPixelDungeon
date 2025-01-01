@@ -5,13 +5,18 @@ import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomItemClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
@@ -34,17 +39,66 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.UnlimitedCapacityBag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FakeTenguBomb;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.*;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.*;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.*;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHaste;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLevitation;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfParalyticGas;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfToxicGas;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.AquaBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.BlizzardBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.Brew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.CausticBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.InfernalBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.ShockingBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.UnstableBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.Elixir;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfAquaticRejuvenation;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfArcaneArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfDragonsBlood;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfFeatherFall;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfHoneyedHealing;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfIcyTouch;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfToxicEssence;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCleansing;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCorrosiveGas;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDragonsBreath;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfEarthenArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfMagicalSight;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfMastery;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfShielding;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfShroudingFog;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfSnapFreeze;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfStamina;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfStormClouds;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfSummoning;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.AdrenalineDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.BlindingDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.ChillingDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.CleansingDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.HealingDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.HolyDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.IncendiaryDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -176,7 +230,6 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
     @Override
     public CharSprite sprite() {
-        //TODO tzz might not work!
         HeroSprite.HeroMobSprite sprite = new HeroSprite.HeroMobSprite(internalHero) {
             @Override
             public void link(Char ch) {
@@ -196,6 +249,14 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     @Override
     public String desc() {
         return customDesc == null ? internalHero.heroClass.shortDesc() : super.desc();
+    }
+
+    @Override
+    protected boolean act() {
+        updateInternalStats();
+        boolean ret = super.act();
+        updateStats();
+        return ret;
     }
 
     @Override
@@ -251,38 +312,17 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         for (Item item : internalHero.potions()) {
             Potion potion = (Potion) item;
 
-            if (!potion.isIdentified()) continue;
+            potion.anonymize();
 
             Class<? extends Potion> c = potion.getClass();
-            if ((c == PotionOfHealing.class || c == PotionOfShielding.class) && internalHero.HP < 4 + internalHero.lvl && buff(Healing.class) == null) return potion;
+            if (CustomItemClass.class.isAssignableFrom(c)) c = (Class<? extends Potion>) c.getSuperclass();
 
-            if (c == PotionOfPurity.class && internalHero.buff(BlobImmunity.class) == null) {
-                HashSet<Class> immunities = new BlobImmunity().immunities();
-                for (Blob b : Dungeon.level.blobs.values()) {
-                    if (b != null && b.volume > 0 && b.cur[pos] > 0) {
-                        if (immunities.contains(b.getClass())) return potion;
-                    }
-                }
-                continue;
-            }
-            if (c == PotionOfCleansing.class && buff(BlobImmunity.class) == null) {
-                //only use on self
-                for (Buff b : internalHero.buffs()) {
-                    if (b.type == Buff.buffType.NEGATIVE
-                            && !(b instanceof AllyBuff)
-                            && !(b instanceof LostInventory)) return potion;
-                }
-                continue;
-            }
+            if (usePotionAsMelee(c)) return potion;
 
-            if (potion instanceof Elixir) {
-                if (c == ElixirOfAquaticRejuvenation.class && buff(ElixirOfAquaticRejuvenation.AquaHealing.class) != null) return potion;
-                if (c == ElixirOfArcaneArmor.class && buff(ArcaneArmor.class) != null) return potion;
-                if (c == ElixirOfDragonsBlood.class && buff(FireImbue.class) != null) return potion;
-                if (c == ElixirOfIcyTouch.class && buff(FrostImbue.class) != null) return potion;
-                if (c == ElixirOfMight.class && buff(ElixirOfMight.HTBoost.class) != null) return potion;
-                if (c == ElixirOfToxicEssence.class && buff(ToxicImbue.class) != null) return potion;
-                if (c == ElixirOfIcyTouch.class && buff(FireImbue.class) != null) return potion;
+            if (c == UnstableBrew.class) {
+                for (Class<? extends Potion> clazz : UnstableBrew.potionEffects()) {
+                    if (usePotionAsMelee(clazz)) return potion;
+                }
             }
         }
 
@@ -293,6 +333,54 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         }
 
         return null;
+    }
+
+    private boolean usePotionAsMelee(Class<? extends Potion> c) {
+        if (c == PotionOfHealing.class   && internalHero.HP < 4 + internalHero.lvl && buff(Healing.class) == null) return true;
+        if (c == PotionOfShielding.class && internalHero.HP < 4 + internalHero.lvl && buff(Healing.class) == null && buff(Barrier.class) == null) return true;
+
+        if (c == PotionOfPurity.class && internalHero.buff(BlobImmunity.class) == null) {
+            HashSet<Class> immunities = new BlobImmunity().immunities();
+            for (Blob b : Dungeon.level.blobs.values()) {
+                if (b != null && b.volume > 0 && b.cur[pos] > 0) {
+                    if (immunities.contains(b.getClass())) {
+                        if (b instanceof Fire && buff(Burning.class) != null) continue;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        if (c == PotionOfCleansing.class && buff(BlobImmunity.class) == null) {
+            //only use on self
+            for (Buff b : internalHero.buffs()) {
+                if (b.type == Buff.buffType.NEGATIVE
+                        && !(b instanceof AllyBuff)
+                        && !(b instanceof LostInventory)) return true;
+            }
+            return false;
+        }
+
+        if (Elixir.class.isAssignableFrom(c)) {
+            if (c == ElixirOfAquaticRejuvenation.class && buff(ElixirOfAquaticRejuvenation.AquaHealing.class) == null && internalHero.HP * 1.5f < 4 + internalHero.lvl) return true;
+            if (c == ElixirOfArcaneArmor.class && buff(ArcaneArmor.class) == null) return true;
+            if (c == ElixirOfDragonsBlood.class && buff(FireImbue.class) == null) return true;
+            if (c == ElixirOfIcyTouch.class && buff(FrostImbue.class) == null) return true;
+            if (c == ElixirOfMight.class && buff(ElixirOfMight.HTBoost.class) == null) return true;
+            if (c == ElixirOfToxicEssence.class && buff(ToxicImbue.class) == null) return true;
+            if (c == ElixirOfIcyTouch.class && buff(FireImbue.class) == null) return true;
+
+            if (c == ElixirOfFeatherFall.class && buff(ElixirOfFeatherFall.FeatherBuff.class) == null) {
+                //check if we are in the radius of a pitfall trap
+                PitfallTrap.DelayedPit delayedPit = Dungeon.hero.buff(PitfallTrap.DelayedPit.class);
+                if (delayedPit != null && delayedPit.activatedOn.equals(Dungeon.levelName) && delayedPit.branch == Dungeon.branch) {
+                    for (int cell : delayedPit.positions) {
+                        if (cell == pos) return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private Item nextUseDistanceAttackItem(int target, boolean justCheck) {
@@ -308,9 +396,11 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             for (Item item : internalHero.potions()) {
                 Potion potion = (Potion) item;
 
-                if (!potion.isIdentified()) continue;
+                potion.anonymize();
 
                 Class<? extends Potion> c = potion.getClass();
+                if (CustomItemClass.class.isAssignableFrom(c)) c = (Class<? extends Potion>) c.getSuperclass();
+
                 if (c == PotionOfStrength.class) return potion;
                 if (c == PotionOfExperience.class) return potion;
                 if (c == PotionOfHaste.class && buff(Haste.class) == null) return potion;
@@ -318,16 +408,17 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                 if (c == PotionOfMindVision.class && buff(MindVision.class) == null) return potion;
                 if (c == PotionOfMagicalSight.class && buff(MagicalSight.class) == null) return potion;
                 if (c == PotionOfEarthenArmor.class && buff(Barkskin.class) == null) return potion;
-                if ((c == PotionOfInvisibility.class || c == PotionOfShroudingFog.class) && internalHero.invisible <= 0) return potion;
+                if ((c == PotionOfInvisibility.class || c == PotionOfShroudingFog.class) && invisible <= 0 && buff(Invisibility.class) == null && shot.dist >= 2) return potion;
                 if (c == PotionOfLevitation.class && buff(Levitation.class) == null) return potion;//do not throw; maybe check for Chasms?
 
-                if (c == PotionOfStormClouds.class && !Dungeon.level.water[target]) return potion;
+                if (c == PotionOfStormClouds.class && !Dungeon.level.water[target] && Dungeon.level.canSetCellToWater(true, target)) return potion;
 
                 if (c == PotionOfFrost.class && enemy != null && !enemy.isImmune(Frost.class)) return potion;
-                if ((c == PotionOfLiquidFlame.class || c == PotionOfDragonsBreath.class) && enemy != null && !enemy.isImmune(Fire.class) && !Dungeon.level.water[target]) return potion;
+                if (c == PotionOfLiquidFlame.class   && enemy != null && !enemy.isImmune(Fire.class) && !Dungeon.level.water[target] && enemy.buff(Burning.class) == null) return potion;
+                if (c == PotionOfDragonsBreath.class && enemy != null && !enemy.isImmune(Fire.class) && !Dungeon.level.water[target] && enemy.buff(Burning.class) == null && shot.dist >= 4) return potion;
 
                 if (enemy != null && (c == PotionOfToxicGas.class && !enemy.isImmune(ToxicGas.class) || c == PotionOfParalyticGas.class && !enemy.isImmune(Paralysis.class)
-                        || c == PotionOfCorrosiveGas.class && !enemy.isImmune(CorrosiveGas.class) || c == PotionOfSnapFreeze.class && !enemy.isImmune(Freezing.class))
+                        || c == PotionOfCorrosiveGas.class && !enemy.isImmune(CorrosiveGas.class) || c == PotionOfSnapFreeze.class && !enemy.isImmune(Frost.class) && enemy.buff(Frost.class) == null)
                         && shot.dist > 4
                         /*&& new Ballistica(pos, target, Ballistica.STOP_BARRIER_BLOBS, null).dist*/) return potion;
 
@@ -338,7 +429,9 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                     if (c == ShockingBrew.class && enemy != null && !enemy.isImmune(Electricity.class)) return potion;
                 }
 
-                if (c == ElixirOfHoneyedHealing.class && (internalHero.HP < 6 + internalHero.lvl/2 || enemy instanceof Bee && enemy.alignment == Alignment.ENEMY)) return potion;
+                if (c == AquaBrew.class && enemy != null && (shot.dist > 2 || enemy.properties().contains(Property.FIERY))) return potion;
+
+                if (c == ElixirOfHoneyedHealing.class && (internalHero.HP < 6 + internalHero.lvl/2 || enemy instanceof Bee && enemy.alignment != alignment)) return potion;
 
                 //don't use: Mastery, DivineInspiration, Placeholder
             }
@@ -354,8 +447,11 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                         if (item instanceof AdrenalineDart && enemy.isImmune(Cripple.class)) continue;
                         if (item instanceof BlindingDart && enemy.isImmune(Blindness.class)) continue;
                         if (item instanceof ChillingDart && enemy.isImmune(Chill.class)) continue;
-                        if (item instanceof HealingDart && enemy.isImmune(Healing.class)) continue;
-                        if (item instanceof IncendiaryDart && (enemy.isImmune(Fire.class) || Dungeon.level.water[target])) continue;
+                        if (item instanceof IncendiaryDart && (enemy.isImmune(Fire.class) || Dungeon.level.water[target] || enemy.buff(Burning.class) != null)) continue;
+
+                        if (item instanceof HealingDart && enemy.isImmune(Healing.class) && enemy.alignment != alignment) continue;
+                        if (item instanceof CleansingDart && enemy.alignment != alignment) continue;
+                        if (item instanceof HolyDart && enemy.alignment != alignment) continue;
                     }
 
                     if (enemy == null || !enemy.isImmune(item.getClass())) return item;
@@ -448,11 +544,16 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
     @Override
     protected boolean canAttack( Char enemy ) {
-        return super.canAttack(enemy) || nextUseMeleeAttackItem() != null || nextUseDistanceAttackItem(enemy.pos, true) != null;
+        return waitNextTurn || super.canAttack(enemy) || nextUseMeleeAttackItem() != null || nextUseDistanceAttackItem(enemy.pos, true) != null;
     }
 
     @Override
     protected boolean doAttack(Char enemy) {
+        if (waitNextTurn) {
+            waitNextTurn = false;
+            spend(TICK);
+            return true;
+        }
         Item meleeAttackItem = nextUseMeleeAttackItem();
         if (meleeAttackItem != null && !(meleeAttackItem instanceof Wand)) {
             useMeleeAttackItem();
@@ -491,6 +592,8 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         }
     }
 
+    private boolean waitNextTurn = false;
+
     protected void useDistanceAttackItem() {
 
         Item item = nextUseDistanceAttackItem(target, false);
@@ -504,16 +607,26 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             Potion potion = (Potion) (item.quantity() > 1 ? item.split(1) : item);
 
             //throw:
-            if (potion instanceof Brew || potion instanceof PotionOfFrost || potion instanceof PotionOfLiquidFlame  || potion instanceof PotionOfDragonsBreath
+            if (potion instanceof Brew || potion instanceof PotionOfFrost || potion instanceof PotionOfLiquidFlame
                     || potion instanceof PotionOfStormClouds
                 || potion instanceof ElixirOfHoneyedHealing && enemy instanceof Bee && enemy.alignment == Alignment.ENEMY) {
                 potion.cast(internalHero, target);
             }
 
-            else if (potion instanceof PotionOfToxicGas || potion instanceof PotionOfParalyticGas || potion instanceof PotionOfCorrosiveGas || potion instanceof PotionOfSnapFreeze) {
+            else if (potion instanceof PotionOfToxicGas || potion instanceof PotionOfParalyticGas || potion instanceof PotionOfCorrosiveGas) {
                 Ballistica shot = new Ballistica( pos, target, Ballistica.REAL_PROJECTILE, null);
                 if (shot.dist <= 2) potion.cast(internalHero, target);
                 else potion.cast(internalHero, shot.path.get(shot.dist-2));
+            }
+
+            else if (potion instanceof PotionOfSnapFreeze) {
+                Ballistica shot = new Ballistica( pos, target, Ballistica.REAL_PROJECTILE, null);
+                if (shot.dist <= 2) potion.cast(internalHero, target);
+                else potion.cast(internalHero, shot.path.get(shot.dist-1));
+            }
+
+            else if (potion instanceof PotionOfDragonsBreath) {
+                ((PotionOfDragonsBreath) potion).usedByHeroMob(this, enemy);
             }
 
             //drink:
@@ -739,6 +852,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         dest.invisible = src.invisible;
         dest.viewDistance = src.viewDistance;
         dest.baseSpeed = src.baseSpeed;
+        dest.attackSpeed = src.attackSpeed;
         dest.pos = src.pos;
         dest.alignment = src.alignment;
     }
@@ -786,6 +900,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     private static final String WANDS = "wands";
     private static final String POTIONS = "potions";
     private static final String UTIL_ITEMS = "util_items";
+    private static final String WAIT_NEXT_TURN = "wait_next_turn";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -797,6 +912,8 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         bundle.put(WANDS + "_cd", wandCD);
         bundle.put(POTIONS + "_cd", potionCD);
         bundle.put(UTIL_ITEMS + "_cd", utilItemCD);
+
+        bundle.put(WAIT_NEXT_TURN, waitNextTurn);
     }
 
     @Override
@@ -814,6 +931,8 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         wandCD = bundle.getFloat(WANDS + "_cd");
         potionCD = bundle.getFloat(POTIONS + "_cd");
         utilItemCD = bundle.getFloat(UTIL_ITEMS + "_cd");
+
+        waitNextTurn = bundle.getBoolean(WAIT_NEXT_TURN);
     }
 
     @Override
@@ -1214,6 +1333,11 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                             }
                         });
                     }
+
+                    @Override
+                    protected void onItemSlotClick(ItemContainer<Item>.Slot slot, Item item) {
+                        GameScene.examineObject(item);
+                    }
                 };
                 add(wands);
 
@@ -1283,6 +1407,11 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                                 }
                             }
                         });
+                    }
+
+                    @Override
+                    protected void onItemSlotClick(ItemContainer<Item>.Slot slot, Item item) {
+                        GameScene.examineObject(item);
                     }
                 };
                 add(utilItems);

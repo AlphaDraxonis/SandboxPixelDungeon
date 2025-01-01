@@ -11,7 +11,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
-import com.shatteredpixel.shatteredpixeldungeon.editor.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
+import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
@@ -22,25 +27,56 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
-import com.shatteredpixel.shatteredpixeldungeon.levels.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CavesLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CityLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.DeadEndLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.HallsLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BlazingTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BurningTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ChillingTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ExplosiveTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FrostTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.IntFunction;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.*;
+import com.watabou.utils.Reflection;
+import com.watabou.utils.SparseArray;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.*;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.*;
@@ -114,6 +150,7 @@ public class CustomLevel extends Level {
 
             LevelScheme temp = new LevelScheme(null, numInRegion);
             temp.setSeed(seed);
+            temp.builder = levelScheme.builder;
             temp.roomsToSpawn = levelScheme.roomsToSpawn;
             temp.spawnStandardRooms = levelScheme.spawnStandardRooms;
             temp.spawnSpecialRooms = levelScheme.spawnSpecialRooms;
@@ -596,8 +633,7 @@ public class CustomLevel extends Level {
         int add = addTop * width;
 
         int[] oldMap = level.map;
-        boolean[] oldVisited = level.visited;
-        boolean[] oldMapped = level.mapped;
+        byte[] oldTileVariance = level.tileVariance;
 
         int levelWidth = level.width();
         level.setSize(width, newHeight);
@@ -605,9 +641,10 @@ public class CustomLevel extends Level {
         boolean[] nDiscoverable = new boolean[newLength];
 
         changeArrayForMapSizeHeight(oldMap, level.map, add, levelWidth, width);
-        changeArrayForMapSizeHeight(oldVisited, level.visited, add, levelWidth, width);
-        changeArrayForMapSizeHeight(oldMapped, level.mapped, add, levelWidth, width);
         changeArrayForMapSizeHeight(level.discoverable, nDiscoverable, add, levelWidth, width);
+
+        if (oldTileVariance != null)
+            changeArrayForMapSizeHeight(oldTileVariance, level.tileVariance, add, levelWidth, width);
 
         level.discoverable = nDiscoverable;
 
@@ -641,8 +678,7 @@ public class CustomLevel extends Level {
         int newLength = height * newWidth;
 
         int[] oldMap = level.map;
-        boolean[] oldVisited = level.visited;
-        boolean[] oldMapped = level.mapped;
+        byte[] oldTileVariance = level.tileVariance;
 
         int levelWidth = level.width();
         level.setSize(newWidth, height);
@@ -650,9 +686,10 @@ public class CustomLevel extends Level {
         boolean[] nDiscoverable = new boolean[newLength];
 
         changeArrayForMapSizeWidth(oldMap, level.map, addLeft, levelWidth, newWidth);
-        changeArrayForMapSizeWidth(oldVisited, level.visited, addLeft, levelWidth, newWidth);
-        changeArrayForMapSizeWidth(oldMapped, level.mapped, addLeft, levelWidth, newWidth);
         changeArrayForMapSizeWidth(level.discoverable, nDiscoverable, addLeft, levelWidth, newWidth);
+
+        if (oldTileVariance != null)
+            changeArrayForMapSizeWidth(oldTileVariance, level.tileVariance, addLeft, levelWidth, newWidth);
 
         level.discoverable = nDiscoverable;
 
@@ -997,6 +1034,23 @@ public class CustomLevel extends Level {
     }
 
     private static void changeArrayForMapSizeWidth(boolean[] src, boolean[] dest, int add, int levelWidth, int newWidth) {
+        int diffW = newWidth - levelWidth;
+        for (int i = 0; i < src.length; i++) {
+            int index = i + add + diffW * (i / levelWidth);
+            if (index >= 0 && index < dest.length && i / levelWidth == index / newWidth)
+                dest[index] = src[i];
+        }
+    }
+
+    private static void changeArrayForMapSizeHeight(byte[] src, byte[] dest, int add, int levelWidth, int newWidth) {
+        int diffW = newWidth - levelWidth;
+        for (int i = 0; i < src.length; i++) {
+            int index = i + add + i / levelWidth * diffW;
+            if (index >= 0 && index < dest.length) dest[index] = src[i];
+        }
+    }
+
+    private static void changeArrayForMapSizeWidth(byte[] src, byte[] dest, int add, int levelWidth, int newWidth) {
         int diffW = newWidth - levelWidth;
         for (int i = 0; i < src.length; i++) {
             int index = i + add + diffW * (i / levelWidth);

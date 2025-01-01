@@ -525,7 +525,7 @@ public abstract class Wand extends Item {
 	public ItemSprite.Glowing glowing() {
 		if (resinBonus == 0) return null;
 
-		return new ItemSprite.Glowing(0xFFFFFF, 1f/(float)resinBonus);
+		return new ItemSprite.Glowing(0xFFFFFF, 1f/(float)Math.min(resinBonus, 3));
 	}
 
 	@Override

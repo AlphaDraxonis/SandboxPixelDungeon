@@ -104,7 +104,7 @@ public class YogDzewa extends Mob {
 	public ArrayList<YogFist> challengeSummons = new ArrayList<>();
 	{
 		//offset seed slightly to avoid output patterns
-		Random.pushGenerator(Dungeon.level == null || Dungeon.levelName == null ? Random.Long() : Dungeon.seedCurLevel()+1);
+		Random.pushGenerator(Dungeon.level == null || Dungeon.levelName == null || Dungeon.customDungeon == null ? Random.Long() : Dungeon.seedCurLevel()+1);
 			fistSummons.add(Random.Int(2) == 0 ? new YogFist.BurningFist() : new YogFist.SoiledFist());
 			fistSummons.add(Random.Int(2) == 0 ? new YogFist.RottingFist() : new YogFist.RustedFist());
 			fistSummons.add(Random.Int(2) == 0 ? new YogFist.BrightFist()  : new YogFist.DarkFist());

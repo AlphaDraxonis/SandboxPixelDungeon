@@ -24,32 +24,88 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DMMob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SpawnerMob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.WndCreator;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditArrowCellComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditBarrierComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditBuffComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCheckpointComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditHeapComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditPlantComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRoomComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTrapComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Buffs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.GameObjectCategory;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Effects;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
-import com.shatteredpixel.shatteredpixeldungeon.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
+import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
+import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
+import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
+import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
+import com.shatteredpixel.shatteredpixeldungeon.items.KingsCrown;
+import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
+import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
+import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.EtherealChains;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArmband;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SandalsOfNature;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.UnstableSpellbook;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
@@ -76,20 +132,43 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.BranchesBuilder;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.FigureEightBuilder;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.LineBuilder;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.LoopBuilder;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.RegularBuilder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
+import com.shatteredpixel.shatteredpixeldungeon.levels.painters.CavesPainter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.painters.CityPainter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.painters.HallsPainter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.painters.MiningLevelPainter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.painters.PrisonPainter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.painters.RegularPainter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.painters.SewerPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+import com.shatteredpixel.shatteredpixeldungeon.mechanics.ConeAOE;
+import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.utils.Holiday;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
@@ -102,8 +181,19 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import com.watabou.utils.SparseArray;
-import org.luaj.vm2.*;
-import org.luaj.vm2.lib.*;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaUserdata;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.OneArgFunction;
+import org.luaj.vm2.lib.ThreeArgFunction;
+import org.luaj.vm2.lib.TwoArgFunction;
+import org.luaj.vm2.lib.VarArgFunction;
+import org.luaj.vm2.lib.ZeroArgFunction;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
@@ -111,7 +201,16 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @NotAllowedInLua
 public class LuaGlobals extends Globals {
@@ -141,27 +240,35 @@ public class LuaGlobals extends Globals {
 			@Override
 			public Varargs invoke(Varargs varargs) {
 				LuaValue arg = varargs.arg1();
-				LuaValue luaResult;
+				Object javaResult;
 				if (arg.isstring()) {
-					if (arg.checkjstring().startsWith(Messages.MAIN_PACKAGE_NAME)
-							|| arg.checkjstring().startsWith(Messages.WATABOU_PACKAGE_NAME)) {
-						luaResult = newInstance.invoke(arg, varargs.subargs(2)).arg1();
+					String s = arg.checkjstring();
+					if (s.startsWith(Messages.MAIN_PACKAGE_NAME)
+							|| s.startsWith(Messages.WATABOU_PACKAGE_NAME)) {
+						javaResult = newInstance.invoke(arg, LuaRestrictionProxy.unwrapRestrictionProxies(varargs.subargs(2))).arg1().touserdata();
 					} else {
-						String fullName = searchFullyQualifiedName(arg.checkjstring());
+
+						String fullName = searchFullyQualifiedName(s);
 						if (fullName != null) {
-							luaResult = newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2)).arg1();
-						}
-						else {
-							fullName = Messages.MAIN_PACKAGE_NAME + arg.checkjstring();
+							javaResult = newInstance.invoke(LuaValue.valueOf(fullName), LuaRestrictionProxy.unwrapRestrictionProxies(varargs.subargs(2))).arg1().touserdata();
+
+						} else if (s.endsWith("[]")) {
+							if (s.startsWith("int")) javaResult = new int[varargs.arg(2).checkint()];
+							else if (s.startsWith("byte")) javaResult = new byte[varargs.arg(2).checkint()];
+							else if (s.startsWith("boolean")) javaResult = new boolean[varargs.arg(2).checkint()];
+							else if (s.startsWith("String")) javaResult = new String[varargs.arg(2).checkint()];
+							else
+								throw new LuaError("Class not found: " + arg.checkstring());
+						} else {
+
+							fullName = Messages.MAIN_PACKAGE_NAME + s;
 
 							if (Reflection.forName(fullName) == null)
 								throw new LuaError("Class not found: " + arg.checkstring());
 
-							luaResult = newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2)).arg1();
+							javaResult = newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2)).arg1().touserdata();
 						}
 					}
-
-					Object javaResult = luaResult.checkuserdata();
 
 					if (javaResult != null) {
 
@@ -184,21 +291,22 @@ public class LuaGlobals extends Globals {
 
 			@Override
 			public Varargs invoke(Varargs varargs) {
-				// tzz FIXME super important
-//				LuaValue arg = varargs.arg1();
-//				if (arg.isstring()) {
-//					String s = arg.tojstring();
-//					for (CustomObject obj : CustomObject.customObjects.values()) {
-//						if (obj.name.equals(s)) return CoerceJavaToLua.coerce(obj.luaClass.newInstance());
-//					}
-//					throw new LuaError("No custom object with name \"" + s + "\" was found!");
-//				}
-//				else if (arg.isint()) {
-//					LuaClass original = CustomObject.getLuaClass(arg.checkint());
-//					if (original == null)
-//						throw new LuaError("No custom object with id \"" + arg.checkint() + "\" was found!");
-//					return CoerceJavaToLua.coerce(original.newInstance());
-//				}
+				LuaValue arg = varargs.arg1();
+				if (arg.isstring()) {
+					String s = arg.tojstring();
+					for (CustomObject obj : CustomObjectManager.allUserContents.values()) {
+						if (obj.getName().equals(s) && obj instanceof LuaCustomObject)
+							return CoerceJavaToLua.coerce(((LuaCustomObject) obj).newInstance());
+					}
+					throw new LuaError("No custom object with name \"" + s + "\" was found!");
+				}
+				else if (arg.isint()) {
+					CustomObject original = CustomObjectManager.allUserContents.get(arg.checkint());
+					if (original instanceof LuaCustomObject)
+						return CoerceJavaToLua.coerce(((LuaCustomObject) original).newInstance());
+					throw new LuaError("No custom object with id \"" + arg.checkint() + "\" was found!");
+
+				}
 				throw new LuaError("Illegal arguments: use newCus(String name) or newCus(int id)");
 			}
 		});
@@ -278,7 +386,12 @@ public class LuaGlobals extends Globals {
 		arrayUtils.set("set", new ThreeArgFunction() {
 			@Override
 			public LuaValue call(LuaValue array, LuaValue index, LuaValue value) {
-				Array.set(LuaRestrictionProxy.coerceLuaToJava(array), index.toint(), LuaRestrictionProxy.coerceLuaToJava(value));
+				Object javaArray = LuaRestrictionProxy.coerceLuaToJava(array);
+				if (javaArray.getClass().getComponentType() == byte.class || javaArray.getClass().getComponentType() == Byte.class) {
+					Array.set(javaArray, index.toint(), Byte.parseByte(Integer.toString((Integer) LuaRestrictionProxy.coerceLuaToJava(value))));
+				} else {
+					Array.set(javaArray, index.toint(), LuaRestrictionProxy.coerceLuaToJava(value));
+				}
 				return LuaValue.NIL;
 			}
 		});
@@ -341,27 +454,6 @@ public class LuaGlobals extends Globals {
 			public LuaValue call(LuaValue key) {
 				if (!key.isstring()) throw new LuaError("Illegal arguments: use Messages.get(String key)");
 				return LuaValue.valueOf(Messages.get(key.checkjstring()));
-			}
-		});
-		messages.set("titleCase", new OneArgFunction() {
-			@Override
-			public LuaValue call(LuaValue s) {
-				if (!s.isstring()) throw new LuaError("Illegal arguments: use Messages.titleCase(String text)");
-				return LuaValue.valueOf(Messages.titleCase(s.checkjstring()));
-			}
-		});
-		messages.set("capitalize", new OneArgFunction() {
-			@Override
-			public LuaValue call(LuaValue s) {
-				if (!s.isstring()) throw new LuaError("Illegal arguments: use Messages.capitalize(String text)");
-				return LuaValue.valueOf(Messages.capitalize(s.checkjstring()));
-			}
-		});
-		messages.set("upperCase", new OneArgFunction() {
-			@Override
-			public LuaValue call(LuaValue s) {
-				if (!s.isstring()) throw new LuaError("Illegal arguments: use Messages.upperCase(String text)");
-				return LuaValue.valueOf(Messages.upperCase(s.checkjstring()));
 			}
 		});
 		set("Messages", messages);
@@ -567,6 +659,19 @@ public class LuaGlobals extends Globals {
 				return LuaValue.NIL;
 			}
 		});
+		set("showWindow", new OneArgFunction() {
+			@Override
+			public LuaValue call(LuaValue window) {
+				Game.runOnRenderThread(() -> {
+					try {
+						DungeonScene.show((Window) window.touserdata(Window.class));
+					} catch (LuaError e) {
+						DungeonScene.show(new WndError(e));
+					}
+				});
+				return LuaValue.NIL;
+			}
+		});
 
 		set("showCellSelector", new TwoArgFunction() {
 			@Override
@@ -750,6 +855,25 @@ public class LuaGlobals extends Globals {
 			}
 		});
 
+		set("runOnRenderThread", new OneArgFunction() {
+			@Override
+			public LuaValue call(LuaValue function) {
+				try {
+					LuaFunction run = function.checkfunction();
+					Game.runOnRenderThread(() -> {
+						try {
+							run.invoke();
+						} catch (LuaError e) {
+							DungeonScene.show(new WndError(e));
+						}
+					});
+					return LuaValue.NIL;
+				} catch (Exception e) {
+					throw new LuaError("Illegal arguments: must provide a function, use runOnRenderThread( function() print(\"example\") end )");
+				}
+			}
+		});
+
 		set("reloadScene", new ZeroArgFunction() {
 			@Override
 			public LuaValue call() {
@@ -877,78 +1001,35 @@ public class LuaGlobals extends Globals {
 
 		LuaTable terrainConstants = new LuaTable();
 
-		terrainConstants.set("CHASM", Terrain.CHASM);
-		terrainConstants.set("EMPTY", Terrain.EMPTY);
-		terrainConstants.set("GRASS", Terrain.GRASS);
-
-		terrainConstants.set("EMPTY_WELL", Terrain.EMPTY_WELL);
-		terrainConstants.set("WALL", Terrain.WALL);
-		terrainConstants.set("DOOR", Terrain.DOOR);
-		terrainConstants.set("OPEN_DOOR", Terrain.OPEN_DOOR);
-		terrainConstants.set("ENTRANCE", Terrain.ENTRANCE);
-		terrainConstants.set("ENTRANCE_SP", Terrain.ENTRANCE_SP);
-		terrainConstants.set("EXIT", Terrain.EXIT);
-		terrainConstants.set("EMBERS", Terrain.EMBERS);
-		terrainConstants.set("LOCKED_DOOR", Terrain.LOCKED_DOOR);
-		terrainConstants.set("CRYSTAL_DOOR", Terrain.CRYSTAL_DOOR);
-		terrainConstants.set("PEDESTAL", Terrain.PEDESTAL);
-		terrainConstants.set("WALL_DECO", Terrain.WALL_DECO);
-		terrainConstants.set("BARRICADE", Terrain.BARRICADE);
-		terrainConstants.set("EMPTY_SP", Terrain.EMPTY_SP);
-		terrainConstants.set("HIGH_GRASS", Terrain.HIGH_GRASS);
-		terrainConstants.set("FURROWED_GRASS", Terrain.FURROWED_GRASS);
-
-		terrainConstants.set("SECRET_DOOR", Terrain.SECRET_DOOR);
-		terrainConstants.set("SECRET_TRAP", Terrain.SECRET_TRAP);
-		terrainConstants.set("TRAP", Terrain.TRAP);
-		terrainConstants.set("INACTIVE_TRAP", Terrain.INACTIVE_TRAP);
-
-		terrainConstants.set("EMPTY_DECO", Terrain.EMPTY_DECO);
-		terrainConstants.set("LOCKED_EXIT", Terrain.LOCKED_EXIT);
-
-		terrainConstants.set("UNLOCKED_EXIT", Terrain.UNLOCKED_EXIT);
-		terrainConstants.set("WELL", Terrain.WELL);
-		terrainConstants.set("BOOKSHELF", Terrain.BOOKSHELF);
-		terrainConstants.set("ALCHEMY", Terrain.ALCHEMY);
-
-		terrainConstants.set("SIGN", Terrain.SIGN);
-		terrainConstants.set("SIGN_SP", Terrain.SIGN_SP);
-		terrainConstants.set("CUSTOM_DECO", Terrain.CUSTOM_DECO);
-		terrainConstants.set("CUSTOM_DECO_EMPTY", Terrain.CUSTOM_DECO_EMPTY);
-		terrainConstants.set("STATUE", Terrain.STATUE);
-		terrainConstants.set("STATUE_SP", Terrain.STATUE_SP);
-		terrainConstants.set("MINE_CRYSTAL", Terrain.MINE_CRYSTAL);
-		terrainConstants.set("MINE_BOULDER", Terrain.MINE_BOULDER);
-		terrainConstants.set("WATER", Terrain.WATER);
-
-		terrainConstants.set("SECRET_LOCKED_DOOR", Terrain.SECRET_LOCKED_DOOR);
-		terrainConstants.set("SECRET_CRYSTAL_DOOR", Terrain.SECRET_CRYSTAL_DOOR);
-		terrainConstants.set("COIN_DOOR", Terrain.COIN_DOOR);
-		terrainConstants.set("MIMIC_DOOR", Terrain.MIMIC_DOOR);
-
-		set("Terrain", terrainConstants);
-
-		LuaTable ballisticaConstants = new LuaTable();
-
-		ballisticaConstants.set("STOP_TARGET", Ballistica.STOP_TARGET);
-		ballisticaConstants.set("STOP_CHARS", Ballistica.STOP_CHARS);
-		ballisticaConstants.set("STOP_SOLID", Ballistica.STOP_SOLID);
-		ballisticaConstants.set("IGNORE_SOFT_SOLID", Ballistica.IGNORE_SOFT_SOLID);
-		ballisticaConstants.set("STOP_BARRIER_PROJECTILES", Ballistica.STOP_BARRIER_PROJECTILES);
-		ballisticaConstants.set("PROJECTILE", Ballistica.PROJECTILE);
-		ballisticaConstants.set("REAL_PROJECTILE", Ballistica.REAL_PROJECTILE);
-		ballisticaConstants.set("MAGIC_BOLT", Ballistica.MAGIC_BOLT);
-		ballisticaConstants.set("REAL_MAGIC_BOLT", Ballistica.REAL_MAGIC_BOLT);
-		ballisticaConstants.set("WONT_STOP", Ballistica.WONT_STOP);
-
-		set("Ballistica", ballisticaConstants);
 
 		addStaticFinals(Terrain.class);
 		addStaticFinals(Ballistica.class);
+		addStaticFinals(ConeAOE.class);
+		addStaticFinals(ShadowCaster.class);
+		addStaticFinals(Bestiary.class);
+		addEnum(Bestiary.class);
+		addEnum(Catalog.class);
+		addStaticFinals(Notes.class);
+		addEnum(Notes.Landmark.class);
 		addStaticFinals(FloatingText.class);
 		addStaticFinals(CharSprite.class);
 		addStaticFinals(ItemSpriteSheet.class);
+		addStaticFinals(Effects.class);
+		addEnum(Effects.Type.class);
 		addStaticFinals(Room.class);
+		addStaticFinals(Painter.class);
+
+		addStaticFinals(Messages.class);
+		addStaticFinals(Languages.class);
+		addEnum(Languages.class);
+
+		addStaticFinals(Assets.class);
+		addStaticFinals(Badges.class);
+		addStaticFinals(Challenges.class);
+		addStaticFinals(Chrome.class);
+		addStaticFinals(Dungeon.class);
+		addStaticFinals(Statistics.class);
+		addStaticFinals(EditorUtilities.class);
 
 		addStaticFinals(CrystalGuardianSprite.class);
 		addStaticFinals(CrystalWispSprite.class);
@@ -999,11 +1080,21 @@ public class LuaGlobals extends Globals {
 		addEnum(LevelTransition.Type.class);
 		addEnum(StandardRoom.SizeCategory.class);
 		addEnum(CharSprite.State.class);
+		addEnum(Chrome.Type.class);
+		addEnum(Dungeon.LimitedDrops.class);
+
+
+		addStaticFinals(Math.class);
+		addStaticFinals(Collections.class);
+		addStaticFinals(Arrays.class);
+		addStaticFinals(DungeonSeed.class);
+		addStaticFinals(GLog.class);
+		addStaticFinals(Holiday.class);
 
 
 		LuaTable zaps = new LuaTable();
 
-		zaps.set("attack", new VarArgFunction() {//tzz add documentation
+		zaps.set("attack", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs varargs) {
 				LuaValue attackerLua = varargs.arg(1);
@@ -1301,7 +1392,7 @@ public class LuaGlobals extends Globals {
 
 	}
 
-	private static String searchFullyQualifiedName(String simpleName) {
+	public static String searchFullyQualifiedName(String simpleName) {
 		switch (simpleName) {
 			case "Checkpoint": return Checkpoint.class.getName();
 			case "ArrowCell": return ArrowCell.class.getName();
@@ -1311,11 +1402,15 @@ public class LuaGlobals extends Globals {
 			case "Set": return HashSet.class.getName();
 			case "List": return ArrayList.class.getName();
 			case "Map": return HashMap.class.getName();
+			case "LandmarkRecord": return Notes.LandmarkRecord.class.getName();
+
+			case "Date": return Date.class.getName();
 		}
 		if (simpleName.endsWith("$Seed")) {
 			return Messages.MAIN_PACKAGE_NAME + "plants." + simpleName;
 		}
 		String result = null;
+		if (result == null) result = otherAccessibleClasses.get(simpleName);
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Items.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Mobs.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Plants.instance().values()));
@@ -1327,47 +1422,6 @@ public class LuaGlobals extends Globals {
 
 	private static String searchFullyQualifiedNameForInstanceof(String simpleName) {
 		switch (simpleName) {
-			case "Mob": return Mob.class.getName();
-			case "QuestNPC": return QuestNPC.class.getName();
-			case "NPC": return NPC.class.getName();
-			case "Buff": return Buff.class.getName();
-			case "Checkpoint": return Checkpoint.class.getName();
-			case "ArrowCell": return ArrowCell.class.getName();
-			case "Barrier": return Barrier.class.getName();
-			case "Ballistica": return Ballistica.class.getName();
-			case "Actor": return Actor.class.getName();
-			case "Weapon": return Weapon.class.getName();
-			case "Armor": return Armor.class.getName();
-			case "MeleeWeapon": return MeleeWeapon.class.getName();
-			case "MissileWeapon": return MissileWeapon.class.getName();
-			case "Wand": return Wand.class.getName();
-			case "Seed": return Plant.Seed.class.getName();
-			case "Runestone": return Runestone.class.getName();
-			case "EquipableItem": return EquipableItem.class.getName();
-			case "KindofMisc": return KindofMisc.class.getName();
-			case "KindOfWeapon": return KindOfWeapon.class.getName();
-			case "TippedDart": return TippedDart.class.getName();
-			case "Key": return Key.class.getName();
-			case "Ring": return Ring.class.getName();
-			case "Artifact": return Artifact.class.getName();
-			case "Potion": return Potion.class.getName();
-			case "Scroll": return Scroll.class.getName();
-			case "ExoticScroll": return ExoticScroll.class.getName();
-			case "ExoticPotion": return ExoticPotion.class.getName();
-			case "Brew": return Brew.class.getName();
-			case "Elixir": return Elixir.class.getName();
-			case "Spell": return Spell.class.getName();
-			case "Bag": return Bag.class.getName();
-			case "RemainsItem": return RemainsItem.class.getName();
-			case "DocumentPage": return DocumentPage.class.getName();
-			case "Hero": return Hero.class.getName();
-			case "YogFist": return YogFist.class.getName();
-			case "Elemental": return Elemental.class.getName();
-			case "DMMob": return DMMob.class.getName();
-			case "SpawnerMob": return SpawnerMob.class.getName();
-			case "ChampionEnemy": return ChampionEnemy.class.getName();
-			case "LevelTransition": return LevelTransition.class.getName();
-
 			case "Set": return Set.class.getName();
 			case "List": return List.class.getName();
 			case "Map": return Map.class.getName();
@@ -1376,6 +1430,7 @@ public class LuaGlobals extends Globals {
 			return Messages.MAIN_PACKAGE_NAME + "plants." + simpleName;
 		}
 		String result = null;
+		if (result == null) result = otherAccessibleClasses.get(simpleName);
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Mobs.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Items.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Buffs.instance().values()));
@@ -1407,8 +1462,7 @@ public class LuaGlobals extends Globals {
 		if (luaValue.islong()) return String.valueOf(luaValue.checklong());
 		if (luaValue.isboolean()) return String.valueOf(luaValue.checkboolean());
 		if (luaValue.isnil()) return "nil";
-		if (luaValue.isuserdata()) return luaValue.touserdata().toString();
-		return null;
+		return luaValue.tojstring();
 	}
 
 	private void addEnum(Class<? extends Enum<?>> enumClass) {
@@ -1431,8 +1485,8 @@ public class LuaGlobals extends Globals {
 		try {
 			for (Field f : clazz.getDeclaredFields()) {
 				int mods = f.getModifiers();
-				if ((mods & PUBLIC_STATIC_FINAL) == PUBLIC_STATIC_FINAL
-						|| (mods & PROTECTED_STATIC_FINAL) == PROTECTED_STATIC_FINAL) {
+				if ((0x00004000 & f.getModifiers()) != 0x00004000 //Modifier.ENUM
+						&& (mods & PUBLIC_STATIC_FINAL) == PUBLIC_STATIC_FINAL || (mods & PROTECTED_STATIC_FINAL) == PROTECTED_STATIC_FINAL) {
 					values.set(f.getName(), LuaRestrictionProxy.wrapObject(f.get(null)));
 				}
 			}
@@ -1482,7 +1536,32 @@ public class LuaGlobals extends Globals {
 			mostEnclosingClass = enclosingClass;
 		} while (true);
 
-		set(mostEnclosingClass.getSimpleName(), values);
+		insertConstants(this, values, mostEnclosingClass.getSimpleName());
+
+	}
+
+	private static void insertConstants(LuaTable current, LuaValue toInsert, String key) {
+		insertConstants(current, toInsert, LuaValue.valueOf(key));
+	}
+
+	private static void insertConstants(LuaTable current, LuaValue toInsert, LuaValue key) {
+		LuaValue existingTable = current.get(key);
+		if (!existingTable.isnil()) {
+			if (existingTable.istable()) {
+				if (toInsert.istable()) {
+					for (LuaValue k : toInsert.checktable().keys()) {
+						insertConstants(existingTable.checktable(), toInsert.get(k), k);
+					}
+				} else {
+//					Game.reportException(new Exception("Could not insert key " + key + "!"));
+				}
+			} else {
+				if (toInsert != existingTable && !toInsert.equals(existingTable));
+//					Game.reportException(new Exception("Could not insert table " + key + "!"));
+			}
+		} else {
+			current.set(key, toInsert);
+		}
 	}
 
 	private static Object[] convertLuaToArgs(Varargs args) {
@@ -1507,6 +1586,87 @@ public class LuaGlobals extends Globals {
 //		}
 //		return result;
 //	}
+
+	private static final Map<String, String> otherAccessibleClasses = new HashMap<>();
+	static {
+		addOtherAccessibleClass(Actor.class);
+		addOtherAccessibleClass(Mob.class);
+		addOtherAccessibleClass(NPC.class);
+		addOtherAccessibleClass(QuestNPC.class);
+		addOtherAccessibleClass(Buff.class);
+
+		addOtherAccessibleClass(Hero.class);
+		addOtherAccessibleClass(YogFist.class);
+		addOtherAccessibleClass(Elemental.class);
+		addOtherAccessibleClass(DMMob.class);
+		addOtherAccessibleClass(SpawnerMob.class);
+		addOtherAccessibleClass(ChampionEnemy.class);
+
+		addOtherAccessibleClass(Checkpoint.class);
+		addOtherAccessibleClass(ArrowCell.class);
+		addOtherAccessibleClass(Barrier.class);
+
+		addOtherAccessibleClass(EquipableItem.class);
+		addOtherAccessibleClass(Armor.class);
+		addOtherAccessibleClass(Artifact.class);
+		addOtherAccessibleClass(Ring.class);
+
+		addOtherAccessibleClass(KindofMisc.class);
+		addOtherAccessibleClass(KindOfWeapon.class);
+		addOtherAccessibleClass(Weapon.class);
+		addOtherAccessibleClass(MeleeWeapon.class);
+		addOtherAccessibleClass(MissileWeapon.class);
+		addOtherAccessibleClass(TippedDart.class);
+		addOtherAccessibleClass(Wand.class);
+
+		addOtherAccessibleClass(Runestone.class);
+		addOtherAccessibleClass(Scroll.class);
+		addOtherAccessibleClass(ExoticScroll.class);
+		addOtherAccessibleClass(Plant.Seed.class);
+		addOtherAccessibleClass(Potion.class);
+		addOtherAccessibleClass(ExoticPotion.class);
+		addOtherAccessibleClass(Brew.class);
+		addOtherAccessibleClass(Elixir.class);
+		addOtherAccessibleClass(Spell.class);
+
+		addOtherAccessibleClass(Key.class);
+		addOtherAccessibleClass(Bag.class);
+		addOtherAccessibleClass(RemainsItem.class);
+		addOtherAccessibleClass(DocumentPage.class);
+
+
+		addOtherAccessibleClass(Painter.class);
+		addOtherAccessibleClass(RegularPainter.class);
+		addOtherAccessibleClass(SewerPainter.class);
+		addOtherAccessibleClass(PrisonPainter.class);
+		addOtherAccessibleClass(CavesPainter.class);
+		addOtherAccessibleClass(CityPainter.class);
+		addOtherAccessibleClass(HallsPainter.class);
+		addOtherAccessibleClass(MiningLevelPainter.class);
+
+		addOtherAccessibleClass(Builder.class);
+		addOtherAccessibleClass(RegularBuilder.class);
+		addOtherAccessibleClass(BranchesBuilder.class);
+		addOtherAccessibleClass(LineBuilder.class);
+		addOtherAccessibleClass(LoopBuilder.class);
+		addOtherAccessibleClass(FigureEightBuilder.class);
+
+
+		addOtherAccessibleClass(Ballistica.class);
+		addOtherAccessibleClass(LevelTransition.class);
+		addOtherAccessibleClass(Notes.LandmarkRecord.class);
+
+		addOtherAccessibleClass(Date.class);
+
+		addOtherAccessibleClass(Set.class);
+		addOtherAccessibleClass(List.class);
+		addOtherAccessibleClass(Map.class);
+
+	}
+
+	private static void addOtherAccessibleClass(Class<?> clazz) {
+		otherAccessibleClasses.put(clazz.getSimpleName(), clazz.getName());
+	}
 
 
 	public void exposeGlobalObject(String name, Object object) {

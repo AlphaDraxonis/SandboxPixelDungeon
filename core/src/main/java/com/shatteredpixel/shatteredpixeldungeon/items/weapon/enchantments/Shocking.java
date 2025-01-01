@@ -89,7 +89,7 @@ public class Shocking extends Weapon.Enchantment {
 		defender.sprite.centerEmitter().burst(SparkParticle.FACTORY, 3);
 		defender.sprite.flash();
 		
-		PathFinder.buildDistanceMap( defender.pos, BArray.not( Dungeon.level.solid, null ), dist );
+		PathFinder.buildDistanceMapForEnvironmentals( defender.pos, BArray.not( Dungeon.level.solid, null ), dist, true );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 				Char n = Actor.findChar(i);

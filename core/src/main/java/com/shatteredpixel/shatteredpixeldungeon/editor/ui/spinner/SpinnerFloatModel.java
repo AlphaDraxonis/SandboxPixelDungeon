@@ -48,7 +48,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
 
     @Override
     public void setValue(Object value) {
-        if (value instanceof Float) value = convertToInt((Integer) value, precision);
+        if (value instanceof Float) value = convertToInt((Float) value, precision);
         super.setValue(value);
     }
 

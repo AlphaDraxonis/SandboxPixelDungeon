@@ -50,6 +50,8 @@ public class CustomDocumentPage extends Item {
 	public int type;
 	public String text, title;
 
+	private boolean read = false;
+
 	public void setType(int type, Heap heap) {
 		this.type = type;
 		image = getImage(type);
@@ -63,6 +65,7 @@ public class CustomDocumentPage extends Item {
 		boolean alreadyFound = false;
 		for (CustomDocumentPage page : Dungeon.customDungeon.foundPages) {
 			if (isContentIdentical(page)) {
+				page.merge(this);
 				alreadyFound = true;
 				break;
 			}
@@ -70,7 +73,7 @@ public class CustomDocumentPage extends Item {
 		if (!alreadyFound) {
 			GameScene.flashForDocument(document(), "");
 			Dungeon.customDungeon.foundPages.add(this);
-			WndJournal.last_index = 4;
+			WndJournal.last_index = WndJournal.CatalogTab.LORE_IDX;
 		}
 		Sample.INSTANCE.play( Assets.Sounds.ITEM );
 		hero.spendAndNext( TIME_TO_PICK_UP );
@@ -125,6 +128,7 @@ public class CustomDocumentPage extends Item {
 	private static final String TYPE = "type";
 	private static final String TEXT = "text";
 	private static final String TITLE = "title";
+	private static final String READ = "read";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
@@ -132,6 +136,7 @@ public class CustomDocumentPage extends Item {
 		bundle.put( TYPE, type );
 		bundle.put( TEXT, text );
 		bundle.put( TITLE, title);
+		bundle.put( READ, read );
 	}
 
 	@Override
@@ -140,6 +145,7 @@ public class CustomDocumentPage extends Item {
 		type = bundle.getInt( TYPE );
 		text = bundle.getString( TEXT );
 		title = bundle.getString( TITLE );
+		read = bundle.getBoolean( READ );
 		image = getImage(type);
 	}
 
@@ -153,10 +159,17 @@ public class CustomDocumentPage extends Item {
 		return Messages.titleCase(t == Messages.NO_TEXT_FOUND ? title : t);
 	}
 
-	public String pageText() {
+	public String pageBody() {
 		if (text == null) return "";
 		String t = Messages.get(text);
 		return t == Messages.NO_TEXT_FOUND ? text : t;
 	}
 
+	public boolean isPageRead() {
+		return read;
+	}
+
+	public void readPage() {
+		read = true;
+	}
 }

@@ -50,7 +50,7 @@ public class WoollyBomb extends Bomb {
 	public void explode(int cell) {
 		super.explode(cell);
 		
-		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), explosionRange()+2 );
+		PathFinder.buildDistanceMapForEnvironmentals( cell, BArray.not( Dungeon.level.solid, null ), explosionRange()+2, true );
 		ArrayList<Integer> spawnPoints = new ArrayList<>();
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE) {

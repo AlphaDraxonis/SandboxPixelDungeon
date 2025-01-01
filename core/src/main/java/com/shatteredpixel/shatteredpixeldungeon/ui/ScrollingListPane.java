@@ -22,8 +22,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.watabou.noosa.*;
+import com.watabou.noosa.BitmapText;
+import com.watabou.noosa.ColorBlock;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.MovieClip;
+import com.watabou.noosa.Scene;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -40,12 +45,11 @@ public class ScrollingListPane extends ScrollPane {
 
 
     protected boolean validClick() {
-        Group p = parent;
-        while (p != null && !(p instanceof Window)) {
-            p = p.parent;
-        }
+        Window w = EditorUtilities.getParentWindow(this);
         Scene s = SandboxPixelDungeon.scene();
-        return !(s instanceof PixelScene) || p == null||((PixelScene) s).isAtFront((Window) p);
+        return !(s instanceof PixelScene)
+                || w == null
+                || ((PixelScene) s).isAtFront(w);
     }
 
     @Override

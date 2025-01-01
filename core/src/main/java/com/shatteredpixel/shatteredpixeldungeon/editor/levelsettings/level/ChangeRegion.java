@@ -100,7 +100,7 @@ public class ChangeRegion extends Component {
 
         region = new StyledSpinner(new SpinnerTextIconModel(true, ((int) oldValues[0]) - 1, REGION_DATA) {
             @Override
-            protected Image getIcon(Object value) {
+            protected Image displayIcon(Object value) {
                 return new TileSprite(CustomLevel.tilesTex((int) value, false), Terrain.EMPTY);
             }
 
@@ -114,7 +114,7 @@ public class ChangeRegion extends Component {
 
         water = new StyledSpinner(new SpinnerTextIconModel(true, ((int) oldValues[1]), WATER_DATA) {
             @Override
-            protected Image getIcon(Object value) {
+            protected Image displayIcon(Object value) {
                 int waterRegion = (int) ((int) value == LevelScheme.REGION_NONE ? region == null ? oldValues[0] : region.getValue() : value);
                 return new TileSprite(CustomLevel.tilesTex(waterRegion, true), Terrain.WATER);
             }

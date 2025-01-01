@@ -23,7 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.watabou.input.*;
+import com.watabou.input.GameAction;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
+import com.watabou.input.PointerEvent;
+import com.watabou.input.ScrollEvent;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
@@ -36,8 +40,8 @@ import com.watabou.utils.Signal;
 
 public class ScrollPane extends Component {
 
-    protected static final int THUMB_COLOR = 0xFF7b8073;
-    protected static final float THUMB_ALPHA = 0.5f;
+    protected static final int THUMB_COLOR		= 0xFF7b8073;
+    protected static final float THUMB_ALPHA	= 0.5f;
 
     protected PointerController controller;
     protected Signal.Listener<KeyEvent> keyListener;
@@ -46,32 +50,32 @@ public class ScrollPane extends Component {
 
     private float keyScroll = 0;
 
-    public ScrollPane(Component content) {
+    public ScrollPane( Component content ) {
         super();
 
         this.content = content;
-        addToBack(content);
+        addToBack( content );
 
         width = content.width();
         height = content.height();
 
-        content.camera = new Camera(0, 0, 1, 1, PixelScene.defaultZoom);
-        Camera.add(content.camera);
+        content.camera = new Camera( 0, 0, 1, 1, PixelScene.defaultZoom );
+        Camera.add( content.camera );
 
         KeyEvent.addKeyListener(keyListener = new Signal.Listener<KeyEvent>() {
             @Override
             public boolean onSignal(KeyEvent keyEvent) {
                 GameAction action = KeyBindings.getActionForKey(keyEvent);
-                if (action == SPDAction.ZOOM_IN) {
-                    if (keyEvent.pressed) {
+                if (action == SPDAction.ZOOM_IN){
+                    if (keyEvent.pressed){
                         keyScroll += 1;
                     } else {
                         keyScroll -= 1;
                     }
                     keyScroll = GameMath.gate(-1f, keyScroll, +1f);
                     return true;
-                } else if (action == SPDAction.ZOOM_OUT) {
-                    if (keyEvent.pressed) {
+                } else if (action == SPDAction.ZOOM_OUT){
+                    if (keyEvent.pressed){
                         keyScroll -= 1;
                     } else {
                         keyScroll += 1;
@@ -87,13 +91,13 @@ public class ScrollPane extends Component {
     @Override
     public void destroy() {
         super.destroy();
-        Camera.remove(content.camera);
+        Camera.remove( content.camera );
         KeyEvent.removeKeyListener(keyListener);
     }
 
-    public void scrollTo(float x, float y) {
+    public void scrollTo( float x, float y ) {
         Camera c = content.camera;
-        c.scroll.set(x, y);
+        c.scroll.set( x, y );
         if (c.scroll.x + width > content.width()) {
             c.scroll.x = content.width() - width;
         }
@@ -106,8 +110,7 @@ public class ScrollPane extends Component {
         if (c.scroll.y < 0) {
             c.scroll.y = 0;
         }
-        thumbVer.y = this.y + height * c.scroll.y / content.height();
-        thumbHor.x = this.x + width * c.scroll.x / content.width();
+        layoutThumbs();
 
         onScroll();
     }
@@ -124,7 +127,7 @@ public class ScrollPane extends Component {
     @Override
     public synchronized void update() {
         super.update();
-        if (keyScroll != 0) {
+        if (keyScroll != 0){
             scrollTo(content.camera.scroll.x, content.camera.scroll.y + (keyScroll * 150 * Game.elapsed));
         }
     }
@@ -132,7 +135,7 @@ public class ScrollPane extends Component {
     @Override
     protected void createChildren() {
         controller = new PointerController();
-        add(controller);
+        add( controller );
 
         thumbVer = new ColorBlock(1, 1, THUMB_COLOR);
         thumbVer.am = THUMB_ALPHA;
@@ -151,7 +154,7 @@ public class ScrollPane extends Component {
 
         //If you edit this, also check out ALL overrides!
 
-        content.setPos(0, 0);
+        content.setPos( 0, 0 );
         controller.x = x;
         controller.y = y;
         controller.width = width;
@@ -165,7 +168,7 @@ public class ScrollPane extends Component {
             cs.x = p.x;
             cs.y = p.y;
         }
-        cs.resize((int) width, (int) height);
+        cs.resize( (int)width, (int)height );
 
         //If you edit this, also check out ALL overrides!
 
@@ -194,7 +197,7 @@ public class ScrollPane extends Component {
         return content;
     }
 
-    public void onClick(float x, float y) {
+    public void onClick( float x, float y ) {
     }
 
     public void onMiddleClick(float x, float y) {
@@ -223,7 +226,7 @@ public class ScrollPane extends Component {
         private float dragThreshold;
 
         public PointerController() {
-            super(0, 0, 0, 0);
+            super( 0, 0, 0, 0 );
             dragThreshold = PixelScene.defaultZoom * 8;
             doNotHover = true;
         }
@@ -265,8 +268,7 @@ public class ScrollPane extends Component {
         }
 
         @Override
-        protected void onPointerUp(PointerEvent event) {
-
+        protected void onPointerUp( PointerEvent event ) {
             if (dragging) {
 
                 dragging = false;
@@ -274,18 +276,18 @@ public class ScrollPane extends Component {
 
             } else {
 
-                PointF p = content.camera.screenToCamera((int) event.current.x, (int) event.current.y);
+                PointF p = content.camera.screenToCamera( (int) event.current.x, (int) event.current.y );
 
                 switch (event.button) {
                     case PointerEvent.LEFT:
                     default:
-                        ScrollPane.this.onClick(p.x, p.y);
+                        ScrollPane.this.onClick( p.x, p.y );
                         break;
                     case PointerEvent.RIGHT:
-                        ScrollPane.this.onRightClick(p.x, p.y);
+                        ScrollPane.this.onRightClick( p.x, p.y );
                         break;
                     case PointerEvent.MIDDLE:
-                        ScrollPane.this.onMiddleClick(p.x, p.y);
+                        ScrollPane.this.onMiddleClick( p.x, p.y );
                         break;
                 }
 
@@ -297,7 +299,7 @@ public class ScrollPane extends Component {
         private PointF lastPos = new PointF();
 
         @Override
-        protected void onDrag(PointerEvent event) {
+        protected void onDrag( PointerEvent event ) {
             if (dragging) {
 
                 scroll(event.current);
@@ -314,10 +316,11 @@ public class ScrollPane extends Component {
             }
         }
 
-        private void scroll(PointF current) {
+        private void scroll( PointF current ){
+
             Camera c = content.camera;
 
-            c.shift(PointF.diff(lastPos, current).invScale(c.zoom));
+            c.shift( PointF.diff( lastPos, current ).invScale( c.zoom ) );
             if (c.scroll.x + width > content.width()) {
                 c.scroll.x = content.width() - width;
             }
@@ -333,7 +336,7 @@ public class ScrollPane extends Component {
 
             layoutThumbs();
 
-            lastPos.set(current);
+            lastPos.set( current );
 
             ScrollPane.this.onScroll();
         }

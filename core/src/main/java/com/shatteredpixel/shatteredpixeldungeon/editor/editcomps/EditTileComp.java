@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -34,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -63,6 +65,9 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     private Spinner coinDoorCost;
 
     private List<ScrollingListPane.ListItem> customParticles;
+
+    //for custom tiles
+    private ContainerWithLabel.ForMobs summonMobs;
 
     public EditTileComp(TileItem item) {
         super(item);
@@ -203,6 +208,16 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 }
             }
 
+            CustomTilemapAndPosWrapper customTileWrapper = findCustomTile();
+            if (customTileWrapper != null) {
+                CustomTilemap customTile = customTileWrapper.customTilemap;
+                if (customTile instanceof RitualSiteRoom.RitualMarker) {
+                    RitualSiteRoom.RitualMarker marker = (RitualSiteRoom.RitualMarker) customTile;
+                    summonMobs = new ContainerWithLabel.ForMobs(marker.summons, this, EditMobComp.label("summon_mob"));
+                    add(summonMobs);
+                }
+            }
+
         }
 
         if (item.terrainType() == Terrain.COIN_DOOR) {
@@ -265,11 +280,18 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         super.layout();
         layoutCompsInRectangles(signBurnOnRead);
         layoutCompsLinear(//transitionEdit is later instantiated
-                transitionEdit, addTransition, editSignText, wellWaterSpinner, volumeSpinner, sacrificialFirePrize, coinDoorCost
+                transitionEdit, addTransition, editSignText, wellWaterSpinner, volumeSpinner, sacrificialFirePrize, summonMobs, coinDoorCost
         );
         if (customParticles != null && !customParticles.isEmpty()) {
             layoutCompsLinear(customParticles.toArray(EditorUtilities.EMPTY_COMP_ARRAY));
         }
+    }
+
+    @Override
+    protected void updateStates() {
+        super.updateStates();
+
+        if (summonMobs != null) summonMobs.updateState(((RitualSiteRoom.RitualMarker) obj.getObject()).summons);
     }
 
     protected static final class CustomTilemapAndPosWrapper {

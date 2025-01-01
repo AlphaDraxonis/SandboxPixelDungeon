@@ -278,7 +278,7 @@ public class WandmakerQuest extends Quest {
 
                 boolean containsMarker = false;
                 for (CustomTilemap ct : Dungeon.level.customTiles) {
-                    if (ct instanceof RitualSiteRoom.RitualMarker && !((RitualSiteRoom.RitualMarker) ct).used) {
+                    if (ct instanceof RitualSiteRoom.RitualMarker && ((RitualSiteRoom.RitualMarker) ct).canSummonMobs()) {
                         containsMarker = true;
                         break;
                     }
@@ -292,7 +292,7 @@ public class WandmakerQuest extends Quest {
                     if (candles >= 4) return true;
 
                     for (CustomTilemap ct : Dungeon.level.customTiles) {
-                        if (ct instanceof RitualSiteRoom.RitualMarker && !((RitualSiteRoom.RitualMarker) ct).used) {
+                        if (ct instanceof RitualSiteRoom.RitualMarker && ((RitualSiteRoom.RitualMarker) ct).canSummonMobs()) {
                             int ritualPos = (ct.tileX + 1) + (ct.tileY + 1) * Dungeon.level.width();
                             Heap[] candleHeaps = new Heap[4];
                             candleHeaps[0] = Dungeon.level.heaps.get(ritualPos - Dungeon.level.width());

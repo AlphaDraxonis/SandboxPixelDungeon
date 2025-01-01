@@ -21,7 +21,7 @@ public abstract class SpinnerTextIconModel extends SpinnerTextModel {
         super(cycle, initValueIndex, data);
     }
 
-    protected abstract Image getIcon(Object value);
+    protected abstract Image displayIcon(Object value);
 
     protected Image getSubIcon(Object value) {
         return null;
@@ -33,7 +33,7 @@ public abstract class SpinnerTextIconModel extends SpinnerTextModel {
             @Override
             public void showValue(Object value) {
                 textBlock.text(displayString(value));
-                setIcon(getIcon(value));
+                setIcon(displayIcon(value));
                 setSubIcon(getSubIcon(value));
                 layout();
             }

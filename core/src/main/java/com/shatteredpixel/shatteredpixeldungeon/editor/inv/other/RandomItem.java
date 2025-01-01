@@ -111,7 +111,7 @@ public interface RandomItem<T extends GameObject> {
     class RandomItemAny extends Item implements RandomItem<Item> {
 
         {
-            image = ItemSpriteSheet.SOMETHING;
+            image = ItemSpriteSheet.RANDOM_ITEM;
         }
 
         //can only have one item per slot, and no RandomItem
@@ -182,7 +182,7 @@ public interface RandomItem<T extends GameObject> {
     class RandomWeapon extends Weapon implements RandomItem<Weapon> {
 
         {
-            image = ItemSpriteSheet.SOMETHING;
+            image = ItemSpriteSheet.RANDOM_ITEM;
         }
 
         //can only have one item per slot, and no RandomItem
@@ -262,7 +262,7 @@ public interface RandomItem<T extends GameObject> {
     class RandomMeleeWeapon extends MeleeWeapon implements RandomItem<MeleeWeapon> {
 
         {
-            image = ItemSpriteSheet.SOMETHING;
+            image = ItemSpriteSheet.RANDOM_ITEM;
         }
 
         //can only have one item per slot, and no RandomItem
@@ -327,7 +327,7 @@ public interface RandomItem<T extends GameObject> {
     class RandomArmor extends Armor implements RandomItem<Armor> {
 
         {
-            image = ItemSpriteSheet.SOMETHING;
+            image = ItemSpriteSheet.RANDOM_ITEM;
         }
 
         //can only have one item per slot, and no RandomItem
@@ -396,7 +396,7 @@ public interface RandomItem<T extends GameObject> {
     class RandomRing extends Ring implements RandomItem<Ring> {
 
         {
-            image = ItemSpriteSheet.SOMETHING;
+            image = ItemSpriteSheet.RANDOM_ITEM;
         }
 
         //can only have one item per slot, and no RandomItem
@@ -467,7 +467,7 @@ public interface RandomItem<T extends GameObject> {
     class RandomArtifact extends Artifact implements RandomItem<Artifact> {
 
         {
-            image = ItemSpriteSheet.SOMETHING;
+            image = ItemSpriteSheet.RANDOM_ITEM;
         }
 
         //can only have one item per slot, and no RandomItem
@@ -533,7 +533,7 @@ public interface RandomItem<T extends GameObject> {
     class RandomEqMiscItem extends KindofMisc implements RandomItem<KindofMisc> {
 
         {
-            image = ItemSpriteSheet.SOMETHING;
+            image = ItemSpriteSheet.RANDOM_ITEM;
         }
 
         //can only have one item per slot, and no RandomItem
@@ -603,7 +603,7 @@ public interface RandomItem<T extends GameObject> {
     class RandomWand extends Wand implements RandomItem<Wand> {
 
         {
-            image = ItemSpriteSheet.SOMETHING;
+            image = ItemSpriteSheet.RANDOM_ITEM;
         }
 
         //can only have one item per slot, and no RandomItem
@@ -687,7 +687,7 @@ public interface RandomItem<T extends GameObject> {
     class RandomBag extends Bag implements RandomItem<Bag> {
 
         {
-            image = ItemSpriteSheet.SOMETHING;
+            image = ItemSpriteSheet.RANDOM_ITEM;
         }
 
         //can only have one item per slot, and no RandomItem
@@ -752,7 +752,7 @@ public interface RandomItem<T extends GameObject> {
     class RandomTrinket extends Trinket implements RandomItem<Trinket> {
 
         {
-            image = ItemSpriteSheet.SOMETHING;
+            image = ItemSpriteSheet.RANDOM_ITEM;
         }
 
         //can only have one item per slot, and no RandomItem

@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -73,6 +74,10 @@ public class PotionOfDragonsBreath extends ExoticPotion {
 		}
 
 		GameScene.selectCell(targeter);
+	}
+
+	public void usedByHeroMob(HeroMob hero, Char enemy) {
+		aimAtCell(hero.hero(), enemy.pos);
 	}
 	
 	private CellSelector.Listener targeter = new CellSelector.Listener() {
@@ -123,94 +128,7 @@ public class PotionOfDragonsBreath extends ExoticPotion {
 					curItem.detach(curUser.belongings.backpack);
 				}
 				potionAlreadyUsed = true;
-				identifiedByUse = false;
-				curUser.busy();
-				Sample.INSTANCE.play( Assets.Sounds.DRINK );
-				curUser.sprite.operate(curUser.pos, new Callback() {
-					@Override
-					public void call() {
-
-						curUser.sprite.idle();
-						curUser.sprite.zap(cell);
-						Sample.INSTANCE.play( Assets.Sounds.BURNING );
-
-						final Ballistica bolt = new Ballistica(curUser.pos, cell, Ballistica.WONT_STOP, null);
-
-						int maxDist = 6;
-						int dist = Math.min(bolt.dist, maxDist);
-
-						final ConeAOE cone = new ConeAOE(bolt, 6, 60, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.IGNORE_SOFT_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null);
-
-						//cast to cells at the tip, rather than all cells, better performance.
-						for (Ballistica ray : cone.outerRays){
-							((MagicMissile)curUser.sprite.parent.recycle( MagicMissile.class )).reset(
-									MagicMissile.FIRE_CONE,
-									curUser.sprite,
-									ray.path.get(ray.dist),
-									null
-							);
-						}
-						
-						MagicMissile.boltFromChar(curUser.sprite.parent,
-								MagicMissile.FIRE_CONE,
-								curUser.sprite,
-								bolt.path.get(dist / 2),
-								new Callback() {
-									@Override
-									public void call() {
-										ArrayList<Integer> adjacentCells = new ArrayList<>();
-										for (int cell : cone.cells){
-											//ignore caster cell
-											if (cell == bolt.sourcePos){
-												continue;
-											}
-
-											//knock doors open
-											if (Dungeon.level.map[cell] == Terrain.DOOR){
-												Level.set(cell, Terrain.OPEN_DOOR);
-												GameScene.updateMap(cell);
-											}
-
-											//only ignite cells directly near caster if they are flammable
-											if (Dungeon.level.adjacent(bolt.sourcePos, cell) && !Dungeon.level.isFlamable(cell)){
-												adjacentCells.add(cell);
-											} else {
-												GameScene.add( Blob.seed( cell, 5, Fire.class ) );
-											}
-											
-											Char ch = Actor.findChar( cell );
-											if (ch != null) {
-												
-												Buff.affect( ch, Burning.class ).reignite( ch );
-												Buff.affect(ch, Cripple.class, 5f);
-											}
-										}
-
-										//ignite cells that share a side with an adjacent cell, are flammable, and are further from the source pos
-										//This prevents short-range casts not igniting barricades or bookshelves
-										for (int cell : adjacentCells){
-											for (int i : PathFinder.NEIGHBOURS4){
-												if (Dungeon.level.trueDistance(cell+i, bolt.sourcePos) > Dungeon.level.trueDistance(cell, bolt.sourcePos)
-														&& Dungeon.level.isFlamable(cell+i)
-														&& Fire.volumeAt(cell+i, Fire.class) == 0){
-													GameScene.add( Blob.seed( cell+i, 5, Fire.class ) );
-												}
-											}
-										}
-
-										curUser.spendAndNext(1f);
-
-										if (!anonymous) {
-											Catalog.countUse(PotionOfDragonsBreath.class);
-											if (Random.Float() < talentChance) {
-												Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
-											}
-										}
-									}
-								});
-						
-					}
-				});
+				aimAtCell(curUser, cell);
 			}
 		}
 		
@@ -219,4 +137,95 @@ public class PotionOfDragonsBreath extends ExoticPotion {
 			return Messages.get(PotionOfDragonsBreath.class, "prompt");
 		}
 	};
+
+	private void aimAtCell(Hero curUser, int cell) {
+		identifiedByUse = false;
+		curUser.busy();
+		Sample.INSTANCE.play( Assets.Sounds.DRINK );
+		curUser.sprite.operate(curUser.pos, new Callback() {
+			@Override
+			public void call() {
+
+				curUser.sprite.idle();
+				curUser.sprite.zap(cell);
+				Sample.INSTANCE.play( Assets.Sounds.BURNING );
+
+				final Ballistica bolt = new Ballistica(curUser.pos, cell, Ballistica.WONT_STOP, null);
+
+				int maxDist = 6;
+				int dist = Math.min(bolt.dist, maxDist);
+
+				final ConeAOE cone = new ConeAOE(bolt, 6, 60, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.IGNORE_SOFT_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null);
+
+				//cast to cells at the tip, rather than all cells, better performance.
+				for (Ballistica ray : cone.outerRays){
+					((MagicMissile)curUser.sprite.parent.recycle( MagicMissile.class )).reset(
+							MagicMissile.FIRE_CONE,
+							curUser.sprite,
+							ray.path.get(ray.dist),
+							null
+					);
+				}
+
+				MagicMissile.boltFromChar(curUser.sprite.parent,
+						MagicMissile.FIRE_CONE,
+						curUser.sprite,
+						bolt.path.get(dist / 2),
+						new Callback() {
+							@Override
+							public void call() {
+								ArrayList<Integer> adjacentCells = new ArrayList<>();
+								for (int cell : cone.cells){
+									//ignore caster cell
+									if (cell == bolt.sourcePos){
+										continue;
+									}
+
+									//knock doors open
+									if (Dungeon.level.map[cell] == Terrain.DOOR){
+										Level.set(cell, Terrain.OPEN_DOOR);
+										GameScene.updateMap(cell);
+									}
+
+									//only ignite cells directly near caster if they are flammable
+									if (Dungeon.level.adjacent(bolt.sourcePos, cell) && !Dungeon.level.isFlamable(cell)){
+										adjacentCells.add(cell);
+									} else {
+										GameScene.add( Blob.seed( cell, 5, Fire.class ) );
+									}
+
+									Char ch = Actor.findChar( cell );
+									if (ch != null) {
+
+										Buff.affect( ch, Burning.class ).reignite( ch );
+										Buff.affect(ch, Cripple.class, 5f);
+									}
+								}
+
+								//ignite cells that share a side with an adjacent cell, are flammable, and are further from the source pos
+								//This prevents short-range casts not igniting barricades or bookshelves
+								for (int cell : adjacentCells){
+									for (int i : PathFinder.NEIGHBOURS4){
+										if (Dungeon.level.trueDistance(cell+i, bolt.sourcePos) > Dungeon.level.trueDistance(cell, bolt.sourcePos)
+												&& Dungeon.level.isFlamable(cell+i)
+												&& Fire.volumeAt(cell+i, Fire.class) == 0){
+											GameScene.add( Blob.seed( cell+i, 5, Fire.class ) );
+										}
+									}
+								}
+
+								curUser.spendAndNext(1f);
+
+								if (!anonymous) {
+									Catalog.countUse(PotionOfDragonsBreath.class);
+									if (Random.Float() < talentChance) {
+										Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+									}
+								}
+							}
+						});
+
+			}
+		});
+	}
 }

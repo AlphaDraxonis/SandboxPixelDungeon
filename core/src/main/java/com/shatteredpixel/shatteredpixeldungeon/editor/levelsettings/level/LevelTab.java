@@ -4,6 +4,12 @@ import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.LuaLevelScript;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.CustomObjSelector;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndSelectResourceFile;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.editcomps.CustomObjectEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
@@ -29,11 +35,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ResourcePath;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.blueprints.LuaLevelScript;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.CustomObjSelector;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.WndSelectResourceFile;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
@@ -231,17 +232,18 @@ public class LevelTab extends MultiWindowTabComp {
                 changeContent(ChangeLevelColoring.createTitle(), content, null);
             }
         };
+        levelColoring.icon(Icons.COLORS.get());
         content.add(levelColoring);
 
         LuaLevelScript lco;
         if (levelScheme.luaScriptID == 0) {
-            lco = UserContentManager.createNewCustomObject(LuaLevelScript.class, "", levelScheme.getType().getName());
+            lco = CustomObjectManager.createNewCustomObject(LuaLevelScript.class, "", levelScheme.getType().getName());
             levelScheme.luaScriptID = lco.getIdentifier();
         } else {
-            lco = UserContentManager.getUserContent(levelScheme.luaScriptID, LuaLevelScript.class);
+            lco = CustomObjectManager.getUserContent(levelScheme.luaScriptID, LuaLevelScript.class);
         }
 
-        luaScriptPath = new CustomObjSelector<String>(Messages.get(LevelTab.class, "script_path"), new CustomObjSelector.Selector<String>() {
+        luaScriptPath = new CustomObjSelector<String>(Messages.get(CustomObjectEditor.class, "script"), new CustomObjSelector.Selector<String>() {
 
             @Override
             public String getCurrentValue() {
@@ -286,13 +288,13 @@ public class LevelTab extends MultiWindowTabComp {
             public synchronized void destroy() {
                 super.destroy();
                 if (lco.getLuaScriptPath() == null) {
-                    CustomDungeonSaves.deleteUserContent(
-                            UserContentManager.getUserContent(levelScheme.luaScriptID, null)
+                    CustomDungeonSaves.deleteCustomObject(
+                            CustomObjectManager.getUserContent(levelScheme.luaScriptID, null)
                     );
                     levelScheme.luaScriptID = 0;
                 } else {
 					try {
-						CustomDungeonSaves.storeUserContent(lco);
+						CustomDungeonSaves.storeCustomObject(lco);
 					} catch (IOException e) {
                         DungeonScene.show(new WndError(e));
 					}

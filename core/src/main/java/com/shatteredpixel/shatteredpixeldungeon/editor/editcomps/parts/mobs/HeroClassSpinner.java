@@ -28,7 +28,7 @@ public class HeroClassSpinner extends StyledSpinner {
         }
 
         @Override
-        protected Image getIcon(Object value) {
+        protected Image displayIcon(Object value) {
             return null;
 //            return BadgeBanner.image(((HeroClass) value).getIndex());
         }
@@ -54,7 +54,7 @@ public class HeroClassSpinner extends StyledSpinner {
             }
 
             @Override
-            protected Image getIcon(Object value) {
+            protected Image displayIcon(Object value) {
                 return null;
 //                if (value == HeroSubClass.NONE) return new Image();
 //                return new HeroIcon((HeroSubClass) value);

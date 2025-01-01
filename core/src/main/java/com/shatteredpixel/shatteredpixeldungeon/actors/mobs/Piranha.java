@@ -137,7 +137,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (enemyInFOV) {
-				PathFinder.buildDistanceMap(enemy.pos, Dungeon.level.water, viewDistance);
+				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, Dungeon.level.water, viewDistance, true);
 				enemyInFOV = PathFinder.distance[pos] != Integer.MAX_VALUE;
 			}
 			
@@ -149,7 +149,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (enemyInFOV) {
-				PathFinder.buildDistanceMap(enemy.pos, Dungeon.level.water, viewDistance);
+				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, Dungeon.level.water, viewDistance, true);
 				enemyInFOV = PathFinder.distance[pos] != Integer.MAX_VALUE;
 			}
 			
@@ -162,7 +162,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (enemyInFOV) {
-				PathFinder.buildDistanceMap(enemy.pos, Dungeon.level.water, viewDistance);
+				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, Dungeon.level.water, viewDistance, true);
 				enemyInFOV = PathFinder.distance[pos] != Integer.MAX_VALUE;
 			}
 			
@@ -181,7 +181,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 
 
 	public static boolean canSurviveOnCell(Char ch, int cell, Level level) {
-		if (ch.isFlying() && Char.hasProp(ch, Property.AQUATIC)) {
+		if (ch != null && ch.isFlying() && Char.hasProp(ch, Property.AQUATIC)) {
 			return false;
 		}
 		return level.water[cell]

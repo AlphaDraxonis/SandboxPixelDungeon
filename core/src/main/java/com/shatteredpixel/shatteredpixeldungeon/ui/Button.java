@@ -24,7 +24,11 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
-import com.watabou.input.*;
+import com.watabou.input.ControllerHandler;
+import com.watabou.input.GameAction;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
+import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
@@ -36,7 +40,7 @@ import com.watabou.utils.Signal;
 public class Button extends Component {
 
 	public static float longClick = 0.5f;
-	
+
 	protected PointerArea hotArea;
 	protected Tooltip hoverTip;
 
@@ -132,7 +136,7 @@ public class Button extends Component {
 			}
 		};
 		add( hotArea );
-		
+
 		KeyEvent.addKeyListener( keyListener = new Signal.Listener<KeyEvent>() {
 			@Override
 			public boolean onSignal ( KeyEvent event ) {
@@ -156,9 +160,9 @@ public class Button extends Component {
 			}
 		});
 	}
-	
+
 	private Signal.Listener<KeyEvent> keyListener;
-	
+
 	public GameAction keyAction(){
 		return null;
 	}
@@ -171,7 +175,7 @@ public class Button extends Component {
 	@Override
 	public void update() {
 		super.update();
-		
+
 		hotArea.active = visible;
 
 		if (isclickHolding) {
@@ -181,7 +185,7 @@ public class Button extends Component {
 			for (int i = 0; i < clicks; i++) onClick();
 			return;
 		}
-		
+
 		if (pressedButton == this && (pressTime += Game.elapsed) >= longClick) {
 			if (getClicksPerSecondWhenHolding() > 0) {
 				SandboxPixelDungeon.vibrate(50);
@@ -230,7 +234,7 @@ public class Button extends Component {
 	protected int getClicksPerSecondWhenHolding() {
 		return 0;
 	}
-	
+
 	protected void onPointerDown() {}
 	protected void onPointerUp() {}
 	protected void onClick() {} //left click, default key type
@@ -265,7 +269,7 @@ public class Button extends Component {
 			hoverTip = null;
 		}
 	}
-	
+
 	@Override
 	protected void layout() {
 		hotArea.x = x;
@@ -273,7 +277,7 @@ public class Button extends Component {
 		hotArea.width = width;
 		hotArea.height = height;
 	}
-	
+
 	@Override
 	public synchronized void destroy () {
 		super.destroy();
@@ -284,5 +288,5 @@ public class Button extends Component {
 	public void givePointerPriority(){
 		hotArea.givePointerPriority();
 	}
-	
+
 }

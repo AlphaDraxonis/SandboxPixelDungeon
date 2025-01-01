@@ -162,18 +162,30 @@ public class Buff extends Actor {
 		return cooldown()+1f;
 	}
 
+
     //creates a fresh instance of the buff and attaches that, this allows duplication.
     public static <T extends Buff> T append(Char target, Class<T> buffClass) {
-        T buff = Reflection.newInstance(buffClass);
-        buff.attachTo(target);
-        return buff;
+        return append(target, Reflection.newInstance(buffClass));
     }
+
+	public static <T extends Buff> T append(Char target, T buff) {
+		buff = (T) buff.getCopy();
+		buff.attachTo(target);
+		return buff;
+	}
 
     public static <T extends FlavourBuff> T append(Char target, Class<T> buffClass, float duration) {
         T buff = append(target, buffClass);
         buff.spend(duration * target.resist(buffClass));
         return buff;
     }
+
+	public static <T extends FlavourBuff> T append(Char target, T buff, float duration) {
+		buff = append(target, buff);
+		buff.spend(duration * target.resist(buff.getClass()));
+		return buff;
+	}
+
 
     //same as append, but prevents duplication.
     public static <T extends Buff> T affect(Char target, Class<T> buffClass) {
@@ -185,11 +197,28 @@ public class Buff extends Actor {
         }
     }
 
+	public static <T extends Buff> T affect(Char target, T buff) {
+		T existingBuff = (T) target.buff(buff.getClass());
+		if (existingBuff != null) {
+			existingBuff.alwaysHidesFx |= buff.alwaysHidesFx;
+			return existingBuff;
+		} else {
+			return append(target, buff);
+		}
+	}
+
     public static <T extends FlavourBuff> T affect(Char target, Class<T> buffClass, float duration) {
         T buff = affect(target, buffClass);
         buff.spend(duration * target.resist(buffClass));
         return buff;
     }
+
+	public static <T extends FlavourBuff> T affect(Char target, T buff, float duration) {
+		buff = affect(target, buff);
+		buff.spend(duration * target.resist(buff.getClass()));
+		return buff;
+	}
+
 
 	//postpones an already active buff, or creates & attaches a new buff and delays that.
 	public static<T extends FlavourBuff> T prolong( Char target, Class<T> buffClass, float duration ) {
@@ -197,6 +226,7 @@ public class Buff extends Actor {
 		buff.postpone( duration * target.resist(buffClass) );
 		return buff;
 	}
+
 
 	public static<T extends CounterBuff> T count( Char target, Class<T> buffclass, float count ) {
 		T buff = affect( target, buffclass );
@@ -210,12 +240,6 @@ public class Buff extends Actor {
 		}
 	}
 
-
-	public static <T extends Buff> T affectAnyBuffAndSetDuration(Char target, Class<T> buffclass, float duration) {
-		T buff = Buff.affect(target, buffclass);
-		buff.spend(duration);// duration times  * m.resist(Burning.class)  ??
-		return buff;
-	}
 
     @Override
     public Actor getCopy() {

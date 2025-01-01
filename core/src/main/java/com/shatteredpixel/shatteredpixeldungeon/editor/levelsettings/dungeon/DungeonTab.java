@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndAllCustomObjects;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
@@ -21,7 +22,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.ui.WndUserContent;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndChallenges;
 import com.watabou.NotAllowedInLua;
@@ -149,7 +149,7 @@ public class DungeonTab extends MultiWindowTabComp {
         viewCustomObjects = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "view_custom_objects"), PixelScene.landscape() ? 8 : 6){
             @Override
             protected void onClick() {
-                DungeonScene.show(new WndUserContent());
+                DungeonScene.show(new WndAllCustomObjects());
             }
         };
 //        viewCustomObjects.icon(new TileSprite(Terrain.ALCHEMY));

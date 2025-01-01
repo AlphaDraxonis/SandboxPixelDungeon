@@ -56,8 +56,8 @@ public abstract class AbstractCategoryScroller<T extends Component> extends Comp
         if (categories.length > minimumNumOfActiveCategoriesRequiredForFirstCategoryComp()) {
             this.categoryComps = categoryComps;
 
-            for (int i = 0; i < categoryComps.length; i++) {
-                categoryComps[i] = createCategoryComp(i, categories[i]);
+            for (int i = 0; i < this.categoryComps.length; i++) {
+                this.categoryComps[i] = createCategoryComp(i, this.categories[i]);
             }
 
             KeyEvent.addKeyListener(keyListener = new Signal.Listener<KeyEvent>() {
@@ -213,7 +213,7 @@ public abstract class AbstractCategoryScroller<T extends Component> extends Comp
             return items == null || forceItemUpdates ? items = createItems(required) : items;
         }
 
-        protected abstract List<?> createItems(boolean required);
+        public abstract List<?> createItems(boolean required);
 
         protected Component createListItem(Object object, EditorInventoryWindow window) {
             if (object instanceof EditorItem) {
@@ -230,11 +230,11 @@ public abstract class AbstractCategoryScroller<T extends Component> extends Comp
             }
         }
 
-        protected Image getImage() {
+        public Image getImage() {
             return new ItemSprite(ItemSpriteSheet.SOMETHING);
         }
 
-        protected String getName() {
+        public String getName() {
             return Messages.NO_TEXT_FOUND;
         }
 

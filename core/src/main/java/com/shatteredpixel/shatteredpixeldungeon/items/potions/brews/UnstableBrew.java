@@ -33,6 +33,7 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class UnstableBrew extends Brew {
@@ -66,6 +67,10 @@ public class UnstableBrew extends Brew {
 		potionChances.put(PotionOfParalyticGas.class, 2f);
 		potionChances.put(PotionOfPurity.class, 2f);
 		potionChances.put(PotionOfExperience.class, 1f);
+	}
+
+	public static Collection<Class<? extends Potion>> potionEffects() {
+		return potionChances.keySet();
 	}
 	
 	@Override

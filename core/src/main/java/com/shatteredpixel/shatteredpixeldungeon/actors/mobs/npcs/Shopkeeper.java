@@ -53,7 +53,12 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTradeItem;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import com.watabou.utils.*;
+import com.watabou.utils.BArray;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.Function;
+import com.watabou.utils.PathFinder;
 
 import java.util.ArrayList;
 
@@ -121,15 +126,15 @@ public class Shopkeeper extends NPC {
 				protected boolean act() {
 					//cleanses all harmful blobs in the shop
 					ArrayList<Blob> blobs = new ArrayList<>();
-					for (Class c : new BlobImmunity().immunities()){
+					for (Class c : new BlobImmunity().immunities()) {
 						Dungeon.level.blobs.doOnEach(c, b -> {
-					if (b.volume > 0){
-						blobs.add(b);
+							if (b.volume > 0) {
+								blobs.add(b);
+							}
+						});
 					}
-				});
-			}
 
-					PathFinder.buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 4 );
+					PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.solid, null ), 4, true );
 
 					for (int i=0; i < Dungeon.level.length(); i++) {
 						if (PathFinder.distance[i] < Integer.MAX_VALUE) {

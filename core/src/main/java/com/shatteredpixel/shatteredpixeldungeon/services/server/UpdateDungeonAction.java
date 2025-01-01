@@ -31,6 +31,7 @@ import com.badlogic.gdx.utils.Base64Coder;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 
 import java.io.FileNotFoundException;
@@ -39,6 +40,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+@NotAllowedInLua
 public class UpdateDungeonAction {
 
 	private final ServerCommunication.UploadCallback callback;

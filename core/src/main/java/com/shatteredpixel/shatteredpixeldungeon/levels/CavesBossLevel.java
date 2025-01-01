@@ -21,7 +21,11 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels;
 
-import com.shatteredpixel.shatteredpixeldungeon.*;
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Bones;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
@@ -55,10 +59,19 @@ import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.*;
+import com.watabou.utils.WatabouRect;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CavesBossLevel extends Level {
 
@@ -250,14 +263,13 @@ public class CavesBossLevel extends Level {
 	}
 
 	@Override
-	public boolean setCellToWater(boolean includeTraps, int cell) {
+	public boolean canSetCellToWater(boolean includeTraps, int cell) {
 		for (int i : pylonPositions){
 			if (Dungeon.level.distance(cell, i) <= 1){
 				return false;
 			}
 		}
-
-		return super.setCellToWater(includeTraps, cell);
+		return super.canSetCellToWater(includeTraps, cell);
 	}
 
 	@Override

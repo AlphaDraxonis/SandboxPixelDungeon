@@ -6,6 +6,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
@@ -13,7 +16,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRemoverComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.GameObjectCategory;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
@@ -37,9 +45,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomObjectClass;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Function;
 import com.watabou.utils.Reflection;
@@ -128,8 +133,8 @@ public abstract class EditorItem<T> extends Item implements CompactCategoryScrol
     public void doAction(Action action) {
         if (action == Action.REMOVE) {
             if (obj instanceof CustomObjectClass) {
-                CustomDungeonSaves.deleteUserContent(
-                        UserContentManager.getUserContent(((CustomObjectClass) obj).getIdentifier(), null)
+                CustomDungeonSaves.deleteCustomObject(
+                        CustomObjectManager.getUserContent(((CustomObjectClass) obj).getIdentifier(), null)
                 );
             }
         }

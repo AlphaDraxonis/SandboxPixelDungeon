@@ -21,24 +21,62 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels;
 
-import com.shatteredpixel.shatteredpixeldungeon.*;
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.*;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.BlobStoreMap;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SmokeScreen;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Web;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PinCushion;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Shadows;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobSpawner;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
+import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.annotations.KeepProguard;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
@@ -47,7 +85,13 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
-import com.shatteredpixel.shatteredpixeldungeon.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
+import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
@@ -60,7 +104,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
-import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.EyeOfNewt;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MossyClump;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrapMechanism;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
@@ -94,10 +142,27 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.BArray;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.*;
+import com.watabou.utils.Reflection;
+import com.watabou.utils.SparseArray;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.*;
 
@@ -137,6 +202,7 @@ public abstract class Level implements Bundlable {
 	public int[] map;
 	public int[] visualMap;
 	public int[] visualRegions;
+	public byte[] tileVariance;
 	public boolean[] visited;
 	public boolean[] mapped;
 	public boolean[] discoverable;
@@ -212,6 +278,7 @@ public abstract class Level implements Bundlable {
 	private static final String HEIGHT      = "height";
 	private static final String NAME        = "name";
 	private static final String MAP			= "map";
+	private static final String TILE_VARIANCE= "tile_variance";
 	private static final String VISITED		= "visited";
 	private static final String MAPPED		= "mapped";
 	private static final String TRANSITIONS	= "transitions";
@@ -414,6 +481,8 @@ public abstract class Level implements Bundlable {
 		passableMob =new boolean[length];
 		passableAlly=new boolean[length];
 
+		tileVariance = null;
+
 		PathFinder.setMapSize(w, h);
 	}
 	
@@ -604,6 +673,8 @@ public abstract class Level implements Bundlable {
 		originalViewDistance = bundle.getInt( ORIGINAL_VIEW_DISTANCE );
 		if (originalViewDistance == 0) originalViewDistance = viewDistance;
 
+		tileVariance = bundle.getByteArray( TILE_VARIANCE );
+
 		if (bundle.contains("music_requests")) {
 			int[] intArray = bundle.getIntArray("music_requests");
 			int region = LevelScheme.getRegion(getClass());
@@ -768,6 +839,7 @@ public abstract class Level implements Bundlable {
 		bundle.put( INIT_FOR_PLAY_CALLED, initForPlayCalled );
 		bundle.put( MAP, map );
 		bundle.put( NAME, name );
+		if  (tileVariance != null) bundle.put( TILE_VARIANCE, tileVariance );
 		if (initForPlayCalled) {
 			bundle.put( VISITED, visited );
 			bundle.put( MAPPED, mapped );
@@ -2002,7 +2074,20 @@ public abstract class Level implements Bundlable {
 		GameScene.updateMap( cell );
 	}
 
-	public boolean setCellToWater( boolean includeTraps, int cell ){
+	public final boolean setCellToWater( boolean includeTraps, int cell ){
+		if (canSetCellToWater(includeTraps, cell)) {
+			if (includeTraps && TileItem.isTrapTerrainCell(map[cell])){
+				Dungeon.level.traps.remove(cell);
+			}
+			set(cell, Terrain.WATER);
+			GameScene.updateMap(cell);
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean canSetCellToWater( boolean includeTraps, int cell ) {
 		Point p = cellToPoint(cell);
 
 		//if a custom tilemap is over that cell, don't put water there
@@ -2019,21 +2104,11 @@ public abstract class Level implements Bundlable {
 		}
 
 		int terr = map[cell];
-		if (terr == Terrain.EMPTY || terr == Terrain.GRASS ||
+		return terr == Terrain.EMPTY || terr == Terrain.GRASS ||
 				terr == Terrain.EMBERS || terr == Terrain.EMPTY_SP ||
 				terr == Terrain.HIGH_GRASS || terr == Terrain.FURROWED_GRASS
-				|| terr == Terrain.EMPTY_DECO){
-			set(cell, Terrain.WATER);
-			GameScene.updateMap(cell);
-			return true;
-		} else if (includeTraps && TileItem.isTrapTerrainCell(terr)){
-			set(cell, Terrain.WATER);
-			Dungeon.level.traps.remove(cell);
-			GameScene.updateMap(cell);
-			return true;
-		}
-
-		return false;
+				|| terr == Terrain.EMPTY_DECO
+				|| includeTraps && TileItem.isTrapTerrainCell(terr);
 	}
 	
 	public int fallCell( boolean fallIntoPit, String destZone ) {

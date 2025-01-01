@@ -31,7 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.*;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.usercontent.UserContentManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.watabou.noosa.Game;
 
 import java.io.IOException;
@@ -129,7 +129,7 @@ public class WndGame extends Window {
 				}
 				if (GamesInProgress.curSlot == GamesInProgress.TEST_SLOT) GamesInProgress.curSlot = 0;
 
-				UserContentManager.loadUserContentFromFiles();
+				CustomObjectManager.loadUserContentFromFiles();
 
 				Game.switchScene(TitleScene.class);
 			}

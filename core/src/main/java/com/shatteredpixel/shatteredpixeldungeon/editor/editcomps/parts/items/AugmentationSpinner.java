@@ -69,7 +69,7 @@ public class AugmentationSpinner extends StyledSpinner {
         }
 
         @Override
-        protected Image getIcon(Object value) {
+        protected Image displayIcon(Object value) {
             return value == Weapon.Augment.RANDOM ? new ItemSprite(ItemSpriteSheet.SOMETHING) : null;
         }
     }
@@ -102,7 +102,7 @@ public class AugmentationSpinner extends StyledSpinner {
         }
 
         @Override
-        protected Image getIcon(Object value) {
+        protected Image displayIcon(Object value) {
             return value == Armor.Augment.RANDOM ? new ItemSprite(ItemSpriteSheet.SOMETHING) : null;
         }
     }

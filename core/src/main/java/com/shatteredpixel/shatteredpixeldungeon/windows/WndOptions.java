@@ -27,40 +27,40 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
 public class WndOptions extends Window {
-
+	
 	protected static final int WIDTH_P = 120;
 	protected static final int WIDTH_L = 144;
-
+	
 	protected static final int MARGIN 		= 2;
 	protected static final int BUTTON_HEIGHT	= 18;
-
+	
 	private ScrollPane sp;
 	private Component content;
-
+	
 	protected RenderedTextBlock tfMessage;
 	protected Component tfTitle;
 	protected RedButton[] buttons;
 	protected IconButton[] infos;
-
+	
 	public WndOptions(Image icon, String title, String message, String... options) {
 		super();
-
+		
 		if (title != null) {
 			tfTitle = new IconTitle(icon, title);
 			add(tfTitle);
 		}
-
+		
 		tfMessage = PixelScene.renderTextBlock( message, 6 );
 		add(tfMessage);
-
+		
 		initBody(options);
 	}
 	
 	public WndOptions( String title, String message, String... options ) {
 		super();
-
+		
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
-
+		
 		if (title != null) {
 			RenderedTextBlock tfTitle = PixelScene.renderTextBlock(title, 9);
 			tfTitle.hardlight(TITLE_COLOR);
@@ -68,20 +68,20 @@ public class WndOptions extends Window {
 			add(tfTitle);
 			this.tfTitle = tfTitle;
 		}
-
+		
 		tfMessage = PixelScene.renderTextBlock( message, 6 );
 		add(tfMessage);
 		
 		initBody(options);
 	}
-
+	
 	protected void initBody(String... options){
-
+		
 		content = new Component();
-
+		
 		buttons = new RedButton[options.length];
 		infos = new IconButton[options.length];
-
+		
 		for (int i=0; i < options.length; i++) {
 			final int index = i;
 			buttons[i] = new RedButton( options[i] ) {
@@ -98,7 +98,7 @@ public class WndOptions extends Window {
 			if (icon != null) buttons[i].icon(icon);
 			buttons[i].enable(enabled(i));
 			content.add( buttons[i] );
-
+			
 			if (hasInfo(i)) {
 				infos[i] = new IconButton(Icons.get(Icons.INFO)){
 					@Override
@@ -109,17 +109,17 @@ public class WndOptions extends Window {
 				content.add(infos[i]);
 			}
 		}
-
+		
 		sp = new ScrollPane(content);
 		add(sp);
-
+		
 		layout(PixelScene.landscape() ? WIDTH_L : WIDTH_P);
 	}
-
+	
 	protected void layout(int width) {
-
+		
 		float pos = 0;
-
+		
 		if (tfTitle instanceof RenderedTextBlock) {
 			pos += MARGIN;
 			((RenderedTextBlock) tfTitle).maxWidth(width - MARGIN * 2);
@@ -128,25 +128,25 @@ public class WndOptions extends Window {
 			tfTitle.setRect(0, pos, width, 0);
 		}
 		pos = tfTitle.bottom() + 2*MARGIN;
-
+		
 		tfMessage.maxWidth(width);
 		tfMessage.setPos(0, pos);
 		pos = tfMessage.bottom() + 2*MARGIN;
-
-
+		
+		
 		float spaceForButtons = layoutButtons(width);
-
-
+		
+		
 		content.setSize(width, spaceForButtons - MARGIN);
-
+		
 		float spHeight = Math.min(content.height(), PixelScene.uiCamera.height * 0.88f - pos);
-
+		
 		resize(width, (int)(pos + spHeight));
-
+		
 		sp.setRect(0, pos, width, spHeight);
-
+		
 	}
-
+	
 	protected float layoutButtons(int width) {
 		float pos = 0;
 		for (int i = 0; i < buttons.length; i++) {
@@ -156,34 +156,34 @@ public class WndOptions extends Window {
 				buttons[i].setRect(0, pos, width - BUTTON_HEIGHT, BUTTON_HEIGHT);
 				infos[i].setRect(width-BUTTON_HEIGHT, pos, BUTTON_HEIGHT, BUTTON_HEIGHT);
 			}
-
+			
 			pos += BUTTON_HEIGHT + MARGIN;
 		}
 		return pos;
 	}
-
+	
 	@Override
 	public void offset(int xOffset, int yOffset) {
 		super.offset(xOffset, yOffset);
 		layout(width);
 	}
-
-	protected boolean enabled( int index ) {
+	
+	protected boolean enabled( int index ){
 		return true;
 	}
 	
 	protected void onSelect( int index ) {}
-
+	
 	protected boolean hasInfo( int index ) {
 		return false;
 	}
-
+	
 	protected void onInfo( int index ) {}
-
+	
 	protected Image getIcon( int index ) {
 		return null;
 	}
-
+	
 	public void setHighlightingEnabled(boolean flag) {
 //		float plusHeight = 0f;
 //		for (Gizmo g : content.me) {
@@ -202,12 +202,12 @@ public class WndOptions extends Window {
 //			resize(width, (int) (height + plusHeight));
 //		}
 	}
-
+	
 	public void appendMessage(String msg) {
 		tfMessage.text(tfMessage.text() + " " + msg);
 		layout(width);
 	}
-
+	
 	public String getMessage() {
 		return tfMessage.text();
 	}
