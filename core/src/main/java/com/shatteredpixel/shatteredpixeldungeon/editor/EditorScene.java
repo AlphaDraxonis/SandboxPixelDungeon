@@ -144,7 +144,8 @@ public class EditorScene extends DungeonScene {
             String oldLvlName;
             if (EditorScene.customLevel != null) {
                 oldLvlName = EditorScene.customLevel.levelScheme.getCustomDungeon() == Dungeon.customDungeon ? EditorScene.customLevel.name : null;
-                EditorScene.customLevel.levelScheme.unloadLevel();
+                if (EditorScene.customLevel ==  EditorScene.customLevel.levelScheme.getLevel())
+                    EditorScene.customLevel.levelScheme.unloadLevel();
             } else oldLvlName = null;
             if (openDifferentLevel) {
                 mainCameraPos = null;
@@ -333,11 +334,6 @@ public class EditorScene extends DungeonScene {
                 new DungeonTerrainTilemap(i);
             }
         }
-    }
-
-    @Override
-    public synchronized void draw() {
-        super.draw();
     }
 
     public static void setDisplayZoneState(boolean enable) {

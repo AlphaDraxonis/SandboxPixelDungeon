@@ -172,7 +172,7 @@ public abstract class GameObject implements Bundlable {
 		int index = 0;
 		for (GameObject obj : list.toArray(EMPTY_GAME_OBJECT_ARRAY)) {
 
-			ModifyResult result = whatToDo.apply(obj);
+			ModifyResult result = obj == null ? ModifyResult.noChange() : whatToDo.apply(obj);
 
 			if (ModifyResult.isNoChange(result)) {
 				if (obj != null && obj.doOnAllGameObjects(whatToDo)) changedSth = true;
@@ -204,7 +204,7 @@ public abstract class GameObject implements Bundlable {
 		boolean changedSth = false;
 		for (GameObject obj : set.toArray(EMPTY_GAME_OBJECT_ARRAY)) {
 
-			ModifyResult result = whatToDo.apply(obj);
+			ModifyResult result = obj == null ? ModifyResult.noChange() : whatToDo.apply(obj);
 
 			if (ModifyResult.isNoChange(result)) {
 				if (obj != null && obj.doOnAllGameObjects(whatToDo)) changedSth = true;
@@ -236,7 +236,7 @@ public abstract class GameObject implements Bundlable {
 		for (int key : keys) {
 			GameObject obj = sparseArray.get(key);
 
-			ModifyResult result = whatToDo.apply(obj);
+			ModifyResult result = obj == null ? ModifyResult.noChange() : whatToDo.apply(obj);
 
 			if (ModifyResult.isNoChange(result)) {
 				if (obj != null && obj.doOnAllGameObjects(whatToDo)) changedSth = true;
@@ -267,7 +267,7 @@ public abstract class GameObject implements Bundlable {
 		for (K key : map.keySet()) {
 			GameObject obj = map.get(key);
 
-			ModifyResult result = whatToDo.apply(obj);
+			ModifyResult result = obj == null ? ModifyResult.noChange() : whatToDo.apply(obj);
 
 			if (ModifyResult.isNoChange(result)) {
 				if (obj != null && obj.doOnAllGameObjects(whatToDo)) changedSth = true;
@@ -298,7 +298,7 @@ public abstract class GameObject implements Bundlable {
 		List<T> list = new ArrayList<>();
 		for (T obj : array) {
 
-			ModifyResult result = whatToDo.apply(obj);
+			ModifyResult result = obj == null ? ModifyResult.noChange() : whatToDo.apply(obj);
 
 			if (ModifyResult.isNoChange(result)) {
 				if (obj != null && obj.doOnAllGameObjects(whatToDo)) changedSth = true;

@@ -69,6 +69,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
@@ -166,7 +167,7 @@ import java.util.Set;
 
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.*;
 
-public abstract class Level implements Bundlable {
+public abstract class Level implements Bundlable, Copyable<Level> {
 
 	public static final String SURFACE = "surface", NONE = "none", ANY = "any" + (char) 30 + (char) 31;
 
@@ -673,7 +674,8 @@ public abstract class Level implements Bundlable {
 		originalViewDistance = bundle.getInt( ORIGINAL_VIEW_DISTANCE );
 		if (originalViewDistance == 0) originalViewDistance = viewDistance;
 
-		tileVariance = bundle.getByteArray( TILE_VARIANCE );
+		if (bundle.contains( TILE_VARIANCE ))
+			tileVariance = bundle.getByteArray( TILE_VARIANCE );
 
 		if (bundle.contains("music_requests")) {
 			int[] intArray = bundle.getIntArray("music_requests");
@@ -697,7 +699,8 @@ public abstract class Level implements Bundlable {
 			bossmobMusic = bundle.getString(BOSS_MOB_MUSIC);
 		}
 
-		Dungeon.customDungeon.getFloor(name).setLevel(this);
+		if (!bundle.contains(DO_NOT_SET_AS_DUNGEON_FLOOR) || !bundle.getBoolean(DO_NOT_SET_AS_DUNGEON_FLOOR))
+			Dungeon.customDungeon.getFloor(name).setLevel(this);
 
 		if (bundle.contains(BOSS_MOB_AT)) {
 			bossmobAt = bundle.getInt(BOSS_MOB_AT);
@@ -876,6 +879,15 @@ public abstract class Level implements Bundlable {
 		}
 		bundle.put(MUSIC_REQUESTS_MOB_IDS, intArray);
 		if (bossmobMusic != null) bundle.put(BOSS_MOB_MUSIC, bossmobMusic);
+	}
+	
+	private static final String DO_NOT_SET_AS_DUNGEON_FLOOR = "do_not_set_as_dungeon_floor";
+	@Override
+	public Level getCopy() {
+		Bundle bundle = new Bundle();
+		bundle.put("LEVEL",this);
+		bundle.getBundle("LEVEL").put(DO_NOT_SET_AS_DUNGEON_FLOOR, true);
+		return (Level) bundle.get("LEVEL");
 	}
 	
 	public int tunnelTile() {

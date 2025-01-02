@@ -3,9 +3,9 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ChangeMapSizeActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -28,7 +28,19 @@ public class ChangeMapSize extends Component {
     private int startTop, startBottom, startLeft, startRight;
 
     public ChangeMapSize(Runnable onClose) {
-
+        
+        info = PixelScene.renderTextBlock(Messages.get(ChangeMapSize.class, "info"), 6);
+        add(info);
+        
+        topSpinner = new Spinner(new OwnSpinnerModel(1, 65, startTop = (int) Math.ceil((Dungeon.level.height() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "n") + " ", 9);
+        add(topSpinner);
+        bottomSpinner = new Spinner(new OwnSpinnerModel(1, 65, startBottom = (int) ((Dungeon.level.height() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "s") + " ", 9);
+        add(bottomSpinner);
+        leftSpinner = new Spinner(new OwnSpinnerModel(1, 65, startLeft = (int) Math.ceil((Dungeon.level.width() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "w") + " ", 9);
+        add(leftSpinner);
+        rightSpinner = new Spinner(new OwnSpinnerModel(1, 65, startRight = (int) ((Dungeon.level.width() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "e") + " ", 9);
+        add(rightSpinner);
+        
         outsideSp = new Component() {
 
             private RedButton cancel, save;
@@ -63,21 +75,6 @@ public class ChangeMapSize extends Component {
     }
 
     @Override
-    protected void createChildren() {
-        info = PixelScene.renderTextBlock(Messages.get(ChangeMapSize.class, "info"), 6);
-        add(info);
-
-        topSpinner = new Spinner(new OwnSpinnerModel(1, 65, startTop = (int) Math.ceil((Dungeon.level.height() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "n") + " ", 9);
-        add(topSpinner);
-        bottomSpinner = new Spinner(new OwnSpinnerModel(1, 65, startBottom = (int) ((Dungeon.level.height() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "s") + " ", 9);
-        add(bottomSpinner);
-        leftSpinner = new Spinner(new OwnSpinnerModel(1, 65, startLeft = (int) Math.ceil((Dungeon.level.width() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "w") + " ", 9);
-        add(leftSpinner);
-        rightSpinner = new Spinner(new OwnSpinnerModel(1, 65, startRight = (int) ((Dungeon.level.width() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "e") + " ", 9);
-        add(rightSpinner);
-    }
-
-    @Override
     protected void layout() {
 
         info.maxWidth((int) width);
@@ -102,17 +99,15 @@ public class ChangeMapSize extends Component {
         if (top == startTop && bottom == startBottom && left == startLeft && right == startRight)
             return;
 
-        int nW = left + right + 1;
-        int nH = top + bottom + 1;
-
         try {
-            CustomLevel.changeMapSize(Dungeon.level, nW, nH, top - startTop, left - startLeft);
+            Undo.startAction();
+            Undo.addActionPart(new ChangeMapSizeActionPart(Dungeon.level, startTop, startBottom, startLeft, startRight, top, bottom, left, right));
+            Undo.endAction();
         } catch (Exception ex) {
             EditorScene.catchError(ex);
             return;
         }
 
-        Undo.reset();
         WndEditorSettings.closingBecauseMapSizeChange = true;
         SandboxPixelDungeon.switchNoFade(EditorScene.class, new Game.SceneChangeCallback() {
             @Override
