@@ -149,7 +149,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
             }
             @Override
             protected void onClick() {
-                SimpleWindow w = new SimpleWindow(WndEditorSettings.calclulateWidth(), WndEditorSettings.calclulateHeight());
+                SimpleWindow w = new SimpleWindow(WndEditorSettings.calclulateWidth(), WndEditorSettings.calculateHeight());
                 ZoneMobSettings ms = new ZoneMobSettings(zone);
                 w.initComponents(ms.createTitle(), ms, ms.getOutsideSp(), 0f, 0.5f);
                 EditorScene.show(w);
@@ -315,7 +315,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
     }
 
     private void addTransition(LevelTransition transition) {
-        transitionEdit = EditTileComp.addTransition(-12345, transition, Dungeon.level.levelScheme, t -> obj.zoneTransition = null);
+        transitionEdit = EditTileComp.addTransition(-12345, transition, Dungeon.level.levelScheme, t -> obj.zoneTransition = null, this::updateObj);
         add(transitionEdit);
         obj.zoneTransition = transition;
         addTransition.setVisible(false);

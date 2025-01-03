@@ -248,7 +248,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         transitionEdit = addTransition(obj.terrainType(), transition, Dungeon.level.levelScheme, t -> {
             Dungeon.level.transitions.remove(transition.cell());
             EditorScene.remove(transition);
-        });
+        }, this::updateObj);
         add(transitionEdit);
         addTransition.setVisible(false);
 
@@ -257,7 +257,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     }
 
     public static TransitionEditPart addTransition(int terrainType, LevelTransition transition,
-                                                   LevelScheme levelScheme, Consumer<LevelTransition> deleteTransition) {
+                                                   LevelScheme levelScheme, Consumer<LevelTransition> deleteTransition, Runnable updateParent) {
         String suggestion;
         if (TileItem.isEntranceTerrainCell(terrainType))
             suggestion = levelScheme.getDefaultAbove();
@@ -271,6 +271,11 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             @Override
             protected void deleteTransition(LevelTransition transition) {
                 deleteTransition.accept(transition);
+            }
+            
+            @Override
+            protected void layoutParent() {
+                updateParent.run();
             }
         };
     }

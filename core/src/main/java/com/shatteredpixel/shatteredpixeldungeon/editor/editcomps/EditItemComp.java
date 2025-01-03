@@ -578,7 +578,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     }
 
                     @Override
-                    public void selectObject(Object object) {
+                    public void selectObject(LevelSchemeLike object) {
                         super.selectObject(object);
                         if (object instanceof LevelScheme) {
                             k.levelName = EditorUtilities.getCodeName((LevelScheme) object);

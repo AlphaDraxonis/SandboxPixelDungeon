@@ -28,10 +28,10 @@ public class WndEditorSettings extends WndTabbed {
     public static boolean closingBecauseMapSizeChange = false;
 
     public static int calclulateWidth() {
-        return (int) Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9));
+        return Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9));
     }
 
-    public static int calclulateHeight() {
+    public static int calculateHeight() {
         return (int) (PixelScene.uiCamera.height * 0.9);
     }
 
@@ -57,7 +57,7 @@ public class WndEditorSettings extends WndTabbed {
         Undo.startAction();
 
         offset(0, EditorUtilities.getMaxWindowOffsetYForVisibleToolbar());
-        resize(calclulateWidth(), calclulateHeight() - 50 - yOffset);
+        resize(calclulateWidth(), calculateHeight() - 50 - yOffset);
 
         ownTabs = new TabComp[]{
                 levelTab = EditorScene.isEditingRoomLayout ? null : new LevelTab((CustomLevel) Dungeon.level, Dungeon.level.levelScheme),

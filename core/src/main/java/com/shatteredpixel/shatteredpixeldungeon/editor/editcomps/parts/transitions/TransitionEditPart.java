@@ -6,7 +6,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -38,11 +37,12 @@ public abstract class TransitionEditPart extends Component {
 
         destLevel = new ChooseDestLevelComp(Messages.get(TransitionEditPart.class, "dest_level")) {
             @Override
-            public void selectObject(Object object) {
+            public void selectObject(LevelSchemeLike object) {
                 super.selectObject(object);
                 if (object instanceof QuestLevels) transition.destBranch = ((QuestLevels) object).ID;
                 else transition.destBranch = 0;
                 updateTransition();
+                layoutParent();
             }
 
             @Override
@@ -81,17 +81,12 @@ public abstract class TransitionEditPart extends Component {
 
     @Override
     protected void layout() {
-
-        float pos = y;
-
-        destLevel.setRect(x, pos, width, WndEditorSettings.ITEM_HEIGHT);
-        pos = destLevel.bottom() + 2;
-
-        destCell.setRect(x, pos, width, WndEditorSettings.ITEM_HEIGHT);
-        pos = destCell.bottom() + 2;
-
-        height = pos - y - 2;
+        height = 2;
+        height = EditorUtilities.layoutStyledCompsInRectangles(2, width, 2,this, destLevel, destCell);
+        height += 1;
     }
+    
+    protected abstract void layoutParent();
 
     protected void updateTransition() {
         if (transition.destBranch != 0) {
@@ -123,6 +118,7 @@ public abstract class TransitionEditPart extends Component {
                 destCell.setData(destL.exitCells, destL.getSizeIfUnloaded().x, transition.destCell);
         }
         EditorScene.updateTransitionIndicator(transition);
+        layout();
     }
 
     @Override

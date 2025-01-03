@@ -943,14 +943,26 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 
 	public String tilesTex() {
 		return levelScheme.customTilesTex != null
-				? TextureCache.EXTERNAL_ASSET_PREFIX + CustomDungeonSaves.getExternalFilePath(levelScheme.customTilesTex)
+				? tilesTex(levelScheme)
 				: tilesTex(getVisualRegionValue(), false);
 	}
 
 	public String waterTex() {
 		return levelScheme.customWaterTex != null
-				? TextureCache.EXTERNAL_ASSET_PREFIX + CustomDungeonSaves.getExternalFilePath(levelScheme.customWaterTex)
+				? tilesTex(levelScheme)
 				: tilesTex(levelScheme.waterTexture == REGION_NONE ? getVisualRegionValue() : levelScheme.waterTexture, true);
+	}
+	
+	public static String tilesTex(LevelScheme levelScheme) {
+		return levelScheme.customTilesTex != null
+				? TextureCache.EXTERNAL_ASSET_PREFIX + CustomDungeonSaves.getExternalFilePath(levelScheme.customTilesTex)
+				: tilesTex(levelScheme.getVisualRegion(), false);
+	}
+	
+	public static String waterTex(LevelScheme levelScheme) {
+		return levelScheme.customWaterTex != null
+				? TextureCache.EXTERNAL_ASSET_PREFIX + CustomDungeonSaves.getExternalFilePath(levelScheme.customWaterTex)
+				: tilesTex(levelScheme.getVisualRegion(), true);
 	}
 
 	public static String tilesTex(int region, boolean water) {

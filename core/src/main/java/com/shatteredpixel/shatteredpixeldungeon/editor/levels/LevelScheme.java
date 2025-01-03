@@ -407,8 +407,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     }
 
     public String getPassage() {//Passage entry
-        if (passage == null) return Dungeon.customDungeon.getStart();
-        return passage;
+        return passage == null
+                ? Dungeon.customDungeon.getStart()
+                : passage;
     }
 
     public Class<? extends Level> getType() {
@@ -464,7 +465,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     }
 
     public void setPassage(String passage) {
-        this.passage = passage;
+        if (!Objects.equals(passage, customDungeon.getStart())) {
+            this.passage = passage;
+        } else {
+            this.passage = null;
+        }
     }
 
     public void setEntranceTransitionRegular(LevelTransition entranceTransitionRegular) {
@@ -802,6 +807,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public void restoreFromBundle(Bundle bundle) {
         name = bundle.getString(NAME);
         if (bundle.contains(CHASM)) chasm = bundle.getString(CHASM);
+        if (bundle.contains(PASSAGE)) {
+            passage = bundle.getString(PASSAGE);
+            if (passage.isEmpty()) passage = null;
+        }
 
         if (bundle.contains(LEVEL_CREATED_BEFORE)) levelCreatedBefore = bundle.getString(LEVEL_CREATED_BEFORE);
         if (bundle.contains(LEVEL_CREATED_AFTER)) levelCreatedAfter = bundle.getString(LEVEL_CREATED_AFTER);
@@ -810,7 +819,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             entranceTransitionRegular = (LevelTransition) bundle.get(DEST_ENTRANCE_REGULAR);
         if (bundle.contains(DEST_EXIT_REGULAR))
             exitTransitionRegular = (LevelTransition) bundle.get(DEST_EXIT_REGULAR);
-        passage = bundle.getString(PASSAGE);
+        
         depth = bundle.getInt(DEPTH);
         if (bundle.contains(FEELING)) feeling = bundle.getEnum(FEELING, Level.Feeling.class);
         shopPriceMultiplier = bundle.getFloat(SHOP_PRICE_MULTIPLIER);
@@ -990,6 +999,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     public final int getRegion() {
         if (Dungeon.branch == QuestLevels.MINING.ID) return REGION_CAVES;
+        if (type == null) return LevelScheme.REGION_NONE;
         if (CustomLevel.class.isAssignableFrom(type)) return region;
         return getRegion(type);
     }

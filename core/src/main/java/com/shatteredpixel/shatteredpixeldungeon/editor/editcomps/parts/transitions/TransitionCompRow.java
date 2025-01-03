@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transiti
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -14,8 +15,11 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoCell;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.ui.Component;
 
+@NotAllowedInLua
 public class TransitionCompRow extends FoldableCompWithAdd {
 
     public static final int CELL_DEFAULT_ENTRANCE = -3, CELL_DEFAULT_EXIT = -4;
@@ -37,10 +41,20 @@ public class TransitionCompRow extends FoldableCompWithAdd {
 
         LevelTransition transition;
         if (cell < 0) {
-            if (cell == CELL_DEFAULT_ENTRANCE)
-                transition = levelScheme.getEntranceTransitionRegular();
-            else transition = levelScheme.getExitTransitionRegular();
-        } else transition = levelScheme.getLevel().transitions.get(cell);
+			transition = cell == CELL_DEFAULT_ENTRANCE
+                    ? levelScheme.getEntranceTransitionRegular()
+                    : levelScheme.getExitTransitionRegular();
+            icon = cell == CELL_DEFAULT_ENTRANCE
+                    ? new TileSprite(Level.tilesTex(levelScheme), Terrain.ENTRANCE)
+                    : new TileSprite(Level.tilesTex(levelScheme), Terrain.EXIT);
+        } else {
+            transition = levelScheme.getLevel().transitions.get(cell);
+            icon = WndInfoCell.cellImage(cell);
+        }
+        if (icon != null) {
+            icon.scale.set(BUTTON_HEIGHT / icon.height());
+            add(icon);
+        }
         if (transition != null) {
             onAdd(transition, false);
             showBody(transition.showDetailsInEditor);
@@ -106,7 +120,7 @@ public class TransitionCompRow extends FoldableCompWithAdd {
                 if (levelScheme.getLevel() == Dungeon.level)
                     EditorScene.remove(transition);
             }
-        });
+        }, this::layoutParent);
     }
 
     @Override

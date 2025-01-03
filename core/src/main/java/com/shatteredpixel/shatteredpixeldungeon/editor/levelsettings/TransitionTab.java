@@ -36,6 +36,8 @@ public class TransitionTab extends WndEditorSettings.TabComp {
 
     @Override
     protected void createChildren() {
+        
+        LevelScheme levelScheme = Dungeon.level.levelScheme;
 
         title = PixelScene.renderTextBlock(Messages.get(TransitionTab.class, "title"), 10);
         title.hardlight(Window.TITLE_COLOR);
@@ -45,10 +47,17 @@ public class TransitionTab extends WndEditorSettings.TabComp {
 
         startfloor = new ChooseDestLevelComp(Messages.get(TransitionTab.class, "startfloor")) {
             @Override
-            public void selectObject(Object object) {
+            public void selectObject(LevelSchemeLike object) {
                 super.selectObject(object);
-                if (object instanceof LevelScheme)
+                if (object instanceof LevelScheme) {
                     Dungeon.customDungeon.setStart(EditorUtilities.getCodeName((LevelScheme) object));
+                    if (passage != null) {
+                        passage.selectObject(levelScheme.getPassage());
+                    }
+                }
+                if (parent != null) {
+                    TransitionTab.this.layout();
+                }
             }
 
             @Override
@@ -58,50 +67,12 @@ public class TransitionTab extends WndEditorSettings.TabComp {
                 return ret;
             }
         };
+        startfloor.selectObject(Dungeon.customDungeon.getStart());
         content.add(startfloor);
 
-        passage = new ChooseDestLevelComp(Messages.get(TransitionTab.class, "passage")) {
-            @Override
-            public void selectObject(Object object) {
-                super.selectObject(object);
-                if (object instanceof LevelScheme)
-                    Dungeon.level.levelScheme.setPassage(EditorUtilities.getCodeName((LevelScheme) object));
-            }
+        content.add(passage = createChooseDestLevelCompForPassage(levelScheme, TransitionTab.this::layout));
 
-            @Override
-            protected float getDisplayWidth() {
-                return startfloor.getDW();
-            }
-        };
-        content.add(passage);
-
-        chasm = new ChooseDestLevelComp(Messages.get(TransitionTab.class, "chasm")) {
-            @Override
-            public void selectObject(Object object) {
-                super.selectObject(object);
-                if (object instanceof LevelScheme)
-                    Dungeon.level.levelScheme.setChasm(EditorUtilities.getCodeName((LevelScheme) object), true);
-            }
-
-            @Override
-            protected float getDisplayWidth() {
-                return startfloor.getDW();
-            }
-
-            @Override
-            protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
-                List<LevelSchemeLike> ret = super.filterLevels(levels);
-//                ret.remove(Dungeon.level.levelScheme);//Cant choose same level
-                return ret;
-            }
-        };
-        content.add(chasm);
-
-        LevelScheme levelScheme = Dungeon.level.levelScheme;
-        startfloor.selectObject(Dungeon.customDungeon.getStart());
-        passage.selectObject(levelScheme.getPassage() != null && !levelScheme.getPassage().equals(Dungeon.customDungeon.getStart())
-                ? levelScheme.getPassage() : null);
-        chasm.selectObject(levelScheme.getChasm());
+        content.add(chasm = createChooseDestLevelCompForChasm(levelScheme, TransitionTab.this::layout));
 
 
         line = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
@@ -119,6 +90,10 @@ public class TransitionTab extends WndEditorSettings.TabComp {
 
     @Override
     public void layout() {
+        if (sp == null) {
+            return;
+        }
+        
         super.layout();
 
         float pos = y;
@@ -129,12 +104,9 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         sp.setRect(x, pos, width, height - pos);
 
         pos = 0;
-        startfloor.setRect(x, pos, width, WndEditorSettings.ITEM_HEIGHT);
-        pos = startfloor.bottom() + 2;
-        passage.setRect(x, pos, width, WndEditorSettings.ITEM_HEIGHT);
-        pos = passage.bottom() + 2;
-        chasm.setRect(x, pos, width, WndEditorSettings.ITEM_HEIGHT);
-        pos = chasm.bottom() + 2;
+        content.setSize(width, 0);
+        content.setSize(width, pos = EditorUtilities.layoutStyledCompsInRectangles(2, width, content, startfloor, passage, chasm) + 2);
+        
         line.size(width, 1);
         line.x = x;
         line.y = pos;
@@ -160,7 +132,9 @@ public class TransitionTab extends WndEditorSettings.TabComp {
                 comp = new TransitionCompRow(cell, Dungeon.level.levelScheme, true) {
                     @Override
                     protected void layoutParent() {
-                        TransitionTab.this.layout();
+                        if (parent != null) {
+                            TransitionTab.this.layout();
+                        }
                     }
                 };
                 content.add(comp);
@@ -185,5 +159,49 @@ public class TransitionTab extends WndEditorSettings.TabComp {
     @Override
     public String hoverText() {
         return Messages.get(TransitionTab.class, "title");
+    }
+    
+    
+    public static ChooseDestLevelComp createChooseDestLevelCompForPassage(LevelScheme levelScheme, Runnable layoutParent) {
+        ChooseDestLevelComp result = new ChooseDestLevelComp(Messages.get(TransitionTab.class, "passage")) {
+            @Override
+            public void selectObject(LevelSchemeLike object) {
+                if (object == null) {
+                    selectObject(Dungeon.customDungeon.getStart());
+                    return;
+                }
+                super.selectObject(object);
+                if (object instanceof LevelScheme)
+                    levelScheme.setPassage(EditorUtilities.getCodeName((LevelScheme) object));
+                if (parent != null) {
+                    layoutParent.run();
+                }
+            }
+        };
+        result.selectObject(levelScheme.getPassage());
+        return result;
+    }
+    
+    public static ChooseDestLevelComp createChooseDestLevelCompForChasm(LevelScheme levelScheme, Runnable layoutParent) {
+        ChooseDestLevelComp result = new ChooseDestLevelComp(Messages.get(TransitionTab.class, "chasm")) {
+            @Override
+            public void selectObject(LevelSchemeLike object) {
+                super.selectObject(object);
+                if (object instanceof LevelScheme)
+                    Dungeon.level.levelScheme.setChasm(EditorUtilities.getCodeName((LevelScheme) object), true);
+                if (parent != null) {
+                    layoutParent.run();
+                }
+            }
+            
+            @Override
+            protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
+                List<LevelSchemeLike> ret = super.filterLevels(levels);
+//                ret.remove(Dungeon.level.levelScheme);//Can't choose same level
+                return ret;
+            }
+        };
+        result.selectObject(levelScheme.getChasm());
+        return result;
     }
 }

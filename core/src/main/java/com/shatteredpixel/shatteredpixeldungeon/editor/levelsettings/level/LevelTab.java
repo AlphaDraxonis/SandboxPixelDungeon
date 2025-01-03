@@ -24,6 +24,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -32,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ShopkeeperSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
@@ -211,7 +213,7 @@ public class LevelTab extends MultiWindowTabComp {
         } else viewDistance = null;
 
         depth = new StyledSpinner(DepthSpinner.createModel(levelScheme.getDepth(), height -> (float) Spinner.FILL),
-                DepthSpinner.createLabel(), 8);
+                DepthSpinner.createLabel(), 8, Icons.getWithNoOffset(Level.Feeling.NONE));
         depth.addChangeListener(() -> levelScheme.setDepth((Integer) depth.getValue()));
         content.add(depth);
 
@@ -220,7 +222,12 @@ public class LevelTab extends MultiWindowTabComp {
             public float getInputFieldWidth(float height) {
                 return Spinner.FILL;
             }
-        }, Messages.get(LevelTab.class, "shop_price"), 8);
+            
+            @Override
+            protected String displayString(Object value) {
+                return "x " + super.displayString(value);
+            }
+        }, Messages.get(LevelTab.class, "shop_price"), 8, new ShopkeeperSprite());
         ((SpinnerIntegerModel) shopPrice.getModel()).setAbsoluteMinAndMax(0f, 10000f);
         shopPrice.addChangeListener(() -> levelScheme.shopPriceMultiplier = ((SpinnerFloatModel) shopPrice.getModel()).getAsFloat());
         content.add(shopPrice);

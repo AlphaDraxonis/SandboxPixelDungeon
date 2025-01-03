@@ -3,12 +3,12 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionCompRow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.TransitionTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab;
@@ -16,11 +16,15 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.LevelListPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
@@ -32,7 +36,10 @@ import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @NotAllowedInLua
 public class WndEditFloorInOverview extends WndTabbed {
@@ -64,16 +71,16 @@ public class WndEditFloorInOverview extends WndTabbed {
             }
         }
 
-        resize(PixelScene.landscape() ? 210 : Math.min(155, (int) (PixelScene.uiCamera.width * 0.85)), (int) (PixelScene.uiCamera.height * 0.75f));
-
+        resize(WndEditorSettings.calclulateWidth(), WndEditorSettings.calculateHeight() - tabHeight());
+        
         ownTabs = new WndEditorSettings.TabComp[]{
                 new General(), new LevelGenComp(levelScheme) {
-            @Override
-            protected void onFeelingChange() {
-                super.onFeelingChange();
-                listItem.updateLevel();
-            }
-        }, new LevelTab(null, levelScheme)
+                    @Override
+                    protected void onFeelingChange() {
+                        super.onFeelingChange();
+                        listItem.updateLevel();
+                    }
+            }, new LevelTab(null, levelScheme)
         };
 
         WndTabbed.Tab[] tabs = new WndTabbed.Tab[ownTabs.length];
@@ -111,23 +118,34 @@ public class WndEditFloorInOverview extends WndTabbed {
         protected ColorBlock line;
 
         protected RenderedTextBlock title;
+        protected Image titleIconForeground, titleIconBackground;
         protected ChooseDestLevelComp passage, chasm;
         protected RedButton delete, open;
 
         protected IconButton rename, copy;
 
         public General() {
-        }
-
-        @Override
-        protected void createChildren() {
             content = new Component();
-
-            title = PixelScene.renderTextBlock(levelScheme.getName() + " (" + levelScheme.getType().getSimpleName() + ")", 9);
+            
+            title = PixelScene.renderTextBlock(EditorUtilities.getDispayName(levelScheme.getName()), 9);
             title.hardlight(Window.TITLE_COLOR);
             title.setHighlighting(false);
+            title.align(RenderedTextBlock.CENTER_ALIGN);
             add(title);
-
+            
+            titleIconForeground = LevelListPane.createLevelForegroundImage(levelScheme);
+            
+            int region = levelScheme.getRegion();
+            if (region > LevelScheme.REGION_NONE) {
+                add(titleIconBackground = new TileSprite(CustomLevel.tilesTex(region, false), Terrain.WALL));
+            } else if (titleIconForeground != null) {
+                add(titleIconBackground = titleIconForeground);
+                titleIconForeground = null;
+            }
+            if (titleIconForeground != null) {
+                add(titleIconForeground);
+            }
+            
             rename = new IconButton(Icons.get(Icons.SCROLL_COLOR)) {
                 @Override
                 protected void onClick() {
@@ -166,14 +184,14 @@ public class WndEditFloorInOverview extends WndTabbed {
                     };
                     EditorScene.show(w);
                 }
-
+                
                 @Override
                 protected String hoverText() {
                     return Messages.get(WndSelectDungeon.class, "rename_yes");
                 }
             };
             add(rename);
-
+            
             copy = new IconButton(Icons.COPY.get()) {
                 @Override
                 protected void onClick() {
@@ -200,7 +218,7 @@ public class WndEditFloorInOverview extends WndTabbed {
                                     LevelScheme newLevel = levelScheme.getCustomDungeon().copyLevel(levelScheme, text);
                                     if (newLevel == null) return;
                                     WndEditFloorInOverview.this.hide();
-
+                                    
                                     if (newLevel.getType() == CustomLevel.class) {
                                         //open level
                                         WndSwitchFloor.selectLevelScheme(newLevel, listItem, listPane);
@@ -215,59 +233,27 @@ public class WndEditFloorInOverview extends WndTabbed {
                     };
                     EditorScene.show(w);
                 }
-
+                
                 @Override
                 protected String hoverText() {
                     return Messages.get(WndSelectDungeon.class, "copy_yes");
                 }
             };
             add(copy);
-
-            //From TransitionTab
-            passage = new ChooseDestLevelComp(Messages.get(TransitionTab.class, "passage")) {
-                @Override
-                public void selectObject(Object object) {
-                    super.selectObject(object);
-                    if (object instanceof LevelScheme)
-                        levelScheme.setPassage(EditorUtilities.getCodeName((LevelScheme) object));
-                }
-            };
-            content.add(passage);
-
-            chasm = new ChooseDestLevelComp(Messages.get(TransitionTab.class, "chasm")) {
-                @Override
-                public void selectObject(Object object) {
-                    super.selectObject(object);
-                    if (object instanceof LevelScheme)
-                        levelScheme.setChasm(EditorUtilities.getCodeName((LevelScheme) object), true);
-                }
-
-                @Override
-                protected float getDisplayWidth() {
-                    return passage.getDW();
-                }
-
-                @Override
-                protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
-                    List<LevelSchemeLike> ret = super.filterLevels(levels);
-                    ret.remove(levelScheme);//Cant choose same level
-                    return ret;
-                }
-            };
-            content.add(chasm);
-
-            if (levelScheme.getPassage() != null)
-                passage.selectObject(levelScheme.getPassage());
-            if (levelScheme.getChasm() != null) chasm.selectObject(levelScheme.getChasm());
-
+            
+            
+            content.add(passage = TransitionTab.createChooseDestLevelCompForPassage(levelScheme, WndEditFloorInOverview.General.this::layout));
+            
+            content.add(chasm = TransitionTab.createChooseDestLevelCompForChasm(levelScheme, WndEditFloorInOverview.General.this::layout));
+            
             line = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
             content.add(line);
-
+            
             delete = new RedButton(Messages.get(WndGameInProgress.class, "erase")) {
                 @Override
                 protected void onClick() {
                     super.onClick();
-
+                    
                     SandboxPixelDungeon.scene().add(new WndOptions(Icons.get(Icons.WARNING),
                             Messages.get(WndEditFloorInOverview.class, "erase_title"),
                             Messages.get(WndEditFloorInOverview.class, "erase_body"),
@@ -288,8 +274,9 @@ public class WndEditFloorInOverview extends WndTabbed {
                     });
                 }
             };
-            delete.icon(Icons.get(Icons.CLOSE));
+            delete.icon(Icons.TRASH.get());
             add(delete);
+            
             if (levelScheme.getType() == CustomLevel.class && Dungeon.level != levelScheme.getLevel()) {
                 open = new RedButton(Messages.get(WndEditFloorInOverview.class, "open")) {
                     @Override
@@ -299,14 +286,14 @@ public class WndEditFloorInOverview extends WndTabbed {
                 };
                 add(open);
             }
-
+            
             sp = new ScrollPane(content);
             add(sp);
         }
-
+        
         @Override
         public Image createIcon() {
-            return new ItemSprite(ItemSpriteSheet.SOMETHING);
+            return Icons.STAIRS.get();
         }
 
         @Override
@@ -319,20 +306,38 @@ public class WndEditFloorInOverview extends WndTabbed {
         @Override
         public void layout() {
 
-            float iconWidh = rename.icon().width + copy.icon().width + 2;
-
-            title.maxWidth((int) (width - iconWidh - 2));
-            title.setPos((title.maxWidth() - title.width()) * 0.5f, 3);
-
-            rename.setRect(width - iconWidh, title.top() + (title.height() - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
-            copy.setRect(rename.right() + 2, title.top() + (title.height() - copy.icon().height) * 0.5f, copy.icon().width, copy.icon().height);
-            float titlePos = title.bottom() + 5;
-
+            float iconWidth = 1 + rename.icon().width() + 1 + copy.icon().width() + 1;
+            float posY = y + 3;
+            
+            rename.setRect(x + width - iconWidth, posY, rename.icon().width(), rename.icon().height());
+            copy.setRect(rename.right() + 2, posY, copy.icon().width(), copy.icon().height());
+            
+            titleIconBackground.x = x + 1;
+            titleIconBackground.y = y + 2;
+            PixelScene.align(titleIconBackground);
+            
+            if (titleIconForeground != null) {
+                titleIconForeground.x = titleIconBackground.x + (titleIconBackground.width() - titleIconForeground.width()) * 0.5f;
+                titleIconForeground.y = titleIconBackground.y + (titleIconBackground.height() - titleIconForeground.height()) * 0.5f;
+                PixelScene.align(titleIconForeground);
+            }
+            
+            float titleIconWidth = titleIconBackground.width() - 3;
+            title.maxWidth((int) (width - iconWidth - 2 - titleIconWidth));
+            
+            title.setPos(x + (width - title.width()) * 0.5f, posY);
+            if (title.left() < titleIconBackground.x + titleIconWidth) {
+                title.setPos(titleIconBackground.x + titleIconWidth, title.top());
+            } else if (title.right() > rename.left() - 1) {
+                title.setPos(rename.left() - 1 - title.width(), title.top());
+            }
+            
+            float titlePos = Math.max(title.bottom() + 5, titleIconBackground.y + titleIconBackground.height() + 3);
+            
             float pos = 0;
-            passage.setRect(0, pos, width, WndEditorSettings.ITEM_HEIGHT);
-            pos = passage.bottom() + 2;
-            chasm.setRect(0, pos, width, WndEditorSettings.ITEM_HEIGHT);
-            pos = chasm.bottom() + 2;
+            content.setSize(width, 0);
+            content.setSize(width, pos = EditorUtilities.layoutStyledCompsInRectangles(2, width, 2, content, passage, chasm) + 2);
+            
             line.size(width, 1);
             line.x = 0;
             line.y = pos;
@@ -366,7 +371,9 @@ public class WndEditFloorInOverview extends WndTabbed {
                     comp = new TransitionCompRow(cell, levelScheme, false) {
                         @Override
                         protected void layoutParent() {
-                            General.this.layout();
+                            if (parent != null) {
+                                General.this.layout();
+                            }
                         }
                     };
                     content.add(comp);

@@ -21,7 +21,15 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.DM300Sprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.FungalSentrySprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollGuardSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.GooSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.KingSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.TenguSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.YogSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
@@ -185,60 +193,27 @@ public class LevelListPane extends ScrollPane {
             String name;
             int region = LevelScheme.REGION_NONE;
             int depth = -1;
-            Image newForegroundImg = null;
             Level.Feeling feeling = null;
+            
+            Image newForegroundImg = icon == null
+                    ? createLevelForegroundImage(levelScheme)
+                    : createLevelForegroundImage(levelScheme, icon.width(), icon.height());
 
             if (levelScheme instanceof QuestLevels) {
-                name = ((QuestLevels) levelScheme).getName();
-                region = ((QuestLevels) levelScheme).getRegion();
-                newForegroundImg = ((QuestLevels) levelScheme).createForegroundIcon();
+                name = levelScheme.getName();
+                region = levelScheme.getRegion();
             } else if (levelScheme == LevelScheme.NO_LEVEL_SCHEME) {
                 name = EditorUtilities.getDispayName(Level.NONE);
-                newForegroundImg = Icons.CLOSE.get();
             } else if (levelScheme == LevelScheme.SURFACE_LEVEL_SCHEME) {
                 name = EditorUtilities.getDispayName(Level.SURFACE);
-                newForegroundImg = BadgeBanner.image(Badges.Badge.HAPPY_END.image);
             } else if (levelScheme == LevelScheme.ANY_LEVEL_SCHEME) {
                 name = EditorUtilities.getDispayName(Level.ANY);
-                newForegroundImg = new ItemSprite();
             } else {
                 LevelScheme ls = (LevelScheme) levelScheme;
                 name = ls.getName();
                 depth = ls.getDepth();
                 region = ls.getRegion();
                 feeling = ls.getFeeling();
-                Class<? extends Level> type = ls.getType();
-                if (type == CustomLevel.class) newForegroundImg = Icons.TALENT.get();
-                else if (type == MiningLevel.CrystalMiningLevel.class) newForegroundImg = new TileSprite(CustomLevel.tilesTex(region, false), Terrain.MINE_CRYSTAL);
-                else if (type == MiningLevel.GnollMiningLevel.class) newForegroundImg = new GnollGuardSprite();
-                else if (type == MiningLevel.FungiMiningLevel.class) newForegroundImg = new FungalSentrySprite();
-                else if (type == LastLevel.class) newForegroundImg = new ItemSprite(ItemSpriteSheet.AMULET);
-                else {
-                    switch (ls.getBoss()) {
-                        default:
-                        case LevelScheme.REGION_NONE: break;
-                        case LevelScheme.REGION_SEWERS:
-                            newForegroundImg = new GooSprite();
-                            break;
-                        case LevelScheme.REGION_PRISON:
-                            newForegroundImg = new TenguSprite();
-                            break;
-                        case LevelScheme.REGION_CAVES:
-                            newForegroundImg = new DM300Sprite();
-                            break;
-                        case LevelScheme.REGION_CITY:
-                            newForegroundImg = new KingSprite();
-                            break;
-                        case LevelScheme.REGION_HALLS:
-                            newForegroundImg = new YogSprite();
-                            break;
-                    }
-                }
-            }
-
-            if (newForegroundImg != null) {
-                float bgSize = icon == null ? ItemSpriteSheet.SIZE : Math.min(icon.width(), icon.height());
-                newForegroundImg.scale.set(bgSize / Math.min(newForegroundImg.width(), newForegroundImg.height()) * 0.8f);
             }
 
             text.text(name);
@@ -299,5 +274,59 @@ public class LevelListPane extends ScrollPane {
                 PixelScene.align(depthText);
             }
         }
+    }
+    
+    public static Image createLevelForegroundImage(LevelSchemeLike levelScheme) {
+        return createLevelForegroundImage(levelScheme, ItemSpriteSheet.SIZE, ItemSpriteSheet.SIZE);
+    }
+    
+    public static Image createLevelForegroundImage(LevelSchemeLike levelScheme, float width, float height) {
+        Image result = null;
+        
+        if (levelScheme instanceof QuestLevels) {
+            result = ((QuestLevels) levelScheme).createForegroundIcon();
+        } else if (levelScheme == LevelScheme.NO_LEVEL_SCHEME) {
+            result = Icons.CLOSE.get();
+        } else if (levelScheme == LevelScheme.SURFACE_LEVEL_SCHEME) {
+            result = BadgeBanner.image(Badges.Badge.HAPPY_END.image);
+        } else if (levelScheme == LevelScheme.ANY_LEVEL_SCHEME) {
+            result = new ItemSprite();
+        } else {
+            LevelScheme ls = (LevelScheme) levelScheme;
+            Class<? extends Level> type = ls.getType();
+            if (type == CustomLevel.class) result = Icons.TALENT.get();
+            else if (type == MiningLevel.CrystalMiningLevel.class) result = new TileSprite(CustomLevel.tilesTex(ls.getRegion(), false), Terrain.MINE_CRYSTAL);
+            else if (type == MiningLevel.GnollMiningLevel.class) result = new GnollGuardSprite();
+            else if (type == MiningLevel.FungiMiningLevel.class) result = new FungalSentrySprite();
+            else if (type == LastLevel.class) result = new ItemSprite(ItemSpriteSheet.AMULET);
+            else {
+                switch (ls.getBoss()) {
+                    default:
+                    case LevelScheme.REGION_NONE:
+                        break;
+                    case LevelScheme.REGION_SEWERS:
+                        result = new GooSprite();
+                        break;
+                    case LevelScheme.REGION_PRISON:
+                        result = new TenguSprite();
+                        break;
+                    case LevelScheme.REGION_CAVES:
+                        result = new DM300Sprite();
+                        break;
+                    case LevelScheme.REGION_CITY:
+                        result = new KingSprite();
+                        break;
+                    case LevelScheme.REGION_HALLS:
+                        result = new YogSprite();
+                        break;
+                }
+            }
+        }
+        
+        if (result != null) {
+            float bgSize = Math.min(width, height);
+            result.scale.set(bgSize / Math.min(result.width(), result.height()) * 0.8f);
+        }
+        return result;
     }
 }

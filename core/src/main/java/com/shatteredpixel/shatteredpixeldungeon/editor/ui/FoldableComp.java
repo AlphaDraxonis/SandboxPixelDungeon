@@ -5,10 +5,12 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.watabou.noosa.ColorBlock;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
 public class FoldableComp extends Component {
 
+    protected Image icon;
     protected RenderedTextBlock title;
     protected ColorBlock line;
 
@@ -98,15 +100,22 @@ public class FoldableComp extends Component {
 
         float posY = y;
 
-        float posX = width - 2;
-        float titleWidth = posX - requiredWidthForControlButtons();
+        float posX = x + width - 2;
+        float iconWidth = (icon == null ? 0 : icon.width() + 4);
+        float titleWidth = width - 2 - requiredWidthForControlButtons() - iconWidth;
 
         title.maxWidth((int) titleWidth);
-        float titleHeight = Math.max(BUTTON_HEIGHT, title.height());
+        float titleHeight = Math.max(BUTTON_HEIGHT, Math.max(title.height(), icon == null ? 0 : icon.height()));
 
         layoutControlButtons(posX, posY, titleHeight);
+        
+        if (icon != null) {
+            icon.x = x + 2;
+            icon.y = posY + 1 + (titleHeight - icon.height()) * 0.5f;
+            PixelScene.align(icon);
+        }
 
-        title.setPos(x, (titleHeight - title.height()) * 0.5f + posY + 1);
+        title.setPos(x + iconWidth, (titleHeight - title.height()) * 0.5f + posY + 1);
 
         posY += titleHeight + 2;
 
@@ -133,9 +142,11 @@ public class FoldableComp extends Component {
     protected float layoutControlButtons(float posX, float posY, float titleHeight) {
         if (fold != null && fold.visible) {
             fold.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - fold.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+            PixelScene.align(fold);
         }
         if (expand != null && expand.visible) {
             expand.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - expand.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+            PixelScene.align(expand);
         }
 
         return posX;

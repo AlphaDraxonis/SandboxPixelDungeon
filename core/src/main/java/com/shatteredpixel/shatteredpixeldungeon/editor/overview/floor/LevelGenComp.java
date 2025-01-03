@@ -49,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Reflection;
 
@@ -458,7 +459,12 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
     public String hoverText() {
         return Messages.get(LevelGenComp.class, "title");
     }
-
+    
+    @Override
+    public Image createIcon() {
+        return new ItemSprite(ItemSpriteSheet.RANDOM_ITEM);
+    }
+    
     private interface UpdateTitle {
         void updateTitle(int numSlots);
     }
