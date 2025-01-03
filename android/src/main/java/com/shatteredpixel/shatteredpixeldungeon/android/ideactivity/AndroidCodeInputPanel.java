@@ -38,9 +38,11 @@ import com.shatteredpixel.shatteredpixeldungeon.android.R;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.CodeInputPanel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.idewindowactions.LuaScript;
 
+@NotAllowedInLua
 public abstract class AndroidCodeInputPanel extends ConstraintLayout implements CodeInputPanelInterface {
 
 	protected TextView label, desc;

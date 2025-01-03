@@ -32,9 +32,9 @@ import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
 import com.shatteredpixel.shatteredpixeldungeon.services.news.NewsImpl;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.UpdateImpl;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.utils.FileUtils;
-
 import org.robovm.apple.coregraphics.CGRect;
 import org.robovm.apple.foundation.NSAutoreleasePool;
 import org.robovm.apple.foundation.NSBundle;
@@ -49,6 +49,7 @@ import org.robovm.apple.uikit.UIRectEdge;
 
 import java.io.File;
 
+@NotAllowedInLua
 public class IOSLauncher extends IOSApplication.Delegate {
 	@Override
 	protected IOSApplication createApplication() {

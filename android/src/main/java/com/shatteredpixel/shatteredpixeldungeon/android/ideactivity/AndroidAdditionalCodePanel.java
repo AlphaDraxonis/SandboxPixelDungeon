@@ -28,10 +28,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.LuaScript;
 
 import java.util.List;
 
+@NotAllowedInLua
 public class AndroidAdditionalCodePanel extends AndroidCodeInputPanel {
 
 	{

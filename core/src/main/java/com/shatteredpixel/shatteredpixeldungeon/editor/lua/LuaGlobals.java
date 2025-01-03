@@ -470,7 +470,7 @@ public class LuaGlobals extends Globals {
 				return LuaValue.valueOf(Random.Int(min.checkint(), max.checkint()));
 			}
 		});
-		randomUtils.set("float", new ZeroArgFunction() {//tzz document
+		randomUtils.set("float", new ZeroArgFunction() {
 			@Override
 			public LuaValue call() {
 				return LuaValue.valueOf(Random.Float());

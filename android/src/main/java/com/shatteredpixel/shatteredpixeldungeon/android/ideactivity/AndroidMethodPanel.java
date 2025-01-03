@@ -31,12 +31,14 @@ import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.MethodPanel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.idewindowactions.LuaScript;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+@NotAllowedInLua
 public class AndroidMethodPanel extends AndroidCodeInputPanel {
 
 	private Method method;

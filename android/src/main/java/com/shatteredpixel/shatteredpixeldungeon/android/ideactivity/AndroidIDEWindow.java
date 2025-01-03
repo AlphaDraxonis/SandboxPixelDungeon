@@ -55,11 +55,13 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.NewInstance
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.idewindowactions.LuaScript;
 
 import java.util.List;
 
+@NotAllowedInLua
 public class AndroidIDEWindow extends Activity {
 
 	public static RawLuaScript scriptPath;

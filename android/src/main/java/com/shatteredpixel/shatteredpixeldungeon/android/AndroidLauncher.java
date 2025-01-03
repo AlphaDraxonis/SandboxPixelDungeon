@@ -53,10 +53,12 @@ import com.shatteredpixel.shatteredpixeldungeon.services.news.NewsImpl;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.UpdateImpl;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Consumer;
 import com.watabou.utils.FileUtils;
 
+@NotAllowedInLua
 public class AndroidLauncher extends AndroidApplication {
 
 	public static final boolean FILE_ACCESS_ENABLED_ON_ANDROID_11 = false;//GPlay doesn't like apps that want to do this

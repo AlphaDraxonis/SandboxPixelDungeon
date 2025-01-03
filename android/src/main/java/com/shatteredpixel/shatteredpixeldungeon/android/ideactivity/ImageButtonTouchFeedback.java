@@ -30,8 +30,10 @@ import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.audio.Sample;
 
+@NotAllowedInLua
 public class ImageButtonTouchFeedback implements View.OnTouchListener {
 
 	public static ImageButtonTouchFeedback attach(ImageButton button) {

@@ -27,14 +27,15 @@ import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
 import android.app.backup.FullBackupDataOutput;
 import android.os.ParcelFileDescriptor;
-
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
+import com.watabou.NotAllowedInLua;
 
 import java.io.File;
 
 //a handler for android backup requests
+@NotAllowedInLua
 public class AndroidBackupHandler extends BackupAgent {
 	
 	//Both of these do nothing. This handler is here to support use of android 4.0+ ADB backup

@@ -22,12 +22,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.desktop;
 
 import com.badlogic.gdx.utils.SharedLibraryLoader;
+import com.watabou.NotAllowedInLua;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 
+@NotAllowedInLua
 public class DesktopLaunchValidator {
 
 	//Validates that the launching JVM is correctly configured

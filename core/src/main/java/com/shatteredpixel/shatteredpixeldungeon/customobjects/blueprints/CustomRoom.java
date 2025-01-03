@@ -41,12 +41,11 @@ public class CustomRoom extends CustomGameObject<CustomRoomClass> {
 
 	//TODO make sure that all calls also reach this level
 	public RoomLayoutLevel predefinedRoomLayout;//can be null
-	//paint must be overriden in a way that it only calls the real super if predefinedRoomLayout is null, otherwise the predefined one is painted on top
+	//paint() must be overridden in a way that it only calls the real super if predefinedRoomLayout is null, otherwise the predefined one is painted on top
 
-	//paint documentation: paints the room into the level. If a predefined layout is set, it will use this
+	//paint() documentation: paints the room into the level. If a predefined layout is set, it will use this
 	// or else it generates the room using the paint method from the superclass and uses other methods as parameter
 	//you can always edit the level after calling super
-	//TODO tzz also add the painter static mehtods to lua
 
 	@Override
 	public Class<? extends Bag> preferredBag() {

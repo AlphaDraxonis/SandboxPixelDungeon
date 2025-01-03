@@ -29,7 +29,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.TextView;
+import com.watabou.NotAllowedInLua;
 
+@NotAllowedInLua
 public class AndroidMissingNativesHandler extends Activity {
 
 	public static Throwable error;
