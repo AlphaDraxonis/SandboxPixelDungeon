@@ -44,7 +44,12 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.tweeners.AlphaTweener;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
+import com.watabou.utils.WatabouRect;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -670,7 +675,8 @@ public class CityBossLevel extends Level {
                 int cutShadow = 0;
 
 				//upper part of the level, mostly demon halls tiles
-				for (int i = tileW; i < tileW * 21; i++) {
+				int length = Math.min(tileW * 21, map.length);
+				for (int i = tileW; i < length; i++) {
 
 					if (map[i] == Terrain.EXIT && shadowTop == -1) {
                         cutShadow = Math.max(0, 4 - i / tileW);
