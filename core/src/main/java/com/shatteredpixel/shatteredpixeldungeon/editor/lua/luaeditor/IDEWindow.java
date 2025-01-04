@@ -446,7 +446,7 @@ public class IDEWindow extends Component {
 
 		if (Game.platform.openNativeIDEWindow(customObject, customObjSelector, clazz)) return null;
 
-		SimpleWindow w = new SimpleWindow((int) (PixelScene.uiCamera.width * 0.8f),  (int) (PixelScene.uiCamera.height * 0.9f)) {
+		SimpleWindow w = new SimpleWindow(Window.WindowSize.WIDTH_LARGE.get(),  Window.WindowSize.HEIGHT_LARGE.get()) {
 			IDEWindow ideWindow = new IDEWindow(customObject, clazz, this::layout);
 			{
 				initComponents(null, ideWindow, ideWindow.getOutsideSp(), 0f, 0f, new ScrollPaneWithScrollbar(ideWindow));

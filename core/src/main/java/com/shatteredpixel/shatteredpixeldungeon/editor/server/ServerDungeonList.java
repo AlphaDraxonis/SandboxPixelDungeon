@@ -18,7 +18,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
@@ -443,7 +442,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		private Component outsideSp;
 
 		public WndServerDungeonList() {
-			super(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
+			super(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_SMALL.get());
 
 			add(serverDungeonList = new ServerDungeonList() {
 				@Override

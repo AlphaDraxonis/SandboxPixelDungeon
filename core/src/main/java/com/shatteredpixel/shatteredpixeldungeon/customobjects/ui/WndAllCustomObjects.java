@@ -24,16 +24,14 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.ui;
 
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AbstractCategoryScroller;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.CategoryScroller;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 
 @NotAllowedInLua
@@ -44,10 +42,8 @@ public class WndAllCustomObjects extends WndTabbed {
 
 		CustomObjectManager.loadScripts(false);
 
-		int w = Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9));
-		int h = (int) (PixelScene.uiCamera.height * 0.9);
 		offset(0, EditorUtilities.getMaxWindowOffsetYForVisibleToolbar());
-		resize(w, h + yOffset - 5 - tabHeight());
+		resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_LARGE.get() + yOffset - 5 - tabHeight());
 
 		TabCustomObjs[] tbs = {
 				new com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.TabCustomObjs(null, null),

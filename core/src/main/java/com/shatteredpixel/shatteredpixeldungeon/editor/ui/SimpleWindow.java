@@ -1,10 +1,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.ui.Component;
 
 //Window where a component can be added, supports scroll pane
@@ -19,7 +17,7 @@ public class SimpleWindow extends Window {
     protected float titleAlignment;
 
     public SimpleWindow() {
-        this(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
+        this(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_SMALL.get());
     }
 
     public SimpleWindow(int width, int height) {

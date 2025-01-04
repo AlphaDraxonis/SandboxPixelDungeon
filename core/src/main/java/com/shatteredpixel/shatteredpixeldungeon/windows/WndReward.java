@@ -28,7 +28,7 @@ public class WndReward extends SimpleWindow {
 	@Override
 	public void initComponents(Component title, Component body, Component outsideSp, float alignment, float titleAlignmentX, ScrollPane sp) {
 		super.initComponents(title, body, outsideSp, alignment, titleAlignmentX, sp);
-		resize(WIDTH, (int) Math.ceil(Math.min(preferredHeight(), PixelScene.uiCamera.height * 0.85f)));
+		resize(WIDTH, (int) Math.ceil(Math.min(preferredHeight(), WindowSize.HEIGHT_MEDIUM.get())));
 	}
 
 	public void layout() {

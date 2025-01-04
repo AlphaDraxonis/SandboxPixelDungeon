@@ -47,7 +47,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -542,7 +541,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
         public WndRoomSettings(boolean standart, boolean secret, boolean special) {
 
-            resize(PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : (int) (PixelScene.uiCamera.width * 0.85f), 100);
+            resize(WindowSize.WIDTH_SMALL.get(), 100);
 
             RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(LevelGenComp.class, "room_settings_title"), 10);
             title.hardlight(Window.TITLE_COLOR);
@@ -584,7 +583,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
         public WndMobSettings(boolean spawn) {
 
-            resize(PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : (int) (PixelScene.uiCamera.width * 0.85f), 100);
+            resize(WindowSize.WIDTH_SMALL.get(), 100);
 
             RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(LevelGenComp.class, "mob_settings_title"), 10);
             title.hardlight(Window.TITLE_COLOR);
@@ -616,7 +615,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
         public WndItemSettings(boolean spawn) {
 
-            resize(PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : (int) (PixelScene.uiCamera.width * 0.85f), 100);
+            resize(WindowSize.WIDTH_SMALL.get(), 100);
 
             RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(LevelGenComp.class, "item_settings_title"), 10);
             title.hardlight(Window.TITLE_COLOR);

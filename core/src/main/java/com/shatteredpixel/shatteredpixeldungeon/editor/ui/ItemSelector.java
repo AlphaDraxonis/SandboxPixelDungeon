@@ -15,7 +15,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.ui.Component;
 
@@ -205,8 +210,8 @@ public class ItemSelector extends Component {
      */
     public static EditorInventoryWindow showSelectWindow(WndBag.ItemSelectorInterface selector, NullTypeSelector nullTypeSelector, Class<?> itemClasses,
                                                          EditorItemBag bag, Collection<Class<?>> excludeItems, boolean includeRandomItem) {
-        final int WIDTH = Math.min(160, (int) (PixelScene.uiCamera.width * 0.9));
-        final int HEIGHT = (int) (PixelScene.uiCamera.height * 0.8f);
+        final int WIDTH = Math.min(160, Window.WindowSize.WIDTH_LARGE.get());
+        final int HEIGHT = Window.WindowSize.HEIGHT_SMALL.get();
 
         Win w = new Win(selector);
         w.resize(WIDTH, HEIGHT);

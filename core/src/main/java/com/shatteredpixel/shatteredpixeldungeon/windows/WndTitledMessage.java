@@ -151,9 +151,12 @@ public class WndTitledMessage extends Window {
             bringToFront(titlebar);
 
             height = titlebar.height() + 2 * GAP + text.height() + 2 - 1;
-            boolean needsSp = height > PixelScene.uiCamera.height * 0.85f;
-            if (needsSp) height = PixelScene.uiCamera.height * 0.85f;
-            sp.setRect(titlebar.left(), titlebar.bottom() + 2 * GAP, width, height - titlebar.height() - 2 * GAP + (needsSp ? 0 : 1));
+            if (height > WindowSize.HEIGHT_MEDIUM.get()) {
+                height = WindowSize.HEIGHT_MEDIUM.get();
+                sp.setRect(titlebar.left(), titlebar.bottom() + 2 * GAP, width, height - titlebar.height() - 2 * GAP);
+            } else {
+                sp.setRect(titlebar.left(), titlebar.bottom() + 2 * GAP, width, height - titlebar.height() - 2 * GAP + 1);
+            }
         }
 
         public void setHighlightingEnabled(boolean enableHighligthing) {

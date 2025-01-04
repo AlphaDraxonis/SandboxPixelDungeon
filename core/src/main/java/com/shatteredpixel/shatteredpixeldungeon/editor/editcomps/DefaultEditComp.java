@@ -377,7 +377,7 @@ public abstract class DefaultEditComp<T> extends Component {
         Runnable r = () -> {
 
             float ch = content.height();
-            float maxHeightNoOffset = PixelScene.uiCamera.height * 0.9f - 10;
+            float maxHeightNoOffset = Window.WindowSize.HEIGHT_LARGE.get() - 10;
             int offset = EditorUtilities.getMaxWindowOffsetYForVisibleToolbar();
             if (ch > maxHeightNoOffset) {
                 if (ch > maxHeightNoOffset + offset) ch = maxHeightNoOffset + offset;

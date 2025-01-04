@@ -38,7 +38,7 @@ public abstract class NewCompWindow<T> extends Window {
 
         this.obj = obj;
 
-        resize(PixelScene.landscape() ? 210 : Math.min(155, (int) (PixelScene.uiCamera.width * 0.88)), 100);
+        resize(WindowSize.WIDTH_LARGE_S.get(), 100);
 
         title = new IconTitle(getIcon(), titleText != null ? titleText : Messages.titleCase( Messages.get(this, "title") ));
         add(title);
@@ -101,7 +101,7 @@ public abstract class NewCompWindow<T> extends Window {
 
         spContent.setSize(width, -1);
         final float spPos = posY;
-        final float spHeight = Math.min((int) (PixelScene.uiCamera.height * 0.8f) - posY - BUTTON_HEIGHT - 1, spContent.height());
+        final float spHeight = Math.min(WindowSize.HEIGHT_SMALL.get() - posY - BUTTON_HEIGHT - 1, spContent.height());
         posY += spHeight + MARGIN * 2;
 
         create.setRect(MARGIN, posY, (width - MARGIN * 3) / 2, BUTTON_HEIGHT + 1);

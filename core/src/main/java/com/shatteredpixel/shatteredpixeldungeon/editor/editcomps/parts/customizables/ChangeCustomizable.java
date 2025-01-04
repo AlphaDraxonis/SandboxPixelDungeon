@@ -67,7 +67,7 @@ public class ChangeCustomizable<T extends Customizable> extends Component {
     }
 
     protected void updateLayout() {
-        window.resize(window.width(), ((int) Math.min(PixelScene.uiCamera.height * 0.85f, Math.ceil(window.preferredHeight()))));
+        window.resize(window.width(), Math.min(Window.WindowSize.HEIGHT_MEDIUM.get(), (int) Math.ceil(window.preferredHeight()) ));
     }
 
     @Override

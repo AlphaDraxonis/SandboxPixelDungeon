@@ -16,7 +16,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
@@ -30,18 +29,20 @@ import com.watabou.utils.PathFinder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @NotAllowedInLua
 public class WndNewFloor extends WndTabbed {
 
-
     protected static final int MARGIN = 1;
     public static final int BUTTON_HEIGHT = 16;
 
-
     private final CustomDungeon owner;
-
 
     protected LevelGenComp levelGenComp;
     protected NewFloorComp newFloorComp;
@@ -50,7 +51,7 @@ public class WndNewFloor extends WndTabbed {
 
     public WndNewFloor(CustomDungeon owner) {
 
-        resize(PixelScene.landscape() ? 215 : Math.min(160, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.65));
+        resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_VERY_SMALL.get());
 
         this.owner = owner;
 

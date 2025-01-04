@@ -99,7 +99,7 @@ public class EditCompWindow extends Window {
 
     protected void onUpdate() {
         float ch = content.height();
-        float maxHeightNoOffset = PixelScene.uiCamera.height * 0.8f - 10;
+        float maxHeightNoOffset = WindowSize.HEIGHT_SMALL.get() - 10;
         int offset = EditorUtilities.getMaxWindowOffsetYForVisibleToolbar();
         if (ch > maxHeightNoOffset) {
             if (ch > maxHeightNoOffset + offset) ch = maxHeightNoOffset + offset;
@@ -112,13 +112,6 @@ public class EditCompWindow extends Window {
         resize(width, (int) Math.ceil(ch));
         sp.setSize(width, (int) Math.ceil(ch));
         sp.scrollToCurrentView();
-
-//        float ch = content.height();
-//        int maxHeight = (int) (PixelScene.uiCamera.height * 0.8);
-//        int weite = (int) Math.ceil(ch > maxHeight ? maxHeight : ch);
-//        resize(width, weite);
-//        sp.setSize(width, weite);
-//        sp.scrollToCurrentView();
     }
 
     @Override

@@ -31,7 +31,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
@@ -58,9 +57,6 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
     private static final boolean USE_COMPACT_UI = true;
 
     public static boolean chooseClass = false;
-
-    private final int WIDTH = Math.min(215, (int) (PixelScene.uiCamera.width * 0.9));
-    private final int HEIGHT = (int) (PixelScene.uiCamera.height * 0.9);
 
 
     //only one bag window can appear at a time
@@ -96,7 +92,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         curBag = bag;
 
         offset(0, EditorUtilities.getMaxWindowOffsetYForVisibleToolbar() + (addTabs ? 0 : tabHeight() / 5));
-        resize(WIDTH, HEIGHT - (addTabs ? tabHeight() : 0) - yOffset - tabHeight());
+        resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_LARGE.get() - (addTabs ? tabHeight() : 0) - yOffset - tabHeight());
 
         body = createBody(bag);
         add(body);

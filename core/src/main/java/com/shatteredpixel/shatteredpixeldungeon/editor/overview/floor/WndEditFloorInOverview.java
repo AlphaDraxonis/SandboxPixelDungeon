@@ -71,7 +71,7 @@ public class WndEditFloorInOverview extends WndTabbed {
             }
         }
 
-        resize(WndEditorSettings.calclulateWidth(), WndEditorSettings.calculateHeight() - tabHeight());
+        resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_LARGE.get() - tabHeight());
         
         ownTabs = new WndEditorSettings.TabComp[]{
                 new General(), new LevelGenComp(levelScheme) {

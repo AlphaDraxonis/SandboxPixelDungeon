@@ -13,8 +13,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -48,7 +53,7 @@ public class WndEditItemDistribution<T extends Item> extends Window {
         prevObjsToDistr = new ArrayList<>(itemDistribution.getObjectsToDistribute());
         selectedLevelSchemes = new ArrayList<>();
 
-        resize((int) (Math.min(WndTitledMessage.WIDTH_MAX, PixelScene.uiCamera.width * 0.9) * 0.9f), (int) (PixelScene.uiCamera.height * 0.6f));
+        resize((int) (WindowSize.WIDTH_LARGE.get() * 0.9f), WindowSize.HEIGHT_VERY_SMALL.get());
 
         content = new Component();
 

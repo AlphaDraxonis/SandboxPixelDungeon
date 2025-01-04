@@ -7,12 +7,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.StaticReference;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.StaticValueReference;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
@@ -62,7 +60,7 @@ public class WndScrollOfDebug extends Window {
 
         CustomDungeon.knowsEverything = true;
 
-        resize(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
+        resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_LARGE.get());
 
         if (instance != null) {
             instance.hide();

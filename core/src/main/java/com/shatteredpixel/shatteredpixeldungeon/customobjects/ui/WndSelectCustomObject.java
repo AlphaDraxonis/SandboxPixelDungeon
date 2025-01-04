@@ -24,15 +24,13 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.ui;
 
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomObjectItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 
 import java.util.List;
@@ -46,7 +44,7 @@ public abstract class WndSelectCustomObject extends Window {
 	private WndBag.ItemSelectorInterface selector;
 
 	public WndSelectCustomObject(Set<Class<? extends CustomObject>> visibleCategories) {
-		resize(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
+		resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_SMALL.get());
 
 		selector = new WndBag.ItemSelectorInterface() {
 			@Override

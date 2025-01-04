@@ -25,9 +25,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.ui;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 
 import java.util.Map;
@@ -38,7 +36,7 @@ public class WndSelectResourceFile extends Window {
 	protected TabResourceFiles body;
 
 	public WndSelectResourceFile() {
-		resize(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
+		resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_SMALL.get());
 		body = new TabResourceFiles(null) {
 
 			@Override

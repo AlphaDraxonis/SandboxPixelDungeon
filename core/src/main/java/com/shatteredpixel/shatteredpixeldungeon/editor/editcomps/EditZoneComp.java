@@ -22,7 +22,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.WndSelectMusic;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ZoneMobSettings;
@@ -149,7 +148,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
             }
             @Override
             protected void onClick() {
-                SimpleWindow w = new SimpleWindow(WndEditorSettings.calclulateWidth(), WndEditorSettings.calculateHeight());
+                SimpleWindow w = new SimpleWindow(Window.WindowSize.WIDTH_LARGE.get(), Window.WindowSize.HEIGHT_LARGE.get());
                 ZoneMobSettings ms = new ZoneMobSettings(zone);
                 w.initComponents(ms.createTitle(), ms, ms.getOutsideSp(), 0f, 0.5f);
                 EditorScene.show(w);

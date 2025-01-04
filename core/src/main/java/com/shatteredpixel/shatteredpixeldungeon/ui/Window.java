@@ -25,10 +25,16 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.ShadowBox;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;
-import com.watabou.noosa.*;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.NinePatch;
+import com.watabou.noosa.PointerArea;
+import com.watabou.utils.GameMath;
 import com.watabou.utils.Point;
 import com.watabou.utils.Signal;
 
@@ -215,4 +221,36 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 		hide();
 	}
 
+	public enum WindowSize {
+		
+		WIDTH_VERY_SMALL,
+		WIDTH_SMALL,
+		WIDTH_MEDIUM,
+		WIDTH_LARGE_S,
+		WIDTH_LARGE_M,
+		WIDTH_LARGE,
+		
+		HEIGHT_VERY_SMALL,
+		HEIGHT_SMALL,
+		HEIGHT_MEDIUM,
+		HEIGHT_LARGE;
+		
+		public int get() {
+			switch (this) {
+				case WIDTH_VERY_SMALL: return Math.min(160, (int) (PixelScene.uiCamera.width * 0.9f));
+				case WIDTH_SMALL:  return (int) GameMath.gate(140, PixelScene.uiCamera.width * 0.7f, 180);
+				case WIDTH_MEDIUM: return (int) GameMath.gate(150, PixelScene.uiCamera.width * 0.8f, 200);
+				case WIDTH_LARGE:  return (int) GameMath.gate(160, PixelScene.uiCamera.width * 0.9f, WndTitledMessage.WIDTH_MAX);
+				
+				case WIDTH_LARGE_S:  return WIDTH_LARGE.get() - (PixelScene.landscape() ? 10 : 5);
+				case WIDTH_LARGE_M:  return WIDTH_LARGE.get() - (PixelScene.landscape() ? 5 : 0);
+				
+				case HEIGHT_VERY_SMALL:  return (int) (PixelScene.uiCamera.height * 0.65f);
+				case HEIGHT_SMALL:  return (int) (PixelScene.uiCamera.height * 0.8f);
+				case HEIGHT_MEDIUM: return (int) (PixelScene.uiCamera.height * 0.85f);
+				case HEIGHT_LARGE:  return (int) (PixelScene.uiCamera.height * 0.9f);
+			}
+			return 0;
+		}
+	}
 }

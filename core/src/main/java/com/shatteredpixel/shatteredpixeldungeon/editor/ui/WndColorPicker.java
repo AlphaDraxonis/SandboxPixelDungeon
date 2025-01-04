@@ -136,7 +136,7 @@ public class WndColorPicker extends Window {
         add(colorFields[14]);
 
 
-        resize(PixelScene.landscape() ? 210 : Math.min(155, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
+        resize(WindowSize.WIDTH_LARGE_S.get(), WindowSize.HEIGHT_SMALL.get());
 
         title.setRect(MARGIN, MARGIN, width - MARGIN * 2, title.height());
 

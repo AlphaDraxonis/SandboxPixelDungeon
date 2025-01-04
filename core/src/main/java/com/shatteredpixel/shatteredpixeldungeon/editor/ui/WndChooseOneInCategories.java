@@ -22,10 +22,7 @@ public abstract class WndChooseOneInCategories extends Window {
     }
 
     public WndChooseOneInCategories(Component titleBar, String desc, Object[][] categories, String[] categoryNames) {
-        super();
-        int WIDTH = Math.min(160, (int) (PixelScene.uiCamera.width * 0.9));
-        int HEIGHT = (int) (PixelScene.uiCamera.height * 0.8);
-        resize(WIDTH, HEIGHT);
+        super(WindowSize.WIDTH_VERY_SMALL.get(), WindowSize.HEIGHT_SMALL.get());
 
         body = new ChooseOneInCategoriesBody(titleBar, desc, categories, categoryNames) {
 
@@ -40,7 +37,7 @@ public abstract class WndChooseOneInCategories extends Window {
             }
         };
         add(body);
-        body.setSize(WIDTH, HEIGHT);
+        body.setSize(width, height);
     }
 
     protected abstract ChooseOneInCategoriesBody.BtnRow[] createCategoryRows(Object[] category);
