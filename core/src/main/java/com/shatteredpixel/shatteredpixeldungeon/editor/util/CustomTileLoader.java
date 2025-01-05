@@ -154,7 +154,6 @@ public final class CustomTileLoader {
     public static /*sealed*/ abstract class UserCustomTile extends CustomTilemap {
 
         public String desc, name;//not bundled!!
-        public String identifier;
 
         @Override
         public String desc(int tileX, int tileY) {
@@ -167,11 +166,30 @@ public final class CustomTileLoader {
             String ret;
             return name == null ? super.name(tileX, tileY) : ((ret = Messages.get(name)).equals(Messages.NO_TEXT_FOUND) ? name : ret);
         }
+        
+        @Override
+        public CustomTilemap getCopy() {
+            UserCustomTile ret = (UserCustomTile) super.getCopy();
+            ret.setValuesTo(this);
+            return ret;
+        }
+        
+        protected void setValuesTo(UserCustomTile other) {
+            name = other.name;
+            desc = other.desc;
+        }
+        
+        public abstract Object getIdentifier();
+        public abstract void addIntoStaticMap();
+        public abstract void removeFromStaticMap();
     }
 
     public static class OwnCustomTile extends UserCustomTile {
-
+        
+        public static final Map<String, CustomTileLoader.OwnCustomTile> ownCustomTiles = new HashMap<>();
+        
         private String texturePath;
+        private String identifier;
 
         @Override
         public Object getTexture() {
@@ -209,9 +227,9 @@ public final class CustomTileLoader {
             else setValuesTo(template);
         }
 
-        protected void setValuesTo(OwnCustomTile other) {
-            name = other.name;
-            desc = other.desc;
+        @Override
+        protected void setValuesTo(UserCustomTile other) {
+            super.setValuesTo(other);
             tileW = other.tileW;
             tileH = other.tileH;
             offsetCenterX = other.offsetCenterX;
@@ -219,18 +237,30 @@ public final class CustomTileLoader {
             terrain = other.terrain;
             texture = other.getTexture();
         }
-
+        
         @Override
-        public CustomTilemap getCopy() {
-            OwnCustomTile ret = (OwnCustomTile) super.getCopy();
-            ret.setValuesTo(this);
-            return ret;
+        public String getIdentifier() {
+            return identifier;
+        }
+        
+        @Override
+        public void addIntoStaticMap() {
+            ownCustomTiles.put(identifier, this);
+        }
+        
+        @Override
+        public void removeFromStaticMap() {
+            ownCustomTiles.remove(identifier);
         }
     }
 
     //class that stores region and terrain for image, generates image as runtime, not stored as separate file
     public static class SimpleCustomTile extends UserCustomTile {
+        
+        public static final Map<Integer, CustomTileLoader.SimpleCustomTile> simpleCustomTiles = new HashMap<>();
 
+        private int identifier;
+        
         public int imageTerrain, region;
         public boolean placed;
 
@@ -238,14 +268,14 @@ public final class CustomTileLoader {
         }
 
         //also specify terrain!, check if internal name is already used
-        public SimpleCustomTile(int imageTerrain, int region, String identifier) {
+        public SimpleCustomTile(int imageTerrain, int region, int identifier) {
             this.identifier = identifier;
             this.imageTerrain = imageTerrain;
             this.region = region;
             texture = CustomLevel.tilesTex(region, imageTerrain == Terrain.WATER);
         }
 
-        private static final String IDENTIFIER = "identifier";
+        private static final String IDENTIFIER = "id";
         private static final String PLACED = "placed";
         private static final String IMAGE_TERRAIN = "image_terrain";
         private static final String REAL_TERRAIN = "real_terrain";
@@ -271,7 +301,11 @@ public final class CustomTileLoader {
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            identifier = bundle.getString(IDENTIFIER);
+            if (bundle.contains("identifier")) {
+                identifier = bundle.getString("identifier").hashCode();
+            } else {
+                identifier = bundle.getInt(IDENTIFIER);
+            }
             placed = bundle.getBoolean(PLACED);
 
             if (!placed) {
@@ -288,10 +322,8 @@ public final class CustomTileLoader {
 
         public void updateValues() {
             SimpleCustomTile template = (SimpleCustomTile) Tiles.getCustomTile(identifier);
-            if (template == null) identifier = null;
-            else {
-                setValues(template);
-            }
+            if (template == null) identifier = 0;
+            else setValuesTo(template);
         }
 
         public void updateTexture() {
@@ -315,11 +347,11 @@ public final class CustomTileLoader {
             return v;
         }
 
-        public void setValues(SimpleCustomTile template) {
-            name = template.name;
-            desc = template.desc;
-            imageTerrain = template.imageTerrain;
-            region = template.region;
+        @Override
+        protected void setValuesTo(UserCustomTile other) {
+            super.setValuesTo(other);
+            imageTerrain = ((SimpleCustomTile) other).imageTerrain;
+            region = ((SimpleCustomTile) other).region;
             updateTexture();
         }
 
@@ -327,6 +359,21 @@ public final class CustomTileLoader {
         public Image image(int tileX, int tileY) {
             int cell = this.tileX + this.tileY * Dungeon.level.width();
             return DungeonTerrainTilemap.tile(cell, imageTerrain, Dungeon.level.visualRegions[cell]);
+        }
+        
+        @Override
+        public Integer getIdentifier() {
+            return identifier == 0 ? null : identifier;
+        }
+        
+        @Override
+        public void addIntoStaticMap() {
+            simpleCustomTiles.put(identifier, this);
+        }
+        
+        @Override
+        public void removeFromStaticMap() {
+            simpleCustomTiles.remove(identifier);
         }
     }
 

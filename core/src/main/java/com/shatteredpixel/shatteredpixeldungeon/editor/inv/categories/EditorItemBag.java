@@ -58,7 +58,7 @@ public class EditorItemBag extends Bag {
                 if ((realItem.getClass() == Class.class ? realItem : realItem.getClass()) == src.getValue()) return item;
             }
         }
-        if (src.getType() == FindInBag.Type.USER_CONTENT) {
+        if (src.getType() == FindInBag.Type.CUSTOM_OBJECT) {
             for (Item item : bag.items) {
                 if (item instanceof Bag) {
                     Item result = findItem((Bag) item, src);

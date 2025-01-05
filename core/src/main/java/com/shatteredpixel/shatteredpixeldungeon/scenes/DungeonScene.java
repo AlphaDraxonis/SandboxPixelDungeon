@@ -343,7 +343,7 @@ public abstract class DungeonScene extends PixelScene {
 		for (CustomTilemap visual : Dungeon.level.customTiles) {
 			if (visual instanceof CustomTileLoader.SimpleCustomTile) {
 				((CustomTileLoader.SimpleCustomTile) visual).updateValues();
-				if (((CustomTileLoader.SimpleCustomTile) visual).identifier == null) toRemove.add(visual);
+				if (((CustomTileLoader.SimpleCustomTile) visual).getIdentifier() == null) toRemove.add(visual);
 				else add(visual);
 			} else add(visual);
 		}
@@ -352,7 +352,7 @@ public abstract class DungeonScene extends PixelScene {
 		for (CustomTilemap visual : Dungeon.level.customWalls) {
 			if (visual instanceof CustomTileLoader.SimpleCustomTile) {
 				((CustomTileLoader.SimpleCustomTile) visual).updateValues();
-				if (((CustomTileLoader.SimpleCustomTile) visual).identifier == null) toRemove.add(visual);
+				if (((CustomTileLoader.SimpleCustomTile) visual).getIdentifier() == null) toRemove.add(visual);
 				else add(visual);
 			} else add(visual);
 		}

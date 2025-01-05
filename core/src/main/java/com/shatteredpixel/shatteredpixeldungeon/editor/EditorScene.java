@@ -868,7 +868,7 @@ public class EditorScene extends DungeonScene {
                     && (found = CustomTileItem.findAnyCustomTileAt(neighbor)) != null
                     && found.getClass() == customTile.getClass()
             && (!(found instanceof CustomTileLoader.UserCustomTile)
-                    || ((CustomTileLoader.UserCustomTile) found).identifier.equals(((CustomTileLoader.UserCustomTile) customTile).identifier)))
+                    || ((CustomTileLoader.UserCustomTile) found).getIdentifier().equals(((CustomTileLoader.UserCustomTile) customTile).getIdentifier())))
                 queue.add(neighbor);
         }
     }

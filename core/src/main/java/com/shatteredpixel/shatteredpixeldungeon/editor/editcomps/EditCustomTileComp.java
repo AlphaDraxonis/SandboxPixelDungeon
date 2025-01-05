@@ -208,6 +208,6 @@ public class EditCustomTileComp extends EditTileComp {
             if (!EditMobComp.isMobListEqual(((RitualSiteRoom.RitualMarker) a).summons, ((RitualSiteRoom.RitualMarker) b).summons)) return false;
         }
         return !(a instanceof CustomTileLoader.UserCustomTile)
-                || ((CustomTileLoader.UserCustomTile) a).identifier.equals(((CustomTileLoader.UserCustomTile) b).identifier);
+                || ((CustomTileLoader.UserCustomTile) a).getIdentifier().equals(((CustomTileLoader.UserCustomTile) b).getIdentifier());
     }
 }

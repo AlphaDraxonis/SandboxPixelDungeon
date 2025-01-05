@@ -74,7 +74,7 @@ public class FindInBag implements Bundlable {
 		this.source = source;
 
 		if (source instanceof CustomObjectClass) {
-			type = Type.USER_CONTENT;
+			type = Type.CUSTOM_OBJECT;
 			value = ((CustomObjectClass) source).getIdentifier();
 		}
 
@@ -92,10 +92,15 @@ public class FindInBag implements Bundlable {
 			type = Type.PARTICLE;
 			value = ((CustomParticle.ParticleProperty) source).particleID();
 		}
-
+		
+		else if (source  instanceof CustomTileLoader.SimpleCustomTile) {
+			type = Type.SIMPLE_CUSTOM_TILE;
+			value = ((CustomTileLoader.UserCustomTile) source).getIdentifier();
+		}
+		
 		else if (source  instanceof CustomTileLoader.UserCustomTile) {
 			type = Type.CUSTOM_TILE;
-			value = ((CustomTileLoader.UserCustomTile) source).identifier;
+			value = ((CustomTileLoader.UserCustomTile) source).getIdentifier();
 		}
 
 		else if (source  == EditorItem.REMOVER_ITEM) {
@@ -135,9 +140,10 @@ public class FindInBag implements Bundlable {
 		switch (type) {
 			case TILE:
 			case CUSTOM_TILE:
+			case SIMPLE_CUSTOM_TILE:
 			case PARTICLE:
 				return (EditorItem<?>) Tiles.bag.findItem(this);
-			case USER_CONTENT:
+			case CUSTOM_OBJECT:
 				EditorItem<?> result;
 				for (GameObjectCategory<?> category : EditorInventory.getAllCategories()) {
 					result = (EditorItem<?>) category.getBag().findItem(FindInBag.this);
@@ -216,8 +222,9 @@ public class FindInBag implements Bundlable {
 		CLASS,
 		TILE,
 		CUSTOM_TILE,
+		SIMPLE_CUSTOM_TILE,
 		PARTICLE,
-		USER_CONTENT,
+		CUSTOM_OBJECT,
 		REMOVER;
 
 		private void storeValueInBundle(Bundle bundle, Object value) {
@@ -226,9 +233,11 @@ public class FindInBag implements Bundlable {
 					break;
 				case TILE:
 				case PARTICLE:
-				case USER_CONTENT: bundle.put(VALUE, (int) value);
+				case CUSTOM_OBJECT: bundle.put(VALUE, (int) value);
 					break;
 				case CUSTOM_TILE: bundle.put(VALUE, (String) value);
+					break;
+				case SIMPLE_CUSTOM_TILE: bundle.put(VALUE, value == null ? 0 : ((Integer) value));
 					break;
 			}
 		}
@@ -238,7 +247,8 @@ public class FindInBag implements Bundlable {
 				case CLASS: return bundle.getClass(VALUE);
 				case TILE:
 				case PARTICLE:
-				case USER_CONTENT: return bundle.getInt(VALUE);
+				case CUSTOM_OBJECT:
+				case SIMPLE_CUSTOM_TILE: return bundle.getInt(VALUE);
 				case CUSTOM_TILE: return bundle.getString(VALUE);
 			}
 			return null;

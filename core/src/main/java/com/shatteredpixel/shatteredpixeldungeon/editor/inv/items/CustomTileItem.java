@@ -112,7 +112,7 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
             };
 
             for (CustomTilemap ct : Dungeon.level.customTiles.toArray(new CustomTilemap[0])) {
-                if (ct instanceof CustomTileLoader.SimpleCustomTile && ((CustomTileLoader.SimpleCustomTile) ct).identifier.equals(del.identifier)) {
+                if (ct instanceof CustomTileLoader.SimpleCustomTile && ((CustomTileLoader.SimpleCustomTile) ct).getIdentifier().equals(del.getIdentifier())) {
                     int cell = ct.tileX + ct.tileY * Dungeon.level.width();
                     actionPart.addActionPart(new CustomTileActionPart.Remove(cell, Dungeon.level.map[cell], ct));
                 }

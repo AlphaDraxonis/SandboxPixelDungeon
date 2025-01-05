@@ -770,7 +770,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		for (Bundlable p : collection) {
 			CustomTilemap vis = (CustomTilemap)p;
 			if (vis instanceof CustomTileLoader.UserCustomTile) {
-				if (((CustomTileLoader.UserCustomTile) vis).identifier != null) {
+				if (((CustomTileLoader.UserCustomTile) vis).getIdentifier() != null) {
 					if (vis instanceof CustomTileLoader.SimpleCustomTile) {
 						int cell = vis.tileX + vis.tileY * width;
 						visualMap[cell] = ((CustomTileLoader.SimpleCustomTile) vis).imageTerrain;
@@ -784,7 +784,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		collection = bundle.getCollection( CUSTOM_WALLS );
 		for (Bundlable p : collection) {
 			CustomTilemap vis = (CustomTilemap)p;
-			if(!(vis instanceof CustomTileLoader.UserCustomTile) || ((CustomTileLoader.UserCustomTile) vis).identifier != null)
+			if(!(vis instanceof CustomTileLoader.UserCustomTile) || ((CustomTileLoader.UserCustomTile) vis).getIdentifier() != null)
 				customWalls.add(vis);
 		}
 
