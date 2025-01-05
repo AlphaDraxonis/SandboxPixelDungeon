@@ -1291,10 +1291,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         @Override
         protected void layout() {
-            width -= rename.icon().width + 3;
+            width -= rename.icon().width() + 3;
             super.layout();
-            rename.setRect(x + width + 2, y + (height - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
-            width += rename.icon().width + 3;
+            rename.setRect(x + width + 2, y + (height - rename.icon().height()) * 0.5f, rename.icon().width(), rename.icon().height());
+            width += rename.icon().width() + 3;
         }
     }
 

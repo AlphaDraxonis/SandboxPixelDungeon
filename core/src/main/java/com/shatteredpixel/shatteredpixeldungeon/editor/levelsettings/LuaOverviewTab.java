@@ -263,7 +263,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 			super.layout();
 
 			icon.y = y + 2;
-			iconLabel.y = icon.y + (icon.height - iconLabel.height()) / 2f + 0.5f;
+			iconLabel.y = icon.y + (icon.height() - iconLabel.height()) / 2f + 0.5f;
 			PixelScene.align(iconLabel);
 
 			label.setPos(label.left(), y + 4);
@@ -416,8 +416,8 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
 			nameInput.setRect(x + 1, y + 2, width * 3 / 10, height - 4);
 
-			delete.setRect(width - delete.icon().width - 2, y + (height - delete.icon().height) * 0.5f, delete.icon().width(), delete.icon().height());
-			more.setRect(delete.left() - more.icon().width() - 3,  y + (height - more.icon().height) * 0.5f, more.icon().width(), more.icon().height());
+			delete.setRect(width - delete.icon().width() - 2, y + (height - delete.icon().height()) * 0.5f, delete.icon().width(), delete.icon().height());
+			more.setRect(delete.left() - more.icon().width() - 3,  y + (height - more.icon().height()) * 0.5f, more.icon().width(), more.icon().height());
 
 			float posX = nameInput.right() + 2;
 			valueInput.setRect(posX, y + 2, more.left() - 4 - posX, height - 4);

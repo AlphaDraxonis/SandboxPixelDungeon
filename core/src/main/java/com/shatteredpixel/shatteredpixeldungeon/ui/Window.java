@@ -126,7 +126,7 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 			width + chrome.marginHor(),
 			height + chrome.marginVer() );
 		
-		camera.resize( (int)chrome.width, (int)chrome.height );
+		camera.resize( (int)chrome.width(), (int)chrome.height() );
 
 		camera.x = (int)(Game.width - camera.screenWidth()) / 2;
 		camera.x += xOffset * camera.zoom;
@@ -134,7 +134,7 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 		camera.y = (int)(Game.height - camera.screenHeight()) / 2;
 		camera.y += yOffset * camera.zoom;
 
-		shadow.boxRect( camera.x / camera.zoom, camera.y / camera.zoom, chrome.width(), chrome.height );
+		shadow.boxRect( camera.x / camera.zoom, camera.y / camera.zoom, chrome.width(), chrome.height() );
 	}
 
 	public int width() {

@@ -90,15 +90,15 @@ public abstract class SpinnerTextIconModel extends SpinnerTextModel {
             float w = textBlock.width() + (icon == null ? 0 : icon.width() + GAP);
             if (icon != null) {
                 icon.x = (contW - w) / 2 + contX + textOffsetX;
-                icon.y = getCenterPos(icon.height, contH, contY, textOffsetY);
+                icon.y = getCenterPos(icon.height(), contH, contY, textOffsetY);
                 PixelScene.align(icon);
                 if (subIcon != null) {
-                    subIcon.x = icon.x + 1.5f + icon.width / 2f;
-                    subIcon.y = icon.y - 2 + (ItemSpriteSheet.Icons.SIZE - subIcon.height) / 2f;
+                    subIcon.x = icon.x + 1.5f + icon.width() / 2f;
+                    subIcon.y = icon.y - 2 + (ItemSpriteSheet.Icons.SIZE - subIcon.height()) / 2f;
                     PixelScene.align(subIcon);
                 }
             }
-            float x = icon == null ? (contW - w) / 2 + contX + textOffsetX : icon.x + icon.width + GAP;
+            float x = icon == null ? (contW - w) / 2 + contX + textOffsetX : icon.x + icon.width() + GAP;
             textBlock.setRect(x,
                     getCenterPos(textBlock.height(), contH, contY, textOffsetX),
                     textBlock.width(), textBlock.height());

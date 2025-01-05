@@ -31,7 +31,16 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StatusPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.TalentButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.TalentsPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
@@ -314,7 +323,7 @@ public class WndHero extends WndTabbed {
 				txt = PixelScene.renderTextBlock( Messages.titleCase(buff.name()), 8 );
 				txt.setPos(
 						icon.width + GAP,
-						this.y + (icon.height - txt.height()) / 2
+						this.y + (icon.height() - txt.height()) / 2
 				);
 				PixelScene.align(txt);
 				add( txt );
@@ -327,8 +336,8 @@ public class WndHero extends WndTabbed {
 				icon.y = this.y;
 				txt.maxWidth((int)(width - icon.width()));
 				txt.setPos(
-						icon.width + GAP,
-						this.y + (icon.height - txt.height()) / 2
+						icon.width() + GAP,
+						this.y + (icon.height() - txt.height()) / 2
 				);
 				PixelScene.align(txt);
 			}

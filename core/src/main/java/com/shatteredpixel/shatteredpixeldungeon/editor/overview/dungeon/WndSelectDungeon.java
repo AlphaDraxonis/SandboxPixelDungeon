@@ -541,14 +541,14 @@ public class WndSelectDungeon extends Window {
                 };
                 add(copy);
 
-                float iconWidth = rename.icon().width + copy.icon().width + 2;
+                float iconWidth = rename.icon().width() + copy.icon().width() + 2;
 
                 float pos = 2;
                 title.maxWidth((int) (width - iconWidth - 2));
                 title.setPos((title.maxWidth() - title.width()) * 0.5f, pos);
 
-                rename.setRect(width - iconWidth, title.top() + (title.height() - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
-                copy.setRect(rename.right() + 2, title.top() + (title.height() - rename.icon().height) * 0.5f, copy.icon().width, copy.icon().height);
+                rename.setRect(width - iconWidth, title.top() + (title.height() - rename.icon().height()) * 0.5f, rename.icon().width(), rename.icon().height());
+                copy.setRect(rename.right() + 2, title.top() + (title.height() - rename.icon().height()) * 0.5f, copy.icon().width(), copy.icon().height());
                 pos = title.bottom() + GAP;
 
                 pos = statSlot(Messages.get(WndSelectDungeon.class, "num_floors"), Integer.toString(info.numLevels), pos) + GAP * 3;

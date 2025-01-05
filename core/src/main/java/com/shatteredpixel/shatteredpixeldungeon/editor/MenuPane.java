@@ -148,8 +148,8 @@ public class MenuPane extends Component {
         public JournalButton() {
             super();
 
-            width = bg.width + 4;
-            height = bg.height + 4;
+            width = bg.width() + 4;
+            height = bg.height() + 4;
         }
 
         @Override
@@ -227,8 +227,8 @@ public class MenuPane extends Component {
         public MenuButton() {
             super();
 
-            width = image.width + 4;
-            height = image.height + 4;
+            width = image.width() + 4;
+            height = image.height() + 4;
         }
 
         @Override

@@ -39,7 +39,7 @@ public abstract class AdvancedListPaneItem extends ScrollingListPane.ListItem {
 
         if (subIcon != null && icon != null) {
             subIcon.x = x + ICON_WIDTH - (ItemSpriteSheet.Icons.SIZE + subIcon.width()) / 2f;
-            subIcon.y = y + 0.5f + (ItemSpriteSheet.Icons.SIZE - subIcon.height) / 2f;
+            subIcon.y = y + 0.5f + (ItemSpriteSheet.Icons.SIZE - subIcon.height()) / 2f;
             PixelScene.align(subIcon);
         }
         if (lvlLabel != null) {
