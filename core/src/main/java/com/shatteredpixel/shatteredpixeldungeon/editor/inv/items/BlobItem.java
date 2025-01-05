@@ -76,19 +76,16 @@ public class BlobItem extends EditorItem<Class<? extends Blob>> {
             if (r == null) return new ItemSprite();
             Image img = new Image(Assets.Sprites.ITEM_ICONS);
             img.frame(r);
-            img.originToCenter();
             img.scale.set(2.28f);//16/7=2.28
             return img;
         }
         if (blob == MagicalFireRoom.EternalFire.class) {
             Image icon = Icons.ETERNAL_FIRE.get();
-            icon.originToCenter();
             icon.scale.set(2.28f);//16/7=2.28
             return icon;
         }
         if (blob == SacrificialFire.class) {
             Image icon = Icons.SACRIFICIAL_FIRE.get();
-            icon.originToCenter();
             icon.scale.set(2.28f);//16/7=2.28
             return icon;
         }
