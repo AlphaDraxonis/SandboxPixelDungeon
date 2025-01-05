@@ -86,20 +86,22 @@ public class ScrollPaneWithScrollbar extends ScrollPane {
 
 		thumbVer.setVisible(false);
 	}
+	
+	private static final int MINIMUM_THUMB_SIZE = 13;
 
 	@Override
 	protected void layoutThumbs() {
 		//TODO when the thumb reaches the minimum size of 13, it can be moved further than intended!
 		if (scrollbarVer != null) {
 			float availableHeight = height;
-			float h = Math.max(13, availableHeight * Math.min(1, ScrollbarThumb.SCALE_FACTOR * availableHeight / content.height()));
+			float h = Math.max(MINIMUM_THUMB_SIZE, availableHeight * Math.min(1, ScrollbarThumb.SCALE_FACTOR * availableHeight / content.height()));
 			scrollbarVer.fullBarSize = availableHeight - h/2;
 			scrollbarVer.setRect(x + width - ScrollbarThumb.TOTAL_THICKNESS + ScrollbarThumb.GAP, y + (availableHeight * content.camera.scroll.y / content.height()),
 					ScrollbarThumb.THICKNESS, h);
 		}
 		if (scrollbarHor != null) {
 			float availableWidth = (width - (scrollbarVer != null ? ScrollbarThumb.TOTAL_THICKNESS + ScrollbarThumb.GAP : 0));
-			float w = Math.max(13, availableWidth * Math.min(1, ScrollbarThumb.SCALE_FACTOR * availableWidth / content.width()));
+			float w = Math.max(MINIMUM_THUMB_SIZE, availableWidth * Math.min(1, ScrollbarThumb.SCALE_FACTOR * availableWidth / content.width()));
 			scrollbarHor.fullBarSize = availableWidth - w/2;
 			scrollbarHor.setRect(x + (availableWidth * content.camera.scroll.x / content.width()), y + height - ScrollbarThumb.TOTAL_THICKNESS + ScrollbarThumb.GAP,
 					w, ScrollbarThumb.THICKNESS);

@@ -333,7 +333,7 @@ public class EditCompWindowTabbed extends WndTabbed {
     }
 
     @Override
-    public void select(Tab tab) {
+    protected void select(Tab tab) {
         Object obj = ((TabBtn) tab).obj;
         if (selectedObject != obj) {
             super.select(tab);

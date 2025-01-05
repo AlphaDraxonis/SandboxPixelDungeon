@@ -87,11 +87,11 @@ public class WndTabbed extends Window {
 		return tab;
 	}
 	
-	public void select( int index ) {
+	public final void select( int index ) {
 		select( tabs.get( index ) );
 	}
 	
-	public void select( Tab tab ) {
+	protected void select( Tab tab ) {
 		if (tab != selected) {
 			for (Tab t : tabs) {
 				if (t == selected) {

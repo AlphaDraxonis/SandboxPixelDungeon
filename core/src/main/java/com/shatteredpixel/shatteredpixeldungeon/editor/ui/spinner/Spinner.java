@@ -79,11 +79,6 @@ public class Spinner extends Component {
     }
 
     @Override
-    protected final void createChildren() {
-        super.createChildren();
-    }
-
-    @Override
     protected void layout() {
 
         int gap = label.text().isEmpty() ? 0 : GAP;

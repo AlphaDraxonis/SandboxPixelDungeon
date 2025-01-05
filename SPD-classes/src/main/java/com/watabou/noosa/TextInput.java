@@ -405,7 +405,7 @@ public class TextInput extends Component {
 		layoutContainer(true);
 	}
 	
-	private static final float SCROLL_NOT_SET = 999999;
+	private static final float SCROLL_NOT_SET = Float.NaN;
 	private float lastScrollX = SCROLL_NOT_SET, lastScrollY = SCROLL_NOT_SET;
 	
 	private void layoutContainer(boolean force) {
@@ -442,7 +442,7 @@ public class TextInput extends Component {
 			}
 			
 			float cameraBottom = c.y + c.scroll.y + c.height;
-			if (cameraBottom > 1 && contY + contH > cameraBottom) {
+			if (cameraBottom > 1 && cameraBottom <= contY + contH ) {
 				contH = Math.max(0, cameraBottom - contY);
 			}
 			

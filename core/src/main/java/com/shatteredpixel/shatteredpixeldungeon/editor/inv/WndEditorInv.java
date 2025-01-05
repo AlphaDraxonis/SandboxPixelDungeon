@@ -205,12 +205,12 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         }
         super.onBackPressed();
     }
-
+    
     @Override
-    public void select(int index) {
-        if (!tabs.isEmpty()) super.select(index);
+    protected void select(Tab tab) {
+        if (!tabs.isEmpty()) super.select(tab);
     }
-
+    
     public static void updateCurrentTab() {
         if (INSTANCE != null) {
             WndEditorInv w = (WndEditorInv) WndEditorInv.INSTANCE;

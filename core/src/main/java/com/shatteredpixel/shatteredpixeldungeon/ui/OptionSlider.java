@@ -174,21 +174,21 @@ public abstract class OptionSlider extends Component {
         sliderBG.size(width-5, 1);
         tickDist = sliderBG.width()/(maxVal - minVal);
         int numValues = (maxVal - minVal) + 1;
-        float ticksLeftOutPerTick = (numValues - sliderTicks.length) / (float)(sliderTicks.length-2);
-        float posNextSliderTick = x + 2;
+        float distancePerSliderTick = sliderBG.width() / (sliderTicks.length-1);
+        float posNextSliderTick = sliderBG.x;
         int indexNextSliderTick = 0;
         for (int i = 0; i < numValues; i++){
-            float xPos = x + 2 + (tickDist*i);
+            float xPos = sliderBG.x + (tickDist*i);
             if (xPos >= posNextSliderTick) {
                 sliderTicks[indexNextSliderTick].y = sliderBG.y-4;
                 sliderTicks[indexNextSliderTick].x = xPos;
                 PixelScene.align(sliderTicks[indexNextSliderTick]);
                 indexNextSliderTick++;
-                posNextSliderTick += tickDist*ticksLeftOutPerTick;
+                posNextSliderTick += distancePerSliderTick;
             }
         }
         sliderTicks[sliderTicks.length-1].y = sliderBG.y-4;
-        sliderTicks[sliderTicks.length-1].x = x + 2 + (tickDist * (numValues-1) );
+        sliderTicks[sliderTicks.length-1].x = sliderBG.x + (tickDist * (numValues-1) );
         PixelScene.align(sliderTicks[sliderTicks.length-1]);
         
         
