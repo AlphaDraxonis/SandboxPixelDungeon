@@ -249,7 +249,6 @@ public class GameScene extends DungeonScene {
 		hero.place( Dungeon.hero.pos );
 		hero.updateArmor();
 		mobs.add( hero );
-		Dungeon.hero.updateSpriteState();
 		
 		for (Mob mob : Dungeon.level.mobs) {
 			addMobSprite( mob );
