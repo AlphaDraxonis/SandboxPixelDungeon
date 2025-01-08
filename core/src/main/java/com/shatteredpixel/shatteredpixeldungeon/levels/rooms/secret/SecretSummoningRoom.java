@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrapMechanism;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -48,7 +49,7 @@ public class SecretSummoningRoom extends SecretRoom {
 	public void paint(Level level) {
 		Painter.fill(level, this, Terrain.WALL);
 		Painter.fill(level, this, 1, Terrain.SECRET_TRAP);
-
+		
 		if (!itemsGenerated) generateItems(level);
 
 		int pos = level.pointToCell(center());
@@ -57,10 +58,20 @@ public class SecretSummoningRoom extends SecretRoom {
 		}
 		spawnItemsInRoom.clear();
 		
+		float revealedChance = TrapMechanism.revealHiddenTrapChance();
+		float revealInc = 0;
+		
 		for (Point p : getPoints()){
 			int cell = level.pointToCell(p);
 			if (level.map[cell] == Terrain.SECRET_TRAP){
-				level.setTrap(new SummoningTrap().hide(), cell);
+				revealInc += revealedChance;
+				if (revealInc >= 1) {
+					level.setTrap(new SummoningTrap().reveal(), cell);
+					Painter.set(level, cell, Terrain.TRAP);
+					revealInc--;
+				} else {
+					level.setTrap(new SummoningTrap().hide(), cell);
+				}
 			}
 		}
 		
