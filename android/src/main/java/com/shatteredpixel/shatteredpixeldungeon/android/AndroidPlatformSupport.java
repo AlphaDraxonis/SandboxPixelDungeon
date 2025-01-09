@@ -30,6 +30,7 @@ import android.net.NetworkInfo;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.WindowManager;
 import com.badlogic.gdx.Gdx;
@@ -351,7 +352,17 @@ public class AndroidPlatformSupport extends PlatformSupport {
 //		intent.putExtra(Intent.EXTRA_TITLE, "TITLE");
 		AndroidLauncher.instance.startActivityForResult(intent, AndroidLauncher.REQUEST_DIRECTORY);
 	}
-
+	
+	@Override
+	public void selectImageFile(Consumer<Object> callback) {
+		
+		AndroidLauncher.importImageFileCallback = callback;
+		
+		Intent intent = new Intent(Intent.ACTION_PICK);
+		intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+		AndroidLauncher.instance.startActivityForResult(intent, AndroidLauncher.REQUEST_IMAGE_IMPORT);
+	}
+	
 	@Override
 	public boolean canReadExternalFilesIfUserGrantsPermission() {
 		return Build.VERSION.SDK_INT < Build.VERSION_CODES.R || AndroidLauncher.FILE_ACCESS_ENABLED_ON_ANDROID_11;

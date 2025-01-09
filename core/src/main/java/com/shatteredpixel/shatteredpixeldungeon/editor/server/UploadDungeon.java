@@ -1,9 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.server;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.TabResourceFiles;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.ItemContainer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseObjectComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StringInputComp;
@@ -11,19 +16,33 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.DungeonPreview;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptionsCondensed;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Consumer;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.FileUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @NotAllowedInLua
 public class UploadDungeon extends Component implements MultiWindowTabComp.BackPressImplemented {
@@ -37,6 +56,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
     protected ChooseObjectComp selectDungeon;
     protected StringInputComp description;
     protected StringInputComp userName;
+    protected PreviewImageSelector previewImageSelector;
     protected Spinner difficulty;
 
 
@@ -109,6 +129,14 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                     }
                 });
             }
+            
+            @Override
+            public void selectObject(Object object) {
+                super.selectObject(object);
+                if (previewImageSelector != null) {
+                    previewImageSelector.reloadAll();
+                }
+            }
         };
         add(selectDungeon);
 
@@ -124,6 +152,11 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         if (type == ServerCommunication.UploadType.UPLOAD) {
             userName = new StringInputComp(Messages.get(UploadDungeon.class, "username_label") +":", null, 50, false, null);
             add(userName);
+        }
+        
+        if (type == ServerCommunication.UploadType.UPLOAD) {
+            previewImageSelector = new PreviewImageSelector();
+            add(previewImageSelector);
         }
 
         if (type != ServerCommunication.UploadType.REPORT_BUG) {
@@ -153,7 +186,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         height = 0;
         if (info != null) info.maxWidth((int) width);
         if (legalInfo != null) legalInfo.maxWidth((int) width);
-        height = EditorUtilities.layoutCompsLinear(4, this, info, selectDungeon, description, userName, difficulty, legalInfo) + 1;
+        height = EditorUtilities.layoutCompsLinear(4, this, info, selectDungeon, description, userName, previewImageSelector, difficulty, legalInfo) + 1;
     }
 
     public Component createTitle() {
@@ -167,6 +200,155 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
 
     public Component getOutsideSp() {
         return outsideSp;
+    }
+    
+    protected class PreviewImageSelector extends ItemContainerWithLabel<ImageFileItem> {
+        
+        private static final int MAX_NUM_SLOTS = 5;
+        
+        private FileHandle[] knownPreviewImages;
+        
+        public PreviewImageSelector() {
+            super(new ArrayList<>(), null, Messages.get(PreviewImageSelector.class, "label"), false, 0, MAX_NUM_SLOTS);
+		}
+        
+        @Override
+        protected void showSelectWindow() {
+            String dungeon = (String) selectDungeon.getObject();
+            if (dungeon != null) {
+                FileHandle destPath = getDir(dungeon);
+                if (DeviceCompat.isDesktop()) {
+                    String[] option = SandboxPixelDungeon.platform.supportsOpenFileExplorer()
+                            ? new String[]{ Messages.get(WndSelectDungeon.class, "open_file_explorer") }
+                            : new String[]{ };
+                    DungeonScene.show(new WndOptions(Messages.get(this, "import_preview_image_title"),
+                            Messages.get(this, "import_preview_image_info") + "\n\n" + Messages.get(this, "import_preview_image_location", destPath.path()), option) {
+                        {
+                            tfMessage.setHighlighting(false);
+                        }
+                        @Override
+                        protected void onSelect(int index) {
+                            if (index == 0) {
+                                SandboxPixelDungeon.platform.openFileExplorer(getDir(dungeon));
+                            }
+                        }
+                    });
+                } else {
+                    SandboxPixelDungeon.platform.selectImageFile(new Consumer<Object>() {
+                        @Override
+                        public void accept(Object obj) {
+                            if (obj instanceof Exception) {
+                                DungeonScene.show(new WndError((Throwable) obj));
+                            } else {
+                                byte[] data = (byte[]) obj;
+                                int nextFreeIndex = MAX_NUM_SLOTS;
+                                for (int i = 0; i < knownPreviewImages.length; i++) {
+                                    if (knownPreviewImages[i] == null) {
+                                        nextFreeIndex = i;
+                                        break;
+                                    }
+                                }
+                                FileHandle dest = destPath.child(Messages.format("preview%d.png", (nextFreeIndex+1)));
+                                dest.writeBytes(data, false);
+                                previewImageSelector.syncPreviewImageFiles();
+                            }
+                        }
+                    });
+                }
+            } else {
+                DungeonScene.show(new WndMessage(Messages.get(this, "select_dungeon_first")));
+            }
+        }
+        
+        @Override
+        protected void showWndEditItemComp(ItemContainer<ImageFileItem>.Slot slot, Item item) {
+            TabResourceFiles.viewResource(((ImageFileItem) item).getObject().path(), ((ImageFileItem) item).getObject());
+        }
+        
+        @Override
+        protected boolean removeSlot(ItemContainer<ImageFileItem>.Slot slot) {
+            DungeonScene.show(new WndOptionsCondensed(Messages.get(this, "delete_preview_image_title"),
+                    Messages.get(this, "delete_preview_image_desc"),
+                    Messages.get(HeroSelectScene.class, "daily_yes"), Messages.get(HeroSelectScene.class, "daily_no")) {
+                @Override
+                protected void onSelect(int index) {
+                    if (index == 0) {
+                        PreviewImageSelector.super.removeSlot(slot);
+                        ((ImageFileItem) slot.item()).getObject().delete();
+                    }
+                }
+            });
+            return true;
+        }
+        
+        @Override
+        protected void onSlotNumChange() {
+            if (window != null) window.layout();
+        }
+        
+        private float lastSynced;
+        
+        @Override
+        public synchronized void update() {
+            super.update();
+            lastSynced += Game.elapsed;
+            if (lastSynced >= 2) {
+                syncPreviewImageFiles();
+            }
+        }
+        
+        public void syncPreviewImageFiles() {
+            lastSynced = 0;
+            
+            String dungeon = (String) selectDungeon.getObject();
+            if (dungeon != null) {
+                FileHandle[] newPreviewImages = new FileHandle[knownPreviewImages.length];
+                
+                FileHandle dungeonDir = getDir(dungeon);
+                FileHandle[] files = dungeonDir.list(".png");
+                
+                for (int i = 0; i < files.length; i++) {
+                    String name = files[i].name();
+                    if (name.length() == 12 && name.startsWith("preview")) {
+                        char num = name.charAt(7);
+                        if (Character.isDigit(num)) {
+                            int index = Integer.parseInt(Character.toString(num)) - 1;
+                            newPreviewImages[index] = files[i];
+                        }
+                    }
+                }
+                
+                for (int i = 0; i < knownPreviewImages.length; i++) {
+                    String prev = knownPreviewImages[i] == null ? null : knownPreviewImages[i].path();
+                    String now = newPreviewImages[i] == null ? null : newPreviewImages[i].path();
+                    
+                    if (!Objects.equals(prev, now)) {
+                        //update
+                        knownPreviewImages = newPreviewImages;
+                        for (Slot slot : slots) {
+                            super.removeSlot(slot);
+                        }
+                        for (FileHandle knownPreviewImage : knownPreviewImages) {
+                            if (knownPreviewImage != null) {
+                                previewImageSelector.addNewItem(new ImageFileItem(knownPreviewImage));
+                            }
+                        }
+                        return;
+                    }
+                    
+                }
+            }
+            
+        }
+        
+        public void reloadAll() {
+            knownPreviewImages = new FileHandle[MAX_NUM_SLOTS];
+            syncPreviewImageFiles();
+        }
+        
+        private FileHandle getDir(String dungeonName) {
+            return FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), CustomDungeonSaves.DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/");
+        }
     }
 
 

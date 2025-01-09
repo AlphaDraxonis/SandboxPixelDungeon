@@ -35,7 +35,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
     protected ScrollPane sp;
     protected Component content;
 
-    private SubMenuComp subMenuComp;
+    protected SubMenuComp subMenuComp;
 
     protected Component[] mainWindowComps;
 

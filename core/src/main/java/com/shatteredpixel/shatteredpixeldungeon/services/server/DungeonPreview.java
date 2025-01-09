@@ -22,6 +22,10 @@ public class DungeonPreview implements Bundlable {
     //entered by server
     public long uploadTime;
     public String dungeonFileID;
+    
+    public String[] previewImageFileIDs;
+    
+    public boolean isDebug;//only shown if ebug mode is enabled
 
     //TODO more information like rating, download counter, image
 
@@ -32,6 +36,8 @@ public class DungeonPreview implements Bundlable {
     private static final String UPLOADER = "uploader";
     private static final String DIFFICULTY = "difficulty";
     private static final String UPLOAD_TIME = "upload_time";
+    private static final String PREVIEW_IMAGE_FILE_IDS = "preview_image_file_ids";
+    private static final String IS_DEBUG = "is_debug";
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
@@ -42,6 +48,8 @@ public class DungeonPreview implements Bundlable {
         uploader = bundle.getString(UPLOADER);
         difficulty = bundle.getInt(DIFFICULTY);
         uploadTime = bundle.getLong(UPLOAD_TIME);
+        if (bundle.contains(PREVIEW_IMAGE_FILE_IDS)) previewImageFileIDs = bundle.getStringArray(PREVIEW_IMAGE_FILE_IDS);
+        isDebug = bundle.getBoolean(IS_DEBUG);
     }
 
     @Override
@@ -53,6 +61,8 @@ public class DungeonPreview implements Bundlable {
         bundle.put(UPLOADER, uploader);
         bundle.put(DIFFICULTY, difficulty);
         bundle.put(UPLOAD_TIME, uploadTime);
+        if (previewImageFileIDs != null) bundle.put(PREVIEW_IMAGE_FILE_IDS, previewImageFileIDs);
+        bundle.put(IS_DEBUG, isDebug);
     }
 
     public String writeArgumentsForURL() {

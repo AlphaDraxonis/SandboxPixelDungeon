@@ -50,7 +50,7 @@ public class FileUtils {
 	}
 
 	public static Files.FileType getFileTypeForCustomDungeons(){
-		if(DeviceCompat.isDesktop())return originalFileType;
+		if (DeviceCompat.isDesktop()) return originalFileType;
 		return Files.FileType.External;
 	}
 

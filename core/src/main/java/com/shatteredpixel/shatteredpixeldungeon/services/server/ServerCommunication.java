@@ -89,7 +89,7 @@ public final class ServerCommunication {
             }
         }
         //tzz change url in server file!!!! SEEEEEEHHHRRR WICHTIG!
-        return URL == null||true ? "https://script.google.com/macros/s/AKfycbzhOKXc0vMbNxZQdBoAr3QLJ7WSFlJDLFqDSx2GThzVwfFuQbdr1jam9zTxxmnYFCMlsw/exec" : URL;
+        return URL == null||true ? "https://script.google.com/macros/s/AKfycby5KmTrrbVonNFz32DRbrNzpgWQ_ooZoKqB52Kc9QSaZcc0R644MPTcGZQBRXjklXX8Zw/exec" : URL;
     }
 
     static String getUUID() {
@@ -145,11 +145,13 @@ public final class ServerCommunication {
             hideWindow();
             if (t instanceof UnknownHostException) Game.scene().addToFront(new WndError(Messages.get(ServerCommunication.class, "no_internet")));
             else
-                Game.scene().addToFront(new WndError(Messages.get(ServerCommunication.class, "error") + ":\n" + t.getClass().getSimpleName() + ": " + t.getMessage()) {
-                    {
-                        setHighlightingEnabled(false);
-                    }
-                });
+                if (DeviceCompat.isDebug()) {
+                    Game.scene().addToFront(new WndError(Messages.get(ServerCommunication.class, "error") + ":\n" + t.getClass().getSimpleName() + ": " + t.getMessage()) {
+                        {
+                            setHighlightingEnabled(false);
+                        }
+                    });
+                }
         }
 
         public void appendMessage(String msg) {
@@ -244,6 +246,10 @@ public final class ServerCommunication {
                                 preview = new DungeonPreview();
                                 preview.restoreFromBundle(bundle);
                                 preview.dungeonFileID = b.getString("dungeonID");
+                                
+                                if (preview.isDebug && !DeviceCompat.isDebug()) {
+                                    continue;
+                                }
 
                             } catch (Exception e) {
                                 preview = new DungeonPreview();
@@ -253,7 +259,8 @@ public final class ServerCommunication {
                         }
                     }
                 } catch (Exception e) {
-                    Game.runOnRenderThread(() -> callback.failed(e.getMessage() == null ? new IOException(String.valueOf(httpResponse.getStatus().getStatusCode())) : e));
+                    if (DeviceCompat.isDebug())
+                        Game.runOnRenderThread(() -> callback.failed(e.getMessage() == null ? new IOException(String.valueOf(httpResponse.getStatus().getStatusCode())) : e));
                     return;
                 }
                 //sorting is already done on the backend

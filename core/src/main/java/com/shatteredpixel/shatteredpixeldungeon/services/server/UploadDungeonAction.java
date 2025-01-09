@@ -48,6 +48,8 @@ public class UploadDungeonAction {
 
 	private int openResponses;
 	private boolean canceled;
+	
+	private DungeonPreview uploadPreview;
 
 	private List<Throwable> errors = new ArrayList<>(2);
 	private List<Net.HttpRequest> openRequests = new ArrayList<>();
@@ -59,7 +61,7 @@ public class UploadDungeonAction {
 		this.callback = callback;
 		try {
 
-			DungeonPreview uploadPreview = new DungeonPreview();
+			uploadPreview = new DungeonPreview();
 			uploadPreview.title = dungeonName;
 			uploadPreview.description = description;
 			uploadPreview.version = Game.version;
@@ -246,7 +248,8 @@ public class UploadDungeonAction {
 		httpRequest.setUrl(ServerCommunication.getURL()
 				+ "?action=finishUpload"
 				+ "&dungeonID=" + folderID
-				+ "&userID=" + ServerCommunication.getUUID());
+				+ "&userID=" + ServerCommunication.getUUID()
+				+ uploadPreview.writeArgumentsForURL());
 		httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
 		httpRequest.setContent("empty");
 

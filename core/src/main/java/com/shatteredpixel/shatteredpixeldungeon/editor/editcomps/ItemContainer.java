@@ -72,7 +72,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         this.maxSlots = Math.max(itemList.size(), maxSlots);
         slots = new LinkedList<>();
 
-        addBtn = new IconButton(Icons.get(Icons.PLUS)) {
+        addBtn = new IconButton(Icons.PLUS.get()) {
             @Override
             protected void onClick() {
                 showSelectWindow();

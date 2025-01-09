@@ -47,6 +47,8 @@ public class UpdateDungeonAction {
 
 	private int openResponses;
 	private boolean canceled;
+	
+	private DungeonPreview uploadPreview;
 
 	private List<Throwable> errors = new ArrayList<>(2);
 	private List<Net.HttpRequest> openRequests = new ArrayList<>();
@@ -71,7 +73,7 @@ public class UpdateDungeonAction {
 				}
 			}
 
-			DungeonPreview uploadPreview = new DungeonPreview();
+			uploadPreview = new DungeonPreview();
 			uploadPreview.title = dungeonName == null ? oldDungeonPreview.title : dungeonName;
 			uploadPreview.description = description;
 			uploadPreview.version = Game.version;
@@ -255,6 +257,7 @@ public class UpdateDungeonAction {
 				+ "&dungeonID=" + folderID
 				+ "&oldDungeon=" + oldDungeonID
 				+ "&changeFiles=" + (files != null)
+				+ uploadPreview.writeArgumentsForURL()
 				+ "&userID=" + ServerCommunication.getUUID());
 		httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
 		httpRequest.setContent("empty");

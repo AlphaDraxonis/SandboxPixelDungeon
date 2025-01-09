@@ -162,7 +162,7 @@ public class CustomDungeonSaves {
 
 	public static void writeBytesToFileNoBackup( String basePath, String name, byte[] bytes ) throws IOException {
 		try {
-			FileHandle file = FileUtils.getFileHandle( basePath + name);
+			FileHandle file = FileUtils.getFileHandle(FileUtils.getFileTypeForCustomDungeons(), basePath + name);
 			file.writeBytes(bytes, false);
 		} catch (GdxRuntimeException e) {
 			throw new IOException(e);

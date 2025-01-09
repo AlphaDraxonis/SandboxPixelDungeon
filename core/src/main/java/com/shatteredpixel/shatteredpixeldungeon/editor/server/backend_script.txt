@@ -10,7 +10,8 @@ const UPLOAD_TEMP = "1y6Z9AN43QOnEQzk5SZv32MQTp-WTKpxU";
 
 
 function doPost(e) {
-  if (e.parameter.action === "uploadStart") {
+
+  if (e.parameter.action == "uploadStart") {
 
     console.log("dungeon upload start");
 
@@ -27,27 +28,12 @@ function doPost(e) {
 
     const folderID = createDirectory(e.parameter.title, uploadTemp);
 
-    const preview = {
-      title: e.parameter.title,
-      description: e.parameter.description,
-      dungeonID: folderID,
-      version: e.parameter.version,
-      int_version: e.parameter.int_version,
-      uploader: e.parameter.uploader,
-      difficulty: e.parameter.difficulty,
-      upload_time: new Date().getTime(),
-      userHash: userIDFileContent.id1.substring(0, 10),
-    };
-    uploadFile(JSON.stringify(preview), preview.upload_time + "_" + folderID, "", uploadTemp, false);
-
     uploadFile(JSON.stringify(userIDFileContent), folderID, "", uploadTemp, false);
-
-    sendNotificationEmail(e.parameter.title, "Uploaded", e.parameter.description, e.parameter.int_version);
 
     return ContentService.createTextOutput(true.toString() + folderID)
       .setMimeType(ContentService.MimeType.TEXT);
   }
-  else if (e.parameter.action === "finishUpload") {
+  else if (e.parameter.action == "finishUpload") {
 
     const user = e.parameter.userID;
     const userIDs = {
@@ -69,6 +55,7 @@ function doPost(e) {
     if (!isCreatorDuringUpload(uploadTemp, dungeonID, userIDs.id1, userIDs.id2)) return ContentService.createTextOutput("not the creator!")
       .setMimeType(ContentService.MimeType.TEXT);
 
+    uploadPreviewFile(e, userIDs, uploadTemp, "Uploaded");
 
     dungeonFolder.moveTo(DriveApp.getFolderById(FULL_DUNGEON_FOLDER));
     uploadTemp.getFilesByName(dungeonID).next().moveTo(DriveApp.getFolderById(USER_ID_FOLDER));
@@ -131,13 +118,6 @@ function doPost(e) {
     let folderID = e.parameter.folderID;
     const changeFiles = e.parameter.changeFiles === "true";
 
-    let new_int_version;
-    if (changeFiles) {
-      new_int_version = e.parameter.int_version;
-    } else {
-      new_int_version = readIntVersion(folderID);
-    }
-
 
     let newDungeonID;
 
@@ -150,23 +130,7 @@ function doPost(e) {
     }
 
 
-
-    const preview = {
-      title: e.parameter.title,
-      description: e.parameter.description,
-      dungeonID: newDungeonID,
-      version: e.parameter.version,
-      int_version: new_int_version,
-      uploader: e.parameter.uploader,
-      difficulty: e.parameter.difficulty,
-      upload_time: new Date().getTime(),
-      userHash: userIDFileContent.id1.substring(0, 10),
-    };
-    uploadFile(JSON.stringify(preview), preview.upload_time + "_" + newDungeonID, "", uploadTemp, false);
-
     uploadFile(JSON.stringify(userIDFileContent), newDungeonID, "", uploadTemp, false);
-
-    sendNotificationEmail(e.parameter.title, "Updated", e.parameter.description, new_int_version);
 
     return ContentService.createTextOutput(true.toString() + folderID)
       .setMimeType(ContentService.MimeType.TEXT);
@@ -206,6 +170,10 @@ function doPost(e) {
     if (!isCreatorDuringUpload(uploadTemp, fileNameOfUserID, userIDs.id1, userIDs.id2)) return ContentService.createTextOutput("not the creator!")
       .setMimeType(ContentService.MimeType.TEXT);
 
+    if (!changeFiles) {
+      e.parameter.int_version = readIntVersion(folderID);
+    }
+    uploadPreviewFile(e, userIDs, uploadTemp, "Updated");
 
     if (!deleteDungeon(oldDungeon, userIDs.id1, userIDs.id2, changeFiles))
       return ContentService.createTextOutput(false.toString())
@@ -300,6 +268,13 @@ function doGet(e) {
     return ContentService.createTextOutput(result)
       .setMimeType(ContentService.MimeType.JSON);
   }
+
+  else if (e.parameter.action === "getLatestUploadTime") {
+
+    return ContentService.createTextOutput(getLatestUploadTime().toString())
+        .setMimeType(ContentService.MimeType.TEXT);
+  }
+
   else if (e.parameter.action === "downloadStart") {
 
     const userID = e.parameter.userID;
@@ -345,6 +320,67 @@ function doGet(e) {
   else {
     return ContentService.createTextOutput("Invalid action: " + e.parameter.action);
   }
+}
+
+function uploadPreviewFile(e, userIDs, uploadTemp, action) {
+  const preview = {
+      title: e.parameter.title,
+      description: e.parameter.description,
+      dungeonID: e.parameter.dungeonID,
+      version: e.parameter.version,
+      int_version: e.parameter.int_version,
+      uploader: e.parameter.uploader,
+      difficulty: e.parameter.difficulty,
+      upload_time: new Date().getTime(),
+      is_debug: true,//tzz make it false
+      userHash: userIDs.id1.substring(0, 10),
+      preview_image_file_ids: getPreviewImageFileIds(e.parameter.dungeonID),
+    };
+    uploadFile(JSON.stringify(preview), preview.upload_time + "_" + e.parameter.dungeonID, "", uploadTemp.getId(), false);
+
+    if (!preview.is_debug)
+      sendNotificationEmail(e.parameter.title, action, e.parameter.description, e.parameter.int_version);
+}
+
+function getPreviewImageFileIds(folderId) {
+  var folder = DriveApp.getFolderById(folderId);
+  var files = folder.getFiles();
+  var previewFileIds = [];
+
+  while (files.hasNext()) {
+    var file = files.next();
+    var fileName = file.getName();
+
+    if (fileName.match(/^preview(\d+)\.png$/)) {
+      var fileNumber = parseInt(match[1], 10);
+      previewFileIds.push({ id: file.getId(), number: fileNumber });
+    }
+  }
+
+  previewFileIds.sort(function(a, b) {
+    return a.number - b.number;
+  });
+
+  return previewFileIds.map(function(file) {
+    return file.id;
+  });
+}
+
+function getLatestUploadTime() {
+  const folder = DriveApp.getFolderById(FULL_DUNGEON_FOLDER);
+
+  let latestModifiedDate = 0;
+
+  const files = folder.getFolders();
+  while (files.hasNext()) {
+    var fileModifiedDate = files.next().getLastUpdated().getTime();
+
+    if (fileModifiedDate > latestModifiedDate) {
+      latestModifiedDate = fileModifiedDate;
+    }
+  }
+
+  return latestModifiedDate;
 }
 
 function createDirectory(name, parentDirectory) {
@@ -407,7 +443,6 @@ function deleteDungeon(folderID, id1, id2, deleteDungeonFiles) {
   if (!isCreator(folderID, id1, id2)) return 'UserID is incorrect!';
 
   if (deleteDungeonFiles) DriveApp.getFileById(folderID).setTrashed(true);
-
 
   const allPreviewFiles = DriveApp.getFolderById(PREVIEW_FOLDER).getFiles();
   while (allPreviewFiles.hasNext()) {
@@ -477,7 +512,9 @@ function getAllFileIdsInFolder(folder, currentPath = '') {
   while (files.hasNext()) {
     var file = files.next();
     var filePath = currentPath + file.getName();
-    result.push({ id: file.getId(), path: filePath});
+    if (!filePath.match(/^preview(\d+)\.png$/)) {
+      result.push({ id: file.getId(), path: filePath});
+    }
   }
 
   var subfolders = folder.getFolders();

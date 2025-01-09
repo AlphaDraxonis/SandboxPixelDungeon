@@ -77,6 +77,9 @@ public abstract class PlatformSupport {
 //			new FileHandle(selectedFile).copyTo(dest);
 //		}
 	}
+	
+	public void selectImageFile(Consumer<Object> callback) {
+	}
 
 	public boolean canReadExternalFilesIfUserGrantsPermission() {
 		return false;

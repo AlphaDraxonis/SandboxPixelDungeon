@@ -176,7 +176,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		for (int i = 0; i < dungeons[page].length; i++) {
 			killMainWindowComp(i);
 			mainWindowComps[i] = createListItem(dungeons[page][i]);
-			content.add(mainWindowComps[i]);
+			content.addToBack(mainWindowComps[i]);
 		}
 	}
 

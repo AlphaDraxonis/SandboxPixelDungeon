@@ -32,19 +32,49 @@ import com.watabou.noosa.ui.Component;
 public class WndImageViewer extends SimpleWindow {
 
 	public WndImageViewer(Image image) {
-		super(
-				Math.min((int) (PixelScene.uiCamera.width * 0.9), image.texture.width / PixelScene.defaultZoom + 1),
-				Math.min((int) (PixelScene.uiCamera.height * 0.9), image.texture.height / PixelScene.defaultZoom + 5)
-		);
+		float scaleX = 1f, scaleY = 1f;
+		float prefWidth = image.texture.width / PixelScene.defaultZoom + 1;
+		if (PixelScene.uiCamera.width * 0.9f < prefWidth) {
+			scaleX = (PixelScene.uiCamera.width * 0.9f - 1) * PixelScene.defaultZoom / image.texture.width;
+		}
+		float prefHeight = image.texture.height / PixelScene.defaultZoom + 5;
+		if (PixelScene.uiCamera.height * 0.9f < prefHeight) {
+			scaleY = (PixelScene.uiCamera.height * 0.9f - 5) * PixelScene.defaultZoom / image.texture.height;
+		}
+		float neededScale = Math.min(scaleX, scaleY);
+		if (neededScale == 1f) {
+			image.scale.set(1f / PixelScene.defaultZoom);
+			resize((int) prefWidth, (int) prefHeight);
+		} else {
+			image.scale.set(neededScale / PixelScene.defaultZoom);
+			if (scaleX < scaleY) {
+				resize(
+						(int) (prefWidth * neededScale + 1),
+						(int) Math.min(PixelScene.uiCamera.height * 0.9f, prefHeight * neededScale + 5)
+				);
+			} else {
+				resize(
+						(int) Math.min(PixelScene.uiCamera.width * 0.9f, prefWidth * neededScale + 1),
+						(int) (prefHeight * neededScale + 5)
+				);
+			}
+			
+		}
+		
+//		super(
+//				Math.min((int) (PixelScene.uiCamera.width * 0.9f), image.texture.width / PixelScene.defaultZoom + 1),
+//				Math.min((int) (PixelScene.uiCamera.height * 0.9f), image.texture.height / PixelScene.defaultZoom + 5)
+//		);
+//		image.scale.set(1f / PixelScene.defaultZoom);
+		
 		initComponents(null, new Body(image), null, 0.5f, 0f);
 	}
 
-	private static class Body extends Component {
+	private static final class Body extends Component {
 		private final Image image;
 
 		private Body(Image image) {
 			this.image = image;
-			image.scale.set(1f / PixelScene.defaultZoom);
 			add(image);
 		}
 
