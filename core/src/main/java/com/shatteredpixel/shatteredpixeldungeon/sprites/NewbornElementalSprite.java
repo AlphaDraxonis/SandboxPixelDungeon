@@ -67,7 +67,7 @@ public class NewbornElementalSprite extends MobSprite{
 	@Override
 	public void die() {
 		super.die();
-		remove( CharSprite.State.BURNING );
+		processStateRemoval( CharSprite.State.BURNING );
 	}
 
 	@Override
