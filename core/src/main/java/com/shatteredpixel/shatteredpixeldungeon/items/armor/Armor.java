@@ -238,6 +238,10 @@ public class Armor extends EquipableItem {
 		return super.identify(byHero);
 	}
 
+	public void setIDReady(){
+		usesLeftToID = -1;
+	}
+
 	public boolean readyToIdentify(){
 		return !isIdentified() && usesLeftToID <= 0;
 	}
@@ -528,7 +532,7 @@ public class Armor extends EquipableItem {
 					if (usesLeftToID > -1){
 						GLog.p(Messages.get(ShardOfOblivion.class, "identify_ready"), name());
 					}
-					usesLeftToID = -1;
+					setIDReady();
 				} else {
 					identify();
 					GLog.p(Messages.get(Armor.class, "identify"));
