@@ -76,7 +76,7 @@ public class RockfallTrap extends Trap {
 			
 		//if we don't have a room, then just do 5x5
 		} else {
-			PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.solid, null ), 2, true );
+			PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.solid, null ), 2 );
 			for (int i = 0; i < PathFinder.distance.length; i++) {
 				if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 					rockCells.add(i);

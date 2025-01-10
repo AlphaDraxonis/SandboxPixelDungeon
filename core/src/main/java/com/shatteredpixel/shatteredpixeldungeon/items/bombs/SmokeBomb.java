@@ -45,7 +45,7 @@ public class SmokeBomb extends Bomb {
 		super.explode(cell);
 
 		int centerVolume = 1000; //40*25
-		PathFinder.buildDistanceMapForEnvironmentals( cell, BArray.not( Dungeon.level.solid, null ), explosionRange(), true );
+		PathFinder.buildDistanceMapForEnvironmentals( cell, BArray.not( Dungeon.level.solid, null ), explosionRange() );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 				GameScene.add( Blob.seed( i, 40, SmokeScreen.class ) );

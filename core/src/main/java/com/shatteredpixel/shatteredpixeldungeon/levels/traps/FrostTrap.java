@@ -46,7 +46,7 @@ public class FrostTrap extends Trap {
 			Sample.INSTANCE.play( Assets.Sounds.SHATTER );
 		}
 		
-		PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.solid, null ), 2, true );
+		PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.solid, null ), 2 );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 				GameScene.add(Blob.seed(i, 20, Freezing.class));

@@ -345,7 +345,7 @@ public class ShadowClone extends ArmorAbility {
 
 			int curPos = pos;
 
-			PathFinder.buildDistanceMap(c.pos, Dungeon.level.getPassableAndAvoidVarForBoth(c, this));
+			PathFinder.buildDistanceMap(c.pos, Dungeon.level.getPassableAndAvoidVarForBoth(c, this), this);
 			if (PathFinder.distance[pos] == Integer.MAX_VALUE){
 				return true;
 			}

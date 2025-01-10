@@ -55,7 +55,7 @@ public class DisplacingDart extends TippedDart {
 			ArrayList<Integer> visiblePositions = new ArrayList<>();
 			ArrayList<Integer> nonVisiblePositions = new ArrayList<>();
 
-			PathFinder.buildDistanceMap(attacker.pos, Dungeon.level.getPassableAndAvoidVar(defender));
+			PathFinder.buildDistanceMap(attacker.pos, Dungeon.level.getPassableAndAvoidVar(defender), defender);
 
 			for (int pos = 0; pos < Dungeon.level.length(); pos++){
 				if (Dungeon.level.isPassable(pos, defender)

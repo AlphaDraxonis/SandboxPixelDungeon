@@ -657,7 +657,7 @@ public abstract class Mob extends Char implements Customizable {
 				return null;
 			} else {
 				//go after the closest potential enemy, preferring enemies that can be reached/attacked, and the hero if two are equidistant
-				PathFinder.buildDistanceMap(pos, Dungeon.findPassable(this, Dungeon.level.getPassableVar(this), hasMindVision ? Dungeon.level.getPassableVar(this) : fieldOfView, true));
+				PathFinder.buildDistanceMap(pos, Dungeon.findPassable(this, Dungeon.level.getPassableVar(this), hasMindVision ? Dungeon.level.getPassableVar(this) : fieldOfView, true), this);
 				Char closest = null;
 				int closestDist = Integer.MAX_VALUE;
 
@@ -779,7 +779,7 @@ public abstract class Mob extends Char implements Customizable {
 
 		int step = -1;
 
-		if (Dungeon.level.adjacent( pos, target ) && ArrowCell.allowsStep( pos, target )) {
+		if (Dungeon.level.adjacent( pos, target ) && ArrowCell.allowsStep( pos, target, this )) {
 
 			path = null;
 
@@ -801,7 +801,7 @@ public abstract class Mob extends Char implements Customizable {
 			else if (path.getLast() != target) {
 				//if the new target is adjacent to the end of the path, adjust for that
 				//rather than scrapping the whole path.
-				if (Dungeon.level.adjacent(target, path.getLast())) {
+				if (Dungeon.level.adjacent(target, path.getLast()) && ArrowCell.allowsStep(pos, path.getLast(), this)) {
 					int last = path.removeLast();
 
 					if (path.isEmpty()) {
@@ -820,7 +820,7 @@ public abstract class Mob extends Char implements Customizable {
 						if (path.getLast() == target) {
 
 						//if the new target is closer/same, need to modify end of path
-						} else if (Dungeon.level.adjacent(target, path.getLast())) {
+						} else if (Dungeon.level.adjacent(target, path.getLast()) && ArrowCell.allowsStep(pos, path.getLast(), this)) {
 							path.add(target);
 
 						//if the new target is further away, need to extend the path
@@ -845,7 +845,8 @@ public abstract class Mob extends Char implements Customizable {
 					//If the next cell on the path can't be moved into, see if there is another cell that could replace it
 					if (!path.isEmpty()) {
 						for (int i : PathFinder.NEIGHBOURS8) {
-							if (Dungeon.level.adjacent(pos, nextCell + i) && Dungeon.level.adjacent(nextCell + i, path.getFirst())) {
+							if (Dungeon.level.adjacent(pos, nextCell + i) && Dungeon.level.adjacent(nextCell + i, path.getFirst())
+									&& ArrowCell.allowsStep(pos, nextCell+i, this) && ArrowCell.allowsStep(nextCell+i, path.getFirst(), this)) {
 								if (cellIsPathable(nextCell+i)){
 									path.addFirst(nextCell+i);
 									newPath = false;
@@ -1872,10 +1873,10 @@ public abstract class Mob extends Char implements Customizable {
 				} else {
 
 					ArrowCell arrowCell = Dungeon.level.arrowCells.get(pos);
-					if (arrowCell != null && !arrowCell.allowsWaiting) {
+					if (arrowCell != null && !arrowCell.allowsWaiting(Mob.this)) {
 						List<Integer> candidates = new ArrayList<>();
 						for (int i : PathFinder.NEIGHBOURS8) {
-							if (arrowCell.allowsDirectionLeaving(i) && cellIsPathable(pos + i)) {
+							if (arrowCell.allowsDirectionLeaving(i, Mob.this) && cellIsPathable(pos + i)) {
 								candidates.add(pos + i);
 							}
 						}

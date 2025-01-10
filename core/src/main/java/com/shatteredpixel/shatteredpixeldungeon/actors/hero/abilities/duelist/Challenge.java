@@ -110,14 +110,14 @@ public class Challenge extends ArmorAbility {
 		for (Char c : Actor.chars()) {
 			if (c != hero) passable[c.pos] = false;
 		}
-		PathFinder.buildDistanceMap(targetCh.pos, passable);
+		PathFinder.buildDistanceMap(targetCh.pos, passable, hero);
 		int[] reachable = PathFinder.distance.clone();
 
 		int blinkpos = hero.pos;
 		if (hero.hasTalent(Talent.CLOSE_THE_GAP) && !hero.rooted){
 
 			int blinkrange = 1 + hero.pointsInTalent(Talent.CLOSE_THE_GAP);
-			PathFinder.buildDistanceMapForCharacters(hero.pos, Dungeon.level.getPassableAndAvoidVar(targetCh), blinkrange);
+			PathFinder.buildDistanceMapForCharacters(hero.pos, Dungeon.level.getPassableAndAvoidVar(targetCh), blinkrange, hero);
 
 			for (int i = 0; i < PathFinder.distance.length; i++){
 				if (PathFinder.distance[i] == Integer.MAX_VALUE

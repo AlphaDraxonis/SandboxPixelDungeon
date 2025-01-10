@@ -131,7 +131,7 @@ public class GreatCrab extends Crab {
 			//of two potential wander positions, picks the one closest to the hero
 			int pos1 = super.randomDestination();
 			int pos2 = super.randomDestination();
-			PathFinder.buildDistanceMap(Dungeon.hero.pos, Dungeon.level.getPassableVar(GreatCrab.this));
+			PathFinder.buildDistanceMap(Dungeon.hero.pos, Dungeon.level.getPassableVar(GreatCrab.this), GreatCrab.this);
 			if (PathFinder.distance[pos2] < PathFinder.distance[pos1]){
 				return pos2;
 			} else {

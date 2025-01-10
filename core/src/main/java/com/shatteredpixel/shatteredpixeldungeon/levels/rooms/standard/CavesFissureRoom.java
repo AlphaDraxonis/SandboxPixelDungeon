@@ -224,7 +224,7 @@ public class CavesFissureRoom extends StandardRoom {
 				passable[i] = level.map[level.pointToCell(p)] != Terrain.CHASM;
 			}
 
-			PathFinder.buildDistanceMap(doorPoint, passable);
+			PathFinder.buildDistanceMap(doorPoint, passable, null);
 
 			for (Point p : shrink().getPoints()){
 				int i = xyToRoomCoords(p.x, p.y);

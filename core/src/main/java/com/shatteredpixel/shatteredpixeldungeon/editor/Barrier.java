@@ -17,12 +17,12 @@ public class Barrier implements Bundlable, Copyable<Barrier> {
 
     public static final int BLOCK_NONE = 0;
     /**
-     * A player cannot enters this tile in any way, similar to a wall.
+     * A player cannot enter this tile in any way, similar to a wall.
      */
     public static final int BLOCK_PLAYER = 1;
 
     /**
-     * All mobs with enemy alignment can't enters this tile in any way, similar to a wall.
+     * All mobs with enemy alignment can't enter this tile in any way, similar to a wall.
      */
     public static final int BLOCK_MOBS = 2;
 
@@ -121,23 +121,23 @@ public class Barrier implements Bundlable, Copyable<Barrier> {
     }
 
     public boolean blocksHero() {
-        return (blocks & BLOCK_PLAYER) != 0;
+        return (blocks & BLOCK_PLAYER) == BLOCK_PLAYER;
     }
 
     public boolean blocksMobs() {
-        return (blocks & BLOCK_MOBS) != 0;
+        return (blocks & BLOCK_MOBS) == BLOCK_MOBS;
     }
 
     public boolean blocksAllies() {
-        return (blocks & BLOCK_ALLIES) != 0;
+        return (blocks & BLOCK_ALLIES) == BLOCK_ALLIES;
     }
 
     public boolean blocksProjectiles() {
-        return (blocks & BLOCK_PROJECTILES) != 0;
+        return (blocks & BLOCK_PROJECTILES) == BLOCK_PROJECTILES;
     }
 
     public boolean blocksBlobs() {
-        return (blocks & BLOCK_BLOBS) != 0;
+        return (blocks & BLOCK_BLOBS) == BLOCK_BLOBS;
     }
 
     public boolean blocksChar(Char ch) {

@@ -238,7 +238,7 @@ public abstract class Char extends Actor {
 
 		//warp instantly with allies in this case
 		if (c == Dungeon.hero && Dungeon.hero.hasTalent(Talent.ALLY_WARP)){
-			PathFinder.buildDistanceMap(c.pos, Dungeon.level.getPassableAndAvoidVarForBoth(c, this));
+			PathFinder.buildDistanceMap(c.pos, Dungeon.level.getPassableAndAvoidVarForBoth(c, this), c);
 			if (PathFinder.distance[pos] == Integer.MAX_VALUE){
 				return true;
 			}
@@ -258,7 +258,7 @@ public abstract class Char extends Actor {
 		}
 
 		//can't cheese arrow cells
-		if (!ArrowCell.allowsStep(oldPos, newPos) || !ArrowCell.allowsStep(newPos, oldPos)) {
+		if (!ArrowCell.allowsStep(oldPos, newPos, this) || !ArrowCell.allowsStep(newPos, oldPos, c)) {
 			return true;
 		}
 
@@ -1170,7 +1170,7 @@ public abstract class Char extends Actor {
 			sprite.interruptMotion();
 			int newPos = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
 			if (!Barrier.canEnterCell(newPos, this, true, false)
-					|| !ArrowCell.allowsStep(pos, newPos)
+					|| !ArrowCell.allowsStep(pos, newPos, this)
 					|| (properties().contains(Property.LARGE) && !Dungeon.level.openSpace[newPos])
 					|| findChar( newPos ) != null)
 				return;

@@ -1237,13 +1237,13 @@ public class Dungeon {
 
 	public static PathFinder.Path findPath(Char ch, int to, boolean[] pass, boolean[] vis, boolean chars) {
 
-		return PathFinder.find( ch.pos, to, findPassable(ch, pass, vis, chars) );
+		return PathFinder.find( ch.pos, to, findPassable(ch, pass, vis, chars), ch );
 
 	}
 	
 	public static int findStep(Char ch, int to, boolean[] pass, boolean[] visible, boolean chars ) {
 
-		if (Dungeon.level.adjacent( ch.pos, to ) && ArrowCell.allowsStep( ch.pos, to )) {
+		if (Dungeon.level.adjacent( ch.pos, to ) && ArrowCell.allowsStep( ch.pos, to, ch )) {
 			return Actor.findChar( to ) == null && pass[to] ? to : -1;
 		}
 
@@ -1269,7 +1269,7 @@ public class Dungeon {
             }
         }
 
-        return PathFinder.getStep( ch.pos, to, findPassable(ch, pass, visible, chars) );
+        return PathFinder.getStep( ch.pos, to, findPassable(ch, pass, visible, chars), ch );
 
 	}
 	
@@ -1288,7 +1288,7 @@ public class Dungeon {
 
 		//chars affected by terror have a shorter lookahead and can't approach the fear source
 		boolean canApproachFromPos = ch.buff(Terror.class) == null && ch.buff(Dread.class) == null;
-		return PathFinder.getStepBack( ch.pos, from, canApproachFromPos ? 8 : 4, passable, canApproachFromPos );
+		return PathFinder.getStepBack( ch.pos, from, canApproachFromPos ? 8 : 4, passable, canApproachFromPos, ch );
 		
 	}
 

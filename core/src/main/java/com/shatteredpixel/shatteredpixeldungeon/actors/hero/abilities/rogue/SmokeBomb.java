@@ -97,7 +97,7 @@ public class SmokeBomb extends ArmorAbility {
 				return;
 			}
 
-			PathFinder.buildDistanceMapForCharacters(hero.pos, Dungeon.level.getPassableAndAvoidVar(hero), 6);
+			PathFinder.buildDistanceMapForCharacters(hero.pos, Dungeon.level.getPassableAndAvoidVar(hero), 6, hero);
 
 			if ( PathFinder.distance[target] == Integer.MAX_VALUE ||
 					!Dungeon.level.heroFOV[target] ||

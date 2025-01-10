@@ -820,7 +820,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 		public static void fxStatic(boolean on, int bombPos, ArrayList<Emitter> smokeEmitters) {
 			if (on && bombPos != -1){
-				PathFinder.buildDistanceMapForEnvironmentals( bombPos, BArray.not( Dungeon.level.solid, null ), 2, true );
+				PathFinder.buildDistanceMapForEnvironmentals( bombPos, BArray.not( Dungeon.level.solid, null ), 2 );
 				for (int i = 0; i < PathFinder.distance.length; i++) {
 					if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 						Emitter e = CellEmitter.get(i);
@@ -848,7 +848,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		}
 
 		public static void doExplode(int bombPos, Runnable reduceHeroBossScore) {
-			PathFinder.buildDistanceMapForEnvironmentals( bombPos, BArray.not( Dungeon.level.solid, null ), 2, true );
+			PathFinder.buildDistanceMapForEnvironmentals( bombPos, BArray.not( Dungeon.level.solid, null ), 2 );
 			for (int cell = 0; cell < PathFinder.distance.length; cell++) {
 
 				if (PathFinder.distance[cell] < Integer.MAX_VALUE) {

@@ -180,7 +180,7 @@ public class Bomb extends Item {
 			boolean[] explodable = new boolean[Dungeon.level.length()];
 			BArray.not( Dungeon.level.solid, explodable);
 			BArray.or( Dungeon.level.getFlamable(), explodable, explodable);
-			PathFinder.buildDistanceMapForEnvironmentals( cell, explodable, explosionRange(), true );
+			PathFinder.buildDistanceMapForEnvironmentals( cell, explodable, explosionRange() );
 			for (int i = 0; i < PathFinder.distance.length; i++) {
 				if (PathFinder.distance[i] != Integer.MAX_VALUE) {
 					if (Dungeon.level.heroFOV[i]) {

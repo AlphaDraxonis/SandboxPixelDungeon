@@ -58,7 +58,14 @@ import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.tweeners.AlphaTweener;
-import com.watabou.utils.*;
+import com.watabou.utils.BArray;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
+import com.watabou.utils.WatabouRect;
 
 import java.util.ArrayList;
 
@@ -661,7 +668,7 @@ public class PrisonBossLevel extends Level {
 
 			trapsPatch = Patch.generate(7, 7, fill, 0, false);
 
-			PathFinder.buildDistanceMap(tenguPos, BArray.not(trapsPatch, null));
+			PathFinder.buildDistanceMap(tenguPos, BArray.not(trapsPatch, null), null);
 			//note that the effective range of fill is 40%-90%
 			//so distance to tengu starts at 3-6 tiles and scales up to 7-8 as fill increases
 		} while (((PathFinder.distance[heroPos] < Math.ceil(7*fill))

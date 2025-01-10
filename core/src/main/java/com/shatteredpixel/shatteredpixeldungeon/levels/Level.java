@@ -1219,7 +1219,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		final Blacksmith questOwner;
 		if (!potentialQuestOwner.isEmpty()) {
 			//find closest one
-			PathFinder.buildDistanceMap(hero.pos, passable);
+			PathFinder.buildDistanceMap(hero.pos, passable, null);
 			int minDist = Integer.MAX_VALUE;
 			Blacksmith temQuestOwner = null;
 			for(Blacksmith smith : potentialQuestOwner){
@@ -1525,7 +1525,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 	}
 
 	public boolean spawnMob(Mob mob, int disLimit, Zone zone) {
-		PathFinder.buildDistanceMap(Dungeon.hero.pos, getPassableAndAvoidVar(mob));
+		PathFinder.buildDistanceMap(Dungeon.hero.pos, getPassableAndAvoidVar(mob), mob);
 
 		int tries = 30;
 		do {
@@ -1556,7 +1556,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 	public int randomRespawnCell(Char ch, boolean guarantee) {
 		boolean checkPath = Dungeon.hero.pos > 0;
 		if (checkPath)
-			PathFinder.buildDistanceMap(Dungeon.hero.pos, getPassableAndAvoidVar(ch));
+			PathFinder.buildDistanceMap(Dungeon.hero.pos, getPassableAndAvoidVar(ch), ch);
 
 		//prefer spawning >>>in zones<<< where no mobs can spawn if at least one zone that can spawn mobs exists
 		if (ch instanceof Hero) {

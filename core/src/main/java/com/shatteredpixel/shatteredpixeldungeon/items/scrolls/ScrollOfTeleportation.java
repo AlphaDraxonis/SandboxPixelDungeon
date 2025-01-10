@@ -77,7 +77,7 @@ public class ScrollOfTeleportation extends Scroll {
 		return teleportToLocation(ch, pos, pathNeeded, true);
 	}
 	public static boolean teleportToLocation(Char ch, int pos, boolean pathNeeded, boolean animation){
-		if (pathNeeded) PathFinder.buildDistanceMap(pos, Dungeon.level.getPassableAndAvoidVar(ch));
+		if (pathNeeded) PathFinder.buildDistanceMap(pos, Dungeon.level.getPassableAndAvoidVar(ch), ch);
 		if (pathNeeded && PathFinder.distance[ch.pos] == Integer.MAX_VALUE
 				|| (!Dungeon.level.isPassable(pos, ch) && !Dungeon.level.avoid[pos])
 				|| !Barrier.canEnterCell(pos, ch, false, true)){
@@ -228,7 +228,7 @@ public class ScrollOfTeleportation extends Scroll {
 		}
 
 		int pos = teleportInNonRegularLevel(ch.pos, preferNotSeen, Char.hasProp(ch, Char.Property.LARGE)
-				? BArray.and(Dungeon.level.getPassableVar(ch), Dungeon.level.openSpace, null) : Dungeon.level.getPassableVar(ch), ch instanceof Hero);
+				? BArray.and(Dungeon.level.getPassableVar(ch), Dungeon.level.openSpace, null) : Dungeon.level.getPassableVar(ch), ch);
 
 		if (pos == -1) return false;
 
@@ -248,12 +248,12 @@ public class ScrollOfTeleportation extends Scroll {
 		return true;
 	}
 
-	public static int teleportInNonRegularLevel(int from, boolean preferNotSeen, boolean[] passable, boolean writeGameLog){
+	public static int teleportInNonRegularLevel(int from, boolean preferNotSeen, boolean[] passable, Char ch){
 		ArrayList<Integer> visibleValid = new ArrayList<>();
 		ArrayList<Integer> notVisibleValid = new ArrayList<>();
 		ArrayList<Integer> notSeenValid = new ArrayList<>();
 
-		PathFinder.buildDistanceMap(from, passable);
+		PathFinder.buildDistanceMap(from, passable, ch);
 
 		for (int i = 0; i < Dungeon.level.length(); i++){
 			if (PathFinder.distance[i] < Integer.MAX_VALUE
@@ -279,8 +279,9 @@ public class ScrollOfTeleportation extends Scroll {
 		} else if (!visibleValid.isEmpty()){
 			pos = Random.element(visibleValid);
 		} else {
-			if (writeGameLog)
-				GLog.w( Messages.get(ScrollOfTeleportation.class, "no_tele") );
+			if (ch == Dungeon.hero) {
+				GLog.w(Messages.get(ScrollOfTeleportation.class, "no_tele"));
+			}
 			return -1;
 		}
 

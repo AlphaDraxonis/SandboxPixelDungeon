@@ -390,7 +390,7 @@ public class CursedWand {
 
 		@Override
 		public boolean effect(Item origin, Char user, Ballistica bolt, boolean positiveOnly) {
-			PathFinder.buildDistanceMapForEnvironmentals(user.pos, BArray.not( Dungeon.level.solid, null ), 2, true );
+			PathFinder.buildDistanceMapForEnvironmentals(user.pos, BArray.not( Dungeon.level.solid, null ), 2 );
 			for (int i = 0; i < PathFinder.distance.length; i++) {
 				if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 					Splash.at( i, 0x000000, 5);
@@ -1241,7 +1241,7 @@ public class CursedWand {
 		@Override
 		public boolean effect(Item origin, Char user, Ballistica bolt, boolean positiveOnly) {
 			boolean[] passable = Dungeon.level.getPassableAndAnyVarForBoth(null, null, BArray.not( Dungeon.level.solid, null ));
-			PathFinder.buildDistanceMapForEnvironmentals( user.pos, passable, 5, true );
+			PathFinder.buildDistanceMapForEnvironmentals( user.pos, passable, 5 );
 			ArrayList<Integer> positions = new ArrayList<>();
 			for (int i = 0; i < PathFinder.distance.length; i++) {
 				if (PathFinder.distance[i] < Integer.MAX_VALUE) {

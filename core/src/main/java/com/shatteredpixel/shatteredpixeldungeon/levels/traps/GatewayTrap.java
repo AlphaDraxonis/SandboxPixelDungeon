@@ -73,7 +73,7 @@ public class GatewayTrap extends Trap {
 					int cell = Dungeon.level.randomRespawnCell( null );
 
 					if (cell == -1) {
-						cell = ScrollOfTeleportation.teleportInNonRegularLevel(heap.pos, false, Dungeon.level.getPassableHeroVar(), false);
+						cell = ScrollOfTeleportation.teleportInNonRegularLevel(heap.pos, false, Dungeon.level.getPassableHeroVar(), null);
 					}
 
 					if (cell != -1) {

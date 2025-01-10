@@ -235,7 +235,7 @@ public class ChaoticCenser extends Trinket {
 		}
 
 		HashMap<Integer, Float> candidateCells = new HashMap<>();
-		PathFinder.buildDistanceMapForEnvironmentals(Dungeon.hero.pos, BArray.not(Dungeon.level.solid, null), 5, true);
+		PathFinder.buildDistanceMapForEnvironmentals(Dungeon.hero.pos, BArray.not(Dungeon.level.solid, null), 5);
 
 		//spawn gas in a random visible cell 2-5 tiles away, likelihood is 3,4 > 2,5
 		for (int i = 0; i < Dungeon.level.length(); i++){

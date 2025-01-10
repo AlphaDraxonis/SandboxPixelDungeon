@@ -137,7 +137,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (enemyInFOV) {
-				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, Dungeon.level.water, viewDistance, true);
+				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, Dungeon.level.water, viewDistance);
 				enemyInFOV = PathFinder.distance[pos] != Integer.MAX_VALUE;
 			}
 			
@@ -149,7 +149,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (enemyInFOV) {
-				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, Dungeon.level.water, viewDistance, true);
+				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, Dungeon.level.water, viewDistance);
 				enemyInFOV = PathFinder.distance[pos] != Integer.MAX_VALUE;
 			}
 			
@@ -162,7 +162,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (enemyInFOV) {
-				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, Dungeon.level.water, viewDistance, true);
+				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, Dungeon.level.water, viewDistance);
 				enemyInFOV = PathFinder.distance[pos] != Integer.MAX_VALUE;
 			}
 			

@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -81,7 +80,7 @@ public class SecretMazeRoom extends SecretRoom {
 		Point entrance = entrance();
 		int entrancePos = (entrance.x - left) + width()*(entrance.y - top);
 		
-		PathFinder.buildDistanceMap( entrancePos, passable );
+		PathFinder.buildDistanceMap( entrancePos, passable, null );
 
 		if (!itemsGenerated) generateItems(level);
 

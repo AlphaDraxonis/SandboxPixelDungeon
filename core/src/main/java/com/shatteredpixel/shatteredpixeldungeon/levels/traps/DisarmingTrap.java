@@ -89,7 +89,7 @@ public class DisarmingTrap extends Trap{
 					cell = Dungeon.level.randomRespawnCell( null );
 					if (tries-- < 0 && cell != -1) break;
 
-					PathFinder.buildDistanceMap(pos, Dungeon.level.getPassableHeroVar());
+					PathFinder.buildDistanceMap(pos, Dungeon.level.getPassableHeroVar(), Dungeon.hero);
 				} while (cell == -1 || PathFinder.distance[cell] < 10 || PathFinder.distance[cell] > 20);
 
 				hero.belongings.weapon = null;

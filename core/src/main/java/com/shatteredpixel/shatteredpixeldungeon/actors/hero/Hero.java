@@ -1810,7 +1810,7 @@ public class Hero extends Char {
 		
 		int step = -1;
 		
-		if (Dungeon.level.adjacent( pos, target ) && ArrowCell.allowsStep( pos, target )) {
+		if (Dungeon.level.adjacent( pos, target ) && ArrowCell.allowsStep( pos, target, this )) {
 
 			path = null;
 
@@ -1922,11 +1922,11 @@ public class Hero extends Char {
 
 	private int chooseForceMovingTarget() {
 		ArrowCell arrowCell = Dungeon.level.arrowCells.get(pos);
-		if (arrowCell != null && !arrowCell.allowsWaiting) {
+		if (arrowCell != null && !arrowCell.allowsWaiting(this)) {
 			List<Integer> candidates = new ArrayList<>();
 			for (int i : PathFinder.NEIGHBOURS8) {
 				int n = pos + i;
-				if (arrowCell.allowsDirectionLeaving(i) && Actor.findChar(n) == null) {
+				if (arrowCell.allowsDirectionLeaving(i, this) && Actor.findChar(n) == null) {
 					if (com.shatteredpixel.shatteredpixeldungeon.editor.Barrier.canEnterCell(n, this, true, false)
 							&& (!Char.hasProp(this, Property.LARGE) || Dungeon.level.openSpace[n])) {
 						candidates.add(n);

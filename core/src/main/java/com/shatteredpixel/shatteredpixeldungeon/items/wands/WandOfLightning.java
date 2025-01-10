@@ -113,7 +113,7 @@ public class WandOfLightning extends DamageWand {
 		int dist = Dungeon.level.water[ch.pos] ? 2 : 1;
 
 		ArrayList<Char> hitThisArc = new ArrayList<>();
-		PathFinder.buildDistanceMapForEnvironmentals( ch.pos, BArray.not( Dungeon.level.solid, null ), dist, true );
+		PathFinder.buildDistanceMapForEnvironmentals( ch.pos, BArray.not( Dungeon.level.solid, null ), dist );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE){
 				Char n = Actor.findChar( i );

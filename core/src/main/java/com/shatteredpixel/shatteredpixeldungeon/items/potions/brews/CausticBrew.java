@@ -53,7 +53,7 @@ public class CausticBrew extends Brew {
 			Sample.INSTANCE.play( Assets.Sounds.SHATTER );
 		}
 		
-		PathFinder.buildDistanceMapForEnvironmentals( cell, BArray.not( Dungeon.level.solid, null ), 3, true );
+		PathFinder.buildDistanceMapForEnvironmentals( cell, BArray.not( Dungeon.level.solid, null ), 3 );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 				Splash.at( i, 0x000000, 5);

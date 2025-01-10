@@ -54,7 +54,7 @@ public class GnollRockfallTrap extends RockfallTrap {
 		ArrayList<Integer> rockCells = new ArrayList<>();
 
 		//drop rocks in a 5x5 grid, ignoring cells next to barricades
-		PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.solid, null ), 2, true );
+		PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.solid, null ), 2 );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
 				if (Dungeon.level instanceof MiningLevel){

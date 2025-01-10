@@ -210,7 +210,7 @@ public class CrystalGuardian extends Mob {
 		passable = super.modPassable(passable);
 		//if we are hunting, we can stomp through crystals, but prefer not to
 		if (state == HUNTING && target != -1){
-			PathFinder.buildDistanceMap(target, passable);
+			PathFinder.buildDistanceMap(target, passable, this);
 
 			if (PathFinder.distance[pos] > 2*Dungeon.level.distance(pos, target)) {
 				for (int i = 0; i < Dungeon.level.length(); i++) {
@@ -236,7 +236,7 @@ public class CrystalGuardian extends Mob {
 		protected void awaken(boolean enemyInFOV) {
 			if (enemyInFOV){
 				//do not wake up if we see an enemy we can't actually reach
-				PathFinder.buildDistanceMap(enemy.pos, Dungeon.level.getPassableVar(CrystalGuardian.this));
+				PathFinder.buildDistanceMap(enemy.pos, Dungeon.level.getPassableVar(CrystalGuardian.this), CrystalGuardian.this);
 				if (PathFinder.distance[pos] == Integer.MAX_VALUE){
 					return;
 				}

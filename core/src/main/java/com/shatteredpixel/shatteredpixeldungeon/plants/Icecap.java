@@ -46,7 +46,7 @@ public class Icecap extends Plant {
 			Buff.affect(ch, FrostImbue.class, FrostImbue.DURATION()*0.3f);
 		}
 		
-		PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.losBlocking, null ), 1, true );
+		PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.losBlocking, null ), 1 );
 
 		for (int i=0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE) {

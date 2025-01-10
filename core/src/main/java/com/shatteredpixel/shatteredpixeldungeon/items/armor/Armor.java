@@ -411,7 +411,7 @@ public class Armor extends EquipableItem {
 		if (hasGlyph(Swiftness.class, owner)) {
 			boolean enemyNear = false;
 			//for each enemy, check if they are adjacent, or within 2 tiles and an adjacent cell is open
-			PathFinder.buildDistanceMapForEnvironmentals(owner.pos, Dungeon.level.getPassableVar(), 2, true);
+			PathFinder.buildDistanceMapForEnvironmentals(owner.pos, Dungeon.level.getPassableVar(), 2);
 			for (Char ch : Actor.chars()){
 				if ( Dungeon.level.distance(ch.pos, owner.pos) <= 2 && owner.alignment != ch.alignment && ch.alignment != Char.Alignment.NEUTRAL){
 					if (Dungeon.level.adjacent(ch.pos, owner.pos)){

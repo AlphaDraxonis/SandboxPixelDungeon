@@ -134,7 +134,7 @@ public class Shopkeeper extends NPC {
 						});
 					}
 
-					PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.solid, null ), 4, true );
+					PathFinder.buildDistanceMapForEnvironmentals( pos, BArray.not( Dungeon.level.solid, null ), 4 );
 
 					for (int i=0; i < Dungeon.level.length(); i++) {
 						if (PathFinder.distance[i] < Integer.MAX_VALUE) {

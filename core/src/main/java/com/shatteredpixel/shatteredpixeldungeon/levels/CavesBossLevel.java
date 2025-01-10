@@ -169,7 +169,7 @@ public class CavesBossLevel extends Level {
 		for (int i = 0; i < length; i++){
 			pass[i] = map[i] == Terrain.EMPTY || map[i] == Terrain.EMPTY_SP || map[i] == Terrain.EMPTY_DECO;
 		}
-		PathFinder.buildDistanceMap(16 + 25*width(), pass);
+		PathFinder.buildDistanceMap(16 + 25*width(), pass, null);
 		for (int i : pylonPositions){
 			if (PathFinder.distance[i] == Integer.MAX_VALUE){
 				return false;

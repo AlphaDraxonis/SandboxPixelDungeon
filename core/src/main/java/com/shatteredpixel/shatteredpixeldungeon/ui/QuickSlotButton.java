@@ -462,7 +462,7 @@ public class QuickSlotButton extends Button {
 		}
 
 		//Otherwise pick nearby tiles to try and 'angle' the shot, auto-aim basically.
-		PathFinder.buildDistanceMapForEnvironmentals( target.pos, BArray.not( new boolean[Dungeon.level.length()], null ), 2, true );
+		PathFinder.buildDistanceMapForEnvironmentals( target.pos, BArray.not( new boolean[Dungeon.level.length()], null ), 2 );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE
 					&& item.targetingPos(Dungeon.hero, i) == target.pos)

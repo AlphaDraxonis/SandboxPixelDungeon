@@ -21,8 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RotHeart;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RotLasher;
@@ -80,7 +78,7 @@ public class RotGardenRoom extends SpecialRoom {
 			}
 
 			//place the heart in a slightly random location sufficiently far from the entrance
-			PathFinder.buildDistanceMap(entryPos, passable);
+			PathFinder.buildDistanceMap(entryPos, passable, null);
 			candidates.clear();
 			for (Point p : getPoints()) {
 				int i = level.pointToCell(p);
@@ -162,7 +160,7 @@ public class RotGardenRoom extends SpecialRoom {
 			}
 		}
 
-		PathFinder.buildDistanceMap(heartPos, newPassable);
+		PathFinder.buildDistanceMap(heartPos, newPassable, null);
 
 		if (PathFinder.distance[entryPos] == Integer.MAX_VALUE){
 			System.arraycopy(passable, 0, newPassable, 0, passable.length);

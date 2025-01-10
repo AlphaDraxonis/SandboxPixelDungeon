@@ -303,7 +303,7 @@ public abstract class RegularLevel extends Level {
 		boolean[] entranceFOV = new boolean[length()];
 		Point c = cellToPoint(entrance());
 		ShadowCaster.castShadow(c.x, c.y, width(), entranceFOV, losBlocking, 6, false);
-		PathFinder.buildDistanceMapForEnvironmentals(entrance(), BArray.not(solid, null), 8, true);Mob mob = null;while (mobsToSpawn > 0) {
+		PathFinder.buildDistanceMapForEnvironmentals(entrance(), BArray.not(solid, null), 8);Mob mob = null;while (mobsToSpawn > 0) {
 				if (mob == null) mob = createMob();
 				Room roomToSpawn;
 
