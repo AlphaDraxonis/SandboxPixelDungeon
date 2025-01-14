@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.AscendedForm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.ElementalStrike;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.HolyWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.Smite;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnchantmentLike;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
@@ -133,6 +134,10 @@ abstract public class Weapon extends KindOfWeapon {
 				}
 			} else if (enchantment != null) {
 				damage = enchantment.proc(this, attacker, defender, damage);
+			}
+			if (attacker instanceof Hero && isEquipped((Hero) attacker) &&
+					attacker.buff(Smite.SmiteTracker.class) != null){
+				defender.damage(Smite.bonusDmg((Hero) attacker, defender), Smite.INSTANCE);
 			}
 		}
 		
@@ -513,6 +518,10 @@ abstract public class Weapon extends KindOfWeapon {
 			if (attacker.buff(RunicBlade.RunicSlashTracker.class) != null){
 				multi += attacker.buff(RunicBlade.RunicSlashTracker.class).boost;
 				attacker.buff(RunicBlade.RunicSlashTracker.class).detach();
+			}
+
+			if (attacker.buff(Smite.SmiteTracker.class) != null){
+				multi += 3f;
 			}
 
 			if (attacker.buff(ElementalStrike.DirectedPowerTracker.class) != null){
