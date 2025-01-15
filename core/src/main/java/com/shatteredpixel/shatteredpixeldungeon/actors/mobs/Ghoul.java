@@ -42,6 +42,8 @@ import java.util.ArrayList;
 
 public class Ghoul extends Mob {
 	
+	protected static final float REVIVE_PERCENT = 0.1f;
+	
 	{
 		spriteClass = GhoulSprite.class;
 		
@@ -294,14 +296,15 @@ public class Ghoul extends Mob {
 						return true;
 					}
 				}
-				ghoul.HP = Math.round(ghoul.HT/10f);
+				int hpGained = Math.max(1, Math.round(ghoul.HT * REVIVE_PERCENT) );
+				ghoul.HP = hpGained;
 				ghoul.beingLifeLinked = false;
 				Actor.add(ghoul);
 				ghoul.timeToNow();
 				Dungeon.level.mobs.add(ghoul);
 				Dungeon.level.occupyCell( ghoul );
 				ghoul.sprite.idle();
-				ghoul.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(Math.round(ghoul.HT/10f)), FloatingText.HEALING);
+				ghoul.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(hpGained), FloatingText.HEALING);
 				super.detach();
 				return true;
 			}
