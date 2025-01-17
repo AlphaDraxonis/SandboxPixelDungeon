@@ -183,7 +183,7 @@ public enum Talent {
 	//Priest T3
 	HOLY_LANCE(171, 3), HALLOWED_GROUND(172, 3), MNEMONIC_PRAYER(173, 3),
 	//Paladin T3
-	LAY_ON_HANDS(174, 3), PALADINT3B(175, 3), PALADINT3C(176, 3),
+	LAY_ON_HANDS(174, 3), AURA_OF_PROTECTION(175, 3), WALL_OF_LIGHT(176, 3),
 	//Ascended Form T4
 	DIVINE_INTERVENTION(177, 4), JUDGEMENT(178, 4), FLASH(179, 4),
 	//Trinity T4
@@ -1093,6 +1093,7 @@ public enum Talent {
 					case CHAMPION:		return new Talent[] {VARIED_CHARGE, TWIN_UPGRADES, COMBINED_LETHALITY};
 					case MONK:			return new Talent[] {UNENCUMBERED_SPIRIT, MONASTIC_VIGOR, COMBINED_ENERGY};
 					case PRIEST:		return new Talent[] {HOLY_LANCE, HALLOWED_GROUND, MNEMONIC_PRAYER};
+					case PALADIN:		return new Talent[] {LAY_ON_HANDS, AURA_OF_PROTECTION, WALL_OF_LIGHT};
 					default:			return new Talent[0];
 				}
 			}
