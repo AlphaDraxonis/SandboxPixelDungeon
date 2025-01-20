@@ -57,7 +57,7 @@ public class Necromancer extends SpawnerMob {
 		EXP = 7;
 		maxLvl = 14;
 		
-		loot = new PotionOfHealing();
+		loot = PotionOfHealing.class;
 		lootChance = 0.2f; //see lootChance()
 		
 		properties.add(Property.UNDEAD);

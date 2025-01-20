@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Pasty;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SeniorSprite;
-import com.watabou.utils.Random;
 
 public class Senior extends Monk {
 
@@ -32,7 +31,7 @@ public class Senior extends Monk {
 
 		damageRollMin = 16;
 
-		loot = new Pasty();
+		loot = Pasty.class;
 		lootChance = 1f;
 	}
 	

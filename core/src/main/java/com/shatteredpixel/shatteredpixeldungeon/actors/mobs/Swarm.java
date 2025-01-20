@@ -27,7 +27,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -55,7 +54,7 @@ public class Swarm extends Mob {
 
 		setFlying(true);
 
-		loot = new PotionOfHealing();
+		loot = PotionOfHealing.class;
 		lootChance = 0.1667f; //by default, see lootChance()
 	}
 	

@@ -28,7 +28,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Freezing;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -51,7 +56,11 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ElementalSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -239,7 +248,7 @@ public abstract class Elemental extends Mob {
 		{
 			spriteClass = ElementalSprite.Fire.class;
 			
-			loot = new PotionOfLiquidFlame();
+			loot = PotionOfLiquidFlame.class;
 			lootChance = 1/8f;
 			
 			properties.add( Property.FIERY );
@@ -473,7 +482,7 @@ public abstract class Elemental extends Mob {
 		{
 			spriteClass = ElementalSprite.Frost.class;
 			
-			loot = new PotionOfFrost();
+			loot = PotionOfFrost.class;
 			lootChance = 1/8f;
 			
 			properties.add( Property.ICY );
@@ -506,7 +515,7 @@ public abstract class Elemental extends Mob {
 		{
 			spriteClass = ElementalSprite.Shock.class;
 			
-			loot = new ScrollOfRecharging();
+			loot = ScrollOfRecharging.class;
 			lootChance = 1/4f;
 			
 			properties.add( Property.ELECTRIC );
@@ -555,7 +564,7 @@ public abstract class Elemental extends Mob {
 		{
 			spriteClass = ElementalSprite.Chaos.class;
 			
-			loot = new ScrollOfTransmutation();
+			loot = ScrollOfTransmutation.class;
 			lootChance = 1f;
 		}
 		
