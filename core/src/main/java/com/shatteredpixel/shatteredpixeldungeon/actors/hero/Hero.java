@@ -69,8 +69,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CapeOfThorns;
@@ -1641,7 +1639,16 @@ public class Hero extends Char {
 		
 		return super.defenseProc( enemy, damage );
 	}
-	
+
+	@Override
+	public int glyphLevel(Class<? extends Armor.Glyph> cls) {
+		if (belongings.armor() != null && belongings.armor().hasGlyph(cls, this)){
+			return Math.max(super.glyphLevel(cls), belongings.armor.buffedLvl());
+		} else {
+			return super.glyphLevel(cls); //TODO going to have recursion?
+		}
+	}
+
 	@Override
 	public void damage( int dmg, Object src ) {
 		if (buff(TimekeepersHourglass.timeStasis.class) != null
@@ -1681,14 +1688,7 @@ public class Hero extends Char {
 			dmg = thorns.proc(dmg, (src instanceof Char ? (Char)src : null),  this);
 		}
 
-		dmg = (int)Math.ceil(dmg * RingOfTenacity.damageMultiplier(this));
-
-		//TODO improve this when I have proper damage source logic
-		if (belongings.armor() != null && belongings.armor().hasGlyph(AntiMagic.class, this)
-				&& AntiMagic.RESISTS.contains(src.getClass())) {
-			dmg -= AntiMagic.drRoll(this, belongings.armor().buffedLvl());
-			dmg = Math.max(dmg, 0);
-		}
+		dmg = (int)Math.ceil(dmg * RingOfTenacity.damageMultiplier( this ));
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null) {
 			if (pointsInTalent(Talent.IRON_STOMACH) == 1) dmg = Math.round(dmg * 0.25f);
@@ -2275,23 +2275,12 @@ public class Hero extends Char {
 	}
 	
 	@Override
-	public float stealth() {
-		float stealth = super.stealth();
-		
-		if (belongings.armor() != null){
-			stealth = belongings.armor().stealthFactor(this, stealth);
-		}
-		
-		return stealth;
-	}
-
-	@Override
 	public void dieOnLand() {
 		Dungeon.fail(null);
 		GLog.n(Messages.get(this, "die_on_land"));
 		super.dieOnLand();
 	}
-
+	
 	@Override
 	public void die( Object cause ) {
 		
@@ -2592,16 +2581,6 @@ public class Hero extends Char {
 		if (!ready) {
 			super.onOperateComplete();
 		}
-	}
-
-	@Override
-	public boolean isImmune(Class effect) {
-		if (effect == Burning.class
-				&& belongings.armor() != null
-				&& belongings.armor().hasGlyph(Brimstone.class, this)){
-			return true;
-		}
-		return super.isImmune(effect);
 	}
 
 	public boolean search( boolean intentional ) {

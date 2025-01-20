@@ -24,15 +24,11 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
@@ -112,14 +108,9 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 		return super.drRoll() + Random.NormalIntRange( armor.DRMin(), armor.DRMax());
 	}
 
-	@Override
-	public boolean isImmune(Class effect) {
-		if (effect == Burning.class
-				&& armor != null
-				&& armor.hasGlyph(Brimstone.class, this)){
-			return true;
-		}
-		return super.isImmune(effect);
+	//used in some glyph calculations
+	public Armor armor(){
+		return armor;
 	}
 
 	@Override
@@ -129,18 +120,12 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
-		//TODO improve this when I have proper damage source logic
-		if (armor != null && armor.hasGlyph(AntiMagic.class, this)
-				&& AntiMagic.RESISTS.contains(src.getClass())){
-			dmg -= AntiMagic.drRoll(this, armor.buffedLvl());
-			dmg = Math.max(dmg, 0);
+	public int glyphLevel(Class<? extends Armor.Glyph> cls) {
+		if (armor != null && armor.hasGlyph(cls, this)){
+			return Math.max(super.glyphLevel(cls), armor.buffedLvl());
+		} else {
+			return super.glyphLevel(cls);
 		}
-
-		super.damage( dmg, src );
-
-		//for the rose status indicator
-		Item.updateQuickslot();
 	}
 
 	@Override
@@ -148,18 +133,6 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 		CharSprite sprite = super.createSprite();
 		StatueSprite.setArmor(sprite, armor == null ? 0 : armor.tier);
 		return sprite;
-	}
-
-	@Override
-	public float speed() {
-		if (armor == null) return super.speed();
-		return armor.speedFactor(this, super.speed());
-	}
-
-	@Override
-	public float stealth() {
-		if (armor == null) return super.stealth();
-		return armor.stealthFactor(this, super.stealth());
 	}
 
 	@Override
