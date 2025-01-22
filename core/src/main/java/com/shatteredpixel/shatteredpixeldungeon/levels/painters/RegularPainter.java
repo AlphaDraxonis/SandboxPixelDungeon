@@ -489,7 +489,7 @@ public abstract class RegularPainter extends Painter {
 			validNonHallways.remove(trapPos);
 
 			revealInc += revealedChance;
-			if (i < nTraps || revealInc >= 1) {
+			if (i >= nTraps || revealInc >= 1) {
 				trap.reveal();
 				revealInc--;
 			} else {
