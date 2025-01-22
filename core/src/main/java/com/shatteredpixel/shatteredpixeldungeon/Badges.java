@@ -1041,6 +1041,7 @@ public class Badges {
 			Badge badge = Badge.NO_MONSTERS_SLAIN;
 			local.add( badge );
 			displayBadge( badge );
+			Statistics.completedWithNoKilling = false;
 		}
 	}
 	
