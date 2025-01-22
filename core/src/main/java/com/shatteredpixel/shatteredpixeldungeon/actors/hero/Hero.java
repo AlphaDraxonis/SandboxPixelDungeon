@@ -1574,14 +1574,16 @@ public class Hero extends Char {
 
 		damage = Talent.onAttackProc( this, enemy, damage );
 
-		if (wep != null) {damage = wep.proc( this, enemy, damage );
-} else if (buff(HolyWeapon.HolyWepBuff.class) != null) {
-			int dmg = subClass == HeroSubClass.PALADIN ? 6 : 2;
-			enemy.damage(Math.round(dmg * Weapon.Enchantment.genericProcChanceMultiplier(this)), HolyWeapon.INSTANCE);
-		}
-
-		if (buff(Smite.SmiteTracker.class) != null){
-			enemy.damage(Smite.bonusDmg(this, enemy), Smite.INSTANCE);
+		if (wep != null) {
+			damage = wep.proc( this, enemy, damage );
+		} else {
+			if (buff(HolyWeapon.HolyWepBuff.class) != null) {
+				int dmg = subClass == HeroSubClass.PALADIN ? 6 : 2;
+				enemy.damage(Math.round(dmg * Weapon.Enchantment.genericProcChanceMultiplier(this)), HolyWeapon.INSTANCE);
+			}
+			if (buff(Smite.SmiteTracker.class) != null){
+				enemy.damage(Smite.bonusDmg(this, enemy), Smite.INSTANCE);
+			}
 		}
 		
 		switch (subClass) {
