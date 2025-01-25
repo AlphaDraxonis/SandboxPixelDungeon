@@ -819,57 +819,66 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 		final int cell = throwPos( user, dst );
 		user.sprite.zap( cell );
 		user.busy();
-
-		throwSound();
-
+		
 		Char enemy = Actor.findChar( cell );
+		
+		if (user.sprite.visible || enemy != null && enemy.sprite.visible || Dungeon.level.heroFOV[dst]) {
+			throwSound();
+		}
+		
 		if (user == Dungeon.hero) QuickSlotButton.target(enemy);
 		
 		final float delay = castDelay(user, dst);
-
+		
+		Callback callback;
 		if (enemy != null) {
-			((MissileSprite) user.sprite.parent.recycle(MissileSprite.class)).
-					reset(user.sprite,
-							enemy.sprite,
-							this,
-							new Callback() {
-						@Override
-						public void call() {
-							curUser = user;
-							Item i = Item.this.detach(user.belongings.backpack);
-							if (i != null) i.onThrow(cell);
-							if (curUser.hasTalent(Talent.IMPROVISED_PROJECTILES)
-									&& !(Item.this instanceof MissileWeapon)
-									&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null){
-								if (enemy != null && enemy.alignment != curUser.alignment){
-									Sample.INSTANCE.play(Assets.Sounds.HIT);
-									Buff.affect(enemy, Blindness.class, 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES));
-									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, 50f);
-								}
-							}
-							if (user.buff(Talent.LethalMomentumTracker.class) != null){
-								user.buff(Talent.LethalMomentumTracker.class).detach();
-								user.next();
-							} else {
-								user.spendAndNext(delay);
-							}
-						}
-					});
+			callback = () -> {
+				curUser = user;
+				Item i = Item.this.detach(user.belongings.backpack);
+				if (i != null) i.onThrow(cell);
+				if (curUser.hasTalent(Talent.IMPROVISED_PROJECTILES)
+						&& !(Item.this instanceof MissileWeapon)
+						&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null) {
+					if (enemy.alignment != curUser.alignment) {
+						Sample.INSTANCE.play(Assets.Sounds.HIT);
+						Buff.affect(enemy, Blindness.class, 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES));
+						Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, 50f);
+					}
+				}
+				if (user.buff(Talent.LethalMomentumTracker.class) != null) {
+					user.buff(Talent.LethalMomentumTracker.class).detach();
+					user.next();
+				} else {
+					user.spendAndNext(delay);
+				}
+			};
 		} else {
-			((MissileSprite) user.sprite.parent.recycle(MissileSprite.class)).
-					reset(user.sprite,
-							cell,
-							this,
-							new Callback() {
-						@Override
-						public void call() {
-							curUser = user;
-							Item i = Item.this.detach(user.belongings.backpack);
-							user.spend(delay);
-							if (i != null) i.onThrow(cell);
-							user.next();
-						}
-					});
+			callback = () -> {
+				curUser = user;
+				Item i = Item.this.detach(user.belongings.backpack);
+				user.spend(delay);
+				if (i != null) i.onThrow(cell);
+				user.next();
+			};
+		}
+		
+		//same condition as in doAttack()
+		if (!( user.sprite != null && (user.sprite.visible || enemy != null && enemy.sprite.visible) )) {
+			callback.call();
+		} else {
+			MissileSprite missileSprite = ((MissileSprite) user.sprite.parent.recycle(MissileSprite.class));
+			
+			if (enemy != null) {
+				missileSprite.reset(user.sprite,
+						enemy.sprite,
+						this,
+						callback);
+			} else {
+				missileSprite.reset(user.sprite,
+						cell,
+						this,
+						callback);
+			}
 		}
 	}
 	
