@@ -53,7 +53,7 @@ public class Alchemy extends Blob {
 	@Override
 	public void use( BlobEmitter emitter ) {
 		super.use( emitter );
-		emitter.start( Speck.factory( Speck.BUBBLE ), 0.33f, 0 );
+		emitter.pour( Speck.factory( Speck.BUBBLE ), 0.33f );
 	}
 
 }

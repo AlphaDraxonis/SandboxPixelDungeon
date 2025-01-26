@@ -93,7 +93,7 @@ public class Emitter extends Group {
 		this.lightMode = factory.lightMode();
 		
 		this.interval = interval;
-		this.quantity = quantity;
+		this.quantity = Math.min( quantity, Math.max(1, interval == 0 ? 150 : (int) (interval*3000) ) );
 		
 		count = 0;
 		time = Random.Float( interval );

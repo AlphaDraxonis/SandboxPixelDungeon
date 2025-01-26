@@ -74,7 +74,7 @@ public class WaterOfTransmutation extends WellWater {
     @Override
     public void use(BlobEmitter emitter) {
         super.use(emitter);
-        emitter.start(Speck.factory(Speck.CHANGE), 0.2f, 0);
+        emitter.pour( Speck.factory(Speck.CHANGE), 0.2f );
     }
 
     @Override
