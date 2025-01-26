@@ -1303,14 +1303,17 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 
 	public void seal(){
 		lockedCount++;
-		if (lockedCount == 1) {
-			Buff.affect(Dungeon.hero, LockedFloor.class);
+		if (lockedCount >= 1) {
+			if (Dungeon.hero.buff(LockedFloor.class) == null) {
+				Buff.affect(Dungeon.hero, LockedFloor.class);
+			}
 		}
 	}
 
 	public void unseal(){
 		lockedCount--;
-		if (lockedCount == 0) {
+		if (lockedCount <= 0) {
+			lockedCount = 0;
 			if (Dungeon.hero.buff(LockedFloor.class) != null){
 				Dungeon.hero.buff(LockedFloor.class).detach();
 			}
