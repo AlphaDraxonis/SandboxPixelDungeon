@@ -779,8 +779,6 @@ public class CustomDungeon implements Bundlable {
             dungeonVars = null;
         }
 
-        CustomObjectManager.restorePre_v_1_3(bundle);
-
         if (bundle.contains(RUNE_LABELS)) {
             scrollRuneLabels = new LinkedHashMap<>();
             String[] labels = bundle.getStringArray(RUNE_LABELS);
@@ -812,7 +810,7 @@ public class CustomDungeon implements Bundlable {
                 foundPages.add((CustomDocumentPage) b);
         }
 
-        CustomObjectManager.loadUserContentFromFiles();
+        CustomObjectManager.loadUserContentFromFiles(bundle);
 
         int i = 0;
         while (bundle.contains(LEVEL_SCHEME + "_" + i)) {

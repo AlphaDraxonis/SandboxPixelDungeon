@@ -57,7 +57,7 @@ public class CustomDungeonSaves {
     public static final String DUNGEON_FOLDER = ROOT_DIR + "custom_dungeons/";
 	public static final String TEMP_FOLDER = ROOT_DIR + "temp_";
     static final String EXTRA_FILES = "files/";
-    private static final String LEVEL_FOLDER = "levels/";
+    static final String LEVEL_FOLDER = "levels/";
     private static final String DUNGEON_DATA = "data" + FILE_EXTENSION;
     private static final String DUNGEON_INFO = "info" + FILE_EXTENSION;
 
@@ -470,9 +470,14 @@ public class CustomDungeonSaves {
         }
     }
 
-    public static void loadAllCustomObjectsFromFiles() {
+    public static void loadAllCustomObjectsFromFiles(Bundle bundle) {
 
         CustomObjectManager.allUserContents.clear();
+        
+        if (bundle != null) {
+            CustomObjectManager.restorePre_v_1_3(bundle);
+        }
+        
         String errors = null;
 
         FileHandle localCustomObjectDir = FileUtils.getFileHandle(getCurrentCustomObjectsPath());
@@ -523,7 +528,7 @@ public class CustomDungeonSaves {
     }
 
     public static void storeCustomObject(CustomObject customObject) throws IOException {
-        if (customObject == null) return;
+        if (customObject == null || curDirectory == null) return;
 
         Bundle bundle = new Bundle();
         bundle.put(CustomObject.BUNDLE_KEY, customObject);

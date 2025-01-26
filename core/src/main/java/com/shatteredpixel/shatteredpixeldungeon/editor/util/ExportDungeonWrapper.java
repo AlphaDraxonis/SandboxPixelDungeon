@@ -3,6 +3,8 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -109,21 +111,27 @@ public class ExportDungeonWrapper implements Bundlable {
     }
 
     public static CustomDungeonSaves.Info doImport(FileHandle file) {
+        CustomDungeonSaves.Info result = null;
         try {
+            CustomDungeonSaves.curDirectory = null;
             Bundle b = FileUtils.bundleFromStream(file.read());
-            if (b.contains(CustomDungeonSaves.EXPORT)) return ((ExportDungeonWrapper) b.get(CustomDungeonSaves.EXPORT)).doImport();
+            if (b.contains(CustomDungeonSaves.EXPORT)) {
+                result = ((ExportDungeonWrapper) b.get(CustomDungeonSaves.EXPORT)).doImport();
+            }
             else if (b.contains(CustomDungeonSaves.BUGGED)) {
                 AdditionalFileInfo mainFile = (AdditionalFileInfo) b.get(CustomDungeonSaves.BUGGED);
                 mainFile.doImport(CustomDungeonSaves.DUNGEON_FOLDER);
+                result = null;
             }
-            return null;
+            CustomDungeonSaves.curDirectory = null;
+            CustomObjectManager.loadUserContentFromFiles();
         } catch (IOException ex) {
             SandboxPixelDungeon.reportException(ex);
-            return null;
         }
+        return result;
     }
 
-    public CustomDungeonSaves.Info doImport() {
+    private CustomDungeonSaves.Info doImport() {
 
         if (dungeon.maybeFixIncorrectNameEnding()) {
             dungeonInfo.name += " ";
@@ -132,7 +140,8 @@ public class ExportDungeonWrapper implements Bundlable {
         try {
             FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
 
-            if (FileUtils.getFileHandle(CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_')).exists()) return null;
+            FileHandle destDir = FileUtils.getFileHandle(CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_'));
+            if (destDir.exists() && destDir.child(CustomDungeonSaves.LEVEL_FOLDER).exists()) return null;
 
             CustomDungeonSaves.saveDungeon(dungeon);
 
@@ -147,6 +156,10 @@ public class ExportDungeonWrapper implements Bundlable {
             if (customTiles != null) {
                 customTiles.doImport(
                         CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_') + "/");
+            }
+            
+            for (CustomObject obj : CustomObjectManager.allUserContents.values()) {
+                CustomDungeonSaves.storeCustomObject(obj);
             }
 
             return dungeonInfo;

@@ -63,7 +63,11 @@ public final class CustomObjectManager {
 	//Called when "synchronized manually", "game opened", "run has ended"
 	//"run ended" = press exit in SideControlPane; go to TitleScene via MenuPane or death screen; win run
 	public static void loadUserContentFromFiles() {
-		CustomDungeonSaves.loadAllCustomObjectsFromFiles();
+		loadUserContentFromFiles(null);
+	}
+	
+	public static void loadUserContentFromFiles(Bundle bundle) {
+		CustomDungeonSaves.loadAllCustomObjectsFromFiles(bundle);
 		CustomDungeonSaves.loadAllCustomResourceFiles();
 		loadScripts(false);
 	}
@@ -228,6 +232,10 @@ public final class CustomObjectManager {
 				}
 
 				try {
+					if (m.saveDirPath == null)  {
+						m.saveDirPath = m.defaultSaveDir();
+						m.saveDirPath += CustomDungeonSaves.fileName(m);
+					}
 					CustomDungeonSaves.storeCustomObject(m);
 				} catch (IOException ignored) {
 				}
