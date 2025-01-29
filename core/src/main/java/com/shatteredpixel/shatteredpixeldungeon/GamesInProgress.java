@@ -114,7 +114,14 @@ public class GamesInProgress {
 			}
 		}
 		
-		Collections.sort(result, scoreComparator);
+		switch (SPDSettings.gamesInProgressSort()){
+			case "level": default:
+				Collections.sort(result, levelComparator);
+				break;
+			case "last_played":
+				Collections.sort(result, lastPlayedComparator);
+				break;
+		}
 		
 		return result;
 	}
@@ -169,6 +176,8 @@ public class GamesInProgress {
 	public static void set(int slot) {
 		Info info = new Info();
 		info.slot = slot;
+
+		info.lastPlayed = Dungeon.lastPlayed;
 		
 		info.depth = Dungeon.depth;
 		info.levelName = Dungeon.levelName;
@@ -212,7 +221,7 @@ public class GamesInProgress {
 	
 	public static class Info {
 		public int slot;
-		
+
 		public int depth;
 		public String levelName;
 		public int version;
@@ -224,6 +233,7 @@ public class GamesInProgress {
 		public String customSeed;
 		public boolean daily;
 		public boolean dailyReplay;
+		public long lastPlayed;
 
 		public int level;
 		public int str;
@@ -244,12 +254,21 @@ public class GamesInProgress {
 		public boolean checkpointReached;
 	}
 	
-	public static final Comparator<GamesInProgress.Info> scoreComparator = new Comparator<GamesInProgress.Info>() {
+	public static final Comparator<GamesInProgress.Info> levelComparator = new Comparator<GamesInProgress.Info>() {
 		@Override
 		public int compare(GamesInProgress.Info lhs, GamesInProgress.Info rhs ) {
-			int lScore = (lhs.level * lhs.maxDepth * 100) + lhs.goldCollected;
-			int rScore = (rhs.level * rhs.maxDepth * 100) + rhs.goldCollected;
-			return (int)Math.signum( rScore - lScore );
+			if (rhs.level != lhs.level){
+				return (int)Math.signum( rhs.level - lhs.level );
+			} else {
+				return lastPlayedComparator.compare(lhs, rhs);
+			}
+		}
+	};
+
+	public static final Comparator<GamesInProgress.Info> lastPlayedComparator = new Comparator<GamesInProgress.Info>() {
+		@Override
+		public int compare(GamesInProgress.Info lhs, GamesInProgress.Info rhs ) {
+			return (int)Math.signum( rhs.lastPlayed - lhs.lastPlayed );
 		}
 	};
 	

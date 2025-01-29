@@ -52,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
@@ -206,8 +207,9 @@ public class StartScene extends PixelScene {
 		int slotCount = Math.min(GamesInProgress.MAX_SLOTS, games.size()+1);
 		int slotGap = 10 - slotCount;
 		int slotsHeight = slotCount*SLOT_HEIGHT + (slotCount-1)* slotGap;
+		slotsHeight += 14;
 
-		while (slotsHeight > visibleHeight && slotGap > 5){
+		while (slotGap >= 2 && slotsHeight > visibleHeight && slotGap > 5){
 			slotGap--;
 			slotsHeight -= slotCount-1;
 		}
@@ -240,7 +242,7 @@ public class StartScene extends PixelScene {
 			}
 		};
 	}
-	
+
 	@Override
 	protected void onBackPressed() {
 		SandboxPixelDungeon.switchNoFade( TitleScene.class );
@@ -286,6 +288,7 @@ public class StartScene extends PixelScene {
 		
 		private Image hero;
 		private RenderedTextBlock name;
+		private RenderedTextBlock lastPlayed;
 		
 		private Image steps;
 		private BitmapText depth;
@@ -310,6 +313,9 @@ public class StartScene extends PixelScene {
 			
 			name = PixelScene.renderTextBlock(9);
 			add(name);
+
+			lastPlayed = PixelScene.renderTextBlock(6);
+			add(lastPlayed);
 		}
 		
 		public void set( int slot ){
@@ -357,6 +363,21 @@ public class StartScene extends PixelScene {
 					
 					classIcon.copy(Icons.get(info.heroClass));
 				}
+
+				long diff = Game.realTime - info.lastPlayed;
+				if (diff > 99L * 30 * 24 * 60 * 60_000){
+					lastPlayed.text(" "); //show no text for >99 months ago
+				} else if (diff < 60_000){
+					lastPlayed.text(Messages.get(StartScene.class, "one_minute_ago"));
+				} else if (diff < 2 * 60 * 60_000){
+					lastPlayed.text(Messages.get(StartScene.class, "minutes_ago", diff / 60_000));
+				} else if (diff < 2 * 24 * 60 * 60_000){
+					lastPlayed.text(Messages.get(StartScene.class, "hours_ago", diff / (60 * 60_000)));
+				} else if (diff < 2L * 30 * 24 * 60 * 60_000){
+					lastPlayed.text(Messages.get(StartScene.class, "days_ago", diff / (24 * 60 * 60_000)));
+				} else {
+					lastPlayed.text(Messages.get(StartScene.class, "months_ago", diff / (30L * 24 * 60 * 60_000)));
+				}
 				
 				depth.text(Integer.toString(info.depth));
 				depth.measure();
@@ -366,10 +387,12 @@ public class StartScene extends PixelScene {
 				
 				if (info.challenges > 0){
 					name.hardlight(Window.TITLE_COLOR);
+					lastPlayed.hardlight(Window.TITLE_COLOR);
 					depth.hardlight(Window.TITLE_COLOR);
 					level.hardlight(Window.TITLE_COLOR);
 				} else {
 					name.resetColor();
+					lastPlayed.resetColor();
 					depth.resetColor();
 					level.resetColor();
 				}
@@ -404,9 +427,14 @@ public class StartScene extends PixelScene {
 				
 				name.setPos(
 						hero.x + hero.width() + 6,
-						y + (height - name.height())/2f
+						y + (height - name.height() - lastPlayed.height() - 2)/2f
 				);
 				align(name);
+
+				lastPlayed.setPos(
+						hero.x + hero.width() + 6,
+						name.bottom()+2
+				);
 				
 				classIcon.x = x + width - 24 + (16 - classIcon.width())/2f;
 				classIcon.y = y + (height - classIcon.height())/2f;

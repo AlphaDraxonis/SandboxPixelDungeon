@@ -232,6 +232,7 @@ public class Dungeon {
 	public static boolean dailyReplay;
 	public static String customSeedText = "";
 	public static long seed;
+	public static long lastPlayed;
 
 	public static String[] visited;
 	public static String[] completed;
@@ -691,69 +692,70 @@ public class Dungeon {
 		return false;
 	}
 
-
-
-	private static final String INIT_VER = "init_ver";
-    public static final String VERSION = "version";
-    private static final String SEED = "seed";
-    private static final String CUSTOM_SEED = "custom_seed";
-    private static final String DAILY = "daily";
-    private static final String DAILY_REPLAY = "daily_replay";
-    private static final String CHALLENGES = "challenges";
-    private static final String MOBS_TO_CHAMPION = "mobs_to_champion";
-    private static final String HERO = "hero";
-    private static final String DEPTH = "depth";
-    private static final String BRANCH		= "branch";
-    private static final String LEVEL_NAME = "level_name";
-    private static final String GOLD = "gold";
-    private static final String ENERGY = "energy";
-    private static final String DROPPED = "dropped%s";
-    private static final String PORTED = "ported%s";
-    private static final String LEVEL = "level";
-    private static final String LIMDROPS = "limited_drops";
-    private static final String CHAPTERS = "chapters";
-    private static final String QUESTS = "quests";
-    private static final String BADGES = "badges";
-    private static final String COMPLETED = "completed";
-    private static final String VISITED = "visited";
-    private static final String VISITED_DEPTHS = "visited_depths";
+	private static final String INIT_VER	= "init_ver";
+	public  static final String VERSION		= "version";
+	private static final String SEED		= "seed";
+	private static final String CUSTOM_SEED	= "custom_seed";
+	private static final String DAILY	    = "daily";
+	private static final String DAILY_REPLAY= "daily_replay";
+	private static final String LAST_PLAYED = "last_played";
+	private static final String CHALLENGES	= "challenges";
+	private static final String MOBS_TO_CHAMPION	= "mobs_to_champion";
+	private static final String HERO		= "hero";
+	private static final String DEPTH		= "depth";
+	private static final String BRANCH		= "branch";
+	private static final String LEVEL_NAME = "level_name";
+	private static final String GOLD		= "gold";
+	private static final String ENERGY		= "energy";
+	private static final String DROPPED     = "dropped%s";
+	private static final String PORTED      = "ported%s";
+	private static final String LEVEL		= "level";
+	private static final String LIMDROPS    = "limited_drops";
+	private static final String CHAPTERS	= "chapters";
+	private static final String QUESTS		= "quests";
+	private static final String BADGES		= "badges";
+	private static final String COMPLETED = "completed";
+	private static final String VISITED = "visited";
+	private static final String VISITED_DEPTHS = "visited_depths";
 	private static final String REACHED_CHECKPOINT = "reached_checkpoint";
-    private static final String CUSTOM_DUNGEON = "custom_dungeon";
-    private static final String DUNGEON_SCRIPT = "dungeon_script";
-    private static final String TEST_GAME = "test_game";
+	private static final String CUSTOM_DUNGEON = "custom_dungeon";
+	private static final String DUNGEON_SCRIPT = "dungeon_script";
+	private static final String TEST_GAME = "test_game";
+	
+	
+	public static void saveGame( int save ) {
+		try {
+			Bundle bundle = new Bundle();
+			
+			bundle.put( TEST_GAME, isLevelTesting( ));
+			bundle.put( INIT_VER, initialVersion );
+			bundle.put( VERSION, version = Game.versionCode );
+			bundle.put( SEED, seed );
+			bundle.put( CUSTOM_SEED, customSeedText );
+			bundle.put( DAILY, daily );
+			bundle.put( DAILY_REPLAY, dailyReplay );
+			bundle.put( LAST_PLAYED, lastPlayed = Game.realTime);
+			bundle.put( CHALLENGES, challenges );
+			bundle.put( MOBS_TO_CHAMPION, mobsToChampion );
+			bundle.put( HERO, hero );
+			bundle.put( DEPTH, depth );
+			bundle.put( BRANCH, branch );
+			bundle.put( LEVEL_NAME, levelName );
+			bundle.put( REACHED_CHECKPOINT, reachedCheckpoint );
+			
+			bundle.put (VISITED, visited);
+			bundle.put (COMPLETED, completed);
+			
+			int[] visitedDepthsArray = new int[visitedDepths.size()];
+			int i = 0;
+			for (int d : visitedDepths) {
+				visitedDepthsArray[i] = d;
+				i++;
+			}
+			bundle.put( VISITED_DEPTHS, visitedDepthsArray );
 
-    public static void saveGame(int save) {
-        try {
-            Bundle bundle = new Bundle();
-
-            bundle.put(TEST_GAME, isLevelTesting());
-            bundle.put(INIT_VER, initialVersion);
-            bundle.put(VERSION, version = Game.versionCode);
-            bundle.put(SEED, seed);
-            bundle.put(CUSTOM_SEED, customSeedText);
-            bundle.put(DAILY, daily);
-            bundle.put(DAILY_REPLAY, dailyReplay);
-            bundle.put(CHALLENGES, challenges);
-            bundle.put(MOBS_TO_CHAMPION, mobsToChampion);
-            bundle.put(HERO, hero);
-            bundle.put(DEPTH, depth);
-            bundle.put(BRANCH, branch);
-            bundle.put(LEVEL_NAME, levelName);
-			bundle.put(REACHED_CHECKPOINT, reachedCheckpoint);
-
-            bundle.put(VISITED, visited);
-            bundle.put(COMPLETED, completed);
-
-            int[] visitedDepthsArray = new int[visitedDepths.size()];
-            int i = 0;
-            for (int d : visitedDepths) {
-                visitedDepthsArray[i] = d;
-                i++;
-            }
-            bundle.put(VISITED_DEPTHS, visitedDepthsArray);
-
-            bundle.put(GOLD, gold);
-            bundle.put(ENERGY, energy);
+			bundle.put( GOLD, gold );
+			bundle.put( ENERGY, energy );
 
             bundle.put(CUSTOM_DUNGEON, customDungeon);
 			
@@ -766,65 +768,71 @@ public class Dungeon {
 
 			quickslot.storePlaceholders( bundle );
 
-            Bundle limDrops = new Bundle();
-            LimitedDrops.store(limDrops);
-            bundle.put(LIMDROPS, limDrops);
+			Bundle limDrops = new Bundle();
+			LimitedDrops.store( limDrops );
+			bundle.put ( LIMDROPS, limDrops );
+			
+			int count = 0;
+			int ids[] = new int[chapters.size()];
+			for (Integer id : chapters) {
+				ids[count++] = id;
+			}
+			bundle.put( CHAPTERS, ids );
+			
+			Bundle quests = new Bundle();
+			GhostQuest.storeStatics(quests);
+			WandmakerQuest.storeStatics(quests);
+			BlacksmithQuest.storeStatics(quests);
+			ImpQuest.storeStatics(quests);
+			bundle.put(QUESTS, quests);
+			
+			BossHealthBar.storeInBundle(bundle);
+			
+			SpecialRoom.storeRoomsInBundle( bundle );
+			SecretRoom.storeRoomsInBundle( bundle );
+			
+			Statistics.storeInBundle( bundle );
+			Notes.storeInBundle( bundle );
+			Generator.storeInBundle( bundle );
 
-            int count = 0;
-            int[] ids = new int[chapters.size()];
-            for (Integer id : chapters) {
-                ids[count++] = id;
-            }
-            bundle.put(CHAPTERS, ids);
+			int[] bundleArr = new int[generatedLevels.size()];
+			for (int i = 0; i < generatedLevels.size(); i++){
+				bundleArr[i] = generatedLevels.get(i);
+			}
+			bundle.put( GENERATED_LEVELS, bundleArr);
+			
+			Scroll.save( bundle );
+			Potion.save( bundle );
+			Ring.save( bundle );
 
-            Bundle quests = new Bundle();
-            GhostQuest.storeStatics(quests);
-            WandmakerQuest.storeStatics(quests);
-            BlacksmithQuest.storeStatics(quests);
-            ImpQuest.storeStatics(quests);
-            bundle.put(QUESTS, quests);
-
-            BossHealthBar.storeInBundle(bundle);
-
-            SpecialRoom.storeRoomsInBundle(bundle);
-            SecretRoom.storeRoomsInBundle(bundle);
-
-            Statistics.storeInBundle(bundle);
-            Notes.storeInBundle(bundle);
-            Generator.storeInBundle(bundle);
-
-            Scroll.save(bundle);
-            Potion.save(bundle);
-            Ring.save(bundle);
-
-            Actor.storeNextID(bundle);
-
-            Bundle badges = new Bundle();
-            Badges.saveLocal(badges);
-            bundle.put(BADGES, badges);
-
-            FileUtils.bundleToFile(GamesInProgress.gameFile(save), bundle);
-
-        } catch (IOException e) {
-            GamesInProgress.setUnknown(save);
-            SandboxPixelDungeon.reportException(e);
-        }
-    }
-
-    public static void saveLevel(int save) throws IOException {
-        Bundle bundle = new Bundle();
-        bundle.put(LEVEL, level);
-
-        FileUtils.bundleToFile(GamesInProgress.levelFile(save, levelName, branch), bundle);
-    }
-
-    public static void saveAll() throws IOException {
-        if (hero != null && (hero.isAlive() || WndResurrect.instance != null)) {
-
-            Actor.fixTime();
-            updateLevelExplored();
-            saveGame(GamesInProgress.curSlot);
-            saveLevel(GamesInProgress.curSlot);
+			Actor.storeNextID( bundle );
+			
+			Bundle badges = new Bundle();
+			Badges.saveLocal( badges );
+			bundle.put( BADGES, badges );
+			
+			FileUtils.bundleToFile( GamesInProgress.gameFile(save), bundle);
+			
+		} catch (IOException e) {
+			GamesInProgress.setUnknown( save );
+			SandboxPixelDungeon.reportException(e);
+		}
+	}
+	
+	public static void saveLevel( int save ) throws IOException {
+		Bundle bundle = new Bundle();
+		bundle.put( LEVEL, level );
+		
+		FileUtils.bundleToFile(GamesInProgress.levelFile(save, levelName, branch), bundle);
+	}
+	
+	public static void saveAll() throws IOException {
+		if (hero != null && (hero.isAlive() || WndResurrect.instance != null)) {
+			
+			Actor.fixTime();
+			updateLevelExplored();
+			saveGame( GamesInProgress.curSlot );
+			saveLevel( GamesInProgress.curSlot );
 
 			GamesInProgress.set( GamesInProgress.curSlot );
 
@@ -970,27 +978,27 @@ public class Dungeon {
                 droppedItems.put(level, items);
             }
 
-        }
-
-        FileUtils.resetDefaultFileType();
-        if (!DeviceCompat.isDesktop() && initialVersion < 743) {//v0.6 and older
-            CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/dungeon_levels/");
-        } else CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/");
-
-        CustomTileLoader.loadTiles(true);
-
+		}
+		
+		FileUtils.resetDefaultFileType();
+		if (!DeviceCompat.isDesktop() && initialVersion < 743) {//v0.6 and older
+			CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/dungeon_levels/");
+		} else CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/");
+		
+		CustomTileLoader.loadTiles(true);
+		
 		CustomObjectManager.loadUserContentFromFiles();
 		CustomObjectManager.loadScripts(true);
-    }
+	}
+	
+	public static Level loadLevel( int save ) throws IOException {
+		
+		Dungeon.level = null;
+		Actor.clear();
+		
+		Bundle bundle = FileUtils.bundleFromFile(GamesInProgress.levelFile(save, levelName, branch));
 
-    public static Level loadLevel(int save) throws IOException {
-
-        Dungeon.level = null;
-        Actor.clear();
-
-        Bundle bundle = FileUtils.bundleFromFile(GamesInProgress.levelFile(save, levelName, branch));
-
-        Level level = (Level) bundle.get(LEVEL);
+		Level level = (Level)bundle.get( LEVEL );
 
 		if (level == null){
 			throw new IOException();
@@ -1001,37 +1009,38 @@ public class Dungeon {
 	
 	public static void deleteGame( int save ) {
 		FileUtils.deleteDir(GamesInProgress.gameFolder(save));
-        GamesInProgress.delete(save);
-    }
+		GamesInProgress.delete(save);
+	}
+	
+	public static boolean preview( GamesInProgress.Info info, Bundle bundle ) {
+		if (bundle.getBoolean(TEST_GAME)) return false;
+		info.depth = bundle.getInt( DEPTH );
+		info.levelName = bundle.getString( LEVEL_NAME );
+		info.version = bundle.getInt( VERSION );
+		info.challenges = bundle.getInt( CHALLENGES );
+		info.seed = bundle.getLong( SEED );
+		info.customSeed = bundle.getString( CUSTOM_SEED );
+		info.daily = bundle.getBoolean( DAILY );
+		info.dailyReplay = bundle.getBoolean( DAILY_REPLAY );
+		info.lastPlayed = bundle.getLong( LAST_PLAYED );
+		info.checkpointReached = bundle.get( REACHED_CHECKPOINT ) != null;
+		info.dungeonName = ((CustomDungeon) bundle.get( CUSTOM_DUNGEON )).getName();
 
-    public static boolean preview(GamesInProgress.Info info, Bundle bundle) {
-        if (bundle.getBoolean(TEST_GAME)) return false;
-        info.depth = bundle.getInt(DEPTH);
-        info.levelName = bundle.getString(LEVEL_NAME);
-        info.version = bundle.getInt(VERSION);
-        info.challenges = bundle.getInt(CHALLENGES);
-        info.seed = bundle.getLong(SEED);
-        info.customSeed = bundle.getString(CUSTOM_SEED);
-        info.daily = bundle.getBoolean(DAILY);
-        info.dailyReplay = bundle.getBoolean(DAILY_REPLAY);
-		info.checkpointReached = bundle.get(REACHED_CHECKPOINT) != null;
-        info.dungeonName = ((CustomDungeon) bundle.get(CUSTOM_DUNGEON)).getName();
-
-        Hero.preview(info, bundle.getBundle(HERO));
-        Statistics.preview(info, bundle);
-
-        return true;
-    }
-
-    public static void fail(Object cause) {
-        if (WndResurrect.instance == null) {
-            updateLevelExplored();
-            Statistics.gameWon = false;
-            Rankings.INSTANCE.submit(false, cause);
-        }
-    }
-
-    public static void win(Object cause) {
+		Hero.preview( info, bundle.getBundle( HERO ) );
+		Statistics.preview( info, bundle );
+		
+		return true;
+	}
+	
+	public static void fail( Object cause ) {
+		if (WndResurrect.instance == null) {
+			updateLevelExplored();
+			Statistics.gameWon = false;
+			Rankings.INSTANCE.submit( false, cause );
+		}
+	}
+	
+	public static void win( Object cause ) {
 
 		updateLevelExplored();
 		Statistics.gameWon = true;
