@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.keys;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
@@ -82,6 +83,7 @@ public abstract class Key extends Item {
 
 	public void instantPickupKey(int pos) {
 		Catalog.setSeen(getClass());
+		Statistics.itemTypesDiscovered.add(getClass());
 		GameScene.pickUpJournal(this, pos);
 		WndJournal.last_index = 0;
 		Notes.add(this);

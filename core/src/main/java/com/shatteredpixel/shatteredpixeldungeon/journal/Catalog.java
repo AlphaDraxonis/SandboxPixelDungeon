@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.journal;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
@@ -323,7 +322,6 @@ public enum Catalog {
 				Journal.saveNeeded = true;
 			}
 		}
-		Statistics.itemTypesDiscovered.add(cls);
 		Badges.validateCatalogBadges();
 	}
 

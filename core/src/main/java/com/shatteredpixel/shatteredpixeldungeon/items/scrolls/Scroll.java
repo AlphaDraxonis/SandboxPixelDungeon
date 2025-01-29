@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.scrolls;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
@@ -222,6 +223,7 @@ public abstract class Scroll extends Item {
 			
 			if (Dungeon.hero != null && Dungeon.hero.isAlive()) {
 				Catalog.setSeen(getClass());
+				Statistics.itemTypesDiscovered.add(getClass());
 			}
 		}
 	}

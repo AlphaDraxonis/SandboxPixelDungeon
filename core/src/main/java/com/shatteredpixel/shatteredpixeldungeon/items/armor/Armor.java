@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
@@ -222,6 +223,7 @@ public class Armor extends EquipableItem {
 		if (super.collect(container)) {
 			if (Dungeon.hero != null && Dungeon.hero.isAlive() && isIdentified() && glyph != null){
 				Catalog.setSeen(glyph.getClass());
+				Statistics.itemTypesDiscovered.add(glyph.getClass());
 			}
 			return true;
 		} else {
@@ -233,6 +235,7 @@ public class Armor extends EquipableItem {
 	public Item identify(boolean byHero) {
 		if (glyph != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
 			Catalog.setSeen(glyph.getClass());
+			Statistics.itemTypesDiscovered.add(glyph.getClass());
 		}
 		return super.identify(byHero);
 	}
@@ -696,6 +699,7 @@ public class Armor extends EquipableItem {
 		if (glyph != null && isIdentified() && Dungeon.hero != null
 				&& Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)){
 			Catalog.setSeen(glyph.getClass());
+			Statistics.itemTypesDiscovered.add(glyph.getClass());
 		}
 		return this;
 	}

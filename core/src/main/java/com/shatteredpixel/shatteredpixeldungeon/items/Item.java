@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
@@ -290,7 +291,10 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 					if (Dungeon.hero != null && Dungeon.hero.isAlive()) {
 						Badges.validateItemLevelAquired( this );
 						Talent.onItemCollected(Dungeon.hero, item);
-						if (isIdentified()) Catalog.setSeen(getClass());
+						if (isIdentified()) {
+							Catalog.setSeen(getClass());
+							Statistics.itemTypesDiscovered.add(getClass());
+						}
 					}
 					if (TippedDart.lostDarts > 0){
 						Dart d = new Dart();
@@ -317,7 +321,10 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 		if (Dungeon.hero != null && Dungeon.hero.isAlive()) {
 			Badges.validateItemLevelAquired( this );
 			Talent.onItemCollected( Dungeon.hero, this );
-			if (isIdentified()) Catalog.setSeen(getClass());
+			if (isIdentified()){
+				Catalog.setSeen(getClass());
+				Statistics.itemTypesDiscovered.add(getClass());
+			}
 		}
 
 		items.add( this );
@@ -534,7 +541,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 
 		if (byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
 			Catalog.setSeen(getClass());
-			if (!isIdentified()) Talent.onItemIdentified(Dungeon.hero, this);
+			Statistics.itemTypesDiscovered.add(getClass());
 		}
 
 		levelKnown = true;

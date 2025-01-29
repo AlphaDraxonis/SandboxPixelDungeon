@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
@@ -245,6 +246,7 @@ abstract public class Weapon extends KindOfWeapon {
 		if(super.collect(container)){
 			if (Dungeon.hero != null && Dungeon.hero.isAlive() && isIdentified() && enchantment != null){
 				Catalog.setSeen(enchantment.getClass());
+				Statistics.itemTypesDiscovered.add(enchantment.getClass());
 			}
 			return true;
 		} else {
@@ -256,6 +258,7 @@ abstract public class Weapon extends KindOfWeapon {
 	public Item identify(boolean byHero) {
 		if (enchantment != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
 			Catalog.setSeen(enchantment.getClass());
+			Statistics.itemTypesDiscovered.add(enchantment.getClass());
 		}
 		return super.identify(byHero);
 	}
@@ -437,6 +440,7 @@ abstract public class Weapon extends KindOfWeapon {
 		if (ench != null && isIdentified() && Dungeon.hero != null
 				&& Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)){
 			Catalog.setSeen(ench.getClass());
+			Statistics.itemTypesDiscovered.add(ench.getClass());
 		}
 		return this;
 	}
