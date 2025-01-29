@@ -37,7 +37,11 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.RipperSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 
 public class RipperDemon extends Mob {
 
@@ -219,11 +223,14 @@ public class RipperDemon extends Mob {
 
 			enemySeen = enemyInFOV;
 			if (enemyInFOV && !isCharmedBy( enemy ) && canAttack( enemy )) {
-
+				
 				if (enemy.invisible > 0) {
 					spend( TICK );
 					return true;
 				}
+				
+				recentlyAttackedBy.clear();
+				target = enemy.pos;
 
 				return doAttack( enemy );
 
