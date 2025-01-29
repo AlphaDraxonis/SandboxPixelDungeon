@@ -54,7 +54,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GoldenMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
@@ -625,7 +624,7 @@ public class CursedWand {
 		@Override
 		public boolean effect(Item origin, Char user, Ballistica bolt, boolean positiveOnly) {
 			Char ch = Actor.findChar(bolt.collisionPos);
-			if ((!positiveOnly || (ch instanceof Piranha)) && ch != null && !ch.isFlying()) {
+			if ((!positiveOnly || Char.hasProp(ch, Char.Property.AQUATIC)) && ch != null && !ch.isFlying() && !Char.hasProp(ch, Char.Property.IMMOVABLE)) {
 				Buff.affect(ch, Levitation.class, Levitation.DURATION());
 			} else {
 				Buff.affect(user, Levitation.class, Levitation.DURATION());
