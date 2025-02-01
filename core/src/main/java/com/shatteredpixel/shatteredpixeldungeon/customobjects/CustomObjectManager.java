@@ -38,7 +38,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import org.luaj.vm2.LuaValue;
 
@@ -69,6 +68,7 @@ public final class CustomObjectManager {
 	public static void loadUserContentFromFiles(Bundle bundle) {
 		CustomDungeonSaves.loadAllCustomObjectsFromFiles(bundle);
 		CustomDungeonSaves.loadAllCustomResourceFiles();
+		nextID = findLargestUsedID();
 		loadScripts(false);
 	}
 
@@ -170,17 +170,23 @@ public final class CustomObjectManager {
 		return obj;
 	}
 
+	private static int nextID = -1;
 	public static void assignNewID(CustomObject customObject) {
-		int start = 100_000_000;
-		int end = Integer.MAX_VALUE;
-		int nextID;
 		do {
-			nextID = Random.Int(start, end);
-		} while (allUserContents.containsKey(nextID) || nextID == -1);
+			nextID++;
+		} while (allUserContents.containsKey(nextID) || nextID <= 0);
 
 		customObject.setIdentifier(nextID);
 
 		allUserContents.put(nextID, customObject);
+	}
+	
+	private static int findLargestUsedID() {
+		int id = -1;
+		for (int key : allUserContents.keySet()) {
+			id = Math.max(id, key);
+		}
+		return id;
 	}
 
 	public static <T extends GameObject> Set<T> getAllCustomObjects(Class<? super T> luaClassSuperclass) {

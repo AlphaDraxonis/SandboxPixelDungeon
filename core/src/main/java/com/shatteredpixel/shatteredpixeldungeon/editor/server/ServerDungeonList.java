@@ -332,7 +332,9 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
 			title.text( preview.title );
 			by.text(Messages.get(ServerDungeonList.class, "title_entry"));
-			creator.text("_" + preview.uploader + "_");
+			creator.text(preview.uploader);
+			creator.setHighlighting(false);
+			creator.hardlight(Window.TITLE_COLOR);
 
 			desc.text(preview.description);
 
@@ -397,7 +399,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 						creator.setPos(by.left(), by.bottom() + 4);
 					}
 				}
-				desc.setPos(title.left() + 3, creator.bottom() + 4);
+				desc.setPos(title.left() + 3, Math.max(creator.bottom(), by.top()) + 4);
 				height = desc.bottom() - y + 1;
 			} else {
 				height = title.bottom() + 1;

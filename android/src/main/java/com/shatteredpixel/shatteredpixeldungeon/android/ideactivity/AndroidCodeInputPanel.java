@@ -26,6 +26,7 @@ package com.shatteredpixel.shatteredpixeldungeon.android.ideactivity;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -186,5 +187,17 @@ public abstract class AndroidCodeInputPanel extends ConstraintLayout implements 
 		} else {
 			textInput.setText((forceChange || textInput.getText().toString().isEmpty() ? "" : "--[[\n" + textInput.getText() + "]]\n\n") + code);
 		}
+	}
+	
+	private static final String TEXT = "text";
+	
+	protected void restoreState(Bundle bundle) {
+		textInput.setText(bundle.getString(TEXT));
+	}
+	
+	protected Bundle storeState() {
+		Bundle node = new Bundle();
+		node.putString(TEXT, textInput.getText().toString());
+		return node;
 	}
 }

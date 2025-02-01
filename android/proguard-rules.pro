@@ -31,9 +31,6 @@
 -keepclassmembers class * {
     @com.shatteredpixel.shatteredpixeldungeon.editor.lua.annotations.KeepProguard *;
 }
-#-keepclassmembers class * {
-#    @net.bytebuddy.implementation.bind.annotation.RuntimeType *;
-#}
 
 # libGDX stuff
 -dontwarn android.support.**
@@ -63,6 +60,43 @@
     float   reportRayFixture(long, float, float, float, float, float);
 }
 
+
+#Byte Buddy
+-keepclassmembers class * {
+    @net.bytebuddy.implementation.bind.annotation.RuntimeType *;
+}
+-keep class net.bytebuddy.implementation.bind.annotation.** {
+    public <fields>;
+    public <methods>;
+}
+-keep class com.android.dx.cf.direct.DirectClassFile {
+    public <fields>;
+    public <methods>;
+}
+-keep class com.android.dx.cf.direct.StdAttributeFactory {
+    public <fields>;
+    public <methods>;
+}
+-keep class com.android.dx.dex.DexOptions {
+    public <fields>;
+    public <methods>;
+}
+-keep class com.android.dx.dex.cf.CfOptions {
+    public <fields>;
+    public <methods>;
+}
+-keep class com.android.dx.dex.cf.CfTranslator {
+    public <fields>;
+    public <methods>;
+}
+-keep class com.android.dx.dex.file.ClassDefItem {
+    public <fields>;
+    public <methods>;
+}
+-keep class com.android.dx.dex.file.DexFile {
+    public <fields>;
+    public <methods>;
+}
 
 
 #The Android Gradle plugin said I should add this, and because it wouldn't work otherwise, I added this without knowing why it is necessary...
@@ -114,3 +148,5 @@
 -dontwarn org.apache.bcel.generic.ReturnInstruction
 -dontwarn org.apache.bcel.generic.StackInstruction
 -dontwarn org.apache.bcel.generic.Type
+-dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
+-dontwarn javax.annotation.Nonnull

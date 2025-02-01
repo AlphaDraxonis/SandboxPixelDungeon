@@ -54,6 +54,8 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -76,8 +78,8 @@ public abstract class GameObjectCategory<T> {
         bag.items.add(customObjectBag);
     }
 
-    GameObjectCategory.Bag<T> createBag(SubCategory<T> category) {
-        return new GameObjectCategory.Bag<>(category);
+    Bag<T> createBag(SubCategory<T> category) {
+        return new Bag<>(category);
     }
 
     public SubCategory<T>[] values() {
@@ -93,6 +95,7 @@ public abstract class GameObjectCategory<T> {
     public void addCustomObject(CustomGameObjectClass obj) {
         if (obj != null) {
             customObjectBag.items.add(EditorItem.wrapObject(obj));
+            sortCustomObjects();
         }
     }
 
@@ -123,6 +126,16 @@ public abstract class GameObjectCategory<T> {
             }
         }
 
+        sortCustomObjects();
+    }
+    
+    private void sortCustomObjects() {
+        Collections.sort(customObjectBag.items, new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                return Integer.compare(((CustomObjectClass) ((EditorItem<?>) o1).getObject()).getIdentifier(), ((CustomObjectClass) ((EditorItem<?>) o2).getObject()).getIdentifier());
+            }
+        });
     }
 
     public void updateCustomObject(CustomObject customObject) {
@@ -172,7 +185,7 @@ public abstract class GameObjectCategory<T> {
     public abstract static class SubCategory<T> {
 
         private final Class<?>[] classes;
-        GameObjectCategory.Bag<T> bag;
+        Bag<T> bag;
 
         protected SubCategory(Class<?>[] classes) {
 			this.classes = classes;

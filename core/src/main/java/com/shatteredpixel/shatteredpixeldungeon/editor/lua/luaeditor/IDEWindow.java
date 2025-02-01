@@ -28,6 +28,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
@@ -63,6 +64,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptionsCondensed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
@@ -354,7 +356,7 @@ public class IDEWindow extends Component {
 		}
 	}
 
-	private boolean save() {
+	private void save(Runnable onSuccessfulSave, Consumer<String> onError) {
 
 		String newPath;
 		if (pathInput.getText().isEmpty() || pathInput.getText().equals(".lua")) {
@@ -374,47 +376,67 @@ public class IDEWindow extends Component {
 
 			newPath = ResourcePath.removeSpacesInPath(newPath);
 		}
-
-		if (scriptPath == null) {
-			if (newPath == null) {
-				//TODO tzzz cannot create file: invalid name
-				return false;
-			}
-
-			FileHandle saveTo = CustomObject.getResourceFile(newPath, false);
-			if (saveTo.exists()) {
-				//TODO tzzz cannot override!
-				return false;
-			}
-
-			try {
-				CustomDungeonSaves.writeClearText(saveTo, createFullScript());
-				unsavedChanges = false;
-				customObject.setLuaScriptPath(newPath);
-			} catch (IOException e) {
-				EditorScene.show(new WndError(Messages.get(IDEWindow.class, "write_file_exception", e.getClass().getSimpleName(), e.getMessage())) {{
-					setHighlightingEnabled(false);}});
-				return false;
-			}
-			return true;
+		
+		if (scriptPath == null && newPath == null) {
+			onError.accept(Messages.get(IDEWindow.class, "save_invalid_name_error"));
+			return;
 		}
-
-		if (newPath != null && !newPath.equals(scriptPath)) {
-			//tzz save location has changed!
-			//tzz fragen, ob alter pfad gelöscht werden soll, warnung, dass alle anderen die denselben pfad verwenden neu konfiguriert werden müssen
-			return false;
-		} else {
-			FileHandle saveTo = CustomObject.getResourceFile(scriptPath, false);
+		
+		FileHandle saveTo = CustomObject.getResourceFile(newPath, false);
+		if (scriptPath == null) {
+			if (saveTo.exists()) {
+				onError.accept(Messages.get(IDEWindow.class, "save_duplicate_name_error", newPath));
+				return;
+			}
+		}
+		
+		final String saveLocation = newPath;
+		
+		Runnable doSave = () -> {
 			try {
 				CustomDungeonSaves.writeClearText(saveTo, createFullScript());
 				unsavedChanges = false;
-				customObject.setLuaScriptPath(newPath);
+				customObject.setLuaScriptPath(saveLocation);
+				CustomDungeonSaves.storeCustomObject(customObject);
+				
+				onSuccessfulSave.run();
+				
 			} catch (IOException e) {
 				EditorScene.show(new WndError(Messages.get(IDEWindow.class, "write_file_exception", e.getClass().getSimpleName(), e.getMessage())) {{
 					setHighlightingEnabled(false);}});
-				return false;
 			}
-			return true;
+		};
+
+		if (newPath != null && scriptPath != null && !newPath.equals(scriptPath)) {
+			DungeonScene.show(new WndOptionsCondensed(Messages.get(IDEWindow.class, "save_move_file_title"), Messages.get(IDEWindow.class, "save_move_file_body"),
+					Messages.get(IDEWindow.class, "save_move_move"), Messages.get(IDEWindow.class, "save_move_new")) {
+				{
+					tfMessage.setHighlighting(false);
+				}
+				
+				@Override
+				protected void onSelect(int index) {
+					if (index == 0) {
+						for (CustomObject obj : CustomObjectManager.allUserContents.values()) {
+							if (obj != customObject && obj instanceof LuaCustomObject && scriptPath.equals(((LuaCustomObject) obj).getLuaScriptPath())) {
+								((LuaCustomObject) obj).setLuaScriptPath(saveLocation);
+								try {
+									CustomDungeonSaves.storeCustomObject(obj);
+								} catch (IOException e) {
+									Game.reportException(e);
+								}
+							}
+						}
+						FileHandle oldFile = CustomObject.getResourceFile(scriptPath, false);
+						if (oldFile != null) {
+							oldFile.delete();
+						}
+					}
+					doSave.run();
+				}
+			});
+		} else {
+			doSave.run();
 		}
 
 //		if (saveTo.exists()) {
@@ -443,8 +465,9 @@ public class IDEWindow extends Component {
 	}
 
 	public static SimpleWindow showWindow(LuaCustomObject customObject, CustomObjSelector<String> customObjSelector, Class<?> clazz) {
-
-		if (Game.platform.openNativeIDEWindow(customObject, customObjSelector, clazz)) return null;
+		
+		Runnable onScriptChanged = () -> customObjSelector.setValue(customObject.getLuaScriptPath());
+		if (Game.platform.openNativeIDEWindow(customObject, clazz, onScriptChanged)) return null;
 
 		SimpleWindow w = new SimpleWindow(Window.WindowSize.WIDTH_LARGE.get(),  Window.WindowSize.HEIGHT_LARGE.get()) {
 			IDEWindow ideWindow = new IDEWindow(customObject, clazz, this::layout);
@@ -454,26 +477,28 @@ public class IDEWindow extends Component {
 			@Override
 			public void hide() {
 				if (ideWindow.unsavedChanges || true) {
-					if (!ideWindow.save()) {
-						Runnable superHide = super::hide;
-						GameScene.show(new WndOptions(Icons.WARNING.get(),
-								Messages.get(IDEWindow.class, "close_unsaved_title"),
-								Messages.get(IDEWindow.class, "close_unsaved_body"),
-								Messages.get(IDEWindow.class, "close_unsaved_close_and_lose"),
-								Messages.get(IDEWindow.class, "close_unsaved_cancel")) {
-							@Override
-							protected void onSelect(int index) {
-								if (index == 0) {
-									superHide.run();
-									customObjSelector.setValue(customObject.getLuaScriptPath());
-								}
-							}
-						});
-						return;
-					}
+					Runnable superHide = super::hide;
+					ideWindow.save(
+							() -> { //on successful
+								super.hide();
+								onScriptChanged.run();
+							},
+							errorText -> { //on error
+								GameScene.show(new WndOptions(Icons.WARNING.get(),
+										Messages.get(IDEWindow.class, "close_unsaved_title"),
+										Messages.get(IDEWindow.class, "close_unsaved_body", errorText),
+										Messages.get(IDEWindow.class, "close_unsaved_close_and_lose"),
+										Messages.get(IDEWindow.class, "close_unsaved_cancel")) {
+									@Override
+									protected void onSelect(int index) {
+										if (index == 0) {
+											superHide.run();
+											onScriptChanged.run();
+										}
+									}
+								});
+							});
 				}
-				super.hide();
-				customObjSelector.setValue(customObject.getLuaScriptPath());
 			}
 		};
 
@@ -731,11 +756,11 @@ public class IDEWindow extends Component {
 
 	public static void showSelectScriptWindow(Class<?> clazz, Consumer<LuaScript> onSelect) {
 		List<LuaScript> scripts = CustomDungeonSaves.findScripts(script -> {
-			Class<?> luca = script.type;
-			while (!luca.isAssignableFrom(clazz)) {
-				luca = luca.getSuperclass();
+			Class<?> lca = script.type;
+			while (!lca.isAssignableFrom(clazz)) {
+				lca = lca.getSuperclass();
 			}
-			return luca != GameObject.class && luca != Object.class;
+			return lca != GameObject.class && lca != Object.class;
 		});
 
 		String[] options = new String[scripts.size()];
@@ -782,10 +807,10 @@ public class IDEWindow extends Component {
 			protected void onSelect(int index) {
 				onSelect.accept(scripts.get(index));
 			}
-
+			
 			@Override
-			public void hide() {
-				super.hide();
+			public void onBackPressed() {
+				super.onBackPressed();
 				onSelect.accept(null);
 			}
 		});

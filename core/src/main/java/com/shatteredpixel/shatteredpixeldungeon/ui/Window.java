@@ -237,10 +237,10 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 		
 		public int get() {
 			switch (this) {
-				case WIDTH_VERY_SMALL: return Math.min(160, (int) (PixelScene.uiCamera.width * 0.9f));
-				case WIDTH_SMALL:  return (int) GameMath.gate(140, PixelScene.uiCamera.width * 0.7f, 180);
-				case WIDTH_MEDIUM: return (int) GameMath.gate(150, PixelScene.uiCamera.width * 0.8f, 200);
-				case WIDTH_LARGE:  return (int) GameMath.gate(160, PixelScene.uiCamera.width * 0.9f, WndTitledMessage.WIDTH_MAX);
+				case WIDTH_VERY_SMALL: return gateWidth(160, (int) (PixelScene.uiCamera.width * 0.9f), Float.MAX_VALUE);
+				case WIDTH_SMALL:  return gateWidth(140, 180, PixelScene.uiCamera.width * 0.7f);
+				case WIDTH_MEDIUM: return gateWidth(150, 200, PixelScene.uiCamera.width * 0.8f);
+				case WIDTH_LARGE:  return gateWidth(160, WndTitledMessage.WIDTH_MAX, PixelScene.uiCamera.width * 0.9f);
 				
 				case WIDTH_LARGE_S:  return WIDTH_LARGE.get() - (PixelScene.landscape() ? 10 : 5);
 				case WIDTH_LARGE_M:  return WIDTH_LARGE.get() - (PixelScene.landscape() ? 5 : 0);
@@ -251,6 +251,16 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 				case HEIGHT_LARGE:  return (int) (PixelScene.uiCamera.height * 0.9f);
 			}
 			return 0;
+		}
+		
+		private int gateWidth(float min, float val, float max) {
+			if (min > PixelScene.uiCamera.width) min = PixelScene.uiCamera.width * 0.8f;
+			return (int) GameMath.gate(min, val, Math.min(PixelScene.uiCamera.width, max));
+		}
+		
+		private int gateHeight(float min, float val, float max) {
+			if (min > PixelScene.uiCamera.height) min = PixelScene.uiCamera.height * 0.8f;
+			return (int) GameMath.gate(min, val, Math.min(PixelScene.uiCamera.height, max));
 		}
 	}
 }

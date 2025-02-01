@@ -955,7 +955,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     @Override
     protected void updateStates() {
         super.updateStates();
-         if (mobStateSpinner != null) mobStateSpinner.setValue(MobStateSpinner.States.getIndex(obj));
+         if (mobStateSpinner != null) mobStateSpinner.setValue(MobStateSpinner.States.get(obj));
          if (playerAlignment != null) playerAlignment.setValue(obj.playerAlignment);
          if (turnTo != null) turnTo.text(Messages.get(this, "turn_to", obj.turnToCell == -1 ? label("turn_to_random") : EditorUtilities.cellToString(obj.turnToCell)));
          if (mimicItems != null) mimicItems.setItemList(((Mimic) obj).items);

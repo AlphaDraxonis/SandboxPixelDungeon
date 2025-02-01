@@ -18,8 +18,6 @@ android {
         minSdkVersion appAndroidMinSDK
         targetSdkVersion appAndroidTargetSDK
         resourceConfigurations += ['en_US', 'cs', 'de', 'el', 'es', 'fr', 'hu', 'in', 'it', 'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'tr', 'uk', 'vi', 'zh_CN']
-
-        multiDexEnabled true
     }
 
     buildTypes {
@@ -27,9 +25,9 @@ android {
             applicationIdSuffix ".indev"
             versionNameSuffix '-INDEV'
 
-//            shrinkResources true
-//            minifyEnabled true
-//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             dependencies {
                 debugImplementation project(':services:updates:debugUpdates')
@@ -113,4 +111,11 @@ task copyAndroidNatives() {
 
 tasks.matching { it.name.contains("merge") && it.name.contains("JniLibFolders") }.configureEach { packageTask ->
     packageTask.dependsOn 'copyAndroidNatives'
+}
+
+dependencies {
+    // Byte Buddy for bytecode manipulation
+    implementation 'net.bytebuddy:byte-buddy:1.16.1'
+    implementation 'net.bytebuddy:byte-buddy-android:1.16.1'
+    //implementation 'net.bytebuddy:byte-buddy-agent:1.16.1' //for redefining existing classes
 }

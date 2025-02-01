@@ -27,11 +27,14 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.ControllerHandler;
 import com.watabou.noosa.Game;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 
 import java.util.HashMap;
 
+@NotAllowedInLua
 public abstract class PlatformSupport {
 	
 	public abstract void updateDisplaySize();
@@ -93,8 +96,12 @@ public abstract class PlatformSupport {
 		return null;
 	}
 
-	public boolean openNativeIDEWindow(Object customObject, Object rawFileSelector, Class<?> clazz) {
+	public boolean openNativeIDEWindow(Object customObject, Class<?> clazz, Runnable onScriptChanged) {
 		return false;
+	}
+	
+	public ClassLoadingStrategy getClassLoadingStrategy() {
+		return ClassLoadingStrategy.Default.WRAPPER;
 	}
 
 	public void setOnscreenKeyboardVisible(boolean value){

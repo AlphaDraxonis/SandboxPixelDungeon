@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndSelectResour
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
@@ -66,7 +67,7 @@ public class CustomObjectEditor<T extends CustomObject> extends Component {
 
 		if (obj instanceof LuaCustomObject) {
 			LuaCustomObject lco = (LuaCustomObject) obj;
-			luaScriptPath = new CustomObjSelector<String>("Lua Script Path, ", new CustomObjSelector.Selector<String>() {
+			luaScriptPath = new CustomObjSelector<String>(Messages.get(CustomObjectEditor.class, "script"), new CustomObjSelector.Selector<String>() {
 
 				@Override
 				public String getCurrentValue() {

@@ -95,9 +95,9 @@ public class AndroidLauncher extends AndroidApplication {
 			else if (!file.file().canRead()) error = "Cannot read the file. Please make sure to GRANT the PERMISSION!";
 			if (error == null) {
 				try {
-					FileHandle fileDest = FileUtils.getFileHandle(FileUtils.getFileTypeForCustomDungeons(),
+					FileHandle fileDest = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(),
 							CustomDungeonSaves.DUNGEON_FOLDER + file.name());
-					FileHandle destDungeon = FileUtils.getFileHandle(FileUtils.getFileTypeForCustomDungeons(),
+					FileHandle destDungeon = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(),
 							CustomDungeonSaves.DUNGEON_FOLDER + file.nameWithoutExtension());
 
 					//copies the file into the dungeon folder so it can be auto-imported when opening the dungeon selection

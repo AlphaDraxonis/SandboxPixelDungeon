@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
@@ -237,9 +238,13 @@ public class Button extends Component {
 
 	protected void onPointerDown() {}
 	protected void onPointerUp() {}
+	@NotAllowedInLua
 	protected void onClick() {} //left click, default key type
+	@NotAllowedInLua
 	protected void onRightClick() {}
+	@NotAllowedInLua
 	protected void onMiddleClick() {}
+	@NotAllowedInLua
 	protected boolean onLongClick() {
 		return false;
 	}

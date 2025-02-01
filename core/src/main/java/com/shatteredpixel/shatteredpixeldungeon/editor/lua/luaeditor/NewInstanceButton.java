@@ -24,6 +24,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.PopupMenu;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -56,17 +59,18 @@ public abstract class NewInstanceButton extends RedButton {
 
 		if (obj == null || clName == null) return null;
 
-		//tzz
-//		if (obj instanceof LuaClass) {
-//			boolean useID = false;
-//			CustomObject selected = CustomObject.customObjects.get(((LuaClass) obj).getIdentifier());
-//			for (CustomObject cusObj : CustomObject.customObjects.values()) {
-//				if (cusObj != selected && cusObj.name.equals(selected.name)) {
-//					useID = true;
-//				}
-//			}
-//			return "newCus(" + (useID ? ((LuaClass) obj).getIdentifier() : "\"" + selected.name + "\"") +")";
-//		}
+		if (obj instanceof CustomObjectClass) {
+			boolean useID = false;
+			CustomObjectClass selected = (CustomObjectClass) obj;
+			int id = selected.getIdentifier();
+			CustomObject cus = CustomObjectManager.allUserContents.get(id);
+			for (CustomObject cusObj : CustomObjectManager.allUserContents.values()) {
+				if (cusObj != selected && cusObj.getName().equals(cus.getName())) {
+					useID = true;
+				}
+			}
+			return "newCus(" + (useID ? id : "\"" + cus.getName() + "\"") +")";
+		}
 		return  "new(\"" + clName + "\")";
 	}
 }

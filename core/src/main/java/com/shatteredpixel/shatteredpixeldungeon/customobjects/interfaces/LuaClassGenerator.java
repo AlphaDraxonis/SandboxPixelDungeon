@@ -43,16 +43,13 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.TypeCache;
-import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.FixedValue;
 import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.StubMethod;
-import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Argument;
 import net.bytebuddy.implementation.bind.annotation.Origin;
@@ -131,18 +128,28 @@ public final class LuaClassGenerator {
 			if (Bundlable.class.isAssignableFrom(originalClass)) {
 				builder = builder
 						.defineMethod("storeInBundle", void.class, Visibility.PUBLIC).withParameter(Bundle.class)
-						.intercept(SuperMethodCall.INSTANCE // first call super
-								.andThen(Advice.to(AdviceStoreInBundle.class)))
+						.intercept(MethodDelegation.to(InterceptorStoreInBundleWithSuper.class))
 						.defineMethod("restoreFromBundle", void.class, Visibility.PUBLIC).withParameter(Bundle.class)
-						.intercept(MethodDelegation.to(AdviceStoreInBundle.class)
-								.andThen(SuperMethodCall.INSTANCE)); // call super after, so we can restore the id
+						.intercept(MethodDelegation.to(InterceptorRestoreFromBundleWithSuper.class)); // call super after, so we can restore the id
+//				builder = builder
+//						.defineMethod("storeInBundle", void.class, Visibility.PUBLIC).withParameter(Bundle.class)
+//						.intercept(SuperMethodCall.INSTANCE // first call super
+//								.andThen(Advice.to(AdviceStoreInBundle.class)))
+//						.defineMethod("restoreFromBundle", void.class, Visibility.PUBLIC).withParameter(Bundle.class)
+//						.intercept(MethodDelegation.to(AdviceStoreInBundle.class)
+//								.andThen(SuperMethodCall.INSTANCE)); // call super after, so we can restore the id
 			} else {
 				//don't call super hehehe
 				builder = builder
 						.defineMethod("storeInBundle", void.class, Visibility.PUBLIC).withParameter(Bundle.class)
-						.intercept(MethodDelegation.to(AdviceStoreInBundle.class))
+						.intercept(MethodDelegation.to(InterceptorStoreInBundle.class))
 						.defineMethod("restoreFromBundle", void.class, Visibility.PUBLIC).withParameter(Bundle.class)
-						.intercept(MethodDelegation.to(AdviceRestoreFromBundle.class));
+						.intercept(MethodDelegation.to(InterceptorRestoreFromBundle.class));
+//				builder = builder
+//						.defineMethod("storeInBundle", void.class, Visibility.PUBLIC).withParameter(Bundle.class)
+//						.intercept(MethodDelegation.to(AdviceStoreInBundle.class))
+//						.defineMethod("restoreFromBundle", void.class, Visibility.PUBLIC).withParameter(Bundle.class)
+//						.intercept(MethodDelegation.to(AdviceRestoreFromBundle.class));
 			}
 
 		} else {
@@ -168,7 +175,7 @@ public final class LuaClassGenerator {
 
 		return builder
 				.make()
-				.load(LuaClassGenerator.class.getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
+				.load(LuaClassGenerator.class.getClassLoader(), Game.platform.getClassLoadingStrategy())
 				.getLoaded();
 	}
 
@@ -307,8 +314,6 @@ public final class LuaClassGenerator {
 		return methods.values();
     }
 
-	//TODO tzz might need to add @KeepProguard to RuntimeType etc??
-
     public static class InterceptorNewInstance {
 		@RuntimeType
         public static LuaCustomObjectClass newInstance(@This Object self) {
@@ -326,30 +331,36 @@ public final class LuaClassGenerator {
 			return Reflection.newInstance(((Class<? extends LuaCustomObjectClass>) luaUserContentClass(DungeonScript.class)));
 		}
 	}
-
-    public static class AdviceStoreInBundle {
-        @Advice.OnMethodExit
-        public static void exit(@Advice.This LuaCustomObjectClass self, @Advice.Argument(0) Bundle bundle) throws Exception {
-            self.onStoreInBundle(bundle);
-        }
-
+	
+	public static class InterceptorStoreInBundleWithSuper {
 		@RuntimeType
-		public static void storeInBundle(@This LuaCustomObjectClass self, @Argument(0) Bundle bundle) {
+		public static void storeInBundle(@This LuaCustomObjectClass self, @Argument(0) Bundle bundle, @SuperCall Callable<?> originalMethod) throws Exception {
+			self.onStoreInBundle(bundle);
+			originalMethod.call();
+		}
+	}
+
+	public static class InterceptorRestoreFromBundleWithSuper {
+		@RuntimeType
+		public static void restoreFromBundle(@This LuaCustomObjectClass self, @Argument(0) Bundle bundle, @SuperCall Callable<?> originalMethod) throws Exception {
+			self.onRestoreFromBundle(bundle);
+			originalMethod.call();
+		}
+	}
+	
+	public static class InterceptorStoreInBundle {
+		@RuntimeType
+		public static void storeInBundle(@This LuaCustomObjectClass self, @Argument(0) Bundle bundle) throws Exception {
+			self.onStoreInBundle(bundle);
+		}
+	}
+	
+	public static class InterceptorRestoreFromBundle {
+		@RuntimeType
+		public static void restoreFromBundle(@This LuaCustomObjectClass self, @Argument(0) Bundle bundle) throws Exception {
 			self.onRestoreFromBundle(bundle);
 		}
-    }
-
-    public static class AdviceRestoreFromBundle {
-        @Advice.OnMethodExit
-        public static void exit(@Advice.This LuaCustomObjectClass self, @Advice.Argument(0) Bundle bundle) throws Exception {
-            self.onRestoreFromBundle(bundle);
-        }
-
-		@RuntimeType
-		public static void restoreFromBundle(@This LuaCustomObjectClass self, @Argument(0) Bundle bundle) {
-			self.onRestoreFromBundle(bundle);
-		}
-    }
+	}
 
 
 	private static final Map<Class<?>, MethodInterceptor> METHOD_INTERCEPTOR_CACHE = new HashMap<>(5);
@@ -372,7 +383,7 @@ public final class LuaClassGenerator {
 			LuaValue script = getScript(self);
 			if (script != null && script.get(method.getName()).isfunction()) {
 				try {
-					return script.get(method.getName()).invoke(convertArgsToLua(self, self.getVars(), args)).touserdata(1);
+					return LuaRestrictionProxy.coerceLuaToJava( script.get(method.getName()).invoke(convertArgsToLua(self, self.getVars(), args)).arg1(), method.getReturnType() );
 				} catch (LuaError error) {
 					Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error)));
 				}
@@ -407,7 +418,7 @@ public final class LuaClassGenerator {
 		@RuntimeType
 		public static Object intercept(@This CustomObjectClass self, @SuperCall Callable<?> superCall, @Argument(0) Object arg, @SuperMethod Method superMethod) throws Exception {
 			if (self.getIdentifier() == 0) return superCall.call();
-			String resourcePath = ((CustomCharSprite) CustomObjectManager.getUserContent(self.getIdentifier(), CustomCharSprite.class)).getResourcePath();
+			String resourcePath = CustomObjectManager.getUserContent(self.getIdentifier(), CustomCharSprite.class).getResourcePath();
 			return superMethod.invoke(self,
 					resourcePath == null
 							? (arg != null ? arg : ((CharSprite) self).texture)
@@ -423,7 +434,7 @@ public final class LuaClassGenerator {
 			LuaValue script = CustomObjectManager.getScript(self.getIdentifier());
 			if (script != null && script.get(method.getName()).isfunction()) {
 				try {
-					return script.get(method.getName()).invoke(MethodInterceptor.convertArgsToLua(self, self.getVars(), args)).touserdata(1);
+					return LuaRestrictionProxy.coerceLuaToJava( script.get(method.getName()).invoke(MethodInterceptor.convertArgsToLua(self, self.getVars(), args)).arg1(), method.getReturnType() );
 				} catch (LuaError error) {
 					Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error)));
 				}

@@ -21,6 +21,7 @@
 
 package com.watabou.noosa;
 
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.PointerEvent;
 import com.watabou.utils.Signal;
 
@@ -60,7 +61,7 @@ public class PointerArea extends Visual implements Signal.Listener<PointerEvent>
     @Override
     public boolean onSignal( PointerEvent event ) {
         
-        boolean hit = event != null && target.overlapsScreenPoint( (int)event.current.x, (int)event.current.y );
+        boolean hit = event != null && target.overlapsScreenPoint( (int)event.current.x, (int)event.current.y ) && ScrollArea.isInTopWindow(target);
         
         if (!isActive()) {
             if (hit && blockLevel == ALWAYS_BLOCK) {
@@ -126,6 +127,7 @@ public class PointerArea extends Visual implements Signal.Listener<PointerEvent>
     
     protected void onPointerUp( PointerEvent event) { }
     
+    @NotAllowedInLua
     protected void onClick( PointerEvent event ) { }
     
     protected void onDrag( PointerEvent event ) { }

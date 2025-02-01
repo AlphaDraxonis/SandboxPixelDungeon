@@ -162,7 +162,7 @@ public class CustomDungeonSaves {
 
 	public static void writeBytesToFileNoBackup( String basePath, String name, byte[] bytes ) throws IOException {
 		try {
-			FileHandle file = FileUtils.getFileHandle(FileUtils.getFileTypeForCustomDungeons(), basePath + name);
+			FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), basePath + name);
 			file.writeBytes(bytes, false);
 		} catch (GdxRuntimeException e) {
 			throw new IOException(e);
@@ -445,8 +445,15 @@ public class CustomDungeonSaves {
     }
 
     public static LuaScript readLuaFile(String pathToScript) {
+        if (pathToScript == null) {
+            return null;
+        }
         FileHandle file = FileUtils.getFileHandle(getExternalFilePath(pathToScript));
-        if (!file.exists() || file.isDirectory()) return null;
+        
+        if (!file.exists() || file.isDirectory()) {
+            return null;
+        }
+        
         return LuaScript.readFromFileContent(file.readString(), pathToScript);
     }
 

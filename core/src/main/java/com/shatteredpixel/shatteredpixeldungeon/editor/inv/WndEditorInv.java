@@ -158,14 +158,16 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                         }
                     }
 
-                    if (b instanceof Tiles.CustomTileBag) {
-                        ret.add(new Tiles.AddSimpleCustomTileButton());
-                    }
-                    if (b instanceof Tiles.ParticleBag) {
-                        ret.add(new Tiles.AddParticleButton());
-                    }
-                    if (b instanceof GameObjectCategory.CustomObjectBag && WndEditorInv.INSTANCE != null) {
-                        ret.add( ((GameObjectCategory.CustomObjectBag) b).createAddBtn() );
+                    if (selector == null || selector.includeAddButtons()) {
+                        if (b instanceof Tiles.CustomTileBag) {
+                            ret.add(new Tiles.AddSimpleCustomTileButton());
+                        }
+                        if (b instanceof Tiles.ParticleBag) {
+                            ret.add(new Tiles.AddParticleButton());
+                        }
+                        if (b instanceof GameObjectCategory.CustomObjectBag && WndEditorInv.INSTANCE != null) {
+                            ret.add(((GameObjectCategory.CustomObjectBag) b).createAddBtn());
+                        }
                     }
 
                     return ret;

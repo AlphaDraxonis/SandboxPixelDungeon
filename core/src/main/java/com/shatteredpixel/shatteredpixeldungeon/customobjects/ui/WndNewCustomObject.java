@@ -28,7 +28,15 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.*;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.AnyLuaCustomObj;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomBuff;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomCharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomItem;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomMob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomPlant;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomRoom;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomTrap;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.ItemContainer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
@@ -48,7 +56,12 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.RatSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.CreateCancelComp;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Image;
@@ -129,6 +142,11 @@ public class WndNewCustomObject extends SimpleWindow {
 					}
 
 					@Override
+					public boolean includeAddButtons() {
+						return false;
+					}
+					
+					@Override
 					public Class<? extends Bag> preferredBag() {
 						return selectedObject.preferredBag();
 					}
@@ -145,6 +163,9 @@ public class WndNewCustomObject extends SimpleWindow {
 							c = ((EditorItem<?>) item).getObject().getClass();
 						} else {
 							c = item.getClass();
+						}
+						if (CustomObjectClass.class.isAssignableFrom(c)) {
+							return false;
 						}
 						return selectedObject.isSuperclassValid(c);
 					}

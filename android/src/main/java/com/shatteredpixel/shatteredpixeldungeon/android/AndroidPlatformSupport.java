@@ -41,12 +41,15 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.android.ideactivity.AndroidIDEWindow;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.NotAllowedInLua;
 import com.watabou.input.ControllerHandler;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Consumer;
 import com.watabou.utils.PlatformSupport;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -384,10 +387,18 @@ public class AndroidPlatformSupport extends PlatformSupport {
 
 
 	@Override
-	public boolean openNativeIDEWindow(Object customObject, Object rawFileSelector, Class<?> clazz) {
-//		AndroidIDEWindow.luaCodeHolder = (LuaCodeHolder) luaCodeHolder;
-//		AndroidIDEWindow.script = (LuaScript) luaScript;
-//		AndroidLauncher.launchIDEWindowActivity();
+	public boolean openNativeIDEWindow(Object customObject, Class<?> clazz, Runnable onScriptChanged) {
+		AndroidIDEWindow.clazz = clazz;
+		AndroidIDEWindow.customObject = (LuaCustomObject) customObject;
+		AndroidIDEWindow.onScriptChanged = onScriptChanged;
+		AndroidLauncher.launchIDEWindowActivity();
 		return true;
+	}
+	
+	@Override
+	public ClassLoadingStrategy getClassLoadingStrategy() {
+		return new net.bytebuddy.android.AndroidClassLoadingStrategy.Wrapping(AndroidLauncher.instance.getDir(
+				"generated",
+				Context.MODE_PRIVATE));
 	}
 }

@@ -10,4 +10,8 @@ dependencies {
 
     //noinspection GradleDependency , later JSON versions cause crashes on old versions of android
     implementation "org.json:json:20170516"
+
+    // Byte Buddy for bytecode manipulation
+    implementation 'net.bytebuddy:byte-buddy:1.16.1'
+    //implementation 'net.bytebuddy:byte-buddy-agent:1.16.1' //for redefining existing classes
 }

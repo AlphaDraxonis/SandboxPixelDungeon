@@ -36,7 +36,7 @@ import com.watabou.utils.FileUtils;
 public class ImageFileItem extends EditorItem<FileHandle> {
 	
 	public ImageFileItem(String dungeonName, String path) {
-		this.obj = FileUtils.getFileHandle(FileUtils.getFileTypeForCustomDungeons(), CustomDungeonSaves.DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + path);
+		this.obj = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), CustomDungeonSaves.DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + path);
 	}
 	
 	public ImageFileItem(FileHandle file) {

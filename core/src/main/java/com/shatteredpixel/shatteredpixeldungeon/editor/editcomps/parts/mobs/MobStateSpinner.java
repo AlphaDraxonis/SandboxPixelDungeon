@@ -1,12 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerEnumModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.ui.Component;
-
-import java.util.Locale;
 
 public class MobStateSpinner extends StyledSpinner {
 
@@ -26,13 +24,13 @@ public class MobStateSpinner extends StyledSpinner {
         FLEEING,
         FOLLOWING;
 
-        public static int getIndex(Mob mob) {
-            if (mob.following) return 5;
-            if (mob.state == mob.SLEEPING) return 0;
-            if (mob.state == mob.HUNTING) return 2;
-            if (mob.state == mob.PASSIVE) return 3;
-            if (mob.state == mob.FLEEING) return 4;
-            return 1;//Wandering is default
+        public static States get(Mob mob) {
+            if (mob.following) return FOLLOWING;
+            if (mob.state == mob.SLEEPING) return SLEEPING;
+            if (mob.state == mob.HUNTING) return HUNTING;
+            if (mob.state == mob.PASSIVE) return PASSIVE;
+            if (mob.state == mob.FLEEING) return FLEEING;
+            return WANDERING;//Wandering is default
         }
 
         public void applyChange(Mob mob) {
@@ -61,16 +59,10 @@ public class MobStateSpinner extends StyledSpinner {
         }
     }
 
-    private static class MobStateSpinnerModel extends SpinnerTextModel {
+    private static class MobStateSpinnerModel extends SpinnerEnumModel<States> {
 
         public MobStateSpinnerModel(Mob mob) {
-            super(true, States.getIndex(mob), (Object[]) States.values());
-        }
-
-        @Override
-        protected String displayString(Object value) {
-            States state = (States) value;
-            return Messages.get(MobStateSpinner.class, state.name().toLowerCase(Locale.ENGLISH));
+            super(States.class, States.get(mob), state -> state.applyChange(mob));
         }
 
         @Override
