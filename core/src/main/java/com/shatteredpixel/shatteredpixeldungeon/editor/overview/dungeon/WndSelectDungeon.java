@@ -3,16 +3,12 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon;
 import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.OpenDungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.DungeonToJsonConverter;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.ExportDungeonWrapper;
@@ -637,30 +633,7 @@ public class WndSelectDungeon extends Window {
     }
 
     public static void openDungeon(String name) {
-        try {
-            Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(name);
-        } catch (IOException e) {
-            SandboxPixelDungeon.reportException(e);
-        } catch (CustomDungeonSaves.RenameRequiredException e) {
-            e.showExceptionWindow();
-            return;
-        }
-        EditorScene.isEditing = true;
-        CustomTileLoader.loadTiles(EditorScene.openDifferentLevel);
-        String lastEditedFloor = Dungeon.customDungeon.getLastEditedFloor();
-        LevelScheme l;
-        if (Dungeon.customDungeon.getNumFloors() == 0 || lastEditedFloor == null || (l = Dungeon.customDungeon.getFloor(lastEditedFloor)) == null)
-            SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
-        else {
-            if (l.getType() != CustomLevel.class)
-                SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
-            else {
-                l.loadLevel();
-                if (l.getLevel() == null)
-                    SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
-                else EditorScene.open((CustomLevel) l.getLevel());
-            }
-        }
+        OpenDungeonScene.openDungeon(name);
     }
 
     private static class WndExportDungeon extends WndOptions {
