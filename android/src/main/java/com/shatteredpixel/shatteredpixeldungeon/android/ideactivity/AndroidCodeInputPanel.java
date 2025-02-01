@@ -28,12 +28,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.shatteredpixel.shatteredpixeldungeon.android.R;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
@@ -46,10 +50,13 @@ import com.watabou.idewindowactions.LuaScript;
 @NotAllowedInLua
 public abstract class AndroidCodeInputPanel extends ConstraintLayout implements CodeInputPanelInterface {
 
+	private LinearLayout textInputParent;
 	protected TextView label, desc;
 	protected EditText textInput;
 	protected ImageButton btnAdd, btnRemove, btnFold, btnExpand;
 	protected View line;
+	
+	protected String text = "";
 
 	public AndroidCodeInputPanel(Context context) {
 		super(context);
@@ -70,9 +77,10 @@ public abstract class AndroidCodeInputPanel extends ConstraintLayout implements 
 		LayoutInflater inflater = LayoutInflater.from(context);
 		inflater.inflate(R.layout.code_input_panel, this, true);
 
+		textInputParent = findViewById(R.id.text_input_parent);
+		
 		label = findViewById(R.id.label);
 		desc = findViewById(R.id.desc);
-		textInput = findViewById(R.id.text_input);
 		line =findViewById(R.id.line);
 
 		btnAdd = findViewById(R.id.btn_add);
@@ -93,7 +101,6 @@ public abstract class AndroidCodeInputPanel extends ConstraintLayout implements 
 		btnFold.setVisibility(GONE);
 		btnExpand.setVisibility(GONE);
 
-		textInput.setVisibility(GONE);
 		desc.setVisibility(GONE);
 
 		ViewTreeObserver toolbarObserver = getViewTreeObserver();
@@ -105,26 +112,81 @@ public abstract class AndroidCodeInputPanel extends ConstraintLayout implements 
 			label.setWidth(line.getWidth() - reservedWidth);
 		});
 	}
-
+	
+	protected EditText createEditText() {
+		EditText result = new EditText(getContext());
+		
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.MATCH_PARENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT
+		);
+		layoutParams.setMargins(0, 4, 0, 0);
+		result.setLayoutParams(layoutParams);
+		
+		result.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+		result.setTextSize(15);
+		
+		result.setText(text);
+		
+		result.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				text = s.toString();
+			}
+		});
+		
+		return result;
+	}
+	
+	protected void setTextInputVisible(boolean flag) {
+		if (flag) {
+			if (textInput == null) {
+				textInput = createEditText();
+				textInputParent.addView(textInput);
+			}
+		} else {
+			if (textInput != null) {
+				textInputParent.removeView(textInput);
+				textInput = null;
+			}
+		}
+	}
+	
+	public void setText(String text) {
+		if (textInput != null) textInput.setText(text);
+		else this.text = text;
+	}
+	
 	protected void onAdd() {
 		onExpand();
 		btnAdd.setVisibility(GONE);
 		btnRemove.setVisibility(VISIBLE);
 
 		desc.setVisibility(VISIBLE);
-		textInput.setVisibility(VISIBLE);
+		
+		setTextInputVisible(true);
 		textInput.requestFocus();
 	}
 
 	protected void onRemove() {
 
-		if (textInput.getText().toString().isEmpty()) {
+		if (text.isEmpty()) {
 			btnAdd.   setVisibility(VISIBLE);
 			btnRemove.setVisibility(GONE);
 			btnFold.  setVisibility(GONE);
 			btnExpand.setVisibility(GONE);
 			desc.	  setVisibility(GONE);
-			textInput.setVisibility(GONE);
+			
+			setTextInputVisible(false);
+			
 			return;
 		}
 
@@ -138,8 +200,9 @@ public abstract class AndroidCodeInputPanel extends ConstraintLayout implements 
 					btnFold.  setVisibility(GONE);
 					btnExpand.setVisibility(GONE);
 					desc.	  setVisibility(GONE);
-					textInput.setVisibility(GONE);
-					textInput.setText("");
+					setTextInputVisible(false);
+					
+					text = "";
 				});
 
 		builder.setNegativeButton(android.R.string.cancel, (dialog, option) -> dialog.dismiss());
@@ -151,15 +214,17 @@ public abstract class AndroidCodeInputPanel extends ConstraintLayout implements 
 		btnFold.setVisibility(GONE);
 		btnExpand.setVisibility(VISIBLE);
 		desc.setVisibility(GONE);
-		textInput.setVisibility(GONE);
+		
 		AndroidIDEWindow.hideKeyboard(textInput);
+		setTextInputVisible(false);
 	}
 
 	protected void onExpand() {
 		btnFold.setVisibility(VISIBLE);
 		btnExpand.setVisibility(GONE);
 		desc.setVisibility(VISIBLE);
-		textInput.setVisibility(VISIBLE);
+		
+		setTextInputVisible(true);
 		AndroidIDEWindow.showKeyboard(textInput);
 	}
 
@@ -181,23 +246,28 @@ public abstract class AndroidCodeInputPanel extends ConstraintLayout implements 
 			return;
 		}
 
-		if (btnAdd.getVisibility() == VISIBLE) {
+		boolean isAddBtnVisible = btnAdd.getVisibility() == VISIBLE;
+		code = isAddBtnVisible
+				? code
+				: (forceChange || textInput.getText().toString().isEmpty() ? "" : "--[[\n" + textInput.getText() + "]]\n\n") + code
+		;
+		
+		if (isAddBtnVisible) {
 			onAdd();
-			textInput.setText(code);
-		} else {
-			textInput.setText((forceChange || textInput.getText().toString().isEmpty() ? "" : "--[[\n" + textInput.getText() + "]]\n\n") + code);
 		}
+		
+		setText(code);
 	}
 	
 	private static final String TEXT = "text";
 	
 	protected void restoreState(Bundle bundle) {
-		textInput.setText(bundle.getString(TEXT));
+		setText(bundle.getString(TEXT));
 	}
 	
 	protected Bundle storeState() {
 		Bundle node = new Bundle();
-		node.putString(TEXT, textInput.getText().toString());
+		node.putString(TEXT, text);
 		return node;
 	}
 }

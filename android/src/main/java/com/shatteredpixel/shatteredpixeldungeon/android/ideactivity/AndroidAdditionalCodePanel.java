@@ -54,7 +54,7 @@ public class AndroidAdditionalCodePanel extends AndroidCodeInputPanel {
 
 	@Override
 	public String convertToLuaCode() {
-		return textInput.getText().toString();
+		return text;
 	}
 
 	@Override

@@ -6,6 +6,7 @@
             android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/text_input_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -101,14 +102,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#CCCCCC"/>
-
-        <EditText
-            android:id="@+id/text_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:inputType="textMultiLine"
-            android:textSize="15sp" />
 
     </LinearLayout>
 

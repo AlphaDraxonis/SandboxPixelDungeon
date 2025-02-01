@@ -97,30 +97,33 @@ public class AndroidMethodPanel extends AndroidCodeInputPanel {
 	@Override
 	protected void onAdd() {
 		super.onAdd();
-		textInput.setText(CodeInputPanelInterface.defaultMethodCode(method, paramNames));
-		textInput.setSelection(textInput.getText().length());
+		setText(CodeInputPanelInterface.defaultMethodCode(method, paramNames));
+		if (textInput != null) {
+		textInput.setSelection(text.length());
 		AndroidIDEWindow.showKeyboard(textInput);
+		}
 	}
 
 	@Override
 	protected void onExpand() {
 		super.onExpand();
-		textInput.setSelection(textInput.getText().length());
+		if (textInput != null) {
+			textInput.setSelection(text.length());
+		}
 	}
 
 	@Override
 	protected void onRemove() {
 
-		if (textInput.getText().toString().equals(CodeInputPanelInterface.defaultMethodCode(method, paramNames)))
-			textInput.setText("");
+		if (text.equals(CodeInputPanelInterface.defaultMethodCode(method, paramNames)))
+			setText("");
 
 		super.onRemove();
 	}
 
 	@Override
 	public String convertToLuaCode() {
-		String code = textInput.getText().toString();
-		return CodeInputPanelInterface.methodPanelToLuaCode(method, code.isEmpty() ? null : code, paramNames);
+		return CodeInputPanelInterface.methodPanelToLuaCode(method, text.isEmpty() ? null : text, paramNames);
 	}
 
 	@Override

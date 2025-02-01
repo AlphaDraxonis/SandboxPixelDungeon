@@ -183,12 +183,18 @@ public class AndroidIDEWindow extends Activity {
 			{
 				label.setText(createSpannableStringWithColorsFromText(getLabel()));
 				desc.setVisibility(GONE);
-				textInput.setHint(createSpannableStringWithColorsFromText((Messages.get(IDEWindow.class, "desc_info"))));
 
 				btnAdd.setVisibility(GONE);
 				btnExpand.setVisibility(VISIBLE);
 			}
-
+			
+			@Override
+			protected EditText createEditText() {
+				EditText result = super.createEditText();
+				result.setHint(createSpannableStringWithColorsFromText((Messages.get(IDEWindow.class, "desc_info"))));
+				return result;
+			}
+			
 			@Override
 			protected void onAdd() {
 				super.onAdd();
@@ -208,14 +214,13 @@ public class AndroidIDEWindow extends Activity {
 
 			@Override
 			public String convertToLuaCode() {
-				String comment = textInput.getText().toString();
-				return "--" + comment.replace('\n', (char) 29);
+				return "--" + text.replace('\n', (char) 29);
 			}
 
 			@Override
 			public void applyScript(boolean forceChange, LuaScript fullScript, String cleanedCode) {
-				if (forceChange || textInput.getText().toString().isEmpty()) {
-					textInput.setText(fullScript.desc);
+				if (forceChange || text.isEmpty()) {
+					setText(fullScript.desc);
 				}
 			}
 		};
@@ -224,7 +229,13 @@ public class AndroidIDEWindow extends Activity {
 		codeInputPanels[i++] = inputLocalVars = new AndroidVariablesPanel(this, "vars", Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars") + "_title")) {
 			{
 				desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars") + "_info")));
-				textInput.setHint("aNumber = 5,  item = new(\"PotionOfHealing\")");
+			}
+			
+			@Override
+			protected EditText createEditText() {
+				EditText result = super.createEditText();
+				result.setHint("aNumber = 5,  item = new(\"PotionOfHealing\")");
+				return result;
 			}
 		};
 		compGroup.addView(inputLocalVars);
@@ -233,7 +244,13 @@ public class AndroidIDEWindow extends Activity {
 			codeInputPanels[i++] = inputScriptVars = new AndroidVariablesPanel(this, "static", Messages.get(IDEWindow.class, "static_title")) {
 				{
 					desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, "static_info")));
-					textInput.setHint("aNumber = 5,  item = new(\"PotionOfHealing\")");
+				}
+				
+				@Override
+				protected EditText createEditText() {
+					EditText result = super.createEditText();
+					result.setHint("aNumber = 5,  item = new(\"PotionOfHealing\")");
+					return result;
 				}
 			};
 			compGroup.addView(inputScriptVars);
@@ -264,7 +281,9 @@ public class AndroidIDEWindow extends Activity {
 		
 		if (savedInstanceState == null) {
 			inputDesc.onExpand();
-			inputDesc.textInput.requestFocus();
+			if (inputDesc.textInput != null) {
+				inputDesc.textInput.requestFocus();
+			}
 			
 			selectScript(scriptPath, scriptPath == null ? null : CustomDungeonSaves.readLuaFile(scriptPath), true);
 		}
