@@ -119,7 +119,7 @@ public class EditorScene extends DungeonScene {
         Dungeon.hero = null;
         Dungeon.branch = 0;
         Dungeon.reachedCheckpoint = null;
-        GamesInProgress.curSlot = 0;
+        GamesInProgress.curSlot = GamesInProgress.NO_SLOT;
         FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
         Actor.clear();
     }

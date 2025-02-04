@@ -94,9 +94,8 @@ public class CompactCategoryScroller extends AbstractCategoryScroller<CompactCat
 	protected CategoryComp createCategoryComp(int index, Category category) {
 		CategoryComp result = new CategoryComp(index, category);
 		result.expandFoldInTitle.setVisible(false);
-//		result.fold();
-		result.fold.setVisible(false);
-		result.expand.setVisible(false);
+//		result.expanded = false;
+		result.expandAndFold.setVisible(false);
 		content.add(result);
 		return result;
 	}
@@ -278,8 +277,6 @@ public class CompactCategoryScroller extends AbstractCategoryScroller<CompactCat
 				@Override
 				protected void onItemSlotClick(ItemContainer<Item>.Slot slot, Item item) {
 
-					Sample.INSTANCE.play(Assets.Sounds.CLICK);
-
 					if (mode == null) {
 						if (selectorWindow != null) {
 							if (selectorWindow.selector() != null) {
@@ -341,8 +338,7 @@ public class CompactCategoryScroller extends AbstractCategoryScroller<CompactCat
 		@Override
 		protected void showBody(boolean flag) {
 			super.showBody(flag);
-			fold.setVisible(false);
-			expand.setVisible(false);
+			expandAndFold.setVisible(false);
 		}
 
 		@Override

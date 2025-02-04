@@ -158,8 +158,15 @@ public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 	}
 
 	@Override
+	protected boolean onLongClick() {
+		model.setValue(model.getPreviousValue());
+		if (!isClickHolding()) afterClick();
+		return true;
+	}
+	
+	@Override
 	protected int getClicksPerSecondWhenHolding() {
-		return model.getClicksPerSecondWhileHolding();
+		return 0;
 	}
 
 	@Override
@@ -169,5 +176,13 @@ public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 	}
 
 	protected void afterClick() {
+	}
+	
+	public void addChangeListener(Runnable listener) {
+		model.addChangeListener(listener);
+	}
+	
+	public Object getValue() {
+		return model.getValue();
 	}
 }

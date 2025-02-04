@@ -227,10 +227,11 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
             if (c != null) c.setVisible(!flag);
         }
 
-        if (rename != null) rename.setVisible(!flag);
+//        if (rename != null) rename.setVisible(!flag);
 
         ((CustomGameObjectClass) obj).setInheritStats(flag);
-//        if (viewScript != null) viewScript.visible = viewScript.active = true;
+        
+        super.onInheritStatsClicked(flag, initializing);
     }
 
     @Override

@@ -57,6 +57,17 @@ public class OpenDungeonScene extends PixelScene {
 		Game.switchScene( OpenDungeonScene.class );
 	}
 	
+	public static void quickOpenDungeon(String dungeonName) {
+		try {
+			loadDungeon(dungeonName);
+			actuallyEnter();
+		} catch (CustomDungeonSaves.RenameRequiredException e) {
+			e.showExceptionWindow();
+		} catch (Exception e) {
+			error = e;
+		}
+	}
+	
 	private static float fadeTime;
 
     public static String dungeonName = null;
@@ -166,7 +177,7 @@ public class OpenDungeonScene extends PixelScene {
 		im.scale.y = Camera.main.width;
 		add(im);
 
-		String text = "Loading";//fjj tzz tzzMessages.get(Mode.class, mode.name());
+		String text = Messages.get(this, "loading");
 		
 		loadingText = PixelScene.renderTextBlock( text, 9 );
 		loadingText.setPos(
@@ -186,9 +197,7 @@ public class OpenDungeonScene extends PixelScene {
 				public void run() {
 					
 					try {
-						loadDungeon();
-					} catch (CustomDungeonSaves.RenameRequiredException e) {
-						e.showExceptionWindow();
+						loadDungeon(dungeonName);
 					} catch (Exception e) {
 						error = e;
 					}
@@ -217,7 +226,7 @@ public class OpenDungeonScene extends PixelScene {
 		waitingTime += Game.elapsed;
 
 		if (dots != Math.ceil(waitingTime / ((2*DOT_SPEED)/3f))) {
-			String text = "Loading";//tjjtzz tzzt tzztzztzz
+			String text = Messages.get(this, "loading");
 			dots = (int)Math.ceil(waitingTime / ((2*DOT_SPEED)/3f))%3;
 			switch (dots){
 				case 1: default:
@@ -311,7 +320,7 @@ public class OpenDungeonScene extends PixelScene {
 		}
 	}
 	
-	private void actuallyEnter() {
+	private static void actuallyEnter() {
 		String lastEditedFloor = Dungeon.customDungeon.getLastEditedFloor();
 		LevelScheme l;
 		if (Dungeon.customDungeon.getNumFloors() == 0 || lastEditedFloor == null || (l = Dungeon.customDungeon.getFloor(lastEditedFloor)) == null)
@@ -331,9 +340,10 @@ public class OpenDungeonScene extends PixelScene {
 	private void afterLoading(){
 		phase = Phase.FADE_OUT;
 		timeLeft = fadeTime;
+		dungeonName = null;
 	}
 
-	private void loadDungeon() throws Exception {
+	private static void loadDungeon(String dungeonName) throws Exception {
 		
 		Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(dungeonName);
 		

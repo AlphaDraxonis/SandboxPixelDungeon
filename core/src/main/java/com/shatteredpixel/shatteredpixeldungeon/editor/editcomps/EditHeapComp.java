@@ -2,81 +2,47 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerEnumModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerLikeButton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.WraithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.ui.Component;
 
 import java.util.Collections;
+import java.util.Locale;
 
 public class EditHeapComp extends DefaultEditComp<Heap> {
-
-    protected CheckBox autoExplored;
-    protected IconButton autoExploredInfo;
-
-    protected CheckBox haunted;
-    protected IconButton hauntedInfo;
+    
+    protected StyledCheckBox haunted;
     protected Spinner priceMultiplier;
 
-    protected HeapTypeSpinner heapType;
+    protected SpinnerLikeButton heapType;
 
     protected ItemContainer<Item> itemContainer;
 
     public EditHeapComp(Heap heap) {
         super(heap);
 
-        autoExplored = new CheckBox(Messages.get(this, "auto_explored")) {
-            @Override
-            public void checked(boolean value) {
-                super.checked(value);
-                heap.autoExplored = value;
-            }
-        };
-        autoExplored.checked(heap.autoExplored);
-        add(autoExplored);
-
-        autoExploredInfo = new IconButton(Icons.get(Icons.INFO)) {
-            @Override
-            protected void onClick() {
-                EditorScene.show(new WndTitledMessage(Icons.get(Icons.INFO), Messages.titleCase(Messages.get(EditHeapComp.class, "auto_explored")),
-                        Messages.get(EditHeapComp.class, "auto_explored_info")));
-            }
-        };
-        add(autoExploredInfo);
-
-
-        haunted = new CheckBox(Messages.get(this, "haunted")) {
+        haunted = new StyledCheckBox(Messages.get(this, "haunted")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
                 heap.haunted = value;
             }
         };
+        haunted.icon(new WraithSprite());
         haunted.checked(heap.haunted);
         add(haunted);
-
-        hauntedInfo = new IconButton(Icons.get(Icons.INFO)) {
-            @Override
-            protected void onClick() {
-                EditorScene.show(new WndTitledMessage(Icons.get(Icons.INFO), Messages.titleCase(Messages.get(EditHeapComp.class, "haunted")),
-                        Messages.get(EditHeapComp.class, "haunted_info")));
-            }
-        };
-        add(hauntedInfo);
 
         priceMultiplier = new Spinner(new SpinnerFloatModel(0.1f, 10f, heap.priceMultiplier, 2, 0.1f) {
             @Override
@@ -89,12 +55,12 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
                 float price = Item.trueValue(heap.items.getLast()) * 5 * Dungeon.level.levelScheme.shopPriceMultiplier;
                 return super.displayString(value) + " = " + ((int)(getAsFloat() * price) + " " + Messages.get(Gold.class, "name"));
             }
-        }, Messages.get(LevelTab.class, "shop_price"), 9);
+        }, Messages.get(LevelTab.class, "shop_price"), 8);
         ((SpinnerIntegerModel) priceMultiplier.getModel()).setAbsoluteMinAndMax(0f, 10000f);
         priceMultiplier.addChangeListener(() -> heap.priceMultiplier = ((SpinnerFloatModel) priceMultiplier.getModel()).getAsFloat());
         add(priceMultiplier);
 
-        heapType = new HeapTypeSpinner(heap);
+        heapType = new SpinnerLikeButton(new HeapTypeSpinnerModel(heap), Messages.get(EditHeapComp.class, "type"), 9);
         add(heapType);
 
         itemContainer = new ItemContainer<Item>(heap.items, this, true, 1, Integer.MAX_VALUE) {
@@ -138,7 +104,6 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
     @Override
     protected void updateStates() {
         super.updateStates();
-        autoExplored.checked(obj.autoExplored);
         haunted.checked(obj.haunted);
         priceMultiplier.setValue(obj.priceMultiplier);
         heapType.setValue(obj.type);
@@ -210,25 +175,9 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
     @Override
     protected void layout() {
         super.layout();
-
-        float posY = height + WndTitledMessage.GAP * 2 - 1;
-
-        if (autoExplored != null) {
-            autoExplored.setRect(x, posY, width - WndMenuEditor.BTN_HEIGHT - WndTitledMessage.GAP, WndMenuEditor.BTN_HEIGHT);
-            autoExploredInfo.setRect(autoExplored.right() + WndTitledMessage.GAP, posY, WndMenuEditor.BTN_HEIGHT, WndMenuEditor.BTN_HEIGHT);
-            posY = autoExplored.bottom() + WndTitledMessage.GAP;
-        }
-
-        if (haunted != null) {
-            haunted.setRect(x, posY, width - WndMenuEditor.BTN_HEIGHT - WndTitledMessage.GAP, WndMenuEditor.BTN_HEIGHT);
-            hauntedInfo.setRect(haunted.right() + WndTitledMessage.GAP, posY, WndMenuEditor.BTN_HEIGHT, WndMenuEditor.BTN_HEIGHT);
-            posY = haunted.bottom() + WndTitledMessage.GAP;
-        }
-
-        height = (int)(posY - y - WndTitledMessage.GAP);
-
-        layoutCompsLinear(priceMultiplier, heapType, itemContainer);
-
+        layoutCompsLinear(priceMultiplier);
+        layoutCompsInRectangles(heapType, haunted);
+        layoutCompsLinear(itemContainer);
     }
 
     public static boolean areEqual(Heap a, Heap b) {
@@ -242,49 +191,26 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         return EditItemComp.isItemListEqual(a.items, b.items);
     }
 
-
-    private class HeapTypeSpinner extends Spinner {
-
-        public HeapTypeSpinner(Heap heap) {
-            super(new HeapTypeSpinnerModel(heap), Messages.get(EditHeapComp.class, "type"), 9);
-
-            addChangeListener(EditHeapComp.this::updateObj);
-        }
-    }
-
-    private static class HeapTypeSpinnerModel extends SpinnerTextModel {
-
-        private Heap heap;
+    private class HeapTypeSpinnerModel extends SpinnerEnumModel<Heap.Type> {
 
         public HeapTypeSpinnerModel(Heap heap) {
-            super(true, getIndex(heap.type), (Object[]) Heap.Type.values());
-            this.heap = heap;
+            super(Heap.Type.class, heap.type, v -> {
+                heap.type = v;
+                EditHeapComp.this.updateObj();
+            });
         }
-
-        @Override
-        public Component createInputField(int fontSize) {
-            return super.createInputField(8);
-        }
-
+        
         @Override
         protected String displayString(Object value) {
-            Heap.Type type = (Heap.Type) value;
-            heap.type = type;
-            if (type == Heap.Type.HEAP)
-                return Messages.get(EditHeapComp.class, "title_heap_open");
-            if (type == Heap.Type.FOR_SALE)
-                return Messages.get(EditHeapComp.class, "title_heap_for_sale");
-            return heap.title();
-        }
-
-        private static int getIndex(Heap.Type type) {
-            Heap.Type[] types = Heap.Type.values();
-            for (int i = 0; i < types.length; i++) {
-                if (types[i] == type) return i;
+            switch((Heap.Type) value){
+                case HEAP:
+                    return Messages.get(EditHeapComp.class, "title_heap_open");
+                case FOR_SALE:
+                    return Messages.get(EditHeapComp.class, "title_heap_for_sale");
+                default:
+                   return Messages.get(Heap.class, ((Heap.Type) value).name().toLowerCase(Locale.ENGLISH));
             }
-            return -1;
         }
-
     }
 
 }

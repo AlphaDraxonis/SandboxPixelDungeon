@@ -200,6 +200,9 @@ public class HeroSettings extends Component {
 
                 final HeroClass heroClass = HeroClass.getFromIndex(index - 1);
                 subClassesEnabled = new StyledButton(Chrome.Type.GREY_BUTTON_TR, createSubclassBtnLabel(heroClass)) {
+                    {
+                        multiline = true;
+                    }
                     @Override
                     protected void onClick() {
                         RenderedTextBlock titlebar = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(WndHeroInfo.class, "subclasses")),9);

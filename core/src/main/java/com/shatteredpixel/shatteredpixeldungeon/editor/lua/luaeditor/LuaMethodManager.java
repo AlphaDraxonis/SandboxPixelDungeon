@@ -78,6 +78,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PoisonDartTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.RageTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MimicSprite;
@@ -212,7 +213,7 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(87, Char.class.getDeclaredMethod("spend", float.class), "time");
 
 
-			//Char Sprite (undocumented tzz!)
+			//Char Sprite
 			addMethod(201, CharSprite.class.getMethod("initAnimations"));
 			addMethod(202, CharSprite.class.getMethod("getAnimations"));
 			addMethod(203, CharSprite.class.getMethod("play", MovieClip.Animation.class), "anim");
@@ -378,8 +379,6 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(2503, Trap.class.getMethod("hide"));
 			addMethod(2504, Trap.class.getMethod("disarm"));
 			addMethod(2505, Trap.class.getMethod("activate"));
-			addMethod(2506, Trap.class.getMethod("activate"));
-			addMethod(2507, Trap.class.getMethod("activate"));
 			addMethod(2511, PoisonDartTrap.class.getDeclaredMethod("poisonAmount"));
 			addMethod(2512, PoisonDartTrap.class.getDeclaredMethod("canTarget", Char.class), "ch");
 			addMethod(2513, RageTrap.class.getDeclaredMethod("affectsChar", Char.class, int.class, int.class), "ch", "x", "y");
@@ -513,6 +512,14 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 		Collections.sort(newlyAddTemp);
 		result.addAll(newlyAddTemp);
 		newlyAddTemp.clear();
+	}
+	
+	public static String descriptionForMethod(Method method) {
+		String result = Messages.get(LuaMethodManager.class, method.getDeclaringClass().getSimpleName() + "_" + method.getName());
+		if (result.isEmpty()) {
+			return Messages.get(LuaMethodManager.class, "placeholder");
+		}
+		return result;
 	}
 
 }

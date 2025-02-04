@@ -52,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.BeaconOfReturning;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -175,10 +176,12 @@ public class WndNewCustomObject extends SimpleWindow {
 						if (item != null) {
 							Class<?> clazz = ((EditorItem<?>) item).getObject().getClass();
 							String txt = "";
-							Class<?> enclosingClass = clazz.getEnclosingClass();
-							while (enclosingClass != null) {
-								txt = enclosingClass.getSimpleName() + "$" + txt;
-								enclosingClass = enclosingClass.getEnclosingClass();
+							if (Plant.Seed.class.isAssignableFrom(clazz)) {
+								Class<?> enclosingClass = clazz.getEnclosingClass();
+								while (enclosingClass != null) {
+									txt = enclosingClass.getSimpleName() + "$" + txt;
+									enclosingClass = enclosingClass.getEnclosingClass();
+								}
 							}
 							classInput.setText(txt + clazz.getSimpleName());
 						}

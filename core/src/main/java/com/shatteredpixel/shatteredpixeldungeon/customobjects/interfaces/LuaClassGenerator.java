@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomCharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaRestrictionProxy;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -438,6 +439,10 @@ public final class LuaClassGenerator {
 				} catch (LuaError error) {
 					Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error)));
 				}
+			}
+			
+			if (!CustomDungeon.isEditing()) {
+				return originalMethod.call();
 			}
 
 			CustomObject obj =  CustomObjectManager.getUserContent(self.getIdentifier(), null);

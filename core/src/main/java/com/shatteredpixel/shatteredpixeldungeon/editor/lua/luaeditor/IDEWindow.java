@@ -205,8 +205,7 @@ public class IDEWindow extends Component {
 				adder.setVisible(false);
 				remover.setVisible(false);
 
-				fold.setVisible(false);
-				expand.setVisible(true);
+				expanded = false;
 
 				layoutParent();
 			}

@@ -63,7 +63,9 @@ public class WndMenuEditor extends Window {
         addButton(curBtn = new RedButton(Messages.get(WndGame.class, "menu")) {
             @Override
             protected void onClick() {
-                if(GamesInProgress.curSlot == GamesInProgress.TEST_SLOT) GamesInProgress.curSlot = 0;
+                if (GamesInProgress.curSlot == GamesInProgress.TEST_SLOT) {
+                    GamesInProgress.curSlot = GamesInProgress.NO_SLOT;
+                }
                 //no need to sve here bc EditorScene autosaves anyway
                 Game.switchScene(TitleScene.class);
             }

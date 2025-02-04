@@ -3,8 +3,10 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaCustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.editcomps.CustomObjectEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
@@ -25,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlantAct
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TileModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TrapActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
@@ -35,12 +38,15 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.idewindowactions.LuaScript;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -55,6 +61,7 @@ public abstract class DefaultEditComp<T> extends Component {
 
     protected CheckBox inheritStats;
     protected CustomObjectEditor<?> customObjectEditor;
+    protected RedButton viewScript; // for test-games only
 
     protected final T obj;
 
@@ -127,6 +134,30 @@ public abstract class DefaultEditComp<T> extends Component {
 
     protected void initializeCompsForCustomObjectClass() {
         if (!CustomDungeon.isEditing()) {
+            if (obj instanceof LuaCustomObjectClass) {
+                
+                int identifier = ((LuaCustomObjectClass) obj).getIdentifier();
+                LuaCustomObject customObject = CustomObjectManager.getUserContent(identifier, LuaCustomObject.class);
+                
+                if (customObject.getLuaScriptPath() != null) {
+                    viewScript = new RedButton(Messages.get(this, "view_code")) {
+                        @Override
+                        protected void onClick() {
+                            int identifier = ((LuaCustomObjectClass) obj).getIdentifier();
+                            LuaCustomObject customObject = CustomObjectManager.getUserContent(identifier, LuaCustomObject.class);
+                            LuaScript script = CustomDungeonSaves.readLuaFile(customObject.getLuaScriptPath());
+                            DungeonScene.show(
+                                    script == null
+                                            ? new WndError("Error loading script")
+                                            : new WndTitledMessage(Icons.INFO.get(), customObject.getLuaScriptPath(), script.code) {{
+                                        setHighlightingEnabled(false);
+                                    }}
+                            );
+                        }
+                    };
+                    add(viewScript);
+                }
+            }
             return;
         }
 
@@ -196,6 +227,7 @@ public abstract class DefaultEditComp<T> extends Component {
             customObjectEditor.setRect(x, height + WndTitledMessage.GAP, width, 0);
             height += customObjectEditor.height() + WndTitledMessage.GAP;
         }
+        layoutCompsLinear(viewScript);
     }
 
     protected void layoutTitle() {
@@ -240,7 +272,7 @@ public abstract class DefaultEditComp<T> extends Component {
     }
 
     protected void onInheritStatsClicked(boolean flag, boolean initializing) {
-
+        if (viewScript != null) viewScript.visible = viewScript.active = !flag;
     }
 
     protected void onRenameClicked() {

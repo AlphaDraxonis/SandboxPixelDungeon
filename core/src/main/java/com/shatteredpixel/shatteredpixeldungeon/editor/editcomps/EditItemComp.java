@@ -154,7 +154,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
     private void initComps(Item item) {
 
-        rename.setVisible(!(item instanceof CustomGameObjectClass) || ((CustomGameObjectClass) item).getInheritStats());
+        rename.setVisible(!(item instanceof CustomGameObjectClass) || !((CustomGameObjectClass) item).getInheritStats());
 
         if (heap != null) {
             reorderHeapComp = new ReorderHeapComp(item, heap);
@@ -423,7 +423,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                         return 13;
                     }
                 };
-                model.addChangeListener(() -> {
+                classArmorTier.addChangeListener(() -> {
                     armor.tier = (int) model.getValue();
                     updateObj();
                 });
@@ -693,7 +693,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (rename != null) rename.setVisible(!flag && !(obj instanceof RandomItem));
 
         ((CustomGameObjectClass) obj).setInheritStats(flag);
-//        if (viewScript != null) viewScript.visible = viewScript.active = true;
+        
+        super.onInheritStatsClicked(flag, initializing);
     }
 
     @Override

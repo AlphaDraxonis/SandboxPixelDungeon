@@ -60,7 +60,7 @@ public class WndScrollOfDebug extends Window {
 
         CustomDungeon.knowsEverything = true;
 
-        resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_LARGE.get());
+        resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_SMALL.get());
 
         if (instance != null) {
             instance.hide();

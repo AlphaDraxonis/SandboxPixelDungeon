@@ -21,11 +21,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomMob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomMobClass;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaCustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeCustomizable;
@@ -49,7 +46,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
@@ -65,7 +61,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
@@ -86,7 +81,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWea
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
@@ -100,16 +94,12 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.watabou.idewindowactions.LuaScript;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Random;
@@ -154,7 +144,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private StyledSpinner heroMobLvl, heroMobStr;
     private HeroClassSpinner heroClassSpinner;
     private HeroClassSpinner.SubclassSpinner heroSubclassSpinner;
-    private StyledButton viewScript;
 
     private Component[] rectComps, linearComps;
 
@@ -861,27 +850,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(editStats);
         }
 
-
-
-        if (!CustomDungeon.isEditing() && mob instanceof LuaCustomObjectClass) {
-            viewScript = new RedButton(label("view_code")) {
-                @Override
-                protected void onClick() {
-                    int identifier = ((LuaCustomObjectClass) mob).getIdentifier();
-                    LuaCustomObject customObject = CustomObjectManager.getUserContent(identifier, CustomMob.class);
-                    LuaScript script = CustomDungeonSaves.readLuaFile(customObject.getLuaScriptPath());
-                    DungeonScene.show(
-                            script == null
-                            ? new WndError("Error loading script")
-                            : new WndTitledMessage(Icons.INFO.get(), customObject.getLuaScriptPath(), script.code) {{
-                                setHighlightingEnabled(false);
-                            }}
-                    );
-                }
-            };
-            add(viewScript);
-        }
-
 		rectComps = new Component[]{
 
                 mobStateSpinner, playerAlignment, mob instanceof Ghost ? questSpinner : null, editStats, turnTo,
@@ -917,7 +885,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 yogNormalFists, yogChallengeFists,
                 blacksmithQuestRewards,
                 heroWands, heroUtilityItems,
-                buffs, viewScript
+                buffs
         };
 
         initializeCompsForCustomObjectClass();
@@ -949,7 +917,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (rename != null) rename.setVisible(!flag);
 
         ((CustomGameObjectClass) obj).setInheritStats(flag);
-        if (viewScript != null) viewScript.visible = viewScript.active = true;
+        
+        super.onInheritStatsClicked(flag, initializing);
     }
 
     @Override

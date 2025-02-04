@@ -370,7 +370,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public String getChasm() {
         if (chasm == null) {
             String below = getDefaultBelow();
-            if (Objects.equals(below, getDefaultAbove())) return null;
+//            if (Objects.equals(below, getDefaultAbove())) return null;
             return below;
         }
         return chasm;

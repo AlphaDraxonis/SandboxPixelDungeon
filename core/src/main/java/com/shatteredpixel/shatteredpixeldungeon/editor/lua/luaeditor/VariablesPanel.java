@@ -68,8 +68,7 @@ public class VariablesPanel extends CodeInputPanel {
 		adder.setVisible(false);
 		remover.setVisible(false);
 
-		fold.setVisible(false);
-		expand.setVisible(true);
+		expanded = false;
 
 		layoutParent();
 	}
@@ -166,8 +165,7 @@ public class VariablesPanel extends CodeInputPanel {
 	public void setCode(boolean forceChange, String code) {
 		super.setCode(forceChange, code);
 		if (textInputText != null) {
-			expand.setVisible(body == null);
-			fold.setVisible(body != null);
+			expanded = body != null;
 
 			adder.setVisible(false);
 			remover.setVisible(false);

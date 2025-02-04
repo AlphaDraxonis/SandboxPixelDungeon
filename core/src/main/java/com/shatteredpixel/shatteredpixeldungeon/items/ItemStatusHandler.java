@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -154,18 +155,22 @@ public class ItemStatusHandler<T extends Item> {
 		}
 	}
 	
-	public boolean contains( T item ){
-		for (Class<?extends Item> i : items){
-			if (item.getClass().equals(i)){
-				return true;
-			}
+	private Class<? extends T> getKey(Class<?> itemCls) {
+		Class<?> result = itemCls;
+		while (CustomObjectClass.class.isAssignableFrom(result)) {
+			result = result.getSuperclass();
 		}
-		return false;
+		return (Class<? extends T>) result;
+	}
+	
+	public boolean contains( T item ){
+		return contains(getKey(item.getClass()));
 	}
 	
 	public boolean contains( Class<?extends T> itemCls ){
+		Class<?> cl = getKey(itemCls);
 		for (Class<?extends Item> i : items){
-			if (itemCls.equals(i)){
+			if (cl.equals(i)){
 				return true;
 			}
 		}
@@ -181,27 +186,27 @@ public class ItemStatusHandler<T extends Item> {
 	}
 	
 	public String label( T item ) {
-		return itemLabels.get(item.getClass());
+		return itemLabels.get(getKey(item.getClass()));
 	}
 	
 	public String label( Class<?extends T> itemCls ){
-		return itemLabels.get( itemCls );
+		return itemLabels.get( getKey(itemCls) );
 	}
 	
 	public boolean isKnown( T item ) {
-		return known.contains( item.getClass() ) || CustomDungeon.isEditing();
+		return known.contains( getKey(item.getClass()) ) || CustomDungeon.isEditing();
 	}
 	
 	public boolean isKnown( Class<?extends T> itemCls ){
-		return known.contains( itemCls );
+		return known.contains( getKey(itemCls) ) || CustomDungeon.isEditing();
 	}
 	
 	public void know( T item ) {
-		known.add( (Class<? extends T>)item.getClass() );
+		known.add( getKey(item.getClass() ));
 	}
 	
 	public void know( Class<?extends T> itemCls ){
-		known.add( itemCls );
+		known.add( getKey(itemCls) );
 	}
 	
 	public HashSet<Class<? extends T>> known() {

@@ -2,8 +2,8 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerLikeButton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -11,7 +11,7 @@ import com.watabou.noosa.Image;
 
 import java.util.Locale;
 
-public class FeelingSpinner extends StyledSpinner {
+public class FeelingSpinner extends SpinnerLikeButton {
 
     public FeelingSpinner(Level.Feeling initialVal, int textSize, boolean includeRandom) {
         super(new FeelingSpinnerModel(initialVal, includeRandom), " " + Messages.get(FeelingSpinner.class, "label") + ":", textSize);

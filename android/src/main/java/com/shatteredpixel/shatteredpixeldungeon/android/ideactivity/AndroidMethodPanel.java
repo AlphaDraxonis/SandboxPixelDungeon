@@ -29,8 +29,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.MethodPanel;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.LuaMethodManager;
 import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.idewindowactions.LuaScript;
@@ -65,7 +64,7 @@ public class AndroidMethodPanel extends AndroidCodeInputPanel {
 		this.method = method;
 		this.paramNames = paramNames;
 
-		desc.setText(AndroidIDEWindow.createSpannableStringWithColorsFromText(Messages.get(MethodPanel.class, "method_" + method.getName())));
+		desc.setText(AndroidIDEWindow.createSpannableStringWithColorsFromText(LuaMethodManager.descriptionForMethod(method)));
 
 		String modifiers = Modifier.toString(method.getModifiers());
 		if (!modifiers.isEmpty()) modifiers += " ";

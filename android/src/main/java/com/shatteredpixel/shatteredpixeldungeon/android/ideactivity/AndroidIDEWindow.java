@@ -364,6 +364,9 @@ public class AndroidIDEWindow extends Activity {
 
 	@Override
 	public void finish() {
+		if (isFinishing()) {
+			return;
+		};
 		save(
 				() -> { //on successful
 					super.finish();

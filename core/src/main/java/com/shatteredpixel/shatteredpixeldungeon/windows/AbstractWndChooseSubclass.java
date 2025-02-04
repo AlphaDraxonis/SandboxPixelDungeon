@@ -2,10 +2,9 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -13,7 +12,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
 public abstract class AbstractWndChooseSubclass extends Window {
@@ -54,8 +52,7 @@ public abstract class AbstractWndChooseSubclass extends Window {
 				IconButton clsInfo = new IconButton(Icons.get(Icons.INFO)){
 					@Override
 					protected void onClick() {
-						if (Game.scene() instanceof GameScene) GameScene.show(new WndInfoSubclass(heroClass, subCls));
-						else EditorScene.show(new WndInfoSubclass(heroClass, subCls));
+						DungeonScene.show(new WndInfoSubclass(heroClass, subCls));
 					}
 				};
 				clsInfo.setRect(WIDTH-20, btnCls.top() + (btnCls.height()-20)/2, 20, 20);

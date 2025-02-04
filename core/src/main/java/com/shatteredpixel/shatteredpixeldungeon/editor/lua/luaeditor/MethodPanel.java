@@ -24,7 +24,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.idewindowactions.LuaScript;
@@ -70,7 +69,7 @@ public class MethodPanel extends CodeInputPanel {
 
 	@Override
 	protected String createDescription() {
-		return Messages.get(MethodPanel.class, "method_" + method.getName());
+		return LuaMethodManager.descriptionForMethod(method);
 	}
 
 	@Override

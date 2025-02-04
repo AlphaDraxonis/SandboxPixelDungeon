@@ -40,10 +40,11 @@ public class GamesInProgress {
 
     public static final int MAX_SLOTS = 1_000_000;
 	public static final int TEST_SLOT = 0;
+	public static final int NO_SLOT = -1;
 
     //null means we have loaded info and it is empty, no entry means unknown.
     private static HashMap<Integer, Info> slotStates = new HashMap<>();
-    public static int curSlot;
+    public static int curSlot = NO_SLOT;
 
     public static HeroClass selectedClass;
 

@@ -78,8 +78,7 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd implements Code
 		adder.setVisible(false);
 		remover.setVisible(true);
 
-		fold.setVisible(false);
-		expand.setVisible(true);
+		expanded = false;
 
 		layoutParent();
 	}
@@ -163,7 +162,7 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd implements Code
 			textInputText = code;
 			if (textInput != null) textInput.setText(code);
 			else {
-				expand.setVisible(true);
+				expandAndFold.setVisible(true);
 				adder.setVisible(false);
 				remover.setVisible(true);
 			}

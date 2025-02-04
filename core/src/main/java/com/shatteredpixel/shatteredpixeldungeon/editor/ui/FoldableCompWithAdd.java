@@ -59,8 +59,7 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
         adder.setVisible(false);
         remover.setVisible(true);
 
-        fold.setVisible(true);
-        expand.setVisible(false);
+        expanded = true;
 
         if (layoutParent) layoutParent();
     }
@@ -78,8 +77,7 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
         adder.setVisible(true);
         remover.setVisible(false);
 
-        fold.setVisible(false);
-        expand.setVisible(false);
+        expanded = false;
 
         layoutParent();
     }

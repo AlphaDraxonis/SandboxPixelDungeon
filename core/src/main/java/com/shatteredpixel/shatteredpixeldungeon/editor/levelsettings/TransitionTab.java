@@ -198,10 +198,17 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
                 List<LevelSchemeLike> ret = super.filterLevels(levels);
 //                ret.remove(Dungeon.level.levelScheme);//Can't choose same level
+                ret.remove(LevelScheme.NO_LEVEL_SCHEME);
                 return ret;
             }
         };
-        result.selectObject(levelScheme.getChasm());
+        String chasm = levelScheme.getChasm();
+        if (chasm != null) {
+            result.selectObject(chasm);
+        } else {
+            result.selectObject(LevelScheme.NO_LEVEL_SCHEME);
+        }
+        
         return result;
     }
 }

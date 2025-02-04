@@ -179,7 +179,7 @@ public class StartScene extends PixelScene {
 		
 		dungeonSelection.setRect(10, 0, w - 20, h - 20);
 		
-		GamesInProgress.curSlot = 0;
+		GamesInProgress.curSlot = GamesInProgress.NO_SLOT;
 		
 		fadeIn();
 		

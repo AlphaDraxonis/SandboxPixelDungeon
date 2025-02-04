@@ -210,7 +210,7 @@ public class WndSelectDungeon extends Window {
 
     protected void select(String customDungeonName) {
         EditorScene.openDifferentLevel = true;
-        openDungeon(customDungeonName);
+        OpenDungeonScene.openDungeon(customDungeonName);
     }
 
 
@@ -633,7 +633,7 @@ public class WndSelectDungeon extends Window {
     }
 
     public static void openDungeon(String name) {
-        OpenDungeonScene.openDungeon(name);
+        OpenDungeonScene.quickOpenDungeon(name);
     }
 
     private static class WndExportDungeon extends WndOptions {
