@@ -134,6 +134,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.BlacksmithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
@@ -203,10 +204,11 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 	public int[] map;
 	public int[] visualMap;
 	public int[] visualRegions;
-	public byte[] tileVariance;
 	public boolean[] visited;
 	public boolean[] mapped;
 	public boolean[] discoverable;
+	
+	public byte[] tileVariance;
 
 	public int viewDistance = Dungeon.isChallenged( Challenges.DARKNESS ) ? 2 : 8, originalViewDistance;
 	
@@ -1847,6 +1849,32 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 
 	public void setFlamable(boolean[] flamable) {
 		this.flamable = flamable;
+	}
+	
+	public int getTileVarianceAt(int pos) {
+		return tileVariance == null ? 0 : tileVariance[pos] >= 95 ? 3 : tileVariance[pos] >= 50 ? 2 : tileVariance[pos] > 0 ? 1 : 0;
+	}
+	
+	public void setTileVarianceAt(int pos, int spinnerValue) {
+		byte oldValue;
+		if (tileVariance == null) {
+			if (spinnerValue == 0) {
+				return;
+			}
+			tileVariance = new byte[length];
+			oldValue = 0;
+		} else {
+			oldValue = tileVariance[pos];
+		}
+		switch (spinnerValue) {
+			case 1: tileVariance[pos] = 25; break;
+			case 2: tileVariance[pos] = 75; break;
+			case 3: tileVariance[pos] = 98; break;
+			default:
+			case 0: tileVariance[pos] = 0; break;
+		}
+		if (tileVariance[pos] > 0) DungeonTileSheet.tileVariance[pos] = tileVariance[pos];
+		else if (tileVariance[pos] != oldValue) DungeonTileSheet.tileVariance[pos] = (byte) Random.Int(100);
 	}
 
 	public int getCoinDoorCost(int cell) {

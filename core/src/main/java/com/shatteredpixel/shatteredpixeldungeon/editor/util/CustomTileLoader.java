@@ -339,8 +339,9 @@ public final class CustomTileLoader {
             } else if (imageTerrain == Terrain.WATER) {
                 Arrays.fill(data, 0);
             } else {
+                int pos = Dungeon.level == null ? -1 : this.tileX + this.tileY * Dungeon.level.width();
                 for (int i = 0; i < data.length; i++) {
-                    data[i] = DungeonTerrainTilemap.tileSlot(-1, imageTerrain, 0);
+                    data[i] = DungeonTerrainTilemap.tileSlot(pos, imageTerrain, region);
                 }
             }
             v.map(data, tileW);

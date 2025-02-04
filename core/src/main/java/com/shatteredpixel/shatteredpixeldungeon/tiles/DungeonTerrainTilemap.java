@@ -127,7 +127,7 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 	}
 
 	public static int tileSlot(int pos, int tile, int region) {
-		return instances[region].getTileVisual( pos == -1 ? -PathFinder.CIRCLE4[2] - 1 : pos, tile, true);
+		return DungeonTileSheet.getVisualWithAlts( instances[region].getTileVisual( pos == -1 ? -PathFinder.CIRCLE4[2] - 1 : pos, tile, true), pos );
 	}
 
 	@Override

@@ -97,7 +97,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
         private PlaceCellActionPart placeCellActionPart;
 
         public Modify(Trap trap) {
-            before = (Trap) trap.getCopy();
+            before = trap.getCopy();
             after = trap;
             oldTerrain = TrapItem.getTerrain(trap);
         }

@@ -270,6 +270,14 @@ public abstract class DefaultEditComp<T> extends Component {
         if (newHeight == height) height -= gap;
         else height = newHeight;
     }
+    
+    protected final void layoutOneRectCompInRow(Component... comps) {
+        int gap = WndTitledMessage.GAP;
+        if (height > 0) height += gap;
+        float newHeight = EditorUtilities.layoutStyledCompsInRectangles(WndTitledMessage.GAP,width, 1,this, comps);
+        if (newHeight == height) height -= gap;
+        else height = newHeight;
+    }
 
     protected void onInheritStatsClicked(boolean flag, boolean initializing) {
         if (viewScript != null) viewScript.visible = viewScript.active = !flag;

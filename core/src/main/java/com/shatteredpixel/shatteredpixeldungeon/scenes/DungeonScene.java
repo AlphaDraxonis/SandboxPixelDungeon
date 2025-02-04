@@ -286,25 +286,23 @@ public abstract class DungeonScene extends PixelScene {
 	protected abstract void updateMapImpl(int cell);
 
 	public void addCustomTile(CustomTilemap visual) {
-		customTiles.add(visual.create());
-
 		if (visual instanceof CustomTileLoader.SimpleCustomTile) {
 			((CustomTileLoader.SimpleCustomTile) visual).placed = true;
 			int pos = visual.tileX + visual.tileY * Dungeon.level.width();
 			Dungeon.level.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
 			Dungeon.level.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
 		}
+		customTiles.add( visual.create() );
 	}
 
 	public void addCustomWall(CustomTilemap visual) {
-		customWalls.add( visual.create() );
-
 		if (visual instanceof CustomTileLoader.SimpleCustomTile) {
 			((CustomTileLoader.SimpleCustomTile) visual).placed = true;
 			int pos = visual.tileX + visual.tileY * Dungeon.level.width();
 			Dungeon.level.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
 			Dungeon.level.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
 		}
+		customWalls.add( visual.create() );
 	}
 
 	public static void add(CustomTilemap visual) {

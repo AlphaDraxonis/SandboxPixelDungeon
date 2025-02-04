@@ -416,6 +416,14 @@ public class EditorScene extends DungeonScene {
     protected void updateMapImpl(int cell) {
 		if (Dungeon.level != null && Dungeon.level.visualRegions[cell] == LevelScheme.REGION_NONE)
 			Dungeon.level.visualMap[cell] = Dungeon.level.map[cell];
+        
+        if (Dungeon.level != null && Dungeon.level.visualRegions[cell] != LevelScheme.REGION_NONE) {
+            CustomTilemap customTile = CustomTileItem.findAnyCustomTileAt(cell);
+            if (customTile != null) {
+                remove(customTile);
+                add(customTile);
+            }
+        }
 
 		revalidateBossCustomTiles();
         if (scene != null) {

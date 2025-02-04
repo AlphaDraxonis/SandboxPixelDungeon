@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
 import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.TileVarianceSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.WellWaterSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
@@ -38,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -63,6 +65,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     private EditBlobComp.VolumeSpinner volumeSpinner;
     private EditBlobComp.SacrificialFirePrize sacrificialFirePrize;
     private Spinner coinDoorCost;
+    private TileVarianceSpinner tileVariance;
 
     private List<ScrollingListPane.ListItem> customParticles;
 
@@ -74,6 +77,17 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
         final int cell = item.cell();
         if (cell != -1) {
+            
+            if (TileVarianceSpinner.numVariantsForTerrain(Dungeon.level.visualMap[cell]) > 1) {
+                tileVariance = new TileVarianceSpinner(Dungeon.level.visualMap[cell], cell);
+                tileVariance.addChangeListener(() -> {
+                    Dungeon.level.setTileVarianceAt(cell, (int) tileVariance.getValue());
+                    DungeonScene.updateMap(cell);
+                    updateObj();
+                });
+                add(tileVariance);
+            }
+            
             if (TileItem.isEntranceTerrainCell(item.terrainType()) || TileItem.isExitTerrainCell(item.terrainType())) {
 
                 addTransition = new RedButton(Messages.get(EditTileComp.class, "add_transition"), 9) {
@@ -283,6 +297,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     @Override
     protected void layout() {
         super.layout();
+        layoutOneRectCompInRow(tileVariance);
         layoutCompsInRectangles(signBurnOnRead);
         layoutCompsLinear(//transitionEdit is later instantiated
                 transitionEdit, addTransition, editSignText, wellWaterSpinner, volumeSpinner, sacrificialFirePrize, summonMobs, coinDoorCost

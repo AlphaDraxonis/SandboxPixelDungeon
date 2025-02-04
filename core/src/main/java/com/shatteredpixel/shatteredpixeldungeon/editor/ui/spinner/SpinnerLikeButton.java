@@ -104,6 +104,12 @@ public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 
 		}
 
+		if (icon != null) {
+			icon.x = x + (width() - icon.width()) / 2f + 1;
+			icon.y = text.top() - 2 - icon.height();
+			PixelScene.align(icon);
+		}
+		
 		if (valueText != null && !valueText.text().equals("")) {
 			if (multiline) valueText.maxWidth((int) width() - bg.marginHor());
 			valueText.setPos(
@@ -114,20 +120,20 @@ public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 							y + (contentHeight - icon.height() - valueText.height()) / 2f + 1 + icon.height()))
 			);
 			PixelScene.align(valueText);
-
+			
+			if (valueIcon != null) {
+				valueIcon.x = x + (width() - valueIcon.width()) / 2f + 1;
+				valueIcon.y = valueText.top() - 2 - getValueIconHeight();
+				PixelScene.align(valueIcon);
+			}
+		} else {
+			if (valueIcon != null) {
+				valueIcon.x = x + (width() - valueIcon.width()) / 2f + 1;
+				valueIcon.y = y + (contentHeight + text.bottom() - y - getValueIconHeight()) / 2f;
+				PixelScene.align(valueIcon);
+			}
 		}
-
-		if (icon != null) {
-			icon.x = x + (width() - icon.width()) / 2f + 1;
-			icon.y = text.top() - 2 - icon.height();
-			PixelScene.align(icon);
-		}
-
-		if (valueIcon != null) {
-			valueIcon.x = x + (width() - valueIcon.width()) / 2f + 1;
-			valueIcon.y = valueText.top() - 2 - getValueIconHeight();
-			PixelScene.align(valueIcon);
-		}
+		
 
 		if (leftJustify) throw new IllegalArgumentException("leftJustify not supported!");
 	}
