@@ -214,7 +214,7 @@ public class ScrollPane extends Component {
         controller.dragging = false;
         thumbVer.am = thumbHor.am = THUMB_ALPHA;
 
-        controller.resetCurrentEvent();
+        controller.reset();
     }
 
     public void givePointerPriority(){//call this after new content members were added (like revalidate() in Swing)
@@ -339,10 +339,6 @@ public class ScrollPane extends Component {
             lastPos.set( current );
 
             ScrollPane.this.onScroll();
-        }
-
-        private void resetCurrentEvent() {
-            controller.curEvent = null;
         }
     }
 }

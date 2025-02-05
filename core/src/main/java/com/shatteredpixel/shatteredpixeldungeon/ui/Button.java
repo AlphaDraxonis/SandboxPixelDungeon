@@ -199,6 +199,8 @@ public class Button extends Component {
 					hotArea.reset();
 					clickReady = false; //did a long click, can't do a regular one
 					onPointerUp();
+					
+					hotArea.onConsumeCancelingClick();
 
 					if (SPDSettings.vibration()) {
 						SandboxPixelDungeon.vibrate(50);
