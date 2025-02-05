@@ -58,6 +58,9 @@ abstract public class MissileWeapon extends Weapon {
 
 		setCursedKnown(true);
 	}
+
+	//whether or not this instance of the item exists purely to trigger its effect. i.e. no dropping
+	public boolean spawnedForEffect = false;
 	
 	protected boolean sticky = true;
 	
@@ -245,7 +248,7 @@ abstract public class MissileWeapon extends Weapon {
 				}
 			}
 
-			super.onThrow( cell );
+			if (!spawnedForEffect) super.onThrow( cell );
 		} else {
 			if (!curUser.shoot( enemy, this )) {
 				rangedMiss( cell );
@@ -311,13 +314,13 @@ abstract public class MissileWeapon extends Weapon {
 					return;
 				}
 			}
-			Dungeon.level.drop( this, cell ).sprite.drop();
+			if (!spawnedForEffect) Dungeon.level.drop( this, cell ).sprite.drop();
 		}
 	}
 	
 	protected void rangedMiss( int cell ) {
 		parent = null;
-		super.onThrow(cell);
+		if (!spawnedForEffect) super.onThrow(cell);
 	}
 
 	public float durabilityLeft(){
@@ -508,13 +511,15 @@ abstract public class MissileWeapon extends Weapon {
 	public int value() {
 		return 6 * tier * quantity * (level() + 1);
 	}
-	
+
+	private static final String SPAWNED = "spawned";
 	private static final String DURABILITY = "durability";
 	private static final String BASE_USES = "base_uses";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
+		bundle.put(SPAWNED, spawnedForEffect);
 		bundle.put(DURABILITY, durability);
 
 		MissileWeapon def = DefaultStatsCache.getDefaultObject(getClass());
@@ -530,6 +535,7 @@ abstract public class MissileWeapon extends Weapon {
 		bundleRestoring = true;
 		super.restoreFromBundle(bundle);
 		bundleRestoring = false;
+		spawnedForEffect = bundle.getBoolean(SPAWNED);
 		durability = bundle.getFloat(DURABILITY);
 
 		if (bundle.contains(BASE_USES)) baseUses = bundle.getFloat(BASE_USES);
