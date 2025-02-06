@@ -35,8 +35,6 @@ import com.watabou.utils.Bundle;
 
 public class Hunger extends Buff implements Hero.Doom {
 
-	private static final float STEP	= 1f;
-
 	public static final float HUNGRY	= 300f;
 	public static final float STARVING	= 450f;
 
@@ -68,7 +66,7 @@ public class Hunger extends Buff implements Hero.Doom {
 				|| target.buff(WellFed.class) != null
 //				|| SPDSettings.intro()
 				|| target.buff(ScrollOfChallenge.ChallengeArena.class) != null){
-			spend(STEP);
+			spend(TICK);
 			return true;
 		}
 
@@ -87,13 +85,20 @@ public class Hunger extends Buff implements Hero.Doom {
 				
 			} else {
 
-				float newLevel = level + hungerSpeed();
+				float hungerDelay = hungerSpeed();
+				if (target.buff(Shadows.class) != null){
+					hungerDelay *= 1.5f;
+				}
+				hungerDelay /= SaltCube.hungerGainMultiplier();
+
+				float newLevel = level + (1f/hungerDelay);
 				if (newLevel >= STARVING) {
 
 					GLog.n( Messages.get(this, "onstarving") );
 					hero.damage( 1, this );
 
 					hero.interrupt();
+					newLevel = STARVING;
 
 				} else if (newLevel >= HUNGRY && level < HUNGRY) {
 
@@ -107,14 +112,8 @@ public class Hunger extends Buff implements Hero.Doom {
 				level = newLevel;
 
 			}
-
-			float hungerDelay = STEP;
-			if (target.buff(Shadows.class) != null){
-				hungerDelay *= 1.5f;
-			}
-			hungerDelay /= SaltCube.hungerGainMultiplier();
 			
-			spend( hungerDelay );
+			spend( hungerSpeed() );
 
 		} else {
 
@@ -218,6 +217,6 @@ public class Hunger extends Buff implements Hero.Doom {
 	}
 
 	private static float hungerSpeed() {
-		return STEP * Dungeon.curLvlScheme().hungerSpeed;
+		return TICK * Dungeon.curLvlScheme().hungerSpeed;
 	}
 }
