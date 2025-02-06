@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.SpiritForm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
@@ -68,15 +69,25 @@ public class Regeneration extends Buff {
 				}
 			}
 
-			ChaliceOfBlood.chaliceRegen regenBuff = hero.buff( ChaliceOfBlood.chaliceRegen.class);
+			boolean chaliceCursed = false;
+			int chaliceLevel = -1;
+			if (target.buff(MagicImmune.class) == null) {
+				if (hero.buff(ChaliceOfBlood.chaliceRegen.class) != null) {
+					chaliceCursed = hero.buff(ChaliceOfBlood.chaliceRegen.class).isCursed();
+					chaliceLevel = Dungeon.hero.buff(ChaliceOfBlood.chaliceRegen.class).itemLevel();
+				} else if (hero.buff(SpiritForm.SpiritFormBuff.class) != null
+							&& hero.buff(SpiritForm.SpiritFormBuff.class).artifact() instanceof ChaliceOfBlood) {
+					chaliceLevel = SpiritForm.artifactLevel(); //TODO this doesn't work well atm due to prior delay
+				}
+			}
 
 			float delay = REGENERATION_DELAY;
-			if (regenBuff != null && target.buff(MagicImmune.class) == null) {
-				if (regenBuff.isCursed()) {
+			if (chaliceLevel != -1 && target.buff(MagicImmune.class) == null) {
+				if (chaliceCursed) {
 					delay *= 1.5f;
 				} else {
 					//15% boost at +0, scaling to a 500% boost at +10
-					delay -= 1.33f + regenBuff.itemLevel()*0.667f;
+					delay -= 1.33f + chaliceLevel*0.667f;
 					delay /= RingOfEnergy.artifactChargeMultiplier(target);
 				}
 			}
