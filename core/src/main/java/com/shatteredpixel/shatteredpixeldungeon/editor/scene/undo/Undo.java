@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo;
 
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 
 import java.io.IOException;
@@ -68,11 +69,14 @@ public final class Undo {
             try {
                 EditorScene.getCustomLevel().levelScheme.saveLevel();
                 autoSaveCounter = SPDSettings.autoSave() * 5;
-                if (SPDSettings.powerSaver()) autoSaveCounter *= 2;
+                if (SPDSettings.powerSaver()) autoSaveCounter /= 2;
             } catch (IOException e) {
                 autoSaveCounter = SPDSettings.autoSave();
             }
-        } else if (SPDSettings.autoSave() > 0) autoSaveCounter++;
+        } else if (SPDSettings.autoSave() > 0) {
+            autoSaveCounter++;
+        }
+        EditorUtilities.checkBatteryStateAndMaybeShowWarning();
     }
 
     public static void undo() {

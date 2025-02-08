@@ -42,7 +42,6 @@ import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.android.ideactivity.AndroidIDEWindow;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.NotAllowedInLua;
 import com.watabou.input.ControllerHandler;
@@ -340,8 +339,12 @@ public class AndroidPlatformSupport extends PlatformSupport {
 			return regularsplitter.split(text);
 		}
 	}
-
-
+	
+	@Override
+	public int batteryRemaining() {
+		return AndroidLauncher.curBatteryPercentage;
+	}
+	
 	@Override
 	public void selectFile(Consumer<FileHandle> callback) {
 

@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -41,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.ArrowCellTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSupportPrompt;
 import com.watabou.noosa.CombinedImage;
@@ -53,6 +55,7 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Random;
 import com.watabou.utils.RectF;
 
+import java.io.IOException;
 import java.util.Map;
 
 public final class EditorUtilities {
@@ -538,4 +541,42 @@ public final class EditorUtilities {
         Image c = getImageFromFilm(center, ARROW_CELL_TEXTURE_FILM, Assets.Environment.ARROW_CELL);
         return new CombinedImage(a, b, c);
     }
+    
+    
+    private static boolean remindedCriticalBattery = false;
+    
+    public static void checkBatteryStateAndMaybeShowWarning() {
+        if (Game.platform.batteryRemaining() <= 3) {
+            
+            if (!remindedCriticalBattery) {
+                DungeonScene.show(new WndOptions(Icons.WARNING.get(),
+                        Messages.get(EditorUtilities.class, "low_battery_title"),
+                        Messages.get(EditorUtilities.class, "low_battery_body"),
+                        Messages.get(EditorUtilities.class, "low_battery_continue"),
+                        Messages.get(EditorUtilities.class, "low_battery_close_app")) {
+                    @Override
+                    protected void onSelect(int index) {
+                        if (index == 0) {
+                            //continue
+                            remindedCriticalBattery = true;
+                        } else {
+                            //close now
+							try {
+								CustomDungeonSaves.saveLevel(EditorScene.getCustomLevel());
+								CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
+                                Game.instance.finish();
+							} catch (IOException e) {
+                                //don't kill the game if sth went wrong
+								Game.reportException(e);
+                                DungeonScene.show(new WndError(e));
+							}
+						}
+                    }
+                });
+            }
+        } else {
+            remindedCriticalBattery = false;
+        }
+    }
+    
 }

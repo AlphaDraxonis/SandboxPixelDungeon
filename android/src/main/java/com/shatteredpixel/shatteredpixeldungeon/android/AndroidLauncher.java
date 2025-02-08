@@ -24,12 +24,15 @@ package com.shatteredpixel.shatteredpixeldungeon.android;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -76,6 +79,10 @@ public class AndroidLauncher extends AndroidApplication {
 	public static AndroidApplication instance;
 	
 	public static AndroidPlatformSupport support;
+	
+	
+	private BroadcastReceiver batteryStatusReceiver;
+	static int curBatteryPercentage;
 	
 	@SuppressLint("SetTextI18n")
 	@Override
@@ -189,6 +196,16 @@ public class AndroidLauncher extends AndroidApplication {
 		support.updateSystemUI();
 
 		Button.longClick = ViewConfiguration.getLongPressTimeout()/1000f;
+		
+		batteryStatusReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+				int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+				curBatteryPercentage = (int) ((level / (float)scale) * 100);
+			}
+		};
+		registerReceiver(batteryStatusReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
 		initialize(new SandboxPixelDungeon(support), config);
 		
@@ -200,6 +217,15 @@ public class AndroidLauncher extends AndroidApplication {
 	}
 
 	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		if (batteryStatusReceiver != null) {
+			unregisterReceiver(batteryStatusReceiver);
+		}
+	}
+	
+	@Override
 	protected void onResume() {
 		//prevents weird rare cases where the app is running twice
 		if (instance != this){
@@ -207,6 +233,10 @@ public class AndroidLauncher extends AndroidApplication {
 				finishAndRemoveTask();
 			} else {
 				finish();
+			}
+		} else {
+			if (batteryStatusReceiver != null) {
+				registerReceiver(batteryStatusReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 			}
 		}
 		super.onResume();

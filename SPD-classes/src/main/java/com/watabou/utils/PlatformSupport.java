@@ -56,6 +56,10 @@ public abstract class PlatformSupport {
 	public void setHonorSilentSwitch( boolean value ){
 		//does nothing by default
 	}
+	
+	public int batteryRemaining() {
+		return 100;
+	}
 
 	public boolean openURI( String uri ){
 		return Gdx.net.openURI( uri );
