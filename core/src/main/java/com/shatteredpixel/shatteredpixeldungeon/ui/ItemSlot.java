@@ -319,6 +319,13 @@ public class ItemSlot extends Button {
 	public void enable( boolean value ) {
 		
 		active = value;
+		//reset properties if was pressed
+		if (!active && pressedButton == this){
+			hotArea.reset();
+			pressedButton = null;
+			clickReady = false;
+			onPointerUp();
+		}
 		
 		float alpha = value ? ENABLED : DISABLED;
 		sprite.alpha( alpha );
