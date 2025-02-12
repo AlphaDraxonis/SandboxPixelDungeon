@@ -715,6 +715,12 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			h.destroy();
 		}
 
+		if (pos == CityBossLevel.throne){
+			Dungeon.level.drop(new KingsCrown(), pos + Dungeon.level.width()).sprite.drop(pos);
+		} else {
+			Dungeon.level.drop(new KingsCrown(), pos).sprite.drop();
+		}
+
 		Badges.validateBossSlain(DwarfKing.class);
 		if (Statistics.qualifiedForBossChallengesBadge[3]){
 			Badges.validateBossChallengeCompleted(DwarfKing.class);
