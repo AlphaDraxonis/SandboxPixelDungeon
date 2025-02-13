@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.PowerOfMany;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -46,7 +47,11 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.ColorMath;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 
 public class WandOfLivingEarth extends DamageWand {
 	
@@ -106,6 +111,10 @@ public class WandOfLivingEarth extends DamageWand {
 			//create a new guardian
 			guardian = new EarthGuardian();
 			guardian.setInfo(curUser, buffedLvl(), buff.armor);
+
+			if (buff.powerOfManyTurns > 0){
+				Buff.affect(guardian, PowerOfMany.PowerBuff.class, buff.powerOfManyTurns);
+			}
 
 			//if the collision pos is occupied (likely will be), then spawn the guardian in the
 			//adjacent cell which is closes to the user of the wand.
@@ -251,7 +260,22 @@ public class WandOfLivingEarth extends DamageWand {
 		private int wandLevel;
 		private int armor;
 
-		private void addArmor( int wandLevel, int toAdd ){
+		private float powerOfManyTurns = 0;
+
+		@Override
+		public boolean act() {
+			if (powerOfManyTurns > 0){
+				powerOfManyTurns--;
+				if (powerOfManyTurns <= 0){
+					powerOfManyTurns = 0;
+					BuffIndicator.refreshHero();
+				}
+			}
+			spend(TICK);
+			return true;
+		}
+
+		private void addArmor(int wandLevel, int toAdd ){
 			this.wandLevel = Math.max(this.wandLevel, wandLevel);
 			armor += toAdd;
 			armor = Math.min(armor, 2*armorToGuardian());
@@ -272,6 +296,10 @@ public class WandOfLivingEarth extends DamageWand {
 			}
 		}
 
+		public boolean isEmpowered(){
+			return powerOfManyTurns > 0;
+		}
+
 		@Override
 		public int icon() {
 			return BuffIndicator.ARMOR;
@@ -279,7 +307,11 @@ public class WandOfLivingEarth extends DamageWand {
 
 		@Override
 		public void tintIcon(Image icon) {
-			icon.brightness(0.6f);
+			if (isEmpowered()){
+				icon.hardlight(1.8f, 1.8f, 0.6f);
+			} else {
+				icon.brightness(0.6f);
+			}
 		}
 
 		@Override
@@ -294,17 +326,24 @@ public class WandOfLivingEarth extends DamageWand {
 
 		@Override
 		public String desc() {
-			return Messages.get( this, "desc", armor, armorToGuardian());
+			String desc = Messages.get( this, "desc", armor, armorToGuardian());
+			if (isEmpowered()){
+				desc += "\n\n" + Messages.get(this, "desc_many", (int)powerOfManyTurns);
+			}
+			return desc;
 		}
 
 		private static final String WAND_LEVEL = "wand_level";
 		private static final String ARMOR = "armor";
+
+		private static final String POWER_TURNS = "power_turns";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put(WAND_LEVEL, wandLevel);
 			bundle.put(ARMOR, armor);
+			bundle.put(POWER_TURNS, powerOfManyTurns);
 		}
 
 		@Override
@@ -312,6 +351,7 @@ public class WandOfLivingEarth extends DamageWand {
 			super.restoreFromBundle(bundle);
 			wandLevel = bundle.getInt(WAND_LEVEL);
 			armor = bundle.getInt(ARMOR);
+			powerOfManyTurns = bundle.getFloat(POWER_TURNS);
 		}
 	}
 
@@ -436,6 +476,9 @@ public class WandOfLivingEarth extends DamageWand {
 			public boolean act(boolean enemyInFOV, boolean justAlerted) {
 				if (!enemyInFOV){
 					Buff.affect(summonedBy, RockArmor.class).addArmor(wandLevel, HP);
+					if (buff(PowerOfMany.PowerBuff.class) != null){
+						Buff.affect(summonedBy, RockArmor.class).powerOfManyTurns = buff(PowerOfMany.PowerBuff.class).cooldown()+1;
+					}
 					summonedBy.sprite.centerEmitter().burst(MagicMissile.EarthParticle.ATTRACT, 8 + wandLevel/2);
 					destroy();
 					sprite.die();
