@@ -2526,13 +2526,19 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 				}
 				mindVisRange = Math.max(mindVisRange, EyeOfNewt.mindVisionRange(hero));
 
+				//power of many's life link spell allows allies to get divine sense
+				Char ally = PowerOfMany.getPoweredAlly();
+				if (ally != null && ally.buff(DivineSense.DivineSenseTracker.class) == null){
+					ally = null;
+				}
+
 				if (mindVisRange >= 1) {
 					for (Mob mob : mobs) {
-						if (mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL&& ((Mimic) mob).stealthy()){
+						if (mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL && ((Mimic) mob).stealthy()){
 							continue;
 						}
 						int p = mob.pos;
-						if (!fieldOfView[p] && distance(c.pos, p) <= mindVisRange) {
+						if (!fieldOfView[p] && (distance(c.pos, p) <= mindVisRange || (ally != null && distance(ally.pos, p) <= mindVisRange))) {
 							for (int i : PathFinder.NEIGHBOURS9) {
 								int cell = mob.pos + i;
 							if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;}
