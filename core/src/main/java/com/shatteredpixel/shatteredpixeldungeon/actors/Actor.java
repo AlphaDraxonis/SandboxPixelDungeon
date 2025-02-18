@@ -97,7 +97,12 @@ public abstract class Actor extends GameObject implements Copyable<Actor> {
 	}
 
 	public void clearTime() {
-		time = 0;
+		spendConstant(-Actor.now());
+		if (this instanceof Char){
+			for (Buff b : ((Char) this).buffs()){
+				b.spendConstant(-Actor.now());
+			}
+		}
 	}
 
 	public void timeToNow() {
