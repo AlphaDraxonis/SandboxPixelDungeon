@@ -41,6 +41,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Fe
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.ShadowClone;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.ClericSpell;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.GuidingLight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.Stasis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
@@ -2055,13 +2057,16 @@ public abstract class Mob extends Char implements Customizable {
 	public static void holdAllies( Level level, int holdFromPos ){
 		heldAllies.clear();
 		for (Mob mob : level.mobs.toArray( new Mob[0] )) {
-			//preserve directable allies no matter where they are
-			if (mob.getDirectableAlly() != null) {
-				mob.getDirectableAlly().clearDefensingPos();
+			//preserve directable allies or empowered intelligent allies no matter where they are
+			if (mob.getDirectableAlly() != null
+				|| (mob.intelligentAlly && PowerOfMany.getPoweredAlly() == mob)) {
+				if (mob.getDirectableAlly() != null) {
+					mob.getDirectableAlly().clearDefensingPos();
+				}
 				level.mobs.remove( mob );
 				heldAllies.add(mob);
 				
-			//preserve intelligent allies if they are near the hero
+			//preserve other intelligent allies if they are near the hero
 			} else if (mob.alignment == Alignment.ALLY
 					&& mob.intelligentAlly
 					&& Dungeon.level.distance(holdFromPos, mob.pos) <= 5){
@@ -2097,8 +2102,27 @@ public abstract class Mob extends Char implements Customizable {
 					}
 				});
 			}
+
+			//can only have one empowered ally at once, prioritize incoming ally
+			if (Stasis.getStasisAlly() != null){
+				for (Mob mob : level.mobs.toArray( new Mob[0] )) {
+					if (mob.buff(PowerOfMany.PowerBuff.class) != null){
+						mob.buff(PowerOfMany.PowerBuff.class).detach();
+					}
+				}
+			}
 			
 			for (Mob ally : heldAllies) {
+
+				//can only have one empowered ally at once, prioritize incoming ally
+				if (ally.buff(PowerOfMany.PowerBuff.class) != null){
+					for (Mob mob : level.mobs.toArray( new Mob[0] )) {
+						if (mob.buff(PowerOfMany.PowerBuff.class) != null){
+							mob.buff(PowerOfMany.PowerBuff.class).detach();
+						}
+					}
+				}
+
 				level.mobs.add(ally);
 				ally.state = ally.WANDERING;
 				
