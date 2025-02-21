@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
@@ -40,8 +41,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.mage.WildMagic;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.DivineSense;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.GuidingLight;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -232,6 +235,14 @@ public abstract class Wand extends Item {
 				&& Dungeon.hero.buff(Talent.SearingLightCooldown.class) == null){
 			Buff.affect(target, GuidingLight.Illuminated.class);
 			Buff.affect(Dungeon.hero, Talent.SearingLightCooldown.class, 20f);
+		}
+
+		if (Dungeon.hero.heroClass != HeroClass.CLERIC
+				&& Dungeon.hero.hasTalent(Talent.SUNRAY)){
+			// 15/25% chance
+			if (Random.Int(20) < 1 + 2*Dungeon.hero.pointsInTalent(Talent.SUNRAY)){
+				Buff.prolong(target, Blindness.class, 4f);
+			}
 		}
 	}
 
@@ -511,10 +522,29 @@ public abstract class Wand extends Item {
 			Buff.prolong(curUser, Talent.EmpoweredStrikeTracker.class, 10f);
 		}
 
-		if (Dungeon.hero.hasTalent(Talent.LINGERING_MAGIC)
+		if (curUser.hasTalent(Talent.LINGERING_MAGIC)
 				&& charger != null && charger.target == Dungeon.hero){
 
 			Buff.prolong(Dungeon.hero, Talent.LingeringMagicTracker.class, 5f);
+		}
+
+		if (curUser.heroClass != HeroClass.CLERIC
+				&& curUser.hasTalent(Talent.DIVINE_SENSE)){
+			Buff.prolong(curUser, DivineSense.DivineSenseTracker.class, Dungeon.hero.cooldown()+1);
+		}
+
+		// 10/20/30%
+		if (curUser.heroClass != HeroClass.CLERIC
+				&& curUser.hasTalent(Talent.CLEANSE)
+				&& Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.CLEANSE)){
+			boolean removed = false;
+			for (Buff b : curUser.buffs()) {
+				if (b.type == Buff.buffType.NEGATIVE) {
+					b.detach();
+					removed = true;
+				}
+			}
+			if (removed) new Flare( 6, 32 ).color(0xFF4CD2, true).show( Dungeon.hero.sprite, 2f );
 		}
 
 		Invisibility.dispel();
