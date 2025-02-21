@@ -1007,8 +1007,8 @@ public abstract class Mob extends Char implements Customizable {
 	@Override
 	public int defenseSkill( Char enemy ) {
 		if (playerAlignment == NEUTRAL_ALIGNMENT) return INFINITE_EVASION;
-		if (buff(GuidingLight.Illuminated.class) != null){
-			//if the attacker is the hero, they must be using a weapon they have the str for
+		if (buff(GuidingLight.Illuminated.class) != null && Dungeon.hero.heroClass == HeroClass.CLERIC){
+			//if the attacker is the cleric, they must be using a weapon they have the str for
 			if (enemy instanceof Hero){
 				Hero h = (Hero) enemy;
 				if (!(h.belongings.attackingWeapon() instanceof Weapon)
