@@ -447,6 +447,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 
 	public void add( State state ) {
 		synchronized (State.class) {
+			stateRemovals.remove(state);
 			stateAdditions.add(state);
 		}
 	}
@@ -551,6 +552,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 
 	public void remove( State state ) {
 		synchronized (State.class) {
+			stateAdditions.remove(state);
 			stateRemovals.add(state);
 		}
 	}
