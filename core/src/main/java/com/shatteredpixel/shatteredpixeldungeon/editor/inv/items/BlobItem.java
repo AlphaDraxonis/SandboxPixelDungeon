@@ -141,7 +141,6 @@ public class BlobItem extends EditorItem<Class<? extends Blob>> {
             };
             icon.frame(r);
             icon.hardlight(color);
-            icon.originToCenter();
             icon.scale.set(2.28f);//16/7=2.28
             return icon;
         }

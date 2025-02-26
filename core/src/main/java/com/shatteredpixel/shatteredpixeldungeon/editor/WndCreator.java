@@ -26,7 +26,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaRestrictionProxy;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -36,11 +36,22 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptionsCondensed;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndReward;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndStory;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import org.luaj.vm2.*;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaInteger;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 
 import java.util.Locale;
 
@@ -81,19 +92,11 @@ public final class WndCreator {
 	}
 
 	private static Mob parseMob(LuaValue mob) {
-		if (mob.isuserdata()) {
-			Object obj = mob.touserdata();
-			if (obj instanceof Mob) return (Mob) obj;
-		}
-		return null;
+		return (Mob) LuaRestrictionProxy.coerceLuaToJava(mob, Mob.class);
 	}
 
 	private static Item parseItem(LuaValue item) {
-		if (item.isuserdata()) {
-			Object obj = item.touserdata();
-			if (obj instanceof Item) return (Item) obj;
-		}
-		return null;
+		return (Item) LuaRestrictionProxy.coerceLuaToJava(item, Item.class);
 	}
 
 	private static Chrome.Type parseChromeType(LuaValue chromeType) {
@@ -177,7 +180,7 @@ public final class WndCreator {
 				IconTitle titlebar = new IconTitle();
 				if (icon != null) titlebar.icon(icon);
 				else if (payItem != null) titlebar.icon(new ItemSprite(payItem, null));
-				else if (questInitiator != null) titlebar.icon(questInitiator.sprite());
+				else if (questInitiator != null) titlebar.icon(questInitiator.createSprite());
 
 				if (title != null) titlebar.label(titleText);
 				else if (payItem != null) titlebar.label( Messages.titleCase(payItem.name()));

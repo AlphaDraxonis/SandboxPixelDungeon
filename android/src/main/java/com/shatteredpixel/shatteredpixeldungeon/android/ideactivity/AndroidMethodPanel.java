@@ -98,8 +98,8 @@ public class AndroidMethodPanel extends AndroidCodeInputPanel {
 		super.onAdd();
 		setText(CodeInputPanelInterface.defaultMethodCode(method, paramNames));
 		if (textInput != null) {
-		textInput.setSelection(text.length());
-		AndroidIDEWindow.showKeyboard(textInput);
+			textInput.setSelection(text.length());
+			AndroidIDEWindow.showKeyboard(textInput);
 		}
 	}
 

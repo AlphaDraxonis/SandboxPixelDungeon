@@ -25,6 +25,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.customobjects;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.editcomps.CustomObjectEditor;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.editcomps.EditCustomObjectComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
@@ -77,6 +78,16 @@ public class CustomObject implements Bundlable {
 
 	protected final WeakHashMap<Image, Runnable> spriteReloaders = new WeakHashMap<>();
 	private final WeakHashMap<Image, Runnable> tempSpriteReloaders = new WeakHashMap<>();
+	
+	public static void maybeAddSpriteReloaderToCustomImageLater(Runnable reloadSprite, Image customObjectImageInstance) {
+		if (reloadSprite != null && customObjectImageInstance instanceof CustomObjectClass) {
+			int id = ((CustomObjectClass) customObjectImageInstance).getIdentifier();
+			CustomObject customObject = CustomObjectManager.getUserContent(id, CustomObject.class);
+			if (customObject != null) {
+				customObject.spriteReloaders.put(customObjectImageInstance, reloadSprite);
+			}
+		}
+	}
 
 	private boolean reloadingSprites;
 	public void reloadSprite() {

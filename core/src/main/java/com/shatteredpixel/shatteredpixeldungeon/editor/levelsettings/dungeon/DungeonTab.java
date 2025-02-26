@@ -1,12 +1,19 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.CustomObjSelector;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndAllCustomObjects;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndSelectResourceFile;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.LuaOverviewTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipeList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
@@ -28,9 +35,13 @@ import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
+import java.util.Map;
+
 @NotAllowedInLua
 public class DungeonTab extends MultiWindowTabComp {
-
+    
+    private final CustomObjSelector<String> dungeonScript;
+    
     public DungeonTab() {
 
         title = new IconTitle(Icons.get(Icons.PREFS), Messages.get(DungeonTab.class, "title"));
@@ -152,11 +163,56 @@ public class DungeonTab extends MultiWindowTabComp {
                 DungeonScene.show(new WndAllCustomObjects());
             }
         };
-//        viewCustomObjects.icon(new TileSprite(Terrain.ALCHEMY));
         content.add(viewCustomObjects);
+        
+        dungeonScript = new CustomObjSelector<String>(Messages.get(LuaOverviewTab.class, "dungeon_script_title"), new CustomObjSelector.Selector<String>() {
+            
+            @Override
+            public String getCurrentValue() {
+                return Dungeon.customDungeon.dungeonScriptPath;
+            }
+            
+            @Override
+            public void onSelect(String path) {
+                Dungeon.customDungeon.dungeonScriptPath = path;
+            }
+            
+            @Override
+            public void onItemSlotClick() {
+                IDEWindow.showWindow(Dungeon.customDungeon.dungeonScriptPath, dungeonScript::setValue, DungeonScript.class);
+            }
+            
+            @Override
+            public void onChangeClick() {
+                DungeonScene.show(new WndSelectResourceFile() {
+                    @Override
+                    protected boolean acceptExtension(String extension) {
+                        return ResourcePath.isLua(extension);
+                    }
+                    
+                    @Override
+                    protected void onSelect(Map.Entry<String, FileHandle> path) {
+                        dungeonScript.setValue(path.getKey());
+                    }
+                });
+            }
+        }, PixelScene.landscape() ? 8 : 6) {
+            @Override
+            protected void onChangeClick() {
+                IDEWindow.showSelectScriptWindow(DungeonScript.class, script -> {
+                    if (script != null) {
+                        dungeonScript.setValue(script.getPath());
+                    }
+                });
+            }
+        };
+        dungeonScript.enableChanging(true);
+        dungeonScript.enableDetaching(true);
+        content.add(dungeonScript);
+        
 
         mainWindowComps = new Component[]{potionColors, scrollRunes, ringGems, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
-                heroes, durationSettings, forceChallenges, customRecipes, view2d, seeLevelOnDeath, autoRevealSecrets, viewCustomObjects
+                heroes, durationSettings, forceChallenges, customRecipes, view2d, seeLevelOnDeath, autoRevealSecrets, viewCustomObjects, dungeonScript
         };
     }
 

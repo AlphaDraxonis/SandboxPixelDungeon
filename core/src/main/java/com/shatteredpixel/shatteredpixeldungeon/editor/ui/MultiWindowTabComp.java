@@ -276,12 +276,11 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
         protected TabControlButton[] tabs;
         protected int currentIndex;
-
-        @Override
-        protected void createChildren() {
+        
+        {
             KeyEvent.addKeyListener(keyListener = keyEvent -> {
                 GameAction action = KeyBindings.getActionForKey(keyEvent);
-
+                
                 if (keyEvent.pressed) {
                     curAction = action;
                     return processKey();

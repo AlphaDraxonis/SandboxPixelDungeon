@@ -62,7 +62,17 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesGrid;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesList;
+import com.shatteredpixel.shatteredpixeldungeon.ui.CustomNoteButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.QuickRecipe;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingGridPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.noosa.BitmapText;
@@ -73,7 +83,11 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class WndJournal extends WndTabbed {
 
@@ -861,7 +875,7 @@ public class WndJournal extends WndTabbed {
 					}
 				}
 
-				CharSprite sprite = mob.sprite();
+				CharSprite sprite = mob.createSprite();
 				sprite.idle();
 
 				icon = new Image(sprite);
@@ -938,7 +952,7 @@ public class WndJournal extends WndTabbed {
 					if (inside(x, y)) {
 						Image image;
 						if (seen && finalMob != null){
-							image = finalMob.sprite();
+							image = finalMob.createSprite();
 						} else {
 							image = new Image(icon);
 						}

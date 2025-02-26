@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.server.ServerDungeonList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.ExportDungeonWrapper;
@@ -281,7 +282,7 @@ public final class ServerCommunication {
     }
 
     public static void downloadDungeon(String dungeonName, String fileId, OnDungeonReceive callback) {
-        new DownloadDungeonAction(dungeonName, fileId, callback);
+        new DownloadDungeonAction(CustomDungeon.maybeFixIncorrectNameEnding(dungeonName), fileId, callback);
     }
 
     static class UploadDataListener implements Net.HttpResponseListener {
@@ -326,7 +327,7 @@ public final class ServerCommunication {
     }
 
     public static void updateDungeon(DungeonPreview oldDungeonPreview, String newDungeonName, String newDescription, int difficulty, UploadCallback callback) {
-        new UpdateDungeonAction(oldDungeonPreview, newDungeonName, newDescription, difficulty, callback);
+        new UpdateDungeonAction(oldDungeonPreview, CustomDungeon.maybeFixIncorrectNameEnding(newDungeonName), newDescription, difficulty, callback);
     }
 
     public static void reportBug(String dungeonName, String description, UploadCallback callback) {

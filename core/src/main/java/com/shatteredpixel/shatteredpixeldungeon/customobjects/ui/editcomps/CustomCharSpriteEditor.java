@@ -210,10 +210,11 @@ public class CustomCharSpriteEditor extends CustomObjectEditor<CustomCharSprite>
 			title.setPos(x + (width - title.width()) * 0.5f, y + 1);
 			player.x = bg.x = x + (width - player.width()) * 0.5f;
 
-			player.y = bg.y = title.bottom() + 3;
-			height = player.y + player.height() - y;
+			player.y = bg.y = title.bottom() + 1.5f;
 
 			pauseBtn.setRect(bg.x, bg.y, bg.width(), bg.height());
+			
+			height = player.y + player.height() - y + 1;
 		}
 
 		private float requiredWidth() {

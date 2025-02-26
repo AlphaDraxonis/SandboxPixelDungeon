@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Bundle;
@@ -442,6 +443,11 @@ public class HallsBossLevel extends Level {
 					WALL_DECO, WALL_DECO, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, WALL_DECO, WALL_DECO,
 					WALL_DECO, WALL_DECO, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, WALL_DECO, WALL_DECO
 			};
+		}
+		
+		@Override
+		public Image fullImage() {
+			return new Image(Assets.Environment.HALLS_BOSS_LEVEL_CUSTOM_TILE_ICON);
 		}
 	}
 

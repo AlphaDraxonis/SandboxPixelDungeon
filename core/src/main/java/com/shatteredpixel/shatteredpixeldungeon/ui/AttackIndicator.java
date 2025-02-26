@@ -147,11 +147,11 @@ public class AttackIndicator extends Tag {
 		}
 
 		if (lastTarget instanceof LuaCustomObjectClass || lastTarget instanceof HeroMob) {
-			sprite = lastTarget.sprite();
+			sprite = lastTarget.createSprite();
 		}
 		else {
 			sprite = Reflection.newInstance(lastTarget.spriteClass);
-			if (sprite == null) sprite = lastTarget.sprite();
+			if (sprite == null) sprite = lastTarget.createSprite();
 		}
 		active = true;
 		sprite.linkVisuals(lastTarget);

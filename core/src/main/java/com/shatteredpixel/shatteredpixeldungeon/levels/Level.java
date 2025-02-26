@@ -1123,7 +1123,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 				Statistics.ascended = true;
 				Badges.silentValidateHappyEnd();
 				Dungeon.win( winCondition );
-				Dungeon.deleteGame( GamesInProgress.curSlot, true );
+				Dungeon.deleteGame( GamesInProgress.curSlot );
 				AmuletScene.winCondition = winCondition;
 				Game.switchScene( SurfaceScene.class );
 				return true;

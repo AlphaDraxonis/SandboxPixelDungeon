@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewSce
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
@@ -52,21 +53,69 @@ public class OpenDungeonScene extends PixelScene {
 	private static final float FADE = 0.2f;
 	private static final float DOT_SPEED = 1f;
 	
-	public static void openDungeon(String dungeonName) {
+	public static void openDungeon(String dungeonName, Mode mode) {
+		OpenDungeonScene.mode = mode;
 		OpenDungeonScene.dungeonName = dungeonName;
 		Game.switchScene( OpenDungeonScene.class );
 	}
 	
-	public static void quickOpenDungeon(String dungeonName) {
+	public static void quickOpenDungeon(String dungeonName, Mode mode) {
 		try {
+			OpenDungeonScene.mode = mode;
 			loadDungeon(dungeonName);
-			actuallyEnter();
+			mode.actuallyEnter();
 		} catch (CustomDungeonSaves.RenameRequiredException e) {
 			e.showExceptionWindow();
 		} catch (Exception e) {
 			error = e;
 		}
 	}
+	
+	public enum Mode {
+		EDITOR_LOAD,
+		GAME_LOAD;
+		
+		public void afterLoading() {
+			switch (this) {
+				case EDITOR_LOAD:
+					EditorScene.isEditing = true;
+					CustomTileLoader.loadTiles(EditorScene.openDifferentLevel);
+					break;
+				case GAME_LOAD:
+					EditorScene.isEditing = false;
+					CustomTileLoader.loadTiles(true);
+					break;
+			}
+		}
+		
+		public void actuallyEnter() {
+			switch (this) {
+				case EDITOR_LOAD:
+					String lastEditedFloor = Dungeon.customDungeon.getLastEditedFloor();
+					LevelScheme l;
+					if (Dungeon.customDungeon.getNumFloors() == 0 || lastEditedFloor == null || (l = Dungeon.customDungeon.getFloor(lastEditedFloor)) == null) {
+						SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
+					} else if (l.getType() != CustomLevel.class) {
+						SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
+					} else {
+						l.loadLevel();
+						if (l.getLevel() == null) {
+							SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
+						} else {
+							EditorScene.open((CustomLevel) l.getLevel());
+						}
+					}
+					break;
+					
+				case GAME_LOAD:
+					SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+					break;
+			}
+		}
+	}
+	
+	private static Mode mode;
+	
 	
 	private static float fadeTime;
 
@@ -263,7 +312,7 @@ public class OpenDungeonScene extends PixelScene {
 			loadingText.alpha( Math.min(1, timeLeft+0.333f) );
 			
 			if ((timeLeft -= Game.elapsed) <= 0) {
-				actuallyEnter();
+				mode.actuallyEnter();
 				thread = null;
 				error = null;
 			}
@@ -320,23 +369,6 @@ public class OpenDungeonScene extends PixelScene {
 		}
 	}
 	
-	private static void actuallyEnter() {
-		String lastEditedFloor = Dungeon.customDungeon.getLastEditedFloor();
-		LevelScheme l;
-		if (Dungeon.customDungeon.getNumFloors() == 0 || lastEditedFloor == null || (l = Dungeon.customDungeon.getFloor(lastEditedFloor)) == null)
-			SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
-		else {
-			if (l.getType() != CustomLevel.class)
-				SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
-			else {
-				l.loadLevel();
-				if (l.getLevel() == null)
-					SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
-				else EditorScene.open((CustomLevel) l.getLevel());
-			}
-		}
-	}
-	
 	private void afterLoading(){
 		phase = Phase.FADE_OUT;
 		timeLeft = fadeTime;
@@ -347,8 +379,7 @@ public class OpenDungeonScene extends PixelScene {
 		
 		Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(dungeonName);
 		
-		EditorScene.isEditing = true;
-		CustomTileLoader.loadTiles(EditorScene.openDifferentLevel);
+		mode.afterLoading();
 	}
 
 	@Override

@@ -64,6 +64,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Spell;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.InventoryStone;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.DamageWand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -331,9 +332,11 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(2003, Spell.class.getDeclaredMethod("onCast", Hero.class));
 
 			addMethod(2004, Runestone.class.getDeclaredMethod("activate", int.class));
-			addMethod(2005, InventoryStone.class.getDeclaredMethod("inventoryTitle"));
-			addMethod(2006, InventoryStone.class.getDeclaredMethod("usableOnItem", Item.class), "item");
-			addMethod(2007, InventoryStone.class.getDeclaredMethod("onItemSelected", Item.class), "item");
+			addMethod(2005, StoneOfEnchantment.class.getDeclaredMethod("createEnchantmentToInscribe", Weapon.class), "weapon");
+			addMethod(2006, StoneOfEnchantment.class.getDeclaredMethod("createGlyphToInscribe", Armor.class), "armor");
+			addMethod(2007, InventoryStone.class.getDeclaredMethod("inventoryTitle"));
+			addMethod(2008, InventoryStone.class.getDeclaredMethod("usableOnItem", Item.class), "item");
+			addMethod(2009, InventoryStone.class.getDeclaredMethod("onItemSelected", Item.class), "item");
 
 			addMethod(2008, Trinket.class.getDeclaredMethod("upgradeEnergyCost"));
 
@@ -365,6 +368,7 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(2031, KingsCrown.class.getMethod("upgradeArmor", Hero.class, Armor.class, ArmorAbility.class), "hero", "armor", "ability");
 			addMethod(2032, TengusMask.class.getMethod("choose", HeroSubClass.class), "way");
 			addMethod(2033, Stylus.class.getMethod("inscribe", Armor.class), "armor");
+			addMethod(2034, Stylus.class.getDeclaredMethod("createGlyphToInscribe", Armor.class), "armor");
 
 			addMethod(2034, Waterskin.class.getMethod("collectDew", Dewdrop.class), "dew");
 			addMethod(2035, Waterskin.class.getDeclaredMethod("maxVolume"));

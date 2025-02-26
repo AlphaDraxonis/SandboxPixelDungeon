@@ -390,9 +390,9 @@ public class AndroidPlatformSupport extends PlatformSupport {
 
 
 	@Override
-	public boolean openNativeIDEWindow(Object customObject, Class<?> clazz, Runnable onScriptChanged) {
+	public boolean openNativeIDEWindow(String luaScriptPath, Class<?> clazz, Consumer<String> onScriptChanged) {
 		AndroidIDEWindow.clazz = clazz;
-		AndroidIDEWindow.customObject = (LuaCustomObject) customObject;
+		AndroidIDEWindow.originalScriptPath = luaScriptPath;
 		AndroidIDEWindow.onScriptChanged = onScriptChanged;
 		AndroidLauncher.launchIDEWindowActivity();
 		return true;

@@ -140,7 +140,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
                 content.add(comp);
                 transitionCompMap.put(cell, comp);
             }
-            comp.setRect(x, pos, width, -1);
+            comp.setRect(x, pos, width, 0);
             pos = comp.bottom() + 2;
         }
         return pos;

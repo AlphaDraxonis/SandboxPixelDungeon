@@ -177,7 +177,7 @@ public class WndItemDistribution extends Window {
                     subIcon = null;
                     lvlLabel.text(null);
                     if (distribution instanceof ItemDistribution.Mobs)
-                        icon = ((ItemDistribution.Mobs) distribution).getObjectsToDistribute().get(0).mob().sprite();
+                        icon = ((ItemDistribution.Mobs) distribution).getObjectsToDistribute().get(0).mob().createSprite();
                     else icon = new ItemSprite(ItemSpriteSheet.SOMETHING);
                 }
             }

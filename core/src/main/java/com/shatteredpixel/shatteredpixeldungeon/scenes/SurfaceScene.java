@@ -280,7 +280,7 @@ public class SurfaceScene extends PixelScene {
 
 		Badges.validateHappyEnd();
 		Dungeon.win( AmuletScene.winCondition );
-		Dungeon.deleteGame( GamesInProgress.curSlot, true );
+		Dungeon.deleteGame( GamesInProgress.curSlot );
 		Badges.saveGlobal();
 
 		fadeIn();

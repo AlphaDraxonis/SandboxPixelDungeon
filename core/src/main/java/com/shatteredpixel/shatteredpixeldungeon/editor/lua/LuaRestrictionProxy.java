@@ -45,31 +45,35 @@ public class LuaRestrictionProxy extends LuaValue {
 
 	private final Object javaObject; // Original Java object
 
-	private static final Map<Class<?>, Map<String, Object>> ACCESSIBLE_METHODS_MAP = new HashMap<>();// that object is either Method or VarArgFunction
+	private static final Map<Class<?>, Map<String, Map<Integer, Method>> > ACCESSIBLE_METHODS_MAP = new HashMap<>();
 
 	public LuaRestrictionProxy(Object javaObject) {
 		this.javaObject = javaObject;
 
-		if (ACCESSIBLE_METHODS_MAP.get(javaObject.getClass()) == null) {
-			Map<String, Object> methods = new HashMap<>();
+		if (!ACCESSIBLE_METHODS_MAP.containsKey(javaObject.getClass())) {
+			Map<String, Map<Integer, Method>> methods = new HashMap<>();
 			Class<?> clazz = javaObject.getClass();
 			do {
 				for (Method m : clazz.getDeclaredMethods()) {
-					if (m.isAnnotationPresent(NotAllowedInLua.class)) continue;
+					if (m.isAnnotationPresent(NotAllowedInLua.class)) {
+						continue;
+					}
 					int mods = m.getModifiers();
+					
+					Map<Integer, Method> methodsWithSameName = methods.get(m.getName());
+					if (methodsWithSameName == null) {
+						methodsWithSameName = new HashMap<>();
+						methods.put(m.getName(), methodsWithSameName);
+					}
+					
 					if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
-						Method existingMethod = (Method) methods.get(m.getName());
-						if (existingMethod != null) {
-							if (existingMethod.getParameterTypes().length >= m.getParameterTypes().length) {
-								continue;
-							}
-						}
-						methods.put(m.getName(), m);
+						methodsWithSameName.put(m.getParameterCount(), m);
 					}
 				}
 
 				clazz = clazz.getSuperclass();
 			} while (clazz != null);
+			
 			ACCESSIBLE_METHODS_MAP.put(javaObject.getClass(), methods);
 		}
 
@@ -79,31 +83,11 @@ public class LuaRestrictionProxy extends LuaValue {
 	public LuaValue get(LuaValue key) {
 		try {
 			String name = key.tojstring();
-
-			if (!name.endsWith("_V")) {
-				Map<String, Object> methodsForClass = ACCESSIBLE_METHODS_MAP.get(javaObject.getClass());
-				Object methodOrFunction = methodsForClass.get(name);
-
-				if (methodOrFunction != null) {
-					//the problem with the next line is that it uses the same javaObject for all instances, and setting it each time does not ensure thread safety!
-//					if (methodOrFunction instanceof VarArgFunction) return (LuaValue) methodOrFunction;
-					final Method method = (Method) methodOrFunction;
-					VarArgFunction function = new VarArgFunction() {
-						@Override
-						public Varargs invoke(Varargs varargs) {
-							try {
-								Object[] javaArgs = new Object[method.getParameterTypes().length];
-								for (int i = 0; i < javaArgs.length; i++) {
-									javaArgs[i] = coerceLuaToJava(varargs.arg(i + 2), method.getParameterTypes()[i]);
-								}
-								return wrapObject(method.invoke(javaObject, javaArgs));
-							} catch (Exception e) {
-								return new LuaRestrictionProxy(e);
-							}
-						}
-					};
-//					methodsForClass.put(name, function);
-					return function;
+			
+			if (!name.endsWith("_v")) {
+				Map<Integer, Method> methods = ACCESSIBLE_METHODS_MAP.get(javaObject.getClass()).get(name);
+				if (methods != null) {
+					return new FunctionInterceptor(methods, javaObject);
 				}
 			} else {
 				name = name.substring(0, name.length() - 2);
@@ -114,12 +98,47 @@ public class LuaRestrictionProxy extends LuaValue {
 			if (isFieldRestricted(field)) {
 				return NIL;
 			}
+			
+			if (field == null) {
+				if (name.equals("simpleClassName")) {
+					return wrapObject(javaObject.getClass().getSimpleName());
+				}
+				if (name.equals("className")) {
+					return wrapObject(javaObject.getClass().getName());
+				}
+				return NIL;
+			}
 
 			return wrapObject(field.get(javaObject));
 
 		} catch (Exception e) {
 			Game.reportException(e);
 			return NIL;
+		}
+	}
+	
+	private static final class FunctionInterceptor extends VarArgFunction {
+		
+		private final Map<Integer, Method> methods;
+		private final Object javaObject;
+		
+		private FunctionInterceptor(Map<Integer, Method> methods, Object javaObject) {
+			this.methods = methods;
+			this.javaObject = javaObject;
+		}
+		
+		@Override
+		public Varargs invoke(Varargs varargs) {
+			Method method = methods.get( varargs.narg()-1 );
+			try {
+				Object[] javaArgs = new Object[method.getParameterCount()];
+				for (int i = 0; i < javaArgs.length; i++) {
+					javaArgs[i] = coerceLuaToJava(varargs.arg(i + 2), method.getParameterTypes()[i]);
+				}
+				return wrapObject(method.invoke(javaObject, javaArgs));
+			} catch (Exception e) {
+				return new LuaRestrictionProxy(e);
+			}
 		}
 	}
 
@@ -203,12 +222,20 @@ public class LuaRestrictionProxy extends LuaValue {
 		}
 		return LuaValue.varargsOf(result);
 	}
+	
+	public static Object[] unwrapRestrictionProxiesAsJavaArray(Varargs varargs) {
+		Object[] result = new Object[varargs.narg()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = coerceLuaToJava( varargs.arg(i+1) );
+		}
+		return result;
+	}
 
 
 	public static boolean isFieldRestricted(Field field) {
 //		Class<?> fieldType = field.getType();
 //		return isRestricted(fieldType);
-		return false;//tzz test if this is enough!
+		return false;
 	}
 
 	public static boolean isRestricted(Object obj) {
@@ -247,12 +274,27 @@ public class LuaRestrictionProxy extends LuaValue {
 	public Object touserdata(Class c) {
 		return c.isAssignableFrom(javaObject.getClass()) ? javaObject : null;
 	}
-
+	
+	@Override
+	public Object checkuserdata() {
+		return touserdata();
+	}
+	
+	@Override
+	public Object checkuserdata(Class aClass) {
+		return touserdata(aClass);
+	}
+	
 	@Override
 	public boolean isuserdata() {
 		return true;
 	}
-
+	
+	@Override
+	public boolean isuserdata(Class aClass) {
+		return javaObject != null && aClass !=null && aClass.isAssignableFrom(javaObject.getClass());
+	}
+	
 	@Override
 	public LuaValue arg(int index) {
 		if (index == 0) return this;

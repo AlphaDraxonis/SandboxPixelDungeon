@@ -40,7 +40,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.shatteredpixel.shatteredpixeldungeon.android.R;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.CodeInputPanel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.NotAllowedInLua;
@@ -81,7 +81,7 @@ public abstract class AndroidCodeInputPanel extends ConstraintLayout implements 
 		
 		label = findViewById(R.id.label);
 		desc = findViewById(R.id.desc);
-		line =findViewById(R.id.line);
+		line = findViewById(R.id.line);
 
 		btnAdd = findViewById(R.id.btn_add);
 		btnRemove = findViewById(R.id.btn_remove);
@@ -249,7 +249,7 @@ public abstract class AndroidCodeInputPanel extends ConstraintLayout implements 
 		boolean isAddBtnVisible = btnAdd.getVisibility() == VISIBLE;
 		code = isAddBtnVisible
 				? code
-				: (forceChange || textInput.getText().toString().isEmpty() ? "" : "--[[\n" + textInput.getText() + "]]\n\n") + code
+				: (forceChange || text.toString().isEmpty() ? "" : "--[[\n" + text + "]]\n\n") + code
 		;
 		
 		if (isAddBtnVisible) {

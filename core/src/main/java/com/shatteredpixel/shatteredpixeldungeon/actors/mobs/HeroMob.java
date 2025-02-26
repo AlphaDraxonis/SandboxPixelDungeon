@@ -229,7 +229,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     }
 
     @Override
-    public CharSprite sprite() {
+    public CharSprite createSprite() {
         HeroSprite.HeroMobSprite sprite = new HeroSprite.HeroMobSprite(internalHero) {
             @Override
             public void link(Char ch) {
@@ -1504,7 +1504,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
         @Override
         public Image getIcon() {
-            return obj.sprite();
+            return obj.createSprite();
         }
 
         private static class HeroEqSelector extends StyledItemSelector {

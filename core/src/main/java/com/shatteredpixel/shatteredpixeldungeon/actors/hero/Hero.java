@@ -2400,7 +2400,7 @@ public class Hero extends Char {
 			((Hero.Doom)cause).onDeath();
 		}
 
-		Dungeon.deleteGame( GamesInProgress.curSlot, true );
+		Dungeon.deleteGame( GamesInProgress.curSlot );
 	}
 
 	//effectively cache this buff to prevent having to call buff(...) a bunch.

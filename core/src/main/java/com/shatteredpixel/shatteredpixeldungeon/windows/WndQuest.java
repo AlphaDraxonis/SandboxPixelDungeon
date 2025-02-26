@@ -27,6 +27,6 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 public class WndQuest extends WndTitledMessage {
 
 	public WndQuest(Mob questgiver, String text ) {
-		super( questgiver.sprite(), Messages.titleCase( questgiver.name() ), text );
+		super( questgiver.createSprite(), Messages.titleCase( questgiver.name() ), text );
 	}
 }

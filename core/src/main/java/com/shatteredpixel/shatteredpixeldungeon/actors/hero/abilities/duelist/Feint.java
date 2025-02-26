@@ -25,7 +25,12 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -212,8 +217,8 @@ public class Feint extends ArmorAbility {
 		}
 
 		@Override
-		public CharSprite sprite() {
-			CharSprite s = super.sprite();
+		public CharSprite createSprite() {
+			CharSprite s = super.createSprite();
 			((AfterImageSprite)s).updateArmor();
 			return s;
 		}

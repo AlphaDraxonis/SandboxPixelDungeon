@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
@@ -20,7 +21,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
@@ -68,7 +68,6 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Function;
 import com.watabou.utils.Random;
-import org.luaj.vm2.LuaValue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -124,13 +123,10 @@ public class CustomDungeon implements Bundlable {
     public Map<Integer, CustomParticle.ParticleProperty> particles;
 
     public String dungeonScriptPath;
-    private LuaValue dungeonVars;//global vars
 
     public List<CustomDocumentPage> foundPages;
 
     public CustomDungeon(String name) {
-
-//        CustomObject.reset();//ttzz tzz tzz TODO prepare for new dungeon!
 
         this.name = name;
         ratKingLevels = new HashSet<>();
@@ -630,10 +626,6 @@ public class CustomDungeon implements Bundlable {
         if (dungeonScriptPath != null)
             bundle.put(DUNGEON_SCRIPT_PATH, dungeonScriptPath);
 
-        if (dungeonVars != null && dungeonVars.istable() && !CustomDungeon.isEditing()) {
-            LuaManager.storeVarInBundle(bundle, dungeonVars, DUNGEON_VARS);
-        }
-
 
         if (scrollRuneLabels != null) {
             String[] labels = new String[scrollRuneLabels.size()];
@@ -768,15 +760,10 @@ public class CustomDungeon implements Bundlable {
             particles.put(p.particleID(), p);
         }
         updateNextParticleID();
-
-        if (bundle.contains(DUNGEON_SCRIPT_PATH))
-			dungeonScriptPath = bundle.getString(DUNGEON_SCRIPT_PATH);
-
-        LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, DUNGEON_VARS);
-        if (loaded != null && loaded.istable()) {
-            dungeonVars = loaded.checktable();
-        } else {
-            dungeonVars = null;
+        
+        Dungeon.dungeonScript.unloadScript();
+        if (bundle.contains(DUNGEON_SCRIPT_PATH)) {
+            dungeonScriptPath = bundle.getString(DUNGEON_SCRIPT_PATH);
         }
 
         if (bundle.contains(RUNE_LABELS)) {

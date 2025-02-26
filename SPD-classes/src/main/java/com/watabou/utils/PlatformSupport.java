@@ -100,7 +100,7 @@ public abstract class PlatformSupport {
 		return null;
 	}
 
-	public boolean openNativeIDEWindow(Object customObject, Class<?> clazz, Runnable onScriptChanged) {
+	public boolean openNativeIDEWindow(String luaScriptPath, Class<?> clazz, Consumer<String> onScriptChanged) {
 		return false;
 	}
 	

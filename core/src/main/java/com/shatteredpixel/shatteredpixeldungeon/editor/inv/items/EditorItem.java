@@ -98,7 +98,9 @@ public abstract class EditorItem<T> extends Item implements CompactCategoryScrol
     public abstract Image getSprite();
 
     public Image getSprite(Runnable reloadSprite) {
-        return getSprite();
+        Image sprite = getSprite();
+        CustomObject.maybeAddSpriteReloaderToCustomImageLater(reloadSprite, sprite);
+        return sprite;
     }
 
     @Override

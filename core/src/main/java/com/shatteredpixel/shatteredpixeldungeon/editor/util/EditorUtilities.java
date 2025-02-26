@@ -496,7 +496,7 @@ public final class EditorUtilities {
 
     public static Image imageOf(Object obj, boolean nullIfNotFound) {
         if (obj instanceof Item) return Dungeon.customDungeon.getItemImage((Item) obj);
-        if (obj instanceof Mob) return ((Mob) obj).sprite();
+        if (obj instanceof Mob) return ((Mob) obj).createSprite();
         if (obj instanceof Trap) return ((Trap) obj).getSprite();
         if (obj instanceof Plant) return ((Plant) obj).getSprite();
         if (obj instanceof Heap) return new ItemSprite((Heap) obj);

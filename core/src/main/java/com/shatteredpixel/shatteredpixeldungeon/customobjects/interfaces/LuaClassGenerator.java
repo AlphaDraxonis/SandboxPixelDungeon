@@ -162,13 +162,7 @@ public final class LuaClassGenerator {
 
 			builder = builder
 					.defineMethod("newInstance", LuaCustomObjectClass.class, Visibility.PUBLIC)
-					.intercept(MethodDelegation.to(InterceptorDungeonScriptNewInstance.class))
-
-					.defineMethod("storeInBundle", void.class, Visibility.PUBLIC).withParameter(Bundle.class)
-					.intercept(StubMethod.INSTANCE)
-
-					.defineMethod("restoreFromBundle", void.class, Visibility.PUBLIC).withParameter(Bundle.class)
-					.intercept(StubMethod.INSTANCE);
+					.intercept(MethodDelegation.to(InterceptorDungeonScriptNewInstance.class));
 		}
 
 

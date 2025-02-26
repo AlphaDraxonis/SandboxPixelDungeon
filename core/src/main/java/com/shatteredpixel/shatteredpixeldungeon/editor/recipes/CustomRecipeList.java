@@ -11,12 +11,19 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.DungeonTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
@@ -119,8 +126,7 @@ public class CustomRecipeList extends Component {
         protected IngredientSlot[] ingredients;
         protected Image arrow;
         protected IngredientSlot output;
-        protected Spinner cost;
-        protected Image spinnerImage;
+        protected EnergySpinner cost;
 
         protected ColorBlock line;
 
@@ -129,29 +135,10 @@ public class CustomRecipeList extends Component {
         public RecipeListItem(CustomRecipe recipe) {
             this.recipe = recipe;
 
-            cost = new Spinner(new SpinnerIntegerModel(0, 100, recipe.cost(null)) {
-                @Override
-                public int getClicksPerSecondWhileHolding() {
-                    return super.getClicksPerSecondWhileHolding() / 2;
-                }
-
-                @Override
-                public float getInputFieldWidth(float height) {
-                    return Spinner.FILL;
-                }
-            }, "", 8);
-            cost.addChangeListener(() -> recipe.setCost((int) cost.getValue()));
-            cost.setButtonWidth(10f);
+            cost = new EnergySpinner(recipe);
             add(cost);
-
-            updateState();
-        }
-
-        @Override
-        protected void createChildren() {
-            super.createChildren();
-
-            remove = new IconButton(Icons.CLOSE.get()) {
+            
+            remove = new IconButton(Icons.TRASH.get()) {
                 @Override
                 protected void onClick() {
                     Dungeon.customDungeon.recipes.remove(recipe);
@@ -162,25 +149,25 @@ public class CustomRecipeList extends Component {
                 }
             };
             add(remove);
-
+            
             arrow = Icons.BACK.get();
             arrow.originToCenter();
             arrow.angle = 180;
             add(arrow);
-
+            
             output = new IngredientSlot(null, INDEX_OUTPUT);
             add(output);
-
+            
             ingredients = new IngredientSlot[3];
             for (int i = 0; i < ingredients.length; i++) {
                 ingredients[i] = new IngredientSlot(null, i);
                 add(ingredients[i]);
             }
-
-            add(spinnerImage = Icons.ENERGY.get());
-
+            
             line = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
             add(line);
+
+            updateState();
         }
 
         @Override
@@ -202,11 +189,7 @@ public class CustomRecipeList extends Component {
                 }
             }
 
-            spinnerImage.x = posX + 3;
-            spinnerImage.y = y + (height - spinnerImage.height()) * 0.5f;
-            PixelScene.align(spinnerImage);
-
-            cost.setRect(spinnerImage.x + spinnerImage.width() + 2, y + (height - ItemSpriteSheet.SIZE) * 0.5f, 50, ItemSpriteSheet.SIZE);
+            cost.setRect( posX + 5, y + (height - ItemSpriteSheet.SIZE) * 0.5f, 50, ItemSpriteSheet.SIZE);
             PixelScene.align(cost);
             posX = cost.right() + 2;
 
@@ -326,6 +309,68 @@ public class CustomRecipeList extends Component {
             }
         }
 
+    }
+    
+    private static class EnergySpinner extends Spinner {
+        
+        public EnergySpinner(CustomRecipe recipe) {
+            super(new EnergySpinnerModel(recipe), "", 8);
+            
+            addChangeListener(() -> recipe.setCost((int) getValue()));
+            setButtonWidth(10f);
+        }
+    }
+    
+    private static class EnergySpinnerModel extends SpinnerIntegerModel {
+        
+        public EnergySpinnerModel(CustomRecipe recipe) {
+            super(0, 100, recipe.cost(null));
+        }
+        
+        @Override
+        public int getClicksPerSecondWhileHolding() {
+            return super.getClicksPerSecondWhileHolding() / 2;
+        }
+        
+        @Override
+        public float getInputFieldWidth(float height) {
+            return height + 5;
+        }
+        
+        @Override
+        public Component createInputField(int fontSize) {
+            return (Component) (valueDisplay = new ValueDisplayItemSlot());
+        }
+        
+        private class ValueDisplayItemSlot extends ItemSlot implements ValueDisplay {
+            
+            public ValueDisplayItemSlot() {
+                super(new EnergyCrystal() {
+                    @Override
+                    public String status() {
+                        return Integer.toString( quantity );
+                    }
+                });
+            }
+            
+            @Override
+            protected void onClick() {
+                EnergySpinnerModel.this.onClick();
+            }
+            
+            @Override
+            public void showValue(Object value) {
+                item.quantity( Integer.parseInt(value.toString()) );
+                updateCurrentItem();
+            }
+            
+            @Override
+            public void enableValueField(boolean flag) {
+                alpha(flag ? 1.0f : 0.3f);
+            }
+            
+        }
+        
     }
 
 

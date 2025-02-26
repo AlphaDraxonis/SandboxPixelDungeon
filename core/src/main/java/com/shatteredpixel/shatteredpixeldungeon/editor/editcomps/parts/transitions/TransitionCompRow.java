@@ -58,6 +58,8 @@ public class TransitionCompRow extends FoldableCompWithAdd {
         if (transition != null) {
             onAdd(transition, false);
             showBody(transition.showDetailsInEditor);
+        } else {
+            expandAndFold.setVisible(false);
         }
 
         if (saveForUndo) tileModify = new TileModify(transition, cell);
@@ -101,9 +103,11 @@ public class TransitionCompRow extends FoldableCompWithAdd {
     protected Component createBody(Object param) {
 
         int terrainType;
-        if (cell < 0)
+        if (cell < 0) {
             terrainType = cell == CELL_DEFAULT_ENTRANCE ? Terrain.ENTRANCE : Terrain.EXIT;
-        else terrainType = levelScheme.getLevel().map[cell];
+        } else {
+            terrainType = levelScheme.getLevel().map[cell];
+        }
 
         LevelTransition transition = (LevelTransition) param;
 

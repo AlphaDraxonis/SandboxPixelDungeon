@@ -903,7 +903,7 @@ public class GameScene extends DungeonScene {
 
 	@Override
 	protected synchronized void addMobSprite( Mob mob ) {
-		CharSprite sprite = mob.sprite();
+		CharSprite sprite = mob.createSprite();
 		mobs.add( sprite );
 		sprite.link( mob );
 		mob.updateSpriteVisibility();
@@ -1523,7 +1523,7 @@ public class GameScene extends DungeonScene {
 				image = HeroSprite.avatar((Hero) objects.get(0));
 			} else if (objects.get(0) instanceof Mob) {
 				title = textLines.remove(0);
-				image = ((Mob) objects.get(0)).sprite();
+				image = ((Mob) objects.get(0)).createSprite();
 			} else if (objects.get(0) instanceof Heap) {
 				title = textLines.remove(0);
 				image = new ItemSprite((Heap) objects.get(0));

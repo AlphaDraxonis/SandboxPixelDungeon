@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFire
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
@@ -269,17 +270,29 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         layout();
         updateObj();//for resize
     }
-
+    
+    @Override
+    public void updateObj() {
+        if (obj.cell() != -1) {
+            obj.image = DungeonTileSheet.getVisualForSpinner(obj.terrainType(), Dungeon.level.getTileVarianceAt(obj.cell()));
+        }
+        super.updateObj();
+    }
+    
     public static TransitionEditPart addTransition(int terrainType, LevelTransition transition,
                                                    LevelScheme levelScheme, Consumer<LevelTransition> deleteTransition, Runnable updateParent) {
         String suggestion;
-        if (TileItem.isEntranceTerrainCell(terrainType))
+        if (transition.destLevel != null) {
+            suggestion = transition.destLevel;
+        }
+        else if (TileItem.isEntranceTerrainCell(terrainType)) {
             suggestion = levelScheme.getDefaultAbove();
+        }
         else {
             suggestion = levelScheme.getChasm();
             if (suggestion == null) suggestion = levelScheme.getDefaultBelow();
         }
-        if (transition.destLevel != null) suggestion = transition.destLevel;
+        
         return new TransitionEditPart(transition, EditorUtilities.getLevelScheme(suggestion), terrainType == -12345 ? null : !TileItem.isEntranceTerrainCell(terrainType),
                 levelScheme.getDepth()) {
             @Override

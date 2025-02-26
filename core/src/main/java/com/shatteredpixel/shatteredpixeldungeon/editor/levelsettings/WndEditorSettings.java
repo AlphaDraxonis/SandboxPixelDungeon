@@ -74,7 +74,7 @@ public class WndEditorSettings extends WndTabbed {
                 @Override
                 protected void select(boolean value) {
                     super.select(value);
-                    ownTabs[index].active = ownTabs[index].visible = value;
+                    ownTabs[index].setVisible(value);
                     if (value) last_index = index;
                 }
 
@@ -101,9 +101,11 @@ public class WndEditorSettings extends WndTabbed {
     @Override
     public void offset(int xOffset, int yOffset) {
         super.offset(xOffset, yOffset);
-        if (ownTabs == null) return;
-        for (TabComp tab : ownTabs) {
-            tab.layout();
+        
+        if (ownTabs != null) {
+            for (TabComp tab : ownTabs) {
+                tab.layout();
+            }
         }
     }
 

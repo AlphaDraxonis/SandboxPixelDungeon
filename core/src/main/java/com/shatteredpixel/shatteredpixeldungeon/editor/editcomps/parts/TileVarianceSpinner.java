@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Image;
@@ -48,7 +49,7 @@ public class TileVarianceSpinner extends SpinnerLikeButton {
 			@Override
 			protected Image displayIcon(Object value) {
 				if (((int) value) == 0) {
-					return new ItemSprite() {
+					return new ItemSprite(ItemSpriteSheet.RANDOM_ITEM) {
 						{
 							height = width = DungeonTilemap.SIZE;
 						}

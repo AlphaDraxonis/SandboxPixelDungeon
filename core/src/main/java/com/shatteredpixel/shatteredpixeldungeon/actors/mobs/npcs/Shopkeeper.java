@@ -266,14 +266,14 @@ public class Shopkeeper extends NPC {
 					if (options[i].length() > maxLen) options[i] = options[i].substring(0, maxLen-3) + "...";
 					i++;
 				}
-				GameScene.show(new WndOptions(sprite(), Messages.titleCase(name()), desc(), options){
+				GameScene.show(new WndOptions(createSprite(), Messages.titleCase(name()), desc(), options){
 					@Override
 					protected void onSelect(int index) {
 						super.onSelect(index);
 						if (index == 0){
 							sell();
 						} else if (index == 1){
-							GameScene.show(new WndTitledMessage(sprite(), Messages.titleCase(name()), chatText()));
+							GameScene.show(new WndTitledMessage(createSprite(), Messages.titleCase(name()), chatText()));
 						} else if (index > 1){
 							GLog.i(Messages.get(Shopkeeper.this, "buyback"));
 							Item returned = buybackItems.remove(index-2);

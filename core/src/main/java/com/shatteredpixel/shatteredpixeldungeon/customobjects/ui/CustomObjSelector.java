@@ -56,13 +56,17 @@ public class CustomObjSelector<T> extends Component {
 	private final Selector<T> selector;
 
 	public CustomObjSelector(String label, Selector<T> selector) {
+		this(label, selector, 9);
+	}
+	
+	public CustomObjSelector(String label, Selector<T> selector, int textSize) {
 
 		this.selector = selector;
 
 		bg = Chrome.get(Chrome.Type.GREY_BUTTON_TR);
 		add(bg);
 
-		this.label = PixelScene.renderTextBlock(label, 9);
+		this.label = PixelScene.renderTextBlock(label, textSize);
 		add(this.label);
 
 		itemForImage = new EditorItem<Object>() {

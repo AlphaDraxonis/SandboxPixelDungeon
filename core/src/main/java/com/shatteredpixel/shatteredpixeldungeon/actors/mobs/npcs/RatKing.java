@@ -128,7 +128,7 @@ public class RatKing extends NPC {
 					@Override
 					public void call() {
 						GameScene.show(new WndOptions(
-								sprite(),
+								createSprite(),
 								Messages.titleCase(name()),
 								Messages.get(RatKing.class, "crown_desc"),
 								Messages.get(RatKing.class, "crown_yes"),

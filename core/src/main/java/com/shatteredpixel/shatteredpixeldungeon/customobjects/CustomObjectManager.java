@@ -1,41 +1,44 @@
 /*
- * Pixel Dungeon
- * Copyright (C) 2012-2015 Oleg Dolya
  *
- * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ *  * Pixel Dungeon
+ *  * Copyright (C) 2012-2015 Oleg Dolya
+ *  *
+ *  * Shattered Pixel Dungeon
+ *  * Copyright (C) 2014-2024 Evan Debenham
+ *  *
+ *  * Sandbox Pixel Dungeon
+ *  * Copyright (C) 2023-2024 AlphaDraxonis
+ *  *
+ *  * This program is free software: you can redistribute it and/or modify
+ *  * it under the terms of the GNU General Public License as published by
+ *  * the Free Software Foundation, either version 3 of the License, or
+ *  * (at your option) any later version.
+ *  *
+ *  * This program is distributed in the hope that it will be useful,
+ *  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  * GNU General Public License for more details.
+ *  *
+ *  * You should have received a copy of the GNU General Public License
+ *  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  *
- * Sandbox Pixel Dungeon
- * Copyright (C) 2023-2024 AlphaDraxonis
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
 package com.shatteredpixel.shatteredpixeldungeon.customobjects;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomGameObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomMob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
+import com.watabou.idewindowactions.LuaScript;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
@@ -55,6 +58,8 @@ public final class CustomObjectManager {
 
 	public static Map<Integer, CustomObject> allUserContents = new HashMap<>();
 	public static Map<String, FileHandle> allResourcePaths = new HashMap<>();//extension shows type
+	
+	private static LuaValue globalVarsTemp;
 
 	private CustomObjectManager() {
 	}
@@ -88,19 +93,22 @@ public final class CustomObjectManager {
 	}
 
 	private static void loadDungeonScript() {
-		//also condier backwards compatibilit!!! tzz TODO !!!!
-//		Dungeon.dungeonScript.script = null;
-//		if (Dungeon.dungeonScript.pathToScript != null) {
-//			LuaScript ls = CustomDungeonSaves.readLuaFile(Dungeon.dungeonScript.pathToScript);
-//			if (ls != null) {
-//				Dungeon.dungeonScript.script = LuaManager.globals.load(ls.code).call();
-//
-//				if (globalVars == null && Dungeon.dungeonScript.script.istable()) {
-//					globalVars = Dungeon.dungeonScript.script.get("vars");
-//				}
-//			}
-//		}
-//		LuaManager.globals.set("globals", globalVars == null ? LuaValue.NIL : globalVars);
+		if (Dungeon.dungeonScript != null) {
+		
+		}
+		Dungeon.dungeonScript.unloadScript();
+		if (Dungeon.customDungeon.dungeonScriptPath != null) {
+			LuaScript ls = CustomDungeonSaves.readLuaFile(Dungeon.customDungeon.dungeonScriptPath);
+			if (ls != null) {
+				Dungeon.dungeonScript.loadScript(ls);
+
+				if (globalVarsTemp == null && Dungeon.dungeonScript.getScript().istable()) {
+					globalVarsTemp = Dungeon.dungeonScript.getScript().get("static");
+				}
+			}
+		}
+		LuaManager.globals.set("globals", globalVarsTemp == null ? LuaValue.NIL : globalVarsTemp);
+		globalVarsTemp = null;
 	}
 
 	public static <T extends CustomObject> T getUserContent(int id, Class<T> clazz) {
@@ -132,7 +140,8 @@ public final class CustomObjectManager {
 			return ((LuaCustomObject) customObject).getLuaCodeHolder().getScript();
 		}
 		if (id == 0) {
-			Game.reportException(new Throwable("Attempted to retrieve a script with ID 0. Maybe it was forgotten to set the ID correctly when initialiting?"));
+			//some classes call native methods in their constructor before we even have a chance to set the id
+//			Game.reportException(new Throwable("Attempted to retrieve a script with ID 0. Maybe it was forgotten to set the ID correctly when initialiting?"));
 		}
 		return null;
 	}
@@ -217,8 +226,8 @@ public final class CustomObjectManager {
 
 		Bundle node = bundle.getBundle(PRE_v_1_3_NODE);
 
-//		if (node.contains(PRE_v_1_3_DUNGEON_SCRIPT_PATH))
-//			Dungeon.dungeonScript.pathToScript = node.getString(DUNGEON_SCRIPT_PATH);
+		if (node.contains(PRE_v_1_3_DUNGEON_SCRIPT_PATH))
+			Dungeon.customDungeon.dungeonScriptPath = node.getString(PRE_v_1_3_DUNGEON_SCRIPT_PATH);
 
 		Bundle[] array = node.getBundleArray(PRE_v_1_3_CUSTOM_OBJECTS);
 		for (Bundle b : array) {
@@ -248,12 +257,14 @@ public final class CustomObjectManager {
 			}
 		}
 
-//		LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, GLOBAL_VARS);
-//		if (loaded != null && loaded.istable()) {
-//			globalVars = loaded.checktable();
-//		} else {
-//			globalVars = null;
-//		}
+		if (node.contains(PRE_v_1_3_GLOBAL_VARS)) {
+			LuaValue loaded = LuaManager.restoreVarFromBundle(node, PRE_v_1_3_GLOBAL_VARS);
+			if (loaded != null && loaded.istable()) {
+				globalVarsTemp = loaded.checktable();
+			} else {
+				globalVarsTemp = null;
+			}
+		}
 	}
 
 

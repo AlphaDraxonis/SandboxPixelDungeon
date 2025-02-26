@@ -79,18 +79,17 @@ public class HeroSettings extends Component {
         }
 
         outsideSp = new OutsideSpSwitchTabs() {
-
-            @Override
-            protected void createChildren() {
+            
+            {
                 tabs = new TabControlButton[heroTabs.length];
                 for (int j = 0; j < tabs.length; j++) {
                     tabs[j] = new OutsideSpSwitchTabs.TabControlButton(j);
                     tabs[j].icon(createTabIcon(j));
                     add(tabs[j]);
                 }
-
+                
                 super.createChildren();
-
+                
                 select(currentIndex);
             }
 

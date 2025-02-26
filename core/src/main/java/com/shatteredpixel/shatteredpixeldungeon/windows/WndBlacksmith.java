@@ -68,7 +68,7 @@ public class WndBlacksmith extends Window {
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
 		IconTitle titlebar = new IconTitle();
-		titlebar.icon( troll.sprite() );
+		titlebar.icon( troll.createSprite() );
 		titlebar.label( Messages.titleCase( troll.name() ) );
 		titlebar.setRect( 0, 0, width, 0 );
 		add( titlebar );
@@ -86,7 +86,7 @@ public class WndBlacksmith extends Window {
 			@Override
 			protected void onClick() {
 				GameScene.show(new WndOptions(
-						troll.sprite(),
+						troll.createSprite(),
 						Messages.titleCase( troll.name() ),
 						Messages.get(WndBlacksmith.class, "pickaxe_verify") + (pickaxeCost == 0 ? "\n\n" + Messages.get(WndBlacksmith.class, "pickaxe_free") : ""),
 						Messages.get(WndBlacksmith.class, "pickaxe_yes"),
@@ -149,7 +149,7 @@ public class WndBlacksmith extends Window {
 			@Override
 			protected void onClick() {
 				GameScene.show(new WndOptions(
-						troll.sprite(),
+						troll.createSprite(),
 						Messages.titleCase( troll.name() ),
 						Messages.get(WndBlacksmith.class, "smith_verify"),
 						Messages.get(WndBlacksmith.class, "smith_yes"),
@@ -174,7 +174,7 @@ public class WndBlacksmith extends Window {
 			@Override
 			protected void onClick() {
 				GameScene.show(new WndOptions(
-						troll.sprite(),
+						troll.createSprite(),
 						Messages.titleCase( troll.name() ),
 						Messages.get(WndBlacksmith.class, "cashout_verify", troll.quest.favor),
 						Messages.get(WndBlacksmith.class, "cashout_yes"),
@@ -228,7 +228,7 @@ public class WndBlacksmith extends Window {
 			super();
 
 			IconTitle titlebar = new IconTitle();
-			titlebar.icon( troll.sprite() );
+			titlebar.icon( troll.createSprite() );
 			titlebar.label( Messages.titleCase( troll.name() ) );
 			titlebar.setRect( 0, 0, WIDTH, 0 );
 			add( titlebar );
@@ -465,7 +465,7 @@ public class WndBlacksmith extends Window {
 			super();
 
 			IconTitle titlebar = new IconTitle();
-			titlebar.icon(troll.sprite());
+			titlebar.icon(troll.createSprite());
 			titlebar.label(Messages.titleCase(troll.name()));
 
 			RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "prompt"), 6 );

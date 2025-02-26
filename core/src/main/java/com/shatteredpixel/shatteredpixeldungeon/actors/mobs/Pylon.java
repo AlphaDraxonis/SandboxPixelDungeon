@@ -167,8 +167,8 @@ public class Pylon extends Mob {
 	}
 
 	@Override
-	public CharSprite sprite() {
-		PylonSprite p = (PylonSprite) super.sprite();
+	public CharSprite createSprite() {
+		PylonSprite p = (PylonSprite) super.createSprite();
 		if (alignment != Alignment.NEUTRAL || alwaysActive) p.activate();
 		return p;
 	}

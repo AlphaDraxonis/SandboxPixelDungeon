@@ -427,9 +427,9 @@ public abstract class Mob extends Char implements Customizable {
 		if (enemyID != -1 && enemy == null) enemy = (Char)Actor.findById(enemyID);
 	}
 	
-	public CharSprite sprite() {
+	public CharSprite createSprite() {
 		if (this instanceof CustomMobClass) {
-			CustomMob customMob = (CustomMob) CustomObjectManager.getUserContent(((CustomMobClass) this).getIdentifier(), CustomMob.class);
+			CustomMob customMob = CustomObjectManager.getUserContent(((CustomMobClass) this).getIdentifier(), CustomMob.class);
 			if (customMob.sprite != null) {
 				CharSprite result = customMob.sprite.getActualCustomCharSpriteOrNull();
 				if (result != null) return result;

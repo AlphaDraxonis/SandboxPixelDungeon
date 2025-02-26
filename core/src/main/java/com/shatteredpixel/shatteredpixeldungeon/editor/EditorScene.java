@@ -552,14 +552,14 @@ public class EditorScene extends DungeonScene {
 
     @Override
     protected void addMobSprite(Mob mob) {
-        CharSprite sprite = mob.sprite();
+        CharSprite sprite = mob.createSprite();
         sprite.visible = true;
         mobs.add(sprite);
 
         Mob defMob = DefaultStatsCache.getDefaultObject(mob.getClass());
         if (defMob == null && MobSpriteItem.canChangeSprite(mob)) defMob = Reflection.newInstance(mob.getClass());
         if (MobSpriteItem.isSpriteChanged(mob, sprite)) {
-            sprite.realCharSprite = defMob.sprite();
+            sprite.realCharSprite = defMob.createSprite();
             if (sprite.realCharSprite != null) {
                 sprite.realCharSprite.subSprite = true;
                 sprite.realCharSprite.scale.set(0.5f);

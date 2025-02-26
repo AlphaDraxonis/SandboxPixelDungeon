@@ -23,9 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
@@ -155,7 +152,9 @@ public class SpectralNecromancer extends Necromancer {
 	protected Mob convertToSummonedMob(Mob mob) {
 		mob = super.convertToSummonedMob(mob);
 		mob.HP = mob.HT;
-		if (mob instanceof MobBasedOnDepth) ((MobBasedOnDepth) mob).setLevel(0);
+		if (mob instanceof MobBasedOnDepth) {
+			((MobBasedOnDepth) mob).setLevel(0);
+		}
 		return mob;
 	}
 }

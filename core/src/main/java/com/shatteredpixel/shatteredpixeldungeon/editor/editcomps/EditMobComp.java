@@ -23,6 +23,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomMobClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeCustomizable;
@@ -1024,7 +1025,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
     @Override
     public Image getIcon() {
-        return obj.sprite();
+        return obj.createSprite();
     }
 
     @Override
@@ -1048,6 +1049,11 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             }
 
             ((MobTitleEditor) mainTitleComp).setText(((MobTitleEditor) mainTitleComp).createTitle(obj));
+            
+            if (obj instanceof CustomObjectClass) {
+                ((MobTitleEditor) mainTitleComp).updateImageNoLayout(obj);
+            }
+            
             ((MobTitleEditor) mainTitleComp).layout();
         }
 
@@ -1112,7 +1118,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (mainTitleComp instanceof MobTitleEditor) {
             ((MobTitleEditor) mainTitleComp).image.destroy();
             ((MobTitleEditor) mainTitleComp).image.killAndErase();
-            mainTitleComp.add(((MobTitleEditor) mainTitleComp).image = obj.sprite());
+            mainTitleComp.add(((MobTitleEditor) mainTitleComp).image = obj.createSprite());
         }
     }
 

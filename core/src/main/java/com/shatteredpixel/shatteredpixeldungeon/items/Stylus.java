@@ -99,7 +99,7 @@ public class Stylus extends Item {
 
 		GLog.w( Messages.get(this, "inscribed"));
 
-		armor.inscribe();
+		armor.inscribe( createGlyphToInscribe(armor) );
 		
 		curUser.sprite.operate(curUser.pos);
 		curUser.sprite.centerEmitter().start(PurpleParticle.BURST, 0.05f, 10);
@@ -108,6 +108,11 @@ public class Stylus extends Item {
 		
 		curUser.spend(TIME_TO_INSCRIBE);
 		curUser.busy();
+	}
+	
+	protected Armor.Glyph createGlyphToInscribe(Armor armor) {
+		Class<? extends Armor.Glyph> oldGlyphClass = armor.glyph != null ? armor.glyph.getClass() : null;
+		return Armor.Glyph.random( oldGlyphClass );
 	}
 	
 	@Override

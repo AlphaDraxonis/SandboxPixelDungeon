@@ -1,27 +1,29 @@
 /*
- * Pixel Dungeon
- * Copyright (C) 2012-2015 Oleg Dolya
  *
- * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ *  * Pixel Dungeon
+ *  * Copyright (C) 2012-2015 Oleg Dolya
+ *  *
+ *  * Shattered Pixel Dungeon
+ *  * Copyright (C) 2014-2024 Evan Debenham
+ *  *
+ *  * Sandbox Pixel Dungeon
+ *  * Copyright (C) 2023-2024 AlphaDraxonis
+ *  *
+ *  * This program is free software: you can redistribute it and/or modify
+ *  * it under the terms of the GNU General Public License as published by
+ *  * the Free Software Foundation, either version 3 of the License, or
+ *  * (at your option) any later version.
+ *  *
+ *  * This program is distributed in the hope that it will be useful,
+ *  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  * GNU General Public License for more details.
+ *  *
+ *  * You should have received a copy of the GNU General Public License
+ *  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  *
- * Sandbox Pixel Dungeon
- * Copyright (C) 2023-2024 AlphaDraxonis
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
-package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
+package com.shatteredpixel.shatteredpixeldungeon.customobjects;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -51,7 +53,7 @@ public class LuaManager {
 
 	public static Image scriptSprite(LuaScript script) {
 		boolean isAbstract = Modifier.isAbstract(script.type.getModifiers());
-		if (Mob.class.isAssignableFrom(script.type)) return isAbstract ? new SkeletonSprite() : ((Mob) Reflection.newInstance(script.type)).sprite();
+		if (Mob.class.isAssignableFrom(script.type)) return isAbstract ? new SkeletonSprite() : ((Mob) Reflection.newInstance(script.type)).createSprite();
 		return new ItemSprite();
 	}
 
@@ -181,17 +183,21 @@ public class LuaManager {
 				bundle.put(key, value.toboolean());
 				bundle.put(keyType, TYPE_BOOLEAN);
 			}
-			else if (value.isstring()) {
-				bundle.put(key, value.toString());
-				bundle.put(keyType, TYPE_STRING);
-			}
 			else if (value.islong()) {
 				bundle.put(key, value.tolong());
 				bundle.put(keyType, TYPE_LONG);
 			}
-			else if (value.isnumber()){
-				bundle.put(key, value.tofloat());
+			else if (value.isnumber()) {
+				float val = value.tofloat();
+				//infinity cannot be stored
+				if (val == Float.POSITIVE_INFINITY) val = Float.MAX_VALUE;
+				else if (val == Float.NEGATIVE_INFINITY) val = Float.MIN_VALUE;
+				bundle.put(key, val);
 				bundle.put(keyType, TYPE_FLOAT);
+			}
+			else if (value.isstring()) {
+				bundle.put(key, value.toString());
+				bundle.put(keyType, TYPE_STRING);
 			}
 			else if (value.isnil()) {
 				bundle.put(key, ((Bundlable) null));

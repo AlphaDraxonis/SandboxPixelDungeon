@@ -1,28 +1,30 @@
 /*
- * Pixel Dungeon
- * Copyright (C) 2012-2015 Oleg Dolya
  *
- * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ *  * Pixel Dungeon
+ *  * Copyright (C) 2012-2015 Oleg Dolya
+ *  *
+ *  * Shattered Pixel Dungeon
+ *  * Copyright (C) 2014-2024 Evan Debenham
+ *  *
+ *  * Sandbox Pixel Dungeon
+ *  * Copyright (C) 2023-2024 AlphaDraxonis
+ *  *
+ *  * This program is free software: you can redistribute it and/or modify
+ *  * it under the terms of the GNU General Public License as published by
+ *  * the Free Software Foundation, either version 3 of the License, or
+ *  * (at your option) any later version.
+ *  *
+ *  * This program is distributed in the hope that it will be useful,
+ *  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  * GNU General Public License for more details.
+ *  *
+ *  * You should have received a copy of the GNU General Public License
+ *  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  *
- * Sandbox Pixel Dungeon
- * Copyright (C) 2023-2024 AlphaDraxonis
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
+package com.shatteredpixel.shatteredpixeldungeon.customobjects;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
@@ -48,9 +50,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SpawnerMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
@@ -66,6 +65,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditPlantComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRoomComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTrapComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Buffs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Enchantments;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.GameObjectCategory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites;
@@ -74,6 +74,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaRestrictionProxy;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Effects;
@@ -198,6 +199,7 @@ import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -242,32 +244,63 @@ public class LuaGlobals extends Globals {
 				LuaValue arg = varargs.arg1();
 				Object javaResult;
 				if (arg.isstring()) {
+					
 					String s = arg.checkjstring();
-					if (s.startsWith(Messages.MAIN_PACKAGE_NAME)
-							|| s.startsWith(Messages.WATABOU_PACKAGE_NAME)) {
-						javaResult = newInstance.invoke(arg, LuaRestrictionProxy.unwrapRestrictionProxies(varargs.subargs(2))).arg1().touserdata();
+					
+					if (s.endsWith("[]")) {
+						if (s.startsWith("int")) javaResult = new int[varargs.arg(2).checkint()];
+						else if (s.startsWith("byte")) javaResult = new byte[varargs.arg(2).checkint()];
+						else if (s.startsWith("boolean")) javaResult = new boolean[varargs.arg(2).checkint()];
+						else if (s.startsWith("String")) javaResult = new String[varargs.arg(2).checkint()];
+						else
+							throw new LuaError("Class not found: " + arg.checkstring());
 					} else {
-
-						String fullName = searchFullyQualifiedName(s);
-						if (fullName != null) {
-							javaResult = newInstance.invoke(LuaValue.valueOf(fullName), LuaRestrictionProxy.unwrapRestrictionProxies(varargs.subargs(2))).arg1().touserdata();
-
-						} else if (s.endsWith("[]")) {
-							if (s.startsWith("int")) javaResult = new int[varargs.arg(2).checkint()];
-							else if (s.startsWith("byte")) javaResult = new byte[varargs.arg(2).checkint()];
-							else if (s.startsWith("boolean")) javaResult = new boolean[varargs.arg(2).checkint()];
-							else if (s.startsWith("String")) javaResult = new String[varargs.arg(2).checkint()];
-							else
-								throw new LuaError("Class not found: " + arg.checkstring());
-						} else {
-
+						
+						String fullName = s.startsWith(Messages.MAIN_PACKAGE_NAME) || s.startsWith(Messages.WATABOU_PACKAGE_NAME)
+								? s
+								: searchFullyQualifiedName(s);
+						
+						Class<?> c;
+						if (fullName == null || (c = Reflection.forName(fullName)) == null) {
 							fullName = Messages.MAIN_PACKAGE_NAME + s;
-
+							
 							if (Reflection.forName(fullName) == null)
 								throw new LuaError("Class not found: " + arg.checkstring());
-
+							
 							javaResult = newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2)).arg1().touserdata();
+						} else {
+							
+							Object[] params = LuaRestrictionProxy.unwrapRestrictionProxiesAsJavaArray(varargs.subargs(2));
+							
+							Constructor<?> constructor = null;
+							
+							oneConstructor:
+							for (Constructor<?> constr : c.getConstructors()) {
+								Class<?>[] paramTypes = constr.getParameterTypes();
+								
+								if (paramTypes.length == params.length) {
+									
+									for (int i = 0; i < paramTypes.length; i++) {
+										if (!paramTypes[i].isAssignableFrom(params[i].getClass())) {
+											continue oneConstructor;
+										}
+									}
+									constructor = constr;
+									break;
+								}
+								
+							}
+							if (constructor == null) {
+								throw new LuaError("No matching constructor found: " + arg.checkstring());
+							} else {
+								try {
+									javaResult = constructor.newInstance(params);
+								} catch (Exception e) {
+									throw new LuaError(e);
+								}
+							}
 						}
+						
 					}
 
 					if (javaResult != null) {
@@ -664,7 +697,7 @@ public class LuaGlobals extends Globals {
 			public LuaValue call(LuaValue window) {
 				Game.runOnRenderThread(() -> {
 					try {
-						DungeonScene.show((Window) window.touserdata(Window.class));
+						DungeonScene.show((Window) LuaRestrictionProxy.coerceLuaToJava(window, Window.class));
 					} catch (LuaError e) {
 						DungeonScene.show(new WndError(e));
 					}
@@ -760,9 +793,9 @@ public class LuaGlobals extends Globals {
 			@Override
 			public LuaValue call(LuaValue mob) {//returns false to indicate that no spawn point was found by randomly selecting many cells of the level
 				if (mob.isuserdata()) {
-					Object obj = mob.checkuserdata();
-					if (obj instanceof Mob) {
-						return LuaValue.valueOf(Dungeon.level.spawnMob(((Mob) obj), 12, null));
+					Mob m = (Mob) LuaRestrictionProxy.coerceLuaToJava(mob, Mob.class);
+					if (m != null) {
+						return LuaValue.valueOf(Dungeon.level.spawnMob(m, 12, null));
 					}
 				}
 				throw new LuaError("Illegal arguments: use spawnMob(Mob mob)");
@@ -772,9 +805,8 @@ public class LuaGlobals extends Globals {
 			@Override
 			public LuaValue call(LuaValue mob, LuaValue pos) {
 				if (mob.isuserdata() && pos.isint()) {
-					Object obj = mob.checkuserdata();
-					if (obj instanceof Mob) {
-						Mob m = (Mob) obj;
+					Mob m = (Mob) LuaRestrictionProxy.coerceLuaToJava(mob, Mob.class);
+					if (m != null) {
 						if (Dungeon.level.mobs.contains(m)) {
 							ScrollOfTeleportation.appear(m, pos.checkint(), true);
 						} else {
@@ -792,19 +824,19 @@ public class LuaGlobals extends Globals {
 			@Override
 			public LuaValue call(LuaValue target, LuaValue buff, LuaValue duration) {
 				if (target.isuserdata() && buff.isuserdata()) {
-					Object obj = target.checkuserdata();
-					if (obj instanceof Char) {
-						Object b = buff.touserdata();
+					Char ch = (Char) LuaRestrictionProxy.coerceLuaToJava(target, Char.class);
+					if (ch != null) {
+						Object b = LuaRestrictionProxy.coerceLuaToJava(buff);
 						Class<?> buffClass = b instanceof Class ? (Class<?>) b : b.getClass();
 
 						if (duration.isnil() || !duration.isnumber() || !FlavourBuff.class.isAssignableFrom(buffClass)) {
 
 							if (Buff.class.isAssignableFrom(buffClass)) {
-								return LuaRestrictionProxy.wrapObject(Buff.affect((Char) obj, ((Class<? extends Buff>) buffClass)));
+								return LuaRestrictionProxy.wrapObject(Buff.affect(ch, ((Class<? extends Buff>) buffClass)));
 							}
 
 						} else {
-							return LuaRestrictionProxy.wrapObject(Buff.affect((Char) obj, ((Class<? extends FlavourBuff>) buffClass), duration.tofloat()));
+							return LuaRestrictionProxy.wrapObject(Buff.affect(ch, ((Class<? extends FlavourBuff>) buffClass), duration.tofloat()));
 						}
 
 					}
@@ -817,10 +849,10 @@ public class LuaGlobals extends Globals {
 			@Override
 			public LuaValue call(LuaValue item, LuaValue pos, LuaValue from) {
 				if (item.isuserdata() && pos.isint()) {
-					Object obj = item.checkuserdata();
-					if (obj instanceof Item) {
-						if (!from.isint()) Dungeon.level.drop((Item) obj, pos.toint()).sprite.drop();
-						else Dungeon.level.drop((Item) obj, pos.toint()).sprite.drop(from.checkint());
+					Item i = (Item) LuaRestrictionProxy.coerceLuaToJava(item, Item.class);
+					if (i != null) {
+						if (!from.isint()) Dungeon.level.drop(i, pos.toint()).sprite.drop();
+						else Dungeon.level.drop(i, pos.toint()).sprite.drop(from.checkint());
 						return LuaValue.NIL;
 					}
 				}
@@ -832,10 +864,10 @@ public class LuaGlobals extends Globals {
 			@Override
 			public LuaValue call(LuaValue item) {
 				if (item.isuserdata()) {
-					Object obj = item.checkuserdata();
-					if (obj instanceof Item) {
-						if (!((Item) obj).collect()) {
-							Dungeon.level.drop((Item) obj, Dungeon.hero.pos);
+					Item i = (Item) LuaRestrictionProxy.coerceLuaToJava(item, Item.class);
+					if (i != null) {
+						if (!i.collect()) {
+							Dungeon.level.drop(i, Dungeon.hero.pos);
 						}
 						return LuaValue.NIL;
 					}
@@ -999,7 +1031,7 @@ public class LuaGlobals extends Globals {
 			}
 		});
 
-		LuaTable terrainConstants = new LuaTable();
+		
 
 
 		addStaticFinals(Terrain.class);
@@ -1417,6 +1449,7 @@ public class LuaGlobals extends Globals {
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Traps.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Buffs.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(MobSprites.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Enchantments.instance().values()));
 		return result;
 	}
 
@@ -1437,6 +1470,7 @@ public class LuaGlobals extends Globals {
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Traps.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Plants.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(MobSprites.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Enchantments.instance().values()));
 		return result;
 	}
 
@@ -1462,7 +1496,7 @@ public class LuaGlobals extends Globals {
 		if (luaValue.islong()) return String.valueOf(luaValue.checklong());
 		if (luaValue.isboolean()) return String.valueOf(luaValue.checkboolean());
 		if (luaValue.isnil()) return "nil";
-		return luaValue.tojstring();
+		return String.valueOf(LuaRestrictionProxy.coerceLuaToJava(luaValue));
 	}
 
 	private void addEnum(Class<? extends Enum<?>> enumClass) {
@@ -1610,6 +1644,8 @@ public class LuaGlobals extends Globals {
 		addOtherAccessibleClass(Armor.class);
 		addOtherAccessibleClass(Artifact.class);
 		addOtherAccessibleClass(Ring.class);
+		
+		
 
 		addOtherAccessibleClass(KindofMisc.class);
 		addOtherAccessibleClass(KindOfWeapon.class);

@@ -235,8 +235,8 @@ public class PrismaticImage extends NPC {
 	}
 	
 	@Override
-	public CharSprite sprite() {
-		CharSprite s = super.sprite();
+	public CharSprite createSprite() {
+		CharSprite s = super.createSprite();
 		
 		hero = (Hero)Actor.findById(heroID);
 		if (hero != null) {

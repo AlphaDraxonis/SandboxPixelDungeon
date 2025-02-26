@@ -2,7 +2,12 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
+import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
+import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
@@ -11,7 +16,14 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.CheckpointActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.HeapActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ParticleActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlaceCellActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -190,7 +202,7 @@ public class TileItem extends EditorItem {
 
                 String defaultBelowOrAbove;
 
-                LevelTransition defaultTransition; //only if new exit or entrance was placed
+                LevelTransition defaultTransition; //only if a new exit or entrance was placed
                 LevelScheme defaultDestlevelScheme;
                 if (nowExit) {
                     defaultBelowOrAbove = levelScheme.getDefaultBelow();
@@ -218,7 +230,9 @@ public class TileItem extends EditorItem {
                         EditorScene.remove(defaultTransition);
 
                         if (wasEntrance) {
-                            levelScheme.entranceCells.add((Integer) cell);
+                            if (!levelScheme.entranceCells.contains(cell)) {
+                                levelScheme.entranceCells.add(cell);
+                            }
                             levelScheme.exitCells.remove((Integer) cell);
                             if (transition != null) {
                                 level.transitions.put(cell, transition);
@@ -236,7 +250,9 @@ public class TileItem extends EditorItem {
 
                             if (wasExit != nowExit) {
                                 if (wasExit) {
-                                    levelScheme.exitCells.add((Integer) cell);
+                                    if (!levelScheme.exitCells.contains(cell)) {
+                                        levelScheme.exitCells.add(cell);
+                                    }
                                     if (transition != null) {
                                         level.transitions.put(cell, transition);
                                         EditorScene.add(transition);
@@ -252,13 +268,16 @@ public class TileItem extends EditorItem {
                     }
 
                     @Override
-                    public void redo() {//sorry for comments you don't understand...
+                    public void redo() {
+                        //sorry for comments you don't understand...
 
                         Level level = Dungeon.level;
                         LevelScheme levelScheme = level.levelScheme;
 
                         if (nowEntrance) {  //neu entrance
-                            levelScheme.entranceCells.add((Integer) cell);  //füge entrance cell hinzu
+                            if (!levelScheme.entranceCells.contains(cell)) {
+                                levelScheme.entranceCells.add(cell);  //füge entrance cell hinzu
+                            }
                             levelScheme.exitCells.remove((Integer) cell);   // entferne ggf exit
                             if (transition != null) { //entferne ggf alte transition
                                 level.transitions.remove(cell);
@@ -274,7 +293,7 @@ public class TileItem extends EditorItem {
                             //es wird hier kein entrance sein (da terraintype verschieden sein muss)
                             if (wasEntrance) {//wenn es mal entrance war, aber keiner mehr ist
                                 levelScheme.entranceCells.remove((Integer) cell);//entferne entrance
-                                if (transition != null) {//entferne ggf alte transitiom
+                                if (transition != null) {//entferne ggf alte transition
                                     level.transitions.remove(cell);
                                     EditorScene.remove(transition);
                                 }
@@ -287,8 +306,10 @@ public class TileItem extends EditorItem {
                                         level.transitions.remove(cell);
                                         EditorScene.remove(transition);
                                     }
-                                } else {//bei neuem exit: füge exit hinzu (falls es vorher entrance war, wurde zelle+transition schon entfernt)
-                                    levelScheme.exitCells.add((Integer) cell);
+                                } else {//bei neuem exit: füge exit hinzu (falls es vorher entrance war: cell+transition wurden schon entfernt)
+                                    if (!levelScheme.exitCells.contains(cell)) {
+                                        levelScheme.exitCells.add(cell);
+                                    }
                                     //add default transition:
                                     if (defaultTransition != null) {
                                         level.transitions.put(cell, defaultTransition);

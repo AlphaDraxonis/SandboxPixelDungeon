@@ -167,8 +167,8 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 	}
 
 	@Override
-	public CharSprite sprite() {
-		CharSprite sprite = super.sprite();
+	public CharSprite createSprite() {
+		CharSprite sprite = super.createSprite();
 		if (sprite instanceof MimicSprite) ((MimicSprite) sprite).superHidden = superHidden;
 		if (alignment == Alignment.NEUTRAL) MimicSprite.hideMimic(sprite, this);
 		return sprite;

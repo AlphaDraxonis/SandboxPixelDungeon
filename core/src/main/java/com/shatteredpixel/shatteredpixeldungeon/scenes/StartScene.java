@@ -28,8 +28,8 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.OpenDungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
@@ -52,12 +52,10 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -471,7 +469,7 @@ public class StartScene extends PixelScene {
 		List<CustomDungeonSaves.Info> allInfos = CustomDungeonSaves.getAllInfos();
 		if (allInfos == null) return;
 		if (allInfos.isEmpty()) {
-			SandboxPixelDungeon.scene().add(new WndOptions(Icons.get(Icons.WARNING),
+			DungeonScene.show(new WndOptions(Icons.get(Icons.WARNING),
 					Messages.get(StartScene.class, "wnd_no_dungeon_title"),
 					Messages.get(StartScene.class, "wnd_no_dungeon_body"),
 					Messages.get(StartScene.class, "wnd_no_dungeon_create_new"),
@@ -480,7 +478,7 @@ public class StartScene extends PixelScene {
 				@Override
 				protected void onSelect(int index) {
 					if (index == 0) {
-						Game.scene().addToFront(new WndNewDungeon(EMPTY_HASHSET));
+						DungeonScene.show(new WndNewDungeon(EMPTY_HASHSET));
 					} else if(index == 1) {
 						Dungeon.customDungeon = new CustomDungeon(WndNewDungeon.DEFAULT_DUNGEON);
 						Dungeon.customDungeon.initDefault();
@@ -502,27 +500,13 @@ public class StartScene extends PixelScene {
 				}
 			}
 			if (featuredInfo != null) allInfos.remove(featuredInfo);
-			SandboxPixelDungeon.scene().addToFront(new WndSelectDungeon(allInfos,false, featuredInfo){
+			DungeonScene.show(new WndSelectDungeon(allInfos,false, featuredInfo) {
 				@Override
 				protected void select(String customDungeonName) {
-					try {
-						if (featuredDungeon != null && !customDungeonName.equals(featuredDungeon)) {
-							//a different dungeon was chosen, otherwise we come directly from main menu ui or everything is already loaded correcty
-							CustomObjectManager.loadUserContentFromFiles();
-						}
-
-						Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(customDungeonName);
-
-						GamesInProgress.selectedClass = selectClass;
-						GamesInProgress.curSlot = slot;
-						SandboxPixelDungeon.switchScene(HeroSelectScene.class);
-
-					} catch (IOException e) {
-						e.printStackTrace();
-						SandboxPixelDungeon.reportException(e);
-					} catch (CustomDungeonSaves.RenameRequiredException e) {
-						e.showExceptionWindow();
-					}
+					GamesInProgress.selectedClass = selectClass;
+					GamesInProgress.curSlot = slot;
+					
+					OpenDungeonScene.openDungeon(customDungeonName, OpenDungeonScene.Mode.GAME_LOAD);
 				}
 			});
 		}

@@ -52,8 +52,8 @@ public class MobItem extends EditorItem<Mob> {
     @Override
     public Image getSprite() {
         Mob mob = getObject();
-        if (mob.sprite == null) mob.sprite = mob.sprite();
-        return getObject().sprite();
+        if (mob.sprite == null) mob.sprite = mob.createSprite();
+        return getObject().createSprite();
     }
 
     @Override

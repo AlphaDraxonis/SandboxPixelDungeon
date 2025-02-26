@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -61,7 +62,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.idewindowactions.LuaScript;
-import com.watabou.noosa.Game;
 import com.watabou.utils.Consumer;
 
 import java.io.IOException;
@@ -71,9 +71,9 @@ import java.util.List;
 public class AndroidIDEWindow extends Activity {
 
 	private String scriptPath;
-	public static LuaCustomObject customObject;
+	public static String originalScriptPath;
 	public static Class<?> clazz;
-	public static Runnable onScriptChanged;
+	public static Consumer<String> onScriptChanged;
 
 	private AndroidCodeInputPanel[] codeInputPanels;
 	private AndroidCodeInputPanel inputDesc, inputLocalVars, inputScriptVars;
@@ -86,7 +86,7 @@ public class AndroidIDEWindow extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		scriptPath = customObject.getLuaScriptPath();
+		scriptPath = originalScriptPath;
 
 		setContentView(R.layout.android_ide_window);
 
@@ -169,7 +169,11 @@ public class AndroidIDEWindow extends Activity {
 			}
 
 			doInGameSelection(() -> IDEWindow.showSelectScriptWindow(clazz, script -> {
-				goBackAfterInGameSelection(script.getPath(), script, script == null ? null : "force", "true");
+				if (script == null) {
+					goBackAfterInGameSelection(null, null, null, "true");
+				} else {
+					goBackAfterInGameSelection(script.getPath(), script, "force", "true");
+				}
 			}));
 		});
 
@@ -225,25 +229,12 @@ public class AndroidIDEWindow extends Activity {
 			}
 		};
 		compGroup.addView(inputDesc);
-
-		codeInputPanels[i++] = inputLocalVars = new AndroidVariablesPanel(this, "vars", Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars") + "_title")) {
-			{
-				desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "vars") + "_info")));
-			}
-			
-			@Override
-			protected EditText createEditText() {
-				EditText result = super.createEditText();
-				result.setHint("aNumber = 5,  item = new(\"PotionOfHealing\")");
-				return result;
-			}
-		};
-		compGroup.addView(inputLocalVars);
-
+		
+		
 		if (clazz != DungeonScript.class) {
-			codeInputPanels[i++] = inputScriptVars = new AndroidVariablesPanel(this, "static", Messages.get(IDEWindow.class, "static_title")) {
+			codeInputPanels[i++] = inputLocalVars = new AndroidVariablesPanel(this, "vars", Messages.get(IDEWindow.class, "vars_title")) {
 				{
-					desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, "static_info")));
+					desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, "vars_info")));
 				}
 				
 				@Override
@@ -253,19 +244,34 @@ public class AndroidIDEWindow extends Activity {
 					return result;
 				}
 			};
-			compGroup.addView(inputScriptVars);
+			compGroup.addView(inputLocalVars);
 		} else {
-			codeInputPanels[i++] = inputScriptVars = null;
+			codeInputPanels[i++] = inputLocalVars = null;
 		}
-
-
+		
+		codeInputPanels[i++] = inputScriptVars = new AndroidVariablesPanel(this, "static", Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "static") + "_title")) {
+			{
+				desc.setText(createSpannableStringWithColorsFromText(Messages.get(IDEWindow.class, (clazz == DungeonScript.class ? "global_vars" : "static") + "_info")));
+			}
+			
+			@Override
+			protected EditText createEditText() {
+				EditText result = super.createEditText();
+				result.setHint("aNumber = 5,  item = new(\"PotionOfHealing\")");
+				return result;
+			}
+		};
+		compGroup.addView(inputScriptVars);
+		
+		
 		for (LuaMethodManager methodInfo : methods) {
 			codeInputPanels[i] = new AndroidMethodPanel(this, methodInfo.method, methodInfo.paramNames);
 			compGroup.addView(codeInputPanels[i]);
-			//it took me like 3 hours to figure out that only the following statement would also work, but not the second...
+			//Note: the following was when the EditTexts were always there, just with visibility View.GONE
+			//It took me like 3 hours to figure out that only the following statement would also work, but not the second...
 			//What is not working? When scrolling, it would be stuck at the focused EditText which couldn't leave the screen bounds
-//			compGroup.addView(codeInputPanels[i], new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-//			compGroup.addView(codeInputPanels[i], new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//			compGroup.addView(codeInputPanels[i], new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)); working
+//			compGroup.addView(codeInputPanels[i], new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)); not working
 			i++;
 		}
 
@@ -277,13 +283,37 @@ public class AndroidIDEWindow extends Activity {
 				return Messages.get(IDEWindow.class, "additional_code_title");
 			}};
 		compGroup.addView(additionalCode);
-
+		
+		View rootView = findViewById(android.R.id.content);
+		rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+			private boolean isKeyboardVisible;
+			@Override
+			public void onGlobalLayout() {
+				Rect rect = new Rect();
+				rootView.getWindowVisibleDisplayFrame(rect);
+				int screenHeight = rootView.getRootView().getHeight();
+				int keypadHeight = screenHeight - rect.bottom;
+				
+				boolean isVisible = keypadHeight > screenHeight * 0.15; // Threshold for keyboard visibility
+				
+				if (isVisible && !isKeyboardVisible) {
+					isKeyboardVisible = true;
+				} else if (!isVisible && isKeyboardVisible) {
+					isKeyboardVisible = false;
+					
+					View focused = findViewById(R.id.comp_group).findFocus();
+					if (focused instanceof EditText) {
+						focused.clearFocus();
+					}
+				}
+			}
+		});
 		
 		if (savedInstanceState == null) {
 			inputDesc.onExpand();
-			if (inputDesc.textInput != null) {
-				inputDesc.textInput.requestFocus();
-			}
+//			if (inputDesc.textInput != null) {
+//				inputDesc.textInput.requestFocus();
+//			}
 			
 			selectScript(scriptPath, scriptPath == null ? null : CustomDungeonSaves.readLuaFile(scriptPath), true);
 		}
@@ -297,7 +327,7 @@ public class AndroidIDEWindow extends Activity {
 				codeInputPanels[j].restoreState(savedInstanceState.getBundle(CODE_PANEL + j));
 			}
 		}
-		scriptPath = customObject.getLuaScriptPath();
+		scriptPath = originalScriptPath;
 	}
 	
 	@Override
@@ -368,11 +398,11 @@ public class AndroidIDEWindow extends Activity {
 			return;
 		};
 		save(
-				() -> { //on successful
+				scriptPath -> { //on successful
 					super.finish();
-					onScriptChanged.run();
+					onScriptChanged.accept(scriptPath);
 					
-					customObject = null;
+					originalScriptPath = null;
 					clazz = null;
 					onScriptChanged = null;
 				},
@@ -383,7 +413,6 @@ public class AndroidIDEWindow extends Activity {
 
 					builder.setPositiveButton(Messages.get(IDEWindow.class, "close_unsaved_close_and_lose"), (dialog, option) -> {
 						super.finish();
-						onScriptChanged.run();
 					});
 
 					builder.setNegativeButton(Messages.get(IDEWindow.class, "close_unsaved_cancel"), (dialog, option) -> dialog.dismiss());
@@ -393,25 +422,26 @@ public class AndroidIDEWindow extends Activity {
 		
 	}
 	
-	private void save(Runnable onSuccessfulSave, Consumer<String> onError) {
+	private void save(Consumer<String> onSuccessfulSave, Consumer<String> onError) {
 		String newPath;
 		if (pathInput.getText().toString().isEmpty() || pathInput.getText().toString().equals(".lua")) {
-			newPath = null;
-		} else {
-			//script could be stored where the original customObject is saved
-			String pathPrefix;
+			onError.accept(Messages.get(IDEWindow.class, "save_invalid_name_error"));
+			return;
+		}
+		
+		//script could be stored where the original customObject is saved
+		String pathPrefix;
 //			pathPrefix = customObject.saveDirPath.substring(0, customObject.saveDirPath.length() - CustomDungeonSaves.fileName(customObject).length())
 //					+ "scripts/";
-			pathPrefix = "";
-			
-			
-			newPath = pathPrefix + pathInput.getText();
-			
-			//make sure the path has the correct extension
-			if (!newPath.endsWith(".lua")) newPath += ".lua";
-			
-			newPath = ResourcePath.removeSpacesInPath(newPath);
-		}
+		pathPrefix = "";
+		
+		
+		newPath = pathPrefix + pathInput.getText();
+		
+		//make sure the path has the correct extension
+		if (!newPath.endsWith(".lua")) newPath += ".lua";
+		
+		newPath = ResourcePath.removeSpacesInPath(newPath);
 		
 		if (scriptPath == null && newPath == null) {
 			onError.accept(Messages.get(IDEWindow.class, "save_invalid_name_error"));
@@ -431,10 +461,8 @@ public class AndroidIDEWindow extends Activity {
 		Runnable doSave = () -> {
 			try {
 				CustomDungeonSaves.writeClearText(saveTo, createFullScript());
-				customObject.setLuaScriptPath(saveLocation);
-				CustomDungeonSaves.storeCustomObject(customObject);
 				
-				onSuccessfulSave.run();
+				onSuccessfulSave.accept(saveLocation);
 				
 			} catch (IOException e) {
 				showErrorWindow(Messages.get(IDEWindow.class, "write_file_exception", e.getClass().getSimpleName(), e.getMessage()));
@@ -449,13 +477,8 @@ public class AndroidIDEWindow extends Activity {
 			
 			builder.setPositiveButton(Messages.get(IDEWindow.class, "save_move_move"), (dialog, option) -> {
 				for (CustomObject obj : CustomObjectManager.allUserContents.values()) {
-					if (obj != customObject && obj instanceof LuaCustomObject && scriptPath.equals(((LuaCustomObject) obj).getLuaScriptPath())) {
+					if (obj instanceof LuaCustomObject && scriptPath.equals(((LuaCustomObject) obj).getLuaScriptPath())) {
 						((LuaCustomObject) obj).setLuaScriptPath(saveLocation);
-						try {
-							CustomDungeonSaves.storeCustomObject(obj);
-						} catch (IOException e) {
-							Game.reportException(e);
-						}
 					}
 				}
 				FileHandle oldFile = CustomObject.getResourceFile(scriptPath, false);

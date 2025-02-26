@@ -155,7 +155,7 @@ public class FoldableComp extends Component {
         posY += titleHeight + 2;
 
         if (body != null && body.visible) {
-            body.setRect(x, posY, width, -1);
+            body.setRect(x, posY, width, 0);
             posY = body.bottom();
         }
         height = posY - y + 1;

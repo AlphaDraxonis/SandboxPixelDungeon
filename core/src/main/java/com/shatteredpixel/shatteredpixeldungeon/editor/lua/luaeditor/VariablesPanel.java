@@ -24,7 +24,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.CodeInputPanelInterface;

@@ -114,22 +114,21 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
         title.add(titleText);
 
         outsideSp = new MultiWindowTabComp.OutsideSpSwitchTabs() {
-            @Override
-            protected void createChildren() {
+            
+            {
                 tabs = new TabControlButton[2];
                 for (int j = 0; j < tabs.length; j++) {
                     tabs[j] = new TabControlButton(j);
+                    tabs[j].text(getTabName(j));
                     add(tabs[j]);
                 }
                 Image image0 = new ItemSprite(ItemSpriteSheet.ANKH, new ItemSprite.Glowing( 0xFFFFCC ));
                 image0.scale.set(0.8f);
                 tabs[0].icon(image0);
-                tabs[0].text(getTabName(0));
                 tabs[1].icon(new SkeletonSprite());
-                tabs[1].text(getTabName(1));
-
+                
                 super.createChildren();
-
+                
                 select(0);
             }
 
@@ -530,7 +529,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
             if (mob == null) return;
 
             if (icon != null) remove(icon);
-            icon = mob.sprite();
+            icon = mob.createSprite();
             addToBack(icon);
             remove(bg);
             addToBack(bg);
@@ -539,7 +538,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
         }
 
         private static Image createSprite(Mob mob) {
-            CharSprite sprite = mob.sprite();
+            CharSprite sprite = mob.createSprite();
             sprite.jumpToFrame((int) (Math.random() * sprite.idle.frames.length));//Shouldn't all be synchrony
             return sprite;
         }

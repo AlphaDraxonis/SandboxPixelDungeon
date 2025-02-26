@@ -22,7 +22,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatMo
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
@@ -38,13 +37,11 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.RectF;
 
-import java.io.IOException;
 import java.util.Map;
 
 @NotAllowedInLua
@@ -55,8 +52,10 @@ public class LevelTab extends MultiWindowTabComp {
     //DecorationPainter
 
     private CustomObjSelector<String> luaScriptPath;
+    private LevelScheme levelScheme;
 
     public LevelTab(final CustomLevel level, final LevelScheme levelScheme) {
+        this.levelScheme = levelScheme;
 
         title = new IconTitle(Icons.get(Icons.PREFS), Messages.get(this, "title"));
         add(title);
@@ -264,7 +263,7 @@ public class LevelTab extends MultiWindowTabComp {
 
             @Override
             public void onItemSlotClick() {
-                IDEWindow.showWindow(lco, luaScriptPath, lco.getLuaTargetClass());
+                IDEWindow.showWindow(lco.getLuaScriptPath(), newPath -> luaScriptPath.setValue(newPath), lco.getLuaTargetClass());
             }
 
             @Override
@@ -294,18 +293,7 @@ public class LevelTab extends MultiWindowTabComp {
             @Override
             public synchronized void destroy() {
                 super.destroy();
-                if (lco.getLuaScriptPath() == null) {
-                    CustomDungeonSaves.deleteCustomObject(
-                            CustomObjectManager.getUserContent(levelScheme.luaScriptID, null)
-                    );
-                    levelScheme.luaScriptID = 0;
-                } else {
-					try {
-						CustomDungeonSaves.storeCustomObject(lco);
-					} catch (IOException e) {
-                        DungeonScene.show(new WndError(e));
-					}
-				}
+                lco.validate(levelScheme);
             }
         };
         luaScriptPath.enableChanging(true);
@@ -320,6 +308,19 @@ public class LevelTab extends MultiWindowTabComp {
         };
     }
 
+    @Override
+    public void setVisible(boolean flag) {
+        super.setVisible(flag);
+        
+        //because the script might have been deleted
+        if (levelScheme.luaScriptID == 0) {
+            luaScriptPath.setValue(null);
+        } else {
+            luaScriptPath.setValue(
+                    CustomObjectManager.getUserContent(levelScheme.luaScriptID, LuaLevelScript.class).getLuaScriptPath()
+            );
+        }
+    }
 
     public static void updateLayout() {
         WndEditorSettings.getInstance().getLevelTab().layout();

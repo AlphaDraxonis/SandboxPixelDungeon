@@ -62,7 +62,7 @@ public class WndInfoMob extends WndTitledMessage {
             name.hardlight(TITLE_COLOR);
             add(name);
 
-            image = mob.sprite();
+            image = mob.createSprite();
             add(image);
 
             if (includeHealthBar) {
@@ -82,6 +82,15 @@ public class WndInfoMob extends WndTitledMessage {
 
         public String createTitle(Mob mob){
             return Messages.titleCase(mob.name());
+        }
+        
+        public void updateImageNoLayout(Mob mob) {
+            if (image != null) {
+                image.remove();
+                image.destroy();
+            }
+            image = mob.createSprite();
+            add(image);
         }
 
         @Override

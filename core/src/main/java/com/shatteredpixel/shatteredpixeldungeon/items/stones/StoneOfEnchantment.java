@@ -54,11 +54,11 @@ public class StoneOfEnchantment extends InventoryStone {
 		
 		if (item instanceof Weapon) {
 			
-			((Weapon)item).enchant();
+			((Weapon) item).enchant( createEnchantmentToInscribe(((Weapon) item)) );
 			
 		} else {
 			
-			((Armor)item).inscribe();
+			((Armor) item).inscribe( createGlyphToInscribe(((Armor) item)) );
 			
 		}
 		
@@ -83,6 +83,16 @@ public class StoneOfEnchantment extends InventoryStone {
 	@Override
 	public int energyVal() {
 		return 5 * quantity;
+	}
+	
+	
+	protected Armor.Glyph createGlyphToInscribe(Armor armor) {
+		Class<? extends Armor.Glyph> oldGlyphClass = armor.glyph != null ? armor.glyph.getClass() : null;
+		return Armor.Glyph.random( oldGlyphClass );
+	}
+	protected Weapon.Enchantment createEnchantmentToInscribe(Weapon weapon) {
+		Class<? extends Weapon.Enchantment> oldEnchantment = weapon.enchantment != null ? weapon.enchantment.getClass() : null;
+		return Weapon.Enchantment.random( oldEnchantment );
 	}
 
 }

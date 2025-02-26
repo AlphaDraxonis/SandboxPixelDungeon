@@ -25,10 +25,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
+import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.NotAllowedInLua;
@@ -44,16 +45,21 @@ public class LuaTemplates {
 	private static final LuaScript KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK;
 
 	private static final LuaScript REPLACES_WALLS_WITH_EMBERS;
+	private static final LuaScript INSCRIBE_LOOT_TABLE;
 
 	private static final LuaScript[] TEMPLATES;
 
 	static {
 		KILL_HERO_ON_DIE = new LuaScript(Mob.class, "When this mob dies, the hero also dies.");
-		KILL_HERO_ON_DIE.code = "vars = {} static = {} function die(this, vars, cause) hero:die(this);\nthis:super_die(cause); end" +
-				"\n\nreturn {vars = vars; static = static; die = die}";
+		KILL_HERO_ON_DIE.code = "vars = {} static = {} function die(this, vars, cause)hero:die(this);\nthis:super_die(cause); end\n" +
+				"\n" +
+				"\n" +
+				"return {\n" +
+				"    vars = vars; static = static; die = die;\n" +
+				"}";
 
 		SPAWN_MOB_ON_DIE = new LuaScript(Mob.class, "When this mob dies, a wraith (or another mob) is spawned in its place.");
-		SPAWN_MOB_ON_DIE.code = "vars = {} static = {} function die(this, vars, cause) this:super_die(cause);\n" +
+		SPAWN_MOB_ON_DIE.code = "vars = {} static = {} function die(this, vars, cause)this:super_die(cause);\n" +
 				"\n" +
 				"local mob = new(\"Wraith\");\n" +
 				"\n" +
@@ -62,8 +68,12 @@ public class LuaTemplates {
 				"placeMob(mob, this.pos);\n" +
 				"\n" +
 				"mob:spend(1); --so it doesn't act immediately\n" +
-				"end" +
-				"\n\nreturn {vars = vars; static = static; die = die}";
+				"end\n" +
+				"\n" +
+				"\n" +
+				"return {\n" +
+				"    vars = vars; static = static; die = die;\n" +
+				"}";
 
 		CRYSTAL_GUARDIAN_RECOVERY = new LuaScript(Mob.class, "Instead of dying of HP drops to 0, this mobs gains HP like a crystal guardian");
 		CRYSTAL_GUARDIAN_RECOVERY.code = "vars = {\n" +
@@ -116,7 +126,9 @@ public class LuaTemplates {
 				"affectBuff(this, class(\"Blessed\"));\n" +
 				"end\n" +
 				"return true;\n" +
-				"end\n" +
+				"end" +
+				"\n" +
+				"\n" +
 				"return {\n" +
 				"    vars = vars; static = static; defenseSkill = defenseSkill; surprisedBy = surprisedBy; act = act; isInvulnerable = isInvulnerable; isAlive = isAlive;\n" +
 				"}";
@@ -158,7 +170,6 @@ public class LuaTemplates {
 				"end\n" +
 				"\n" +
 				"\n" +
-				"\n" +
 				"return {\n" +
 				"    vars = vars; static = static; canAttack = canAttack; doAttack = doAttack; playZapAnim = playZapAnim; \n" +
 				"}";
@@ -179,11 +190,64 @@ public class LuaTemplates {
 				"updateMap();\n" +
 				"\n" +
 				"Random.popGenerator();" +
-				"\nend" +
-				"\n\nreturn {vars = vars; static = static; initForPlay = initForPlay}";
+				"\nend\n" +
+				"\n" +
+				"\n" +
+				"return {\n" +
+				"    vars = vars; static = static; initForPlay = initForPlay;\n" +
+				"}";
+		
+		INSCRIBE_LOOT_TABLE = new LuaScript(Stylus.class, "Select a custom loot table.");
+		INSCRIBE_LOOT_TABLE.code = "vars = {} static = {} function createGlyphToInscribe(this, vars, armor)" +
+				"local list = new(\"List\");\n" +
+				
+				"\n" +
+				"--add an element multiple times to increase the odds!\n" +
+				
+				"\n" +
+				"--enchantments\n" +
+				"list:add(\"Affection\");\n" +
+				"list:add(\"AntiMagic\");\n" +
+				"list:add(\"Brimstone\");\n" +
+				"list:add(\"Camouflage\");\n" +
+				"list:add(\"Entanglement\");\n" +
+				"list:add(\"Flow\");\n" +
+				"list:add(\"Obfuscation\");\n" +
+				"list:add(\"Potential\");\n" +
+				"list:add(\"Repulsion\");\n" +
+				"list:add(\"Stone\");\n" +
+				"list:add(\"Swiftness\");\n" +
+				"list:add(\"Thorns\");\n" +
+				"list:add(\"Viscosity\");\n" +
+				
+				"\n" +
+				"--curses\n" +
+				"--list:add(\"AntiEntropy\");\n" +
+				"--list:add(\"Corrosion\");\n" +
+				"--list:add(\"Displacement\");\n" +
+				"--list:add(\"Metabolism\");\n" +
+				"--list:add(\"Multiplicity\");\n" +
+				"--list:add(\"Overgrowth\");\n" +
+				"--list:add(\"Stench\");\n" +
+				
+				"\n" +
+				"--should roll a different glyph\n" +
+				"if armor.glyph ~= nil then\n" +
+				"    list:removeAll(armor.glyph.simpleClassName);\n" +
+				"end\n" +
+				"\n" +
+				
+				"local glyphClassName = Random.element(list);\n" +
+				"return new(glyphClassName);\n" +
+				"end\n" +
+				"\n" +
+				"\n" +
+				"return {\n" +
+				"    vars = vars; static = static; createGlyphToInscribe = createGlyphToInscribe;\n" +
+				"}";
 
 		TEMPLATES = new LuaScript[]{KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK,
-				REPLACES_WALLS_WITH_EMBERS};
+				REPLACES_WALLS_WITH_EMBERS, INSCRIBE_LOOT_TABLE};
 	}
 
 	private static String name(LuaScript script) {
@@ -192,6 +256,7 @@ public class LuaTemplates {
 		if (script == CRYSTAL_GUARDIAN_RECOVERY) return Messages.get(LuaTemplates.class, "crystal_guardian_recovery_name");
 		if (script == RANGED_ATTACK) return Messages.get(LuaTemplates.class, "ranged_attack_name");
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_name");
+		if (script == INSCRIBE_LOOT_TABLE) return Messages.get(LuaTemplates.class, "inscribe_loot_table_name");
 		return Messages.NO_TEXT_FOUND;
 	}
 
@@ -201,6 +266,7 @@ public class LuaTemplates {
 		if (script == CRYSTAL_GUARDIAN_RECOVERY) return Messages.get(LuaTemplates.class, "crystal_guardian_recovery_desc");
 		if (script == RANGED_ATTACK) return Messages.get(LuaTemplates.class, "ranged_attack_desc");
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_desc");
+		if (script == INSCRIBE_LOOT_TABLE) return Messages.get(LuaTemplates.class, "inscribe_loot_table_desc");
 		return Messages.NO_TEXT_FOUND;
 	}
 

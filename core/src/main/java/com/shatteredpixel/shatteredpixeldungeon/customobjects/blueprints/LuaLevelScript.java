@@ -24,7 +24,14 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints;
 
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+
+import java.io.IOException;
 
 public class LuaLevelScript extends AbstractAnyLuaCustomObj {
 
@@ -36,5 +43,20 @@ public class LuaLevelScript extends AbstractAnyLuaCustomObj {
 	@Override
 	public String defaultSaveDir() {
 		return "level_scripts/script_";
+	}
+	
+	public void validate(LevelScheme levelScheme) {
+		if (getLuaScriptPath() == null) {
+			CustomDungeonSaves.deleteCustomObject(
+					CustomObjectManager.getUserContent(levelScheme.luaScriptID, null)
+			);
+			levelScheme.luaScriptID = 0;
+		} else {
+			try {
+				CustomDungeonSaves.storeCustomObject(this);
+			} catch (IOException e) {
+				DungeonScene.show(new WndError(e));
+			}
+		}
 	}
 }

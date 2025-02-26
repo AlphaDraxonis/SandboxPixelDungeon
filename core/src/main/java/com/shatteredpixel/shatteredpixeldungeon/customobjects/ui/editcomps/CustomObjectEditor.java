@@ -84,7 +84,7 @@ public class CustomObjectEditor<T extends CustomObject> extends Component {
 
 				@Override
 				public void onItemSlotClick() {
-					IDEWindow.showWindow(lco, luaScriptPath, lco.getLuaTargetClass());
+					IDEWindow.showWindow(lco.getLuaScriptPath(), newPath -> luaScriptPath.setValue(newPath), lco.getLuaTargetClass());
 				}
 
 				@Override

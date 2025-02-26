@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaClassGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
@@ -50,7 +51,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
@@ -261,10 +261,11 @@ public class Dungeon {
 	}
 
 	public static void init() {
+		
+			FileUtils.resetDefaultFileType();
 
 			String levelDir = GamesInProgress.gameFolder(GamesInProgress.curSlot) + "/";
 			FileUtils.deleteDir(levelDir);
-			FileUtils.resetDefaultFileType();
 			try {
 				CustomDungeonSaves.copyLevelsForNewGame(customDungeon.getName(), levelDir);
 			} catch (IOException e) {
@@ -717,6 +718,7 @@ public class Dungeon {
     private static final String VISITED_DEPTHS = "visited_depths";
 	private static final String REACHED_CHECKPOINT = "reached_checkpoint";
     private static final String CUSTOM_DUNGEON = "custom_dungeon";
+    private static final String DUNGEON_SCRIPT = "dungeon_script";
     private static final String TEST_GAME = "test_game";
 
     public static void saveGame(int save) {
@@ -753,6 +755,8 @@ public class Dungeon {
             bundle.put(ENERGY, energy);
 
             bundle.put(CUSTOM_DUNGEON, customDungeon);
+			
+            bundle.put(DUNGEON_SCRIPT, dungeonScript);
 
             for (String level : droppedItems.keySet()) {
                 bundle.put(Messages.format(DROPPED, level), droppedItems.get(level));
@@ -944,6 +948,10 @@ public class Dungeon {
 		energy = bundle.getInt( ENERGY );
 
 		customDungeon = (CustomDungeon) bundle.get( CUSTOM_DUNGEON );
+		
+		if (bundle.contains(DUNGEON_SCRIPT)) {
+			dungeonScript = (DungeonScript) bundle.get(DUNGEON_SCRIPT);
+		}
 
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
@@ -990,19 +998,8 @@ public class Dungeon {
 		}
 	}
 	
-	public static void deleteGame( int save, boolean deleteLevels ) {
-
-        if (deleteLevels) {
-            String folder = GamesInProgress.gameFolder(save);
-            for (String file : FileUtils.filesInDir(folder)) {
-                if (file.contains("level")) {
-                    FileUtils.deleteFile(folder + "/" + file);
-                }
-            }
-        }
-
-        FileUtils.overwriteFile(GamesInProgress.gameFile(save), 1);
-
+	public static void deleteGame( int save ) {
+		FileUtils.deleteDir(GamesInProgress.gameFolder(save));
         GamesInProgress.delete(save);
     }
 
@@ -1208,7 +1205,7 @@ public class Dungeon {
         } else {
 
             if (ch.isFlying() || ch.buff(Amok.class) != null) {
-				pass = Dungeon.level.getPassableAndAvoidVar(ch, pass);
+				pass = Dungeon.level.getPassableAndAvoidVar(ch, passable);
                 for (Barrier b : Dungeon.level.barriers.values()) {
                     if (b.blocksChar(ch)) passable[b.pos] = false;
                 }
@@ -1249,7 +1246,7 @@ public class Dungeon {
 
         setupPassable();
         if (ch.isFlying() || ch.buff(Amok.class) != null) {
-			pass = Dungeon.level.getPassableAndAvoidVar(ch, pass);
+			pass = Dungeon.level.getPassableAndAvoidVar(ch, passable);
             for (Barrier b : Dungeon.level.barriers.values()) {
                 if (b.blocksChar(ch)) passable[b.pos] = false;
             }

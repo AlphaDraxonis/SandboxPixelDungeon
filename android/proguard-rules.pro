@@ -30,6 +30,7 @@
 }
 -keepclassmembers class * {
     @com.shatteredpixel.shatteredpixeldungeon.editor.lua.annotations.KeepProguard *;
+    public static final *;
 }
 
 # libGDX stuff

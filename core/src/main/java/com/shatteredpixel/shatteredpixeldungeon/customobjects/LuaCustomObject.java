@@ -26,7 +26,6 @@ package com.shatteredpixel.shatteredpixeldungeon.customobjects;
 
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaCustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.watabou.utils.Bundle;
 

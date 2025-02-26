@@ -26,7 +26,7 @@ package com.shatteredpixel.shatteredpixeldungeon.android.ideactivity;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.CodeInputPanelInterface;

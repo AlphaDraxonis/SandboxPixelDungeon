@@ -8,6 +8,8 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomGameObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
@@ -18,7 +20,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitio
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomLayoutLevel;
@@ -334,8 +335,7 @@ public class CustomDungeonSaves {
     }
 
     public static List<Info> getAllInfos() {
-
-        try {
+        
             List<String> dungeonDirs = getFilesInDir(DUNGEON_FOLDER);
             List<Info> result = new ArrayList<>();
             for (String path : dungeonDirs) {
@@ -350,22 +350,21 @@ public class CustomDungeonSaves {
                         continue;
                     }
                 }
-                FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
-                if (file.exists()) {
-                    Info info = (Info) FileUtils.bundleFromStream(file.read()).get(INFO);
-                    info.lastModified = file.lastModified();
-                    result.add(info);
+                try {
+                    FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
+                    if (file.exists()) {
+                        Info info = (Info) FileUtils.bundleFromStream(file.read()).get(INFO);
+                        info.lastModified = file.lastModified();
+                        result.add(info);
+                    }
+                } catch (IOException e) {
+                    SandboxPixelDungeon.scene().add(new WndError(
+                            "Could not retrieve the one dungeon (" + path + "):\n"
+                                    + e.getClass().getSimpleName() + ": " + e.getMessage()));
                 }
             }
             Collections.sort(result);
             return result;
-
-        } catch (IOException e) {
-            SandboxPixelDungeon.scene().add(new WndError(
-                    "Could not retrieve the available dungeons:\n"
-                            + e.getClass().getSimpleName() + ": " + e.getMessage()));
-            return null;
-        }
     }
 
     public static FileHandle getAdditionalFilesDir() {
@@ -509,6 +508,12 @@ public class CustomDungeonSaves {
                 CustomObject customObject = (CustomObject) bundle.get(CustomObject.BUNDLE_KEY);
                 customObject.saveDirPath = file.path().replaceFirst(quotedRootPath, "");
                 CustomObjectManager.allUserContents.put(customObject.getIdentifier(), customObject);
+                
+                //preload the ByteBuddy classes here so we have already cached them
+                if (customObject instanceof LuaCustomObject) {
+                    LuaClassGenerator.luaUserContentClass(((LuaCustomObject) customObject).getLuaTargetClass());
+                }
+                
             } catch (IOException e) {
                 if (errors == null) errors = "";
                 else errors += "\n";
