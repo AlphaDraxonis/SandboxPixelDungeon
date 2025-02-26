@@ -61,7 +61,7 @@ import java.util.concurrent.TimeoutException;
 @NotAllowedInLua
 public class WelcomeScene extends PixelScene {
 
-	private static final int LATEST_UPDATE = SandboxPixelDungeon.v2_5_0;
+	private static final int LATEST_UPDATE = SandboxPixelDungeon.v3_0_0;
 
 	//used so that the game does not keep showing the window forever if cleaning fails
 	private static boolean triedCleaningTemp = false;
@@ -223,10 +223,6 @@ public class WelcomeScene extends PixelScene {
 				message += "\n" + Messages.get(this, "patch_translations");
 
 			}
-
-			message = "Greetings Beta testers, the beta for v3.0.0 is now concluding!\n\n" +
-					"There will be a few days of turnaround as I want to give translators a little more time, and prepare new store assets.\n\n" +
-					"Let me know if you encounter any issues so I can get them fixed for the full release!";
 
 		} else {
 			message = Messages.get(this, "what_msg");
