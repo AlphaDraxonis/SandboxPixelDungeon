@@ -25,6 +25,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import org.luaj.vm2.LuaValue;
@@ -101,10 +102,14 @@ public class LuaRestrictionProxy extends LuaValue {
 			
 			if (field == null) {
 				if (name.equals("simpleClassName")) {
-					return wrapObject(javaObject.getClass().getSimpleName());
+					return wrapObject(CustomGameObjectClass.class.isAssignableFrom(javaObject.getClass())
+							? javaObject.getClass().getSuperclass().getSimpleName()
+							: javaObject.getClass().getSimpleName());
 				}
 				if (name.equals("className")) {
-					return wrapObject(javaObject.getClass().getName());
+					return wrapObject(CustomGameObjectClass.class.isAssignableFrom(javaObject.getClass())
+							? javaObject.getClass().getSuperclass().getName()
+							: javaObject.getClass().getName());
 				}
 				return NIL;
 			}
