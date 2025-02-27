@@ -49,7 +49,12 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.LotusSprite;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.ColorMath;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -436,7 +441,13 @@ public class WandOfRegrowth extends Wand {
 		public float seedPreservation(){
 			return Math.min( 1f, 0.40f + 0.04f*wandLvl );
 		}
-
+		
+		@Override
+		public void initAsInventoryItem() {
+			super.initAsInventoryItem();
+			setLevel(7);
+		}
+		
 		@Override
 		public boolean canInteract(Char c) {
 			return false;

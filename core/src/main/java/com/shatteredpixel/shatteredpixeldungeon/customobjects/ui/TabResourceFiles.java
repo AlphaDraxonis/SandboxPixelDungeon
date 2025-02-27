@@ -31,7 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManage
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.CategoryScroller;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.LoadCustomObjects;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -207,7 +207,7 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 	@Override
 	protected void onAddBtnClick() {
 		//reload files, instead of adding something
-		CustomDungeonSaves.loadAllCustomResourceFiles();
+		new LoadCustomObjects(null, true);
 		createCategories();
 		categoryScroller.updateItemsInCategories(false);
 		categoryScroller.selectCategory(categoryScroller.getSelectedCatIndex());

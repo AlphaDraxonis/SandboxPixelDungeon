@@ -66,6 +66,9 @@ public abstract class GameObject implements Bundlable {
 
 		restoreFromBundle(bundle.getBundle("OBJ"));
 	}
+	
+	public void initAsInventoryItem() {
+	}
 
 	/**
 	 * <b>Returns <u>true</u> if a change was performed</b>.

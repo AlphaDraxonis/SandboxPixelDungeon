@@ -26,25 +26,15 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BuffItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
@@ -95,6 +85,7 @@ public abstract class GameObjectCategory<T> {
     public void addCustomObject(CustomGameObjectClass obj) {
         if (obj != null) {
             customObjectBag.items.add(EditorItem.wrapObject(obj));
+            ((GameObject) obj).initAsInventoryItem();
             sortCustomObjects();
         }
     }
@@ -234,39 +225,13 @@ public abstract class GameObjectCategory<T> {
 
 
         private static Item createItem(Class<?> clazz) {
-            if (Mob.class.isAssignableFrom(clazz)) return new MobItem(initMob((Class<? extends Mob>) clazz));
-            if (Trap.class.isAssignableFrom(clazz)) return new TrapItem(initTrap((Class<? extends Trap>) clazz));
-            if (Buff.class.isAssignableFrom(clazz)) return new BuffItem(initBuff((Class<? extends Buff>) clazz));
-
-            //includes Item, Plant, Room
-            return EditorItem.wrapObject(Reflection.newInstance(clazz));
-        }
-
-        protected static Mob initMob(Class<? extends Mob> mobClass) {
-            Mob mob = Reflection.newInstance(mobClass);
-            if (mob instanceof WandOfRegrowth.Lotus) {
-                ((WandOfRegrowth.Lotus) mob).setLevel(7);
+            Object obj = Reflection.newInstance(clazz);
+            
+            if (obj instanceof GameObject) {
+                ((GameObject) obj).initAsInventoryItem();
             }
-            if (mob instanceof QuestNPC) {
-                ((QuestNPC<?>) mob).createNewQuest();
-            }
-            if (mob instanceof HeroMob) ((HeroMob) mob).setInternalHero(new HeroMob.InternalHero());
-            if (mob == null) throw new RuntimeException(mobClass.getName());
-            mob.pos = -1;
-            return mob;
-        }
 
-        private static Trap initTrap(Class<? extends Trap> trapClass) {
-            Trap trap = Reflection.newInstance(trapClass);
-            trap.pos = -1;
-            trap.visible = true;
-            return trap;
-        }
-
-        private static Buff initBuff(Class<? extends Buff> buffClass) {
-            Buff buff = Reflection.newInstance(buffClass);
-            buff.permanent = !(buff instanceof ChampionEnemy); //for description
-            return buff;
+            return EditorItem.wrapObject(obj);
         }
     }
 

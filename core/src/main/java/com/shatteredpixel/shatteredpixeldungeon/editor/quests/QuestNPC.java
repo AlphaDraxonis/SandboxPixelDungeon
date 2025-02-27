@@ -29,6 +29,12 @@ public abstract class QuestNPC<T extends Quest> extends NPC {
             quest.initRandom(levelScheme);
         }
     }
+    
+    @Override
+    public void initAsInventoryItem() {
+        super.initAsInventoryItem();
+        createNewQuest();
+    }
 
     @Override
     public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {

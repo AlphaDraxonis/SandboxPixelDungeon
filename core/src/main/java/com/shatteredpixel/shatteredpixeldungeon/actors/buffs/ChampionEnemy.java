@@ -47,7 +47,13 @@ public abstract class ChampionEnemy extends Buff {
 	}
 
 	protected int color;
-
+	
+	@Override
+	public void initAsInventoryItem() {
+		super.initAsInventoryItem();
+		permanent = false; //for description
+	}
+	
 	@Override
 	public int icon() {
 		return BuffIndicator.CORRUPT;

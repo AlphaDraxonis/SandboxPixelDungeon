@@ -66,7 +66,14 @@ public class Buff extends Actor {
 	public boolean zoneBuff = false;
 	public boolean alwaysHidesFx = false;
 	
-	public boolean attachTo( Char target ) {
+	@Override
+	public void initAsInventoryItem() {
+		super.initAsInventoryItem();
+		permanent = true; //for description
+	}
+	
+	
+	public boolean attachTo(Char target ) {
 
 		if (target.isImmune( getClass() )) {
 			return false;

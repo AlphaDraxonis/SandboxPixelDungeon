@@ -1229,7 +1229,13 @@ public abstract class Char extends Actor {
 	public final int sparseArrayKey() {
 		return pos;
 	}
-
+	
+	@Override
+	public void initAsInventoryItem() {
+		super.initAsInventoryItem();
+		pos = -1;
+	}
+	
 	protected final HashSet<Class> resistances = new HashSet<>();
 	
 	//returns percent effectiveness after resistances

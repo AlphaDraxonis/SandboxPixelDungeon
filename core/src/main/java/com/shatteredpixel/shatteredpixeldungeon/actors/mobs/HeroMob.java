@@ -195,7 +195,13 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         }
         updateEXP();
     }
-
+    
+    @Override
+    public void initAsInventoryItem() {
+        super.initAsInventoryItem();
+        setInternalHero(new HeroMob.InternalHero());
+    }
+    
     @Override
     public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
         Belongings belongings = hero().belongings;
