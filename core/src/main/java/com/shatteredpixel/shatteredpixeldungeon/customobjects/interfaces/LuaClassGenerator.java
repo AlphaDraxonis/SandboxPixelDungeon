@@ -165,7 +165,6 @@ public final class LuaClassGenerator {
 					.intercept(MethodDelegation.to(InterceptorDungeonScriptNewInstance.class));
 		}
 
-
 		builder = interceptMethods(builder, originalClass);
 
 		return builder
@@ -176,6 +175,8 @@ public final class LuaClassGenerator {
 
 	private static <T> DynamicType.Builder<T> interceptMethods(DynamicType.Builder<T> builder, Class<T> originalClass) {
 
+		//TODO it is possible to improve the performance here by about 300-400% if only methods are intercepted that are actually overridden by a script
+		//the problem is that it is challenging to find out which methods that are, and it may change every time a script is changed
 		for (Method method : methodsToIntercept(originalClass)) {
 
 			//define method for calling super
@@ -298,6 +299,7 @@ public final class LuaClassGenerator {
 		methods.remove("restoreFromBundle");
 		
 		methods.remove("getCopy");
+		methods.remove("initAsInventoryItem");
 
 		//will be force-added later
 		methods.remove("name");

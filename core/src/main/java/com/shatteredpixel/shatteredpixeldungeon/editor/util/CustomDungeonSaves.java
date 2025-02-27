@@ -8,9 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomGameObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
@@ -46,7 +44,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -455,74 +452,7 @@ public class CustomDungeonSaves {
         
         return LuaScript.readFromFileContent(file.readString(), pathToScript);
     }
-
-    public static void loadAllCustomResourceFiles() {
-        CustomObjectManager.allResourcePaths.clear();
-
-        FileHandle localCustomObjectDir = FileUtils.getFileHandle(getCurrentCustomObjectsPath());
-        putResourceFilesInMap(localCustomObjectDir, CustomObjectManager.allResourcePaths, Pattern.quote(localCustomObjectDir.path() + "/"));
-
-    }
-
-    private static void putResourceFilesInMap(FileHandle file, Map<String, FileHandle> map, String quotedRootPath) {
-        if (file.isDirectory()) {
-            for (FileHandle f : file.list()) {
-                putResourceFilesInMap(f, map, quotedRootPath);
-            }
-        }
-        else if (!ResourcePath.isCustomObject(file.extension())) {
-            String path = file.path().replaceFirst(quotedRootPath, "");
-            map.put(path, file);
-        }
-    }
-
-    public static void loadAllCustomObjectsFromFiles(Bundle bundle) {
-
-        CustomObjectManager.allUserContents.clear();
-        
-        if (bundle != null) {
-            CustomObjectManager.restorePre_v_1_3(bundle);
-        }
-        
-        String errors = null;
-
-        FileHandle localCustomObjectDir = FileUtils.getFileHandle(getCurrentCustomObjectsPath());
-        errors = readCustomObjectFile(localCustomObjectDir, null, Pattern.quote(localCustomObjectDir.path() + "/"));
-
-        for (CustomObject obj : new HashSet<>(CustomObjectManager.allUserContents.values())) {
-            obj.restoreIDs();
-        }
-
-        if (errors != null) DungeonScene.show(new WndError(errors));
-    }
-
-    private static String readCustomObjectFile(FileHandle file, String errors, String quotedRootPath) {
-        if (file.isDirectory()) {
-            for (FileHandle f : file.list()) {
-                errors = readCustomObjectFile(f, errors, quotedRootPath);
-            }
-        }
-        else if (ResourcePath.isCustomObject(file.extension())) {
-            try {
-                Bundle bundle = FileUtils.bundleFromStream(file.read());
-                CustomObject customObject = (CustomObject) bundle.get(CustomObject.BUNDLE_KEY);
-                customObject.saveDirPath = file.path().replaceFirst(quotedRootPath, "");
-                CustomObjectManager.allUserContents.put(customObject.getIdentifier(), customObject);
-                
-                //preload the ByteBuddy classes here so we have already cached them
-                if (customObject instanceof LuaCustomObject) {
-                    LuaClassGenerator.luaUserContentClass(((LuaCustomObject) customObject).getLuaTargetClass());
-                }
-                
-            } catch (IOException e) {
-                if (errors == null) errors = "";
-                else errors += "\n";
-                errors += e.getMessage();
-            }
-        }
-        return errors;
-    }
-
+    
     public static void storeCustomObject(Collection<CustomObject> customObjects) {
         String errors = null;
         for (CustomObject customObject : customObjects) {

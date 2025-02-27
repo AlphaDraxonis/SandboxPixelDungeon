@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomM
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.LoadCustomObjects;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
@@ -56,8 +57,8 @@ import java.util.Set;
 @NotAllowedInLua
 public final class CustomObjectManager {
 
-	public static Map<Integer, CustomObject> allUserContents = new HashMap<>();
-	public static Map<String, FileHandle> allResourcePaths = new HashMap<>();//extension shows type
+	public static final Map<Integer, CustomObject> allUserContents = new HashMap<>();
+	public static final Map<String, FileHandle> allResourcePaths = new HashMap<>();//extension shows type
 	
 	private static LuaValue globalVarsTemp;
 
@@ -71,8 +72,7 @@ public final class CustomObjectManager {
 	}
 	
 	public static void loadUserContentFromFiles(Bundle bundle) {
-		CustomDungeonSaves.loadAllCustomObjectsFromFiles(bundle);
-		CustomDungeonSaves.loadAllCustomResourceFiles();
+		new LoadCustomObjects(bundle, false);
 		nextID = findLargestUsedID();
 		loadScripts(false);
 	}
