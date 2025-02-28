@@ -669,7 +669,7 @@ public class Hero extends Char {
 
 	//damage rolls that come from the hero can have their RNG influenced by clover
 	public static int heroDamageIntRange(int min, int max ){
-		if (Random.Float() < ThirteenLeafClover.alterHeroDamageChance()){
+		if (Random.Float() < ThirteenLeafClover.alterHeroDamageChance(Dungeon.hero)){
 			return ThirteenLeafClover.alterDamageRoll(min, max);
 		} else {
 			return Random.NormalIntRange(min, max);
@@ -2172,7 +2172,7 @@ public class Hero extends Char {
 			this.exp -= maxExp();
 
 			if (buff(Talent.WandPreservationCounter.class) != null
-				&& pointsInTalent(Talent.WAND_PRESERVATION) == 2){
+				&& pointsInTalent(Talent.WAND_PRESERVATION) >= 2){
 				buff(Talent.WandPreservationCounter.class).detach();
 			}
 

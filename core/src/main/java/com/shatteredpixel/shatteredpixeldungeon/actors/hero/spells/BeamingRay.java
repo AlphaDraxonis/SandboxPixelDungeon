@@ -31,7 +31,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.PowerOfMany;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
@@ -90,7 +89,7 @@ public class BeamingRay extends TargetedClericSpell {
 			telePos = -1;
 			for (int i : PathFinder.NEIGHBOURS8){
 				if (Actor.findChar(target+i) == null && Dungeon.level.heroFOV[target+i]
-						&& (Dungeon.level.passable[target+i] || (ally.flying && Dungeon.level.avoid[target+i])) ){
+						&& (Dungeon.level.isPassable(target+i, ally) || (ally.isFlying() && Dungeon.level.avoid[target+i])) ){
 					if (telePos == -1 || Dungeon.level.trueDistance(telePos, ally.pos) > Dungeon.level.trueDistance(target+i, ally.pos)){
 						telePos =  target+i;
 					}
@@ -150,15 +149,15 @@ public class BeamingRay extends TargetedClericSpell {
 		}
 
 		if (chTarget != null) {
-			if (ally instanceof DirectableAlly) {
-				((DirectableAlly) ally).targetChar(chTarget);
+			if (ally.getDirectableAlly() != null) {
+				ally.getDirectableAlly().targetChar(chTarget);
 			} else if (ally instanceof Mob) {
 				((Mob) ally).aggro(chTarget);
 			}
 			FlavourBuff.prolong(ally, BeamingRayBoost.class, BeamingRayBoost.DURATION).object = chTarget.id();
 		} else {
-			if (ally instanceof DirectableAlly) {
-				((DirectableAlly) ally).clearDefensingPos();
+			if (ally.getDirectableAlly() != null) {
+				ally.getDirectableAlly().clearDefensingPos();
 			}
 			//just the buff with no target
 			FlavourBuff.prolong(ally, BeamingRayBoost.class, BeamingRayBoost.DURATION);

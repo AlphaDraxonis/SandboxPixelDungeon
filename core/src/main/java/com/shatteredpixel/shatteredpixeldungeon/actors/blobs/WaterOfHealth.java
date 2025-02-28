@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Healing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
@@ -60,7 +59,7 @@ public class WaterOfHealth extends WellWater {
 
 		if (VialOfBlood.delayBurstHealing(hero)){
 			Healing healing = Buff.affect(hero, Healing.class);
-			healing.setHeal(hero.HT, 0, VialOfBlood.maxHealPerTurn());
+			healing.setHeal(hero.HT, 0, VialOfBlood.maxHealPerTurn(hero));
 			healing.applyVialEffect();
 		} else {
 			hero.HP = hero.HT;
@@ -70,7 +69,7 @@ public class WaterOfHealth extends WellWater {
 		
 		CellEmitter.get( hero.pos ).start( ShaftParticle.FACTORY, 0.2f, 3 );
 
-		Dungeon.hero.interrupt();
+		hero.interrupt();
 	
 		GLog.p( Messages.get(this, "procced") );
 		

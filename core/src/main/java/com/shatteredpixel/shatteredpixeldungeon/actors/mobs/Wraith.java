@@ -110,15 +110,14 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 	}
 
 	public static Wraith spawnAt( int pos ) {
-		return spawnAt( pos, null, true );
+		return spawnAt( pos, ((Class<? extends Wraith>) null), true );
 	}
 
 	public static Wraith spawnAt( int pos, Class<? extends Wraith> wraithClass ) {
 		return spawnAt( pos, wraithClass, true );
 	}
-
+	
 	public static Wraith spawnAt( int pos, Class<? extends Wraith> wraithClass, boolean allowAdjacent ) {
-
 		Wraith w;
 		//if no wraith type is specified, 1/100 chance for exotic, otherwise normal
 		if (wraithClass == null){
@@ -131,6 +130,14 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 		} else {
 			w = Reflection.newInstance(wraithClass);
 		}
+		return spawnAt(pos, w, allowAdjacent);
+	}
+	
+	public static Wraith spawnAt( int pos, Wraith w ) {
+		return spawnAt(pos, w, true);
+	}
+	
+	public static Wraith spawnAt( int pos, Wraith w, boolean allowAdjacent ) {
 
 		if (!Barrier.canEnterCell(pos, w, w.isFlying(), true)) {
 			ArrayList<Integer> candidates = new ArrayList<>();

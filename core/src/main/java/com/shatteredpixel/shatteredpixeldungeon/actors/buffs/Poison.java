@@ -53,10 +53,6 @@ public class Poison extends BuffWithDuration implements Hero.Doom {
 	public void set( float duration ) {
 		this.left = Math.max(duration, left);
 	}
-
-	public void extend(float duration ) {
-		this.left += duration;
-	}
 	
 	@Override
 	public int icon() {

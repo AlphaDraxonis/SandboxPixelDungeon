@@ -101,17 +101,17 @@ public class ShardOfOblivion extends Trinket {
 			boolean ready = false;
 			if (item instanceof Weapon){
 				ready = ((Weapon) item).readyToIdentify();
-				if (item.isEquipped(curUser) && curUser.pointsInTalent(Talent.ADVENTURERS_INTUITION) == 2){
+				if (item.isEquipped(curUser) && curUser.pointsInTalent(Talent.ADVENTURERS_INTUITION) >= 2){
 					ready = true;
 				}
 			} else if (item instanceof Armor){
 				ready = ((Armor) item).readyToIdentify();
-				if (item.isEquipped(curUser) && curUser.pointsInTalent(Talent.VETERANS_INTUITION) == 2){
+				if (item.isEquipped(curUser) && curUser.pointsInTalent(Talent.VETERANS_INTUITION) >= 2){
 					ready = true;
 				}
 			} else if (item instanceof Ring){
 				ready = ((Ring) item).readyToIdentify();
-				if (item.isEquipped(curUser) && curUser.pointsInTalent(Talent.THIEFS_INTUITION) == 2){
+				if (item.isEquipped(curUser) && curUser.pointsInTalent(Talent.THIEFS_INTUITION) >= 2){
 					ready = true;
 				}
 			} else if (item instanceof Wand){
@@ -164,7 +164,7 @@ public class ShardOfOblivion extends Trinket {
 		return lootChanceMultiplier(trinketLevel(ShardOfOblivion.class));
 	}
 
-	public static float lootChanceMultiplier(int level){
+	private static float lootChanceMultiplier(int level){
 		if (level < 0) return 1f;
 
 		int wornUnIDed = 0;

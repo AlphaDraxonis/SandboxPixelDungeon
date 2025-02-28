@@ -136,9 +136,9 @@ public abstract class KindofMisc extends EquipableItem {
 
 			// 15/25% chance
 			if (hero.heroClass != HeroClass.CLERIC && hero.hasTalent(Talent.HOLY_INTUITION)
-					&& cursed && !cursedKnown
+					&& cursed && !cursedKnown()
 					&& Random.Int(20) < 1 + 2*hero.pointsInTalent(Talent.HOLY_INTUITION)){
-				cursedKnown = true;
+				setCursedKnown(true);
 				GLog.p(Messages.get(this, "curse_detected"));
 				return false;
 			}

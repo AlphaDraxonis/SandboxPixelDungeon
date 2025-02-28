@@ -23,6 +23,8 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
@@ -75,6 +77,10 @@ public class Buff extends Actor {
 		permanent = true; //for description
 	}
 	
+	
+	public static Hero targetHero(Char target) {
+		return target instanceof Hero ? (Hero) target : target instanceof HeroMob ? ((HeroMob) target).hero() : null;
+	}
 	
 	public boolean attachTo(Char target ) {
 

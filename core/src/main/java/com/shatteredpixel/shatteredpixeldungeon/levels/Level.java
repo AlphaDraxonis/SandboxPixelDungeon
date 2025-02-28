@@ -130,7 +130,6 @@ import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.AmuletScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.SurfaceScene;
@@ -151,6 +150,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.BArray;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
@@ -1124,11 +1124,21 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 				return false;
 			} else {
 				Statistics.ascended = true;
-				Badges.silentValidateHappyEnd();
-				Dungeon.win( winCondition );
-				Dungeon.deleteGame( GamesInProgress.curSlot );
-				AmuletScene.winCondition = winCondition;
-				Game.switchScene( SurfaceScene.class );
+				Object finalWinCondition = winCondition;
+				Game.switchScene(SurfaceScene.class, new Game.SceneChangeCallback() {
+					@Override
+					public void beforeCreate() {
+					
+					}
+					
+					@Override
+					public void afterCreate() {
+						Badges.silentValidateHappyEnd();
+						Dungeon.win(finalWinCondition);
+						Dungeon.deleteGame( GamesInProgress.curSlot );
+						Badges.saveGlobal();
+					}
+				});
 				return true;
 			}
 		}

@@ -39,8 +39,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.BeamingRay;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.ClericSpell;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.LifeLinkSpell;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.Stasis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
@@ -127,7 +128,7 @@ public class PowerOfMany extends ArmorAbility {
 			if (target == null){
 				return;
 			} else {
-				((LightAlly) ally).directTocell(target);
+				((LightAlly) ally).getDirectableAlly().directTocell(target);
 			}
 		} else if (allyExists) {
 			GLog.w( Messages.get(this, "ally_exists"));
@@ -152,7 +153,7 @@ public class PowerOfMany extends ArmorAbility {
 				}
 			} else {
 
-				if (!Dungeon.level.passable[target] || Dungeon.level.avoid[target]){
+				if (!Dungeon.level.isPassable(target, ally) || Dungeon.level.avoid[target]){
 					GLog.w(Messages.get(ClericSpell.class, "invalid_target"));
 					return;
 				}
@@ -241,10 +242,14 @@ public class PowerOfMany extends ArmorAbility {
 		}
 	}
 
-	public static class LightAlly extends DirectableAlly {
-
+	public static class LightAlly extends NPC {
+		
+		private DirectableAlly directableAlly;
+		
 		{
 			spriteClass = LightAllySprite.class;
+			
+			directableAlly = new LightAllyDirectableAlly(this);
 
 			HP = HT = 80;
 
@@ -260,9 +265,49 @@ public class PowerOfMany extends ArmorAbility {
 			cls = HeroClass.values()[Random.Int(5)];
 		}
 
-		public LightAlly(int heroLevel ){
+		public LightAlly(int heroLevel){
 			this();
-			defenseSkill = heroLevel + 5; //equal to base hero defense skill
+			defenseSkill = heroLevel + Hero.STARTING_ATK_SKILL; //equal to base hero defense skill
+		}
+		
+		public static class LightAllyDirectableAlly extends DirectableAlly {
+			
+			public LightAllyDirectableAlly(Mob mob) {
+				super(mob);
+			}
+			
+			@Override
+			public void defendPos(int cell) {
+				GLog.i(Messages.get(this, "direct_defend"));
+				super.defendPos(cell);
+			}
+			
+			@Override
+			public void followHero() {
+				GLog.i(Messages.get(this, "direct_follow"));
+				super.followHero();
+			}
+			
+			@Override
+			public void targetChar(Char ch) {
+				GLog.i(Messages.get(this, "direct_attack"));
+				super.targetChar(ch);
+			}
+		}
+		
+		@Override
+		public void aggro(Char ch) {
+			directableAlly.aggroOverride(ch);
+		}
+		
+		@Override
+		public void beckon(int cell) {
+			directableAlly.beckonOverride(cell);
+		}
+		
+		@Override
+		public DirectableAlly getDirectableAlly() {
+			return directableAlly;
 		}
 
 		@Override
@@ -278,24 +323,6 @@ public class PowerOfMany extends ArmorAbility {
 				sprite.idle();
 			}
 			return result;
-		}
-
-		@Override
-		public void defendPos(int cell) {
-			GLog.i(Messages.get(this, "direct_defend"));
-			super.defendPos(cell);
-		}
-
-		@Override
-		public void followHero() {
-			GLog.i(Messages.get(this, "direct_follow"));
-			super.followHero();
-		}
-
-		@Override
-		public void targetChar(Char ch) {
-			GLog.i(Messages.get(this, "direct_attack"));
-			super.targetChar(ch);
 		}
 
 		@Override
@@ -319,17 +346,17 @@ public class PowerOfMany extends ArmorAbility {
 
 			//moves 2 tiles at a time when returning to the hero
 			if (state == WANDERING
-					&& defendingPos == -1
+					&& directableAlly.defendingPos == -1
 					&& Dungeon.level.distance(pos, Dungeon.hero.pos) > 1){
 				speed *= 2;
 			}
 
 			return speed;
 		}
-
+		
 		@Override
-		public CharSprite sprite() {
-			CharSprite sprite = super.sprite();
+		public CharSprite createSprite() {
+			CharSprite sprite = super.createSprite();
 			((LightAllySprite)sprite).setup(cls);
 			return sprite;
 		}

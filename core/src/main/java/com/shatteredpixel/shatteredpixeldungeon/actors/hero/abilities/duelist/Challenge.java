@@ -150,15 +150,15 @@ public class Challenge extends ArmorAbility {
 		}
 
 		if (blinkpos != hero.pos){
-			Dungeon.hero.pos = blinkpos;
-			Dungeon.level.occupyCell(Dungeon.hero);
+			hero.pos = blinkpos;
+			Dungeon.level.occupyCell(hero);
 			//prevents the hero from being interrupted by seeing new enemies
 			Dungeon.observe();
 			GameScene.updateFog();
-			Dungeon.hero.checkVisibleMobs();
+			hero.checkVisibleMobs();
 
-			Dungeon.hero.sprite.place( Dungeon.hero.pos );
-			CellEmitter.get( Dungeon.hero.pos ).burst( Speck.factory( Speck.WOOL ), 6 );
+			hero.sprite.place( hero.pos );
+			CellEmitter.get( hero.pos ).burst( Speck.factory( Speck.WOOL ), 6 );
 			Sample.INSTANCE.play( Assets.Sounds.PUFF );
 		}
 

@@ -26,7 +26,6 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 
 public abstract class HeroSubclassAbilityBuff extends Buff implements ActionIndicator.Action {
@@ -37,10 +36,6 @@ public abstract class HeroSubclassAbilityBuff extends Buff implements ActionIndi
 
 	protected Hero targetHero() {
 		return targetHero(target);
-	}
-
-	public static Hero targetHero(Char target) {
-		return target instanceof Hero ? (Hero) target : target instanceof HeroMob ? ((HeroMob) target).hero() : null;
 	}
 
 	@Override

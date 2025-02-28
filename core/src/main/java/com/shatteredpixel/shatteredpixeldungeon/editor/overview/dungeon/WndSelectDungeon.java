@@ -15,6 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.ExportDungeonWrapper
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
@@ -472,15 +473,12 @@ public class WndSelectDungeon extends Window {
                                         dungeonNames.add(info.name);
                                         updateList();
                                         WndInfoDungeon.this.hide();
-                                        Window w = new WndInfoDungeon(info);
-                                        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                                        else Game.scene().addToFront(w);
+                                        DungeonScene.show(new WndInfoDungeon(info));
                                     }
                                 }
                             }
                         };
-                        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                        else Game.scene().addToFront(w);
+                        DungeonScene.show(w);
                     }
 
                     @Override
@@ -527,7 +525,7 @@ public class WndSelectDungeon extends Window {
                                 }
                             }
                         };
-                        EditorScene.show(w);
+                        DungeonScene.show(w);
                     }
 
                     @Override

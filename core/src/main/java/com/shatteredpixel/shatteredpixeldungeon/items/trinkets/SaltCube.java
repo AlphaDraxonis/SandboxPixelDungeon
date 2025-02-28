@@ -52,11 +52,11 @@ public class SaltCube extends Trinket {
 		}
 	}
 
-	public static float hungerGainMultiplier(){
-		return hungerGainMultiplier(trinketLevel(SaltCube.class));
+	public static float hungerGainMultiplier(Hero hero){
+		return hungerGainMultiplier(trinketLevel(SaltCube.class, hero));
 	}
 
-	public static float hungerGainMultiplier( int level ){
+	private static float hungerGainMultiplier( int level ){
 		if (level == -1){
 			return 1;
 		} else {
@@ -68,7 +68,7 @@ public class SaltCube extends Trinket {
 		return healthRegenMultiplier(trinketLevel(SaltCube.class, hero));
 	}
 
-	public static float healthRegenMultiplier( int level ){
+	private static float healthRegenMultiplier( int level ){
 		switch (level){
 			case -1: default:
 				return 1;

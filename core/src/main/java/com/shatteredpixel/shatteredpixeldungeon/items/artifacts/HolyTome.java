@@ -104,7 +104,7 @@ public class HolyTome extends Artifact {
 		if (targetingSpell == null || targetingSpell.targetingFlags() == -1) {
 			return super.targetingPos(user, dst);
 		} else {
-			return new Ballistica( user.pos, dst, targetingSpell.targetingFlags() ).collisionPos;
+			return new Ballistica( user.pos, dst, targetingSpell.targetingFlags(), null ).collisionPos;
 		}
 	}
 
@@ -143,13 +143,13 @@ public class HolyTome extends Artifact {
 	}
 
 	public boolean canCast( Hero hero, ClericSpell spell ){
-		return (isEquipped(hero) || (Dungeon.hero.hasTalent(Talent.LIGHT_READING) && hero.belongings.contains(this)))
+		return (isEquipped(hero) || (hero.hasTalent(Talent.LIGHT_READING) && hero.belongings.contains(this)))
 				&& hero.buff(MagicImmune.class) == null
 				&& charge >= spell.chargeUse(hero)
 				&& spell.canCast(hero);
 	}
 
-	public void spendCharge( float chargesSpent ){
+	public void spendCharge( Hero hero, float chargesSpent ){
 		partialCharge -= chargesSpent;
 		while (partialCharge < 0){
 			charge--;
@@ -157,7 +157,7 @@ public class HolyTome extends Artifact {
 		}
 
 		//target hero level is 1 + 2*tome level
-		int lvlDiffFromTarget = Dungeon.hero.lvl - (1+level()*2);
+		int lvlDiffFromTarget = hero.lvl - (1+level()*2);
 		//plus an extra one for each level after 6
 		if (level() >= 7){
 			lvlDiffFromTarget -= level()-6;

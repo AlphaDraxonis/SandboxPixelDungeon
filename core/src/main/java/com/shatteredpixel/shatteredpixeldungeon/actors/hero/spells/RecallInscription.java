@@ -54,7 +54,7 @@ public class RecallInscription extends ClericSpell {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", Dungeon.hero.pointsInTalent(Talent.RECALL_INSCRIPTION) == 2 ? 300 : 10) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return Messages.get(this, "desc", Dungeon.hero.pointsInTalent(Talent.RECALL_INSCRIPTION) >= 2 ? 300 : 10) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class RecallInscription extends ClericSpell {
 
 		@Override
 		public float iconFadePercent() {
-			float duration = Dungeon.hero.pointsInTalent(Talent.RECALL_INSCRIPTION) == 2 ? 300 : 10;
+			float duration = Dungeon.hero.pointsInTalent(Talent.RECALL_INSCRIPTION) >= 2 ? 300 : 10;
 			return Math.max(0, (duration - visualcooldown()) / duration);
 		}
 

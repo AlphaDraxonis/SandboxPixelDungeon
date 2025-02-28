@@ -47,7 +47,7 @@ public abstract class TargetedClericSpell extends ClericSpell {
 
 	@Override
 	public int targetingFlags(){
-		return Ballistica.MAGIC_BOLT;
+		return Ballistica.REAL_MAGIC_BOLT;
 	}
 
 	protected String targetingPrompt(){

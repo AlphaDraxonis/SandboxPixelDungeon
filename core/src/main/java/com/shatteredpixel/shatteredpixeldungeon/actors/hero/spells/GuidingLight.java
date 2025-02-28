@@ -60,7 +60,7 @@ public class GuidingLight extends TargetedClericSpell {
 			return;
 		}
 
-		Ballistica aim = new Ballistica(hero.pos, target, targetingFlags());
+		Ballistica aim = new Ballistica(hero.pos, target, targetingFlags(), null);
 
 		if (Actor.findChar( aim.collisionPos ) == hero){
 			GLog.i( Messages.get(Wand.class, "self_target") );

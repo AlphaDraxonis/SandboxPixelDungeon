@@ -652,7 +652,9 @@ public class MonkEnergy extends HeroSubclassAbilityBuff {
 					@Override
 					protected boolean act() {
 						Buff.affect(hero, Recharging.class, 8f);
-						Buff.affect(hero, ArtifactRecharge.class).extend(8f).ignoreHornOfPlenty = false;
+						ArtifactRecharge artifactRecharge = Buff.affect(hero, ArtifactRecharge.class);
+						artifactRecharge.extend( 8f );
+						artifactRecharge.ignoreHornOfPlenty = false;
 						Actor.remove(this);
 						return true;
 					}

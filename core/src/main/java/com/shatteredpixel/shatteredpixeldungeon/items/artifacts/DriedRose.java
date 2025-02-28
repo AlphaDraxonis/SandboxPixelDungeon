@@ -608,6 +608,11 @@ public class DriedRose extends Artifact {
 		public void aggro(Char ch) {
 			directableAlly.aggroOverride(ch);
 		}
+		
+		@Override
+		public void beckon(int cell) {
+			directableAlly.beckonOverride(cell);
+		}
 
 		@Override
 		public DirectableAlly getDirectableAlly() {

@@ -47,6 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.Her
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
@@ -63,6 +64,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMirrorImag
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Cudgel;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
@@ -70,6 +72,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gloves;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Rapier;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingSpike;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
@@ -237,18 +242,101 @@ public enum HeroClass {
     }
 
 	private static void initCleric( Hero hero ) {
-
-		(hero.belongings.weapon = new Cudgel()).identify();
-		hero.belongings.weapon.activate(hero);
-
-		HolyTome tome = new HolyTome();
-		(hero.belongings.artifact = tome).identify();
-		hero.belongings.artifact.activate( hero );
-
-		Dungeon.quickslot.setSlot(0, tome);
-
+		new Cudgel().identify();
+		new HolyTome().identify();
 		new PotionOfPurity().identify();
 		new ScrollOfRemoveCurse().identify();
+	}
+	
+	public static void initWarrior(HeroSettings.HeroStartItemsData data) {
+		
+		if (data.weapon == null) {
+			WornShortsword i = new WornShortsword();
+			i.identifyOnStart = true;
+			data.weapon = i;
+		}
+		
+		data.items.add(new BrokenSeal());
+		
+		ThrowingStone stones = new ThrowingStone();
+		stones.quantity(3);
+		stones.reservedQuickslot = 1;
+		data.items.add(stones);
+		
+	}
+	
+	public static void initMage(HeroSettings.HeroStartItemsData data) {
+		if (data.weapon == null) {
+			MagesStaff i = new MagesStaff(new WandOfMagicMissile());
+			i.reservedQuickslot = 1;
+			i.identifyOnStart = true;
+			data.weapon = i;
+		}
+	}
+	
+	public static void initRouge(HeroSettings.HeroStartItemsData data) {
+		if (data.weapon == null) {
+			Dagger i = new Dagger();
+			i.identifyOnStart = true;
+			data.weapon = i;
+		}
+		
+		int nextQuickslot = 0;
+		if (data.artifact == null || data.misc == null) {
+			CloakOfShadows cloak = new CloakOfShadows();
+			cloak.identifyOnStart = true;
+			cloak.reservedQuickslot = nextQuickslot++;
+			if (data.artifact == null) data.artifact = cloak;
+			else data.misc = cloak;
+		}
+		
+		ThrowingKnife knives = new ThrowingKnife();
+		knives.quantity(3);
+		knives.reservedQuickslot = nextQuickslot;
+	}
+	
+	public static void initHuntress(HeroSettings.HeroStartItemsData data) {
+		if (data.weapon == null) {
+			Gloves i = new Gloves();
+			i.identifyOnStart = true;
+			data.weapon = i;
+		}
+		SpiritBow bow = new SpiritBow();
+		bow.identifyOnStart = true;
+		bow.reservedQuickslot = 1;
+		data.items.add(bow);
+	}
+	
+	public static void initDuelist(HeroSettings.HeroStartItemsData data) {
+		int nextQuickslot = 0;
+		if (data.weapon == null) {
+			Rapier i = new Rapier();
+			i.identifyOnStart = true;
+			i.reservedQuickslot = nextQuickslot++;
+			data.weapon = i;
+		}
+		
+		ThrowingSpike spikes = new ThrowingSpike();
+		spikes.quantity(2);
+		spikes.reservedQuickslot = nextQuickslot++;
+		data.items.add(spikes);
+	}
+	
+	public static void initCleric(HeroSettings.HeroStartItemsData data) {
+		if (data.weapon == null) {
+			Cudgel i = new Cudgel();
+			i.identifyOnStart = true;
+			data.weapon = i;
+		}
+		
+		int nextQuickslot = 0;
+		if (data.artifact == null || data.misc == null) {
+			HolyTome tome = new HolyTome();
+			tome.identifyOnStart = true;
+			tome.reservedQuickslot = nextQuickslot++;
+			if (data.artifact == null) data.artifact = tome;
+			else data.misc = tome;
+		}
 	}
 
 	public String title() {

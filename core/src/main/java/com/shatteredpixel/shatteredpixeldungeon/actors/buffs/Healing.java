@@ -79,8 +79,9 @@ public class Healing extends Buff {
 		int heal = (int)GameMath.gate(1,
 				Math.round(healingLeft * percentHealPerTick) + flatHealPerTick,
 				healingLeft);
-		if (healingLimited && heal > VialOfBlood.maxHealPerTurn()){
-			heal = VialOfBlood.maxHealPerTurn();
+		Hero hero = targetHero(target);
+		if (healingLimited && heal > VialOfBlood.maxHealPerTurn(hero)){
+			heal = VialOfBlood.maxHealPerTurn(hero);
 		}
 		return heal;
 	}

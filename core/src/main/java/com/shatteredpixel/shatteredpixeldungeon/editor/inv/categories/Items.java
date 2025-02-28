@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.EtherealChains;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArmband;
@@ -334,6 +335,7 @@ public final class Items extends GameObjectCategory<Item> {
                     Gloves.class,
                     Rapier.class,
                     SpiritBow.class,
+                    Cudgel.class,
                     Shortsword.class,
                     HandAxe.class,
                     Spear.class,
@@ -432,6 +434,7 @@ public final class Items extends GameObjectCategory<Item> {
                     DriedRose.class,
                     DriedRose.Petal.class,
                     EtherealChains.class,
+                    HolyTome.class,
                     HornOfPlenty.class,
                     MasterThievesArmband.class,
                     SandalsOfNature.class,

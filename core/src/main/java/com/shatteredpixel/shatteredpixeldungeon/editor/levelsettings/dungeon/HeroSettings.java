@@ -541,6 +541,9 @@ public class HeroSettings extends Component {
                 case 5:
                     HeroClass.initDuelist(this);
                     break;
+                case 6:
+                    HeroClass.initCleric(this);
+                    break;
             }
         }
 

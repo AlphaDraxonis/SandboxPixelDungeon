@@ -58,7 +58,7 @@ public class WellFed extends Buff {
 		}
 
 		//salt cube does slow this buff down, but doesn't lessen the bonus health
-		spend(TICK / SaltCube.hungerGainMultiplier());
+		spend(TICK / SaltCube.hungerGainMultiplier(targetHero(target)));
 		return true;
 	}
 	
@@ -88,13 +88,13 @@ public class WellFed extends Buff {
 
 	@Override
 	public String iconTextDisplay() {
-		int visualLeft = (int)(left / SaltCube.hungerGainMultiplier());
+		int visualLeft = (int)(left / SaltCube.hungerGainMultiplier(Dungeon.hero));
 		return Integer.toString(visualLeft+1);
 	}
 	
 	@Override
 	public String desc() {
-		int visualLeft = (int)(left / SaltCube.hungerGainMultiplier());
+		int visualLeft = (int)(left / SaltCube.hungerGainMultiplier(Dungeon.hero));
 		return Messages.get(this, "desc", visualLeft + 1);
 	}
 	

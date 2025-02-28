@@ -71,7 +71,7 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	public Armor armor() {
 		return armor;
 	}
-
+	
 	@Override
 	public ItemSelector.NullTypeSelector useNullArmor() {
 		return ItemSelector.NullTypeSelector.RANDOM;
@@ -106,11 +106,6 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	public int drRoll() {
 		if (armor == null) return super.drRoll();
 		return super.drRoll() + Random.NormalIntRange( armor.DRMin(), armor.DRMax());
-	}
-
-	//used in some glyph calculations
-	public Armor armor(){
-		return armor;
 	}
 
 	@Override

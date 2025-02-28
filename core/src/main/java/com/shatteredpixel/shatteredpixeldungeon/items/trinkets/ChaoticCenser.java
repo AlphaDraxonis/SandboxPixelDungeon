@@ -80,7 +80,7 @@ public class ChaoticCenser extends Trinket {
 		return averageTurnsUntilGas(trinketLevel(ChaoticCenser.class, hero));
 	}
 
-	public static int averageTurnsUntilGas(int level){
+	private static int averageTurnsUntilGas(int level){
 		if (level <= -1){
 			return -1;
 		} else {
@@ -108,8 +108,6 @@ public class ChaoticCenser extends Trinket {
 			}
 
 			if (left <= 0) {
-
-				Char enemy = null;
 
 				if (TargetHealthIndicator.instance != null && TargetHealthIndicator.instance.isVisible()
 						&& TargetHealthIndicator.instance.target() != null
@@ -259,7 +257,7 @@ public class ChaoticCenser extends Trinket {
 
 				//corrosion starts at the same level as potion of corrosive gas
 				if (gasType == CorrosiveGas.class){
-					((CorrosiveGas)Dungeon.level.blobs.get(CorrosiveGas.class)).setStrength( 2 + Dungeon.scalingDepth()/5, ChaoticCenser.class);
+					((CorrosiveGas)Dungeon.level.blobs.getOnly(CorrosiveGas.class)).setStrength( 2 + Dungeon.scalingDepth()/5, ChaoticCenser.class);
 				}
 
 				MagicMissile.boltFromChar(Dungeon.hero.sprite.parent, MISSILE_VFX.get(gasType), Dungeon.hero.sprite, targetCell, null);

@@ -54,9 +54,9 @@ public class Sunray extends TargetedClericSpell {
 
 	@Override
 	public String desc() {
-		int min = Dungeon.hero.pointsInTalent(Talent.SUNRAY) == 2 ? 6 : 4;
-		int max = Dungeon.hero.pointsInTalent(Talent.SUNRAY) == 2 ? 12 : 8;
-		int dur = Dungeon.hero.pointsInTalent(Talent.SUNRAY) == 2 ? 6 : 4;
+		int min = Dungeon.hero.pointsInTalent(Talent.SUNRAY) >= 2 ? 6 : 4;
+		int max = Dungeon.hero.pointsInTalent(Talent.SUNRAY) >= 2 ? 12 : 8;
+		int dur = 2 + 2*Dungeon.hero.pointsInTalent(Talent.SUNRAY);
 		return Messages.get(this, "desc", min, max, dur) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
 	}
 
@@ -71,7 +71,7 @@ public class Sunray extends TargetedClericSpell {
 			return;
 		}
 
-		Ballistica aim = new Ballistica(hero.pos, target,  targetingFlags());
+		Ballistica aim = new Ballistica(hero.pos, target,  targetingFlags(), null);
 
 		if (Actor.findChar( aim.collisionPos ) == hero){
 			GLog.i( Messages.get(Wand.class, "self_target") );
@@ -96,13 +96,13 @@ public class Sunray extends TargetedClericSpell {
 			ch.sprite.burst(0xFFFFFF44, 5);
 
 			if (Char.hasProp(ch, Char.Property.UNDEAD) || Char.hasProp(ch, Char.Property.DEMONIC)){
-				if (hero.pointsInTalent(Talent.SUNRAY) == 2) {
+				if (hero.pointsInTalent(Talent.SUNRAY) >= 2) {
 					ch.damage(12, Sunray.this);
 				} else {
 					ch.damage(8, Sunray.this);
 				}
 			} else {
-				if (hero.pointsInTalent(Talent.SUNRAY) == 2) {
+				if (hero.pointsInTalent(Talent.SUNRAY) >= 2) {
 					ch.damage(Random.NormalIntRange(6, 12), Sunray.this);
 				} else {
 					ch.damage(Random.NormalIntRange(4, 8), Sunray.this);

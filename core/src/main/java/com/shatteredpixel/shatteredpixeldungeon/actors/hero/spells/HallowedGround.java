@@ -154,7 +154,7 @@ public class HallowedGround extends TargetedClericSpell {
 					ch.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(barrier), FloatingText.SHIELDING );
 				}
 			}
-		} else if (!ch.flying) {
+		} else if (!ch.isFlying()) {
 			Buff.affect(ch, Roots.class, 1f);
 		}
 	}

@@ -85,7 +85,7 @@ public class Feint extends ArmorAbility {
 			return;
 		}
 
-		if (Dungeon.hero.rooted){
+		if (hero.rooted){
 			PixelScene.shake( 1, 1f );
 			GLog.w(Messages.get(this, "bad_location"));
 			return;

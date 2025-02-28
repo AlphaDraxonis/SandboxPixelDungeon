@@ -72,7 +72,7 @@ public class GhoulSprite extends MobSprite {
 
 	public static void crumple(CharSprite sprite){
 		sprite.hideEmo();
-		processStateRemoval(State.PARALYSED);
+		sprite.processStateRemoval(State.PARALYSED);
 
 		if (sprite instanceof GhoulSprite) {
 			sprite.play(((GhoulSprite) sprite).crumple);

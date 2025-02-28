@@ -42,7 +42,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.Shad
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.ClericSpell;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.GuidingLight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.Stasis;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
@@ -68,8 +67,8 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.GlyphArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArmband;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
@@ -103,6 +102,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuest;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.BArray;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Function;
@@ -783,7 +783,7 @@ public abstract class Mob extends Char implements Customizable {
 		}
 
 		if (hasProp(this, Property.AQUATIC)) {
-			int step = Dungeon.findStep( this, target, Dungeon.level.water, fieldOfView, true );
+			int step = Dungeon.findStep( this, target, BArray.and(Dungeon.level.water, Dungeon.level.getPassableVar(this), null), fieldOfView, true );
 			if (step != -1) {
 				move( step );
 				return true;
@@ -922,7 +922,7 @@ public abstract class Mob extends Char implements Customizable {
 		}
 
 		if (hasProp(this, Property.AQUATIC)) {
-			int step = Dungeon.flee( this, target, Dungeon.level.water, fieldOfView, true );
+			int step = Dungeon.findStep( this, target, BArray.and(Dungeon.level.water, Dungeon.level.getPassableVar(this), null), fieldOfView, true );
 			if (step != -1) {
 				move( step );
 				return true;
@@ -953,10 +953,6 @@ public abstract class Mob extends Char implements Customizable {
 	@Override
 	protected boolean moveSprite(int from, int to) {
 		return super.moveSprite(from, to);
-	}
-
-	public DirectableAlly getDirectableAlly() {
-		return null;
 	}
 
 	public void playZapAnim(int target) {
@@ -1118,17 +1114,14 @@ public abstract class Mob extends Char implements Customizable {
 		}
 		return super.isImmune(effect);
 	}
-
+	
 	@Override
-	public float speed() {
-		float s = super.speed() * AscensionChallenge.enemySpeedModifier(this);
-		return glyphArmor == null ? s : glyphArmor.speedFactor(this, s);
-	}
-
-	@Override
-	public float stealth() {
-		float sth = super.stealth();
-		return glyphArmor == null ? sth : glyphArmor.stealthFactor(this, sth);
+	public int glyphLevel(Class<? extends Armor.Glyph> cls) {
+		if (glyphArmor != null && glyphArmor.hasGlyph(cls, this)){
+			return Math.max(super.glyphLevel(cls), glyphArmor.buffedLvl());
+		} else {
+			return super.glyphLevel(cls);
+		}
 	}
 
 	public final boolean surprisedBy(Char enemy ){
@@ -1166,12 +1159,6 @@ public abstract class Mob extends Char implements Customizable {
 
 	@Override
 	public void damage( int dmg, Object src ) {
-
-		//TODO improve this when I have proper damage source logic
-		if (glyphArmor != null && glyphArmor.hasGlyph(AntiMagic.class, this)
-				&& AntiMagic.RESISTS.contains(src.getClass())){
-			dmg -= AntiMagic.drRoll(this, glyphArmor.buffedLvl());
-		}
 
 		boolean bleedingCheck;
 		if (isBossMob && !BossHealthBar.isAssigned(this)){

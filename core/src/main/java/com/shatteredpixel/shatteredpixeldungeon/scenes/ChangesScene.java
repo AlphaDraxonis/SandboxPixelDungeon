@@ -386,7 +386,7 @@ public class ChangesScene extends PixelScene {
 				super.onClick();
 				if (changesSelected != 7) {
 					changesSelected = 7;
-					ShatteredPixelDungeon.seamlessResetScene();
+					SandboxPixelDungeon.seamlessResetScene();
 				}
 			}
 		};

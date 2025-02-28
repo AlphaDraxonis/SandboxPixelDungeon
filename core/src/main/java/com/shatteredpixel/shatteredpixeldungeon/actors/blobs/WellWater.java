@@ -22,6 +22,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -53,8 +55,9 @@ public abstract class WellWater extends Blob {
 	protected boolean affect( int pos ) {
 		
 		Heap heap;
+		Hero hero = Buff.targetHero(Actor.findChar(pos));
 		
-		if (pos == Dungeon.hero.pos && affectHero( Dungeon.hero )) {
+		if (hero != null && affectHero( hero )) {
 			
 			clear(pos);
 			return true;
@@ -114,7 +117,7 @@ public abstract class WellWater extends Blob {
 		waters[2] = WaterOfTransmutation.class;
 		
 		for (Class<? extends WellWater> waterClass : waters) {
-			WellWater water = (WellWater)Dungeon.level.blobs.getOnly( waterClass );
+			WellWater water = Dungeon.level.blobs.getOnly( waterClass );
 			if (water != null &&
 				water.volume > 0 &&
 				water.cur[cell] > 0 &&

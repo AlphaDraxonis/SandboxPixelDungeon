@@ -215,6 +215,11 @@ public class ShadowClone extends ArmorAbility {
 		public void aggro(Char ch) {
 			directableAlly.aggroOverride(ch);
 		}
+		
+		@Override
+		public void beckon(int cell) {
+			directableAlly.beckonOverride(cell);
+		}
 
 		@Override
 		public DirectableAlly getDirectableAlly() {

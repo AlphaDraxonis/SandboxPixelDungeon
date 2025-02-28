@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Identification;
@@ -46,7 +45,7 @@ public class HolyIntuition extends InventoryClericSpell {
 
 	@Override
 	protected boolean usableOnItem(Item item) {
-		return (item instanceof EquipableItem || item instanceof Wand) && !item.isIdentified() && !item.cursedKnown;
+		return (item instanceof EquipableItem || item instanceof Wand) && !item.isIdentified() && !item.cursedKnown();
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public class HolyIntuition extends InventoryClericSpell {
 			return;
 		}
 
-		item.cursedKnown = true;
+		item.setCursedKnown(true);
 
 		if (item.cursed){
 			GLog.w(Messages.get(this, "cursed"));

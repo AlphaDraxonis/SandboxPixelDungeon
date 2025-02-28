@@ -67,7 +67,7 @@ public class TrapMechanism extends Trinket {
 		return revealHiddenTrapChance(trinketLevel(TrapMechanism.class));
 	}
 
-	public static float revealHiddenTrapChance( int level ){
+	private static float revealHiddenTrapChance( int level ){
 		if (level == -1){
 			return 0f;
 		} else {

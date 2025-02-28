@@ -38,6 +38,10 @@ public class BuffWithDuration extends Buff {
 	public void set(BuffWithDuration buff, Class source) {
 		this.left = Math.max(buff.left, left);
 	}
+	
+	public void extend( float duration ) {
+		left += duration;
+	}
 
 	private static final String LEFT = "left";
 

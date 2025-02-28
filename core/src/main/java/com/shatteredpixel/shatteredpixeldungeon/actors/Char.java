@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.LifeLinkSpell
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.ShieldOfLight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
@@ -295,6 +296,10 @@ public abstract class Char extends Actor {
 		}
 		
 		return true;
+	}
+	
+	public DirectableAlly getDirectableAlly() {
+		return null;
 	}
 	
 	protected boolean moveSprite( int from, int to ) {

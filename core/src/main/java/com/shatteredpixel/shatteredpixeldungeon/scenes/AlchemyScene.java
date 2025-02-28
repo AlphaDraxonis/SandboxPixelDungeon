@@ -884,7 +884,7 @@ public class AlchemyScene extends PixelScene {
 				Badges.saveGlobal();
 				Journal.saveGlobal();
 			} catch (IOException e) {
-				ShatteredPixelDungeon.reportException(e);
+				SandboxPixelDungeon.reportException(e);
 			}
 		}
 	}

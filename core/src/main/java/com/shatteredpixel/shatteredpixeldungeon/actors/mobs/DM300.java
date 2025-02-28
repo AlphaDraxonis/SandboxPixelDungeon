@@ -705,9 +705,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 						Level.set(pos+i, Terrain.EMPTY_DECO);
 						GameScene.updateMap(pos+i);
 					}
-					if (Dungeon.level.blobs.get(WallOfLight.LightWall.class) != null){
-						Dungeon.level.blobs.get(WallOfLight.LightWall.class).clear(pos+i);
-					}
+					Dungeon.level.blobs.doOnEach(WallOfLight.LightWall.class, b -> b.clear(pos+i));
 				}
 				Dungeon.level.cleanWalls();
 				Dungeon.observe();

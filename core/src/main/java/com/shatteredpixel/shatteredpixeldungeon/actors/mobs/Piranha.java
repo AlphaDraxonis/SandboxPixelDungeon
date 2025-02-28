@@ -36,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.PiranhaSprite;
-import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -122,33 +121,6 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 	@Override
 	public boolean reset() {
 		return true;
-	}
-	
-	@Override
-	protected boolean getCloser( int target ) {
-		
-		if (rooted) {
-			return false;
-		}
-		
-		int step = Dungeon.findStep( this, target, BArray.and(Dungeon.level.water, Dungeon.level.passable, null), fieldOfView, true );
-		if (step != -1) {
-			move( step );
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	@Override
-	protected boolean getFurther( int target ) {
-		int step = Dungeon.flee( this, target, BArray.and(Dungeon.level.water, Dungeon.level.passable, null), fieldOfView, true );
-		if (step != -1) {
-			move( step );
-			return true;
-		} else {
-			return false;
-		}
 	}
 	
 	{

@@ -70,10 +70,6 @@ public class Bleeding extends BuffWithDuration {
 			this.source = source;
 		}
 	}
-
-	public void extend( float amount ) {
-		level += amount;
-	}
 	
 	@Override
 	public void set(BuffWithDuration buff, Class source) {

@@ -32,7 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.PowerOfMany;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
@@ -152,8 +152,7 @@ public class Stasis extends ClericSpell {
 			ArrayList<Integer> spawnPoints = new ArrayList<>();
 			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 				int p = target.pos + PathFinder.NEIGHBOURS8[i];
-				if (Actor.findChar(p) == null
-						&& (Dungeon.level.passable[p] || (stasisAlly.flying && Dungeon.level.avoid[p])) ){
+				if (Barrier.canEnterCell(p, stasisAlly, stasisAlly.isFlying(), true)){
 					spawnPoints.add(p);
 				}
 			}
@@ -163,8 +162,8 @@ public class Stasis extends ClericSpell {
 			stasisAlly.pos = Random.element(spawnPoints);
 			GameScene.add(stasisAlly);
 
-			if (stasisAlly instanceof DirectableAlly){
-				((DirectableAlly) stasisAlly).clearDefensingPos();
+			if (stasisAlly.getDirectableAlly() != null){
+				stasisAlly.getDirectableAlly().clearDefensingPos();
 			}
 
 			if (stasisAlly.buff(LifeLink.class) != null){

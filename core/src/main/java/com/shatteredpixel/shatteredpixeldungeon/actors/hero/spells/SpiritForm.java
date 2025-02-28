@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
@@ -30,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.Trinity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
@@ -63,6 +63,7 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
@@ -197,17 +198,20 @@ public class SpiritForm extends ClericSpell {
 			Game.switchScene(AlchemyScene.class);
 
 		} else if (effect instanceof DriedRose){
+			
+			Wraith w = Reflection.newInstance(Wraith.class);
+			Buff.affect(w, Corruption.class);
+			
 			ArrayList<Integer> spawnPoints = new ArrayList<>();
 			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 				int p = Dungeon.hero.pos + PathFinder.NEIGHBOURS8[i];
-				if (Actor.findChar(p) == null && (Dungeon.level.passable[p] || Dungeon.level.avoid[p])) {
+				if (Barrier.canEnterCell(p, w, true, true)) {
 					spawnPoints.add(p);
 				}
 			}
 			if (spawnPoints.size() > 0) {
-				Wraith w = Wraith.spawnAt(Random.element(spawnPoints), Wraith.class);
+				Wraith.spawnAt(Random.element(spawnPoints), w);
 				w.HP = w.HT = 20 + 8*artifactLevel();
-				Buff.affect(w, Corruption.class);
 			}
 			Talent.onArtifactUsed(Dungeon.hero);
 			Dungeon.hero.spendAndNext(1f);
