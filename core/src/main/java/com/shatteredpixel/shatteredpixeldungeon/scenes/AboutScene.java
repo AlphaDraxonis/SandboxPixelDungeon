@@ -23,10 +23,19 @@ package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.NotAllowedInLua;
 import com.watabou.input.PointerEvent;
-import com.watabou.noosa.*;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.ColorBlock;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 
 @NotAllowedInLua
@@ -193,6 +202,38 @@ public class AboutScene extends PixelScene {
 				"https://github.com/prurigro/");
 		purigro.setRect(arcnor.right()+2, arcnor.top(), colWidth/2f, 0);
 		content.add(purigro);
+		
+		//*** ByteBuddy Credits ***
+		
+		final int BYTE_BUDDY_LUA_COLOR = 0xF0A020;
+		RenderedTextBlock byteBuddyAndLua = PixelScene.renderTextBlock("Lua-Implementation possible thanks to", 66);
+		byteBuddyAndLua.setRect(wata.left(), arcnor.bottom() + 8, colWidth, 0);
+		content.add(byteBuddyAndLua);
+		
+		addLine(byteBuddyAndLua.top() - 4, content);
+		
+		CreditsBlock byteBuddy = new CreditsBlock(false, BYTE_BUDDY_LUA_COLOR,
+				"ByteBuddy:",
+				null,
+				null,
+				"github.com/raphw/byte-buddy",
+				"https://github.com/raphw/byte-buddy");
+		byteBuddy.setSize(colWidth/2f, 0);
+		if (landscape()){
+			byteBuddy.setPos(byteBuddyAndLua.right(), byteBuddyAndLua.top() + (byteBuddyAndLua.height() - byteBuddy.height())/2f);
+		} else {
+			byteBuddy.setPos(alex.left(), byteBuddyAndLua.bottom()+5);
+		}
+		content.add(byteBuddy);
+		
+		CreditsBlock lua = new CreditsBlock(false, BYTE_BUDDY_LUA_COLOR,
+				"Lua-Java:",
+				null,
+				null,
+				"github.com/luaj/luaj",
+				"https://github.com/luaj/luaj");
+		lua.setRect(byteBuddy.right()+2, byteBuddy.top(), colWidth/2f, 0);
+		content.add(lua);
 
 		//*** Transifex Credits ***
 
@@ -203,7 +244,7 @@ public class AboutScene extends PixelScene {
 				"ShatteredPD is community-translated via _Transifex_! Thank you so much to all of Shattered's volunteer translators!",
 				"transifex.com/shattered-pixel/...",
 				"https://explore.transifex.com/shattered-pixel/shattered-pixel-dungeon/");
-		transifex.setRect((Camera.main.width - colWidth)/2f, purigro.bottom() + 12, colWidth, 0);
+		transifex.setRect((Camera.main.width - colWidth)/2f, lua.bottom() + 12, colWidth, 0);
 		content.add(transifex);
 
 		addLine(transifex.top() - 4, content);
