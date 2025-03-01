@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.MobSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Reflection;
 
 public final class MobSprites extends GameObjectCategory<MobSprite> {
 
@@ -108,7 +109,8 @@ public final class MobSprites extends GameObjectCategory<MobSprite> {
             items.clear();
 
             for (Class<?> m : category.getClasses()) {
-                Mob mob = GameObjectCategory.Bag.initMob((Class<? extends Mob>) m);
+                Mob mob = (Mob) Reflection.newInstance(m);
+                mob.initAsInventoryItem();
                 if (MobSpriteItem.canSpriteBeUsedForOthers(mob)) {
                     Class<? extends CharSprite> sprite = mob.spriteClass;
                     Class<?> enclosingClass = sprite.getEnclosingClass();

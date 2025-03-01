@@ -72,10 +72,11 @@ public class LoadCustomObjects {
 		loadFiles(localCustomObjectDir, Pattern.quote(localCustomObjectDir.path() + "/"));
 		
 		if (openResponses <= 0) {
-			maybeDisplayErrors();
 			//finish immediately
-		} else {
+			maybeDisplayErrors();
 			
+		} else {
+			//wait until everything is loaded
 			allExecutorsStarted = true;
 			
 			try {

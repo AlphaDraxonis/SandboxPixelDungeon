@@ -53,6 +53,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.LevelColoring;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.SideControlPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -1248,7 +1249,9 @@ public class GameScene extends DungeonScene {
 					} catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
 						SandboxPixelDungeon.reportException(e);
 					}
-				} else StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass, Dungeon.customDungeon.getName());
+				} else {
+					StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass, Dungeon.customDungeon.getName(), Messages.get(WndSelectDungeon.class, "play_again"));
+				}
 			}
 
 			@Override

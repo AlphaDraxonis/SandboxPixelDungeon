@@ -171,7 +171,7 @@ public class HallowedGround extends TargetedClericSpell {
 
 			int cell;
 
-			Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );
+			Blob[] fires = Dungeon.level.blobs.get( Fire.class );
 
 			ArrayList<Char> affected = new ArrayList<>();
 
@@ -179,14 +179,18 @@ public class HallowedGround extends TargetedClericSpell {
 			int chance = 10 + 10*Dungeon.hero.pointsInTalent(Talent.HALLOWED_GROUND);
 
 			for (int i = area.left-1; i <= area.right; i++) {
+				forEachHallowedGround:
 				for (int j = area.top-1; j <= area.bottom; j++) {
 					cell = i + j*Dungeon.level.width();
 					if (cur[cell] > 0) {
 
 						//fire destroys hallowed terrain
-						if (fire != null && fire.volume > 0 && fire.cur[cell] > 0){
-							off[cell] = cur[cell] = 0;
-							continue;
+						for (int k = 0; k < fires.length; k++) {
+							if (fires[k].cur == null) continue;
+							if (fires[k].volume > 0 && fires[k].cur[cell] > 0) {
+								off[cell] = cur[cell] = 0;
+								continue forEachHallowedGround;
+							}
 						}
 
 						int c = Dungeon.level.map[cell];
@@ -244,7 +248,7 @@ public class HallowedGround extends TargetedClericSpell {
 					ch.HP++;
 					ch.sprite.showStatusWithIcon( CharSprite.POSITIVE, "1", FloatingText.HEALING );
 				}
-			} else if (!ch.flying && ch.buff(Roots.class) == null){
+			} else if (!ch.isFlying() && ch.buff(Roots.class) == null){
 				Buff.prolong(ch, Cripple.class, 1f);
 			}
 		}

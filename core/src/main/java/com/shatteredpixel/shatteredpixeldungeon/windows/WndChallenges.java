@@ -81,7 +81,7 @@ public class WndChallenges extends Window {
 			add( cb );
 			boxes.add( cb );
 
-			if ( (Dungeon.customDungeon.forceChallenges & Challenges.MASKS[i]) != 0 ){
+			if (Dungeon.customDungeon != null && (Dungeon.customDungeon.forceChallenges & Challenges.MASKS[i]) != 0 ){
 				cb.enable(false);
 			}
 			
@@ -113,7 +113,7 @@ public class WndChallenges extends Window {
 				if (boxes.get( i ).checked()) {
 					int mask = Challenges.MASKS[i];
 					//only add to new value if it was in old value or not forced
-					if ((oldValue & mask) != 0 || (Dungeon.customDungeon.forceChallenges & mask) == 0)
+					if ((oldValue & mask) != 0 || Dungeon.customDungeon != null && (Dungeon.customDungeon.forceChallenges & mask) == 0)
 						value |= mask;
 				}
 			}

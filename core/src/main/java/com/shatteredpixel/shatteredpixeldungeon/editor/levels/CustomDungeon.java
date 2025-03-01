@@ -710,12 +710,28 @@ public class CustomDungeon implements Bundlable {
         view2d = bundle.getBoolean(VIEW_2D);
         seeLevelOnDeath = !bundle.contains(SEE_LEVEL_ON_DEATH) || bundle.getBoolean(SEE_LEVEL_ON_DEATH);
         notRevealSecrets = bundle.getBoolean(NOT_REVEAL_SECRETS);
-        if (bundle.contains(HEROES_ENABLED)) heroesEnabled = bundle.getBooleanArray(HEROES_ENABLED);
+        if (bundle.contains(HEROES_ENABLED)) {
+            heroesEnabled = bundle.getBooleanArray(HEROES_ENABLED);
+            if (heroesEnabled.length < HeroClass.values().length) {
+                boolean[] temp = new boolean[HeroClass.values().length];
+                Arrays.fill(temp, true);
+                System.arraycopy(heroesEnabled, 0, temp, 0, heroesEnabled.length);
+                heroesEnabled = temp;
+            }
+        }
         else {
             heroesEnabled = new boolean[HeroClass.values().length];
             Arrays.fill(heroesEnabled, true);
         }
-        if (bundle.contains(HERO_SUBCLASSES_ENABLED)) heroSubClassesEnabled = bundle.getBooleanArray(HERO_SUBCLASSES_ENABLED);
+        if (bundle.contains(HERO_SUBCLASSES_ENABLED)) {
+            heroSubClassesEnabled = bundle.getBooleanArray(HERO_SUBCLASSES_ENABLED);
+            if (heroSubClassesEnabled.length < heroesEnabled.length * 2) {
+                boolean[] temp = new boolean[heroesEnabled.length * 2];
+                Arrays.fill(temp, true);
+                System.arraycopy(heroSubClassesEnabled, 0, temp, 0, heroSubClassesEnabled.length);
+                heroSubClassesEnabled = temp;
+            }
+        }
         else {
             heroSubClassesEnabled = new boolean[heroesEnabled.length * 2];
             Arrays.fill(heroSubClassesEnabled, true);
@@ -726,6 +742,10 @@ public class CustomDungeon implements Bundlable {
             for (Bundlable heroStartItemsData : bundle.getCollection(START_ITEMS)) {
                 startItems[i] = (HeroSettings.HeroStartItemsData) heroStartItemsData;
                 startItems[i].maybeInitDefault(i);
+                i++;
+            }
+            while (i < startItems.length) {
+                startItems[i] = HeroSettings.HeroStartItemsData.getDefault(i);
                 i++;
             }
         } else {

@@ -91,23 +91,28 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
 
     public static final class Modify implements ActionPartModify {
 
-        private final Mob realMob;
         private final Mob before;
         private Mob after;
 
         public Modify(Mob mob) {
             before = (Mob) mob.getCopy();
-            realMob = mob;
+            after = mob;
         }
 
         @Override
         public void undo() {
-            if (realMob != null) realMob.copyStats(before);
+            Mob realMob = Dungeon.level.findMob(after.pos);
+            if (realMob != null) {
+                realMob.copyStats(before);
+            }
         }
 
         @Override
         public void redo() {
-            if (realMob != null) realMob.copyStats(after);
+            Mob realMob = Dungeon.level.findMob(after.pos);
+            if (realMob != null) {
+                realMob.copyStats(after);
+            }
         }
 
         @Override
@@ -117,7 +122,7 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
 
         @Override
         public void finish() {
-            after = (Mob) realMob.getCopy();
+            after = (Mob) after.getCopy();
         }
     }
 }

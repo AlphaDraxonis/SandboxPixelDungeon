@@ -25,6 +25,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.StartScene;
 import com.watabou.NotAllowedInLua;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 @NotAllowedInLua
 public class GamesInProgress {
@@ -114,16 +116,18 @@ public class GamesInProgress {
 			}
 		}
 		
+		return result;
+	}
+	
+	public static void doSort(List<Info> list) {
 		switch (SPDSettings.gamesInProgressSort()){
 			case "level": default:
-				Collections.sort(result, levelComparator);
+				Collections.sort(list, levelComparator);
 				break;
 			case "last_played":
-				Collections.sort(result, lastPlayedComparator);
+				Collections.sort(list, lastPlayedComparator);
 				break;
 		}
-		
-		return result;
 	}
 	
 	public static Info check( int slot ) {
@@ -252,6 +256,9 @@ public class GamesInProgress {
 		public boolean testGame;
 
 		public boolean checkpointReached;
+		
+		
+		public StartScene.SaveSlotButton btn;
 	}
 	
 	public static final Comparator<GamesInProgress.Info> levelComparator = new Comparator<GamesInProgress.Info>() {

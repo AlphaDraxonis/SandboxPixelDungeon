@@ -795,12 +795,6 @@ public class Dungeon {
 			Statistics.storeInBundle( bundle );
 			Notes.storeInBundle( bundle );
 			Generator.storeInBundle( bundle );
-
-			int[] bundleArr = new int[generatedLevels.size()];
-			for (int i = 0; i < generatedLevels.size(); i++){
-				bundleArr[i] = generatedLevels.get(i);
-			}
-			bundle.put( GENERATED_LEVELS, bundleArr);
 			
 			Scroll.save( bundle );
 			Potion.save( bundle );
@@ -1014,6 +1008,9 @@ public class Dungeon {
 	}
 	
 	public static boolean preview( GamesInProgress.Info info, Bundle bundle ) {
+		
+		LuaClassGenerator.skipConversion = true;
+		
 		if (bundle.getBoolean(TEST_GAME)) return false;
 		info.depth = bundle.getInt( DEPTH );
 		info.levelName = bundle.getString( LEVEL_NAME );
@@ -1029,6 +1026,8 @@ public class Dungeon {
 
 		Hero.preview( info, bundle.getBundle( HERO ) );
 		Statistics.preview( info, bundle );
+		
+		LuaClassGenerator.skipConversion = false;
 		
 		return true;
 	}

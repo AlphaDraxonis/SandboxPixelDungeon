@@ -297,7 +297,6 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(2063, Armor.class.getMethod("DRMax", int.class), "lvl");
 			addMethod(2064, Armor.class.getMethod("evasionFactor", Char.class, float.class), "owner", "evasion");
 			addMethod(2065, Armor.class.getMethod("speedFactor", Char.class, float.class), "owner", "speed");
-			addMethod(2066, Armor.class.getMethod("stealthFactor", Char.class, float.class), "owner", "stealth");
 			addMethod(2067, Armor.class.getMethod("affixSeal", BrokenSeal.class), "seal");
 			addMethod(2068, Armor.class.getMethod("upgrade", boolean.class), "inscribe");
 			addMethod(2069, Armor.class.getMethod("inscribe", Armor.Glyph.class), "glyph");

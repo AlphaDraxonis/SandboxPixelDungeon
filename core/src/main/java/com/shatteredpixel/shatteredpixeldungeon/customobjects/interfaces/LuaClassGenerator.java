@@ -76,6 +76,9 @@ public final class LuaClassGenerator {
 	//ClassLoadingStrategy strategy = new AndroidClassLoadingStrategy.Wrapping(context.getDir(
 	//  "generated",
 	//  Context.MODE_PRIVATE))
+	
+	//useful for loading game progresses as preview
+	public static boolean skipConversion = false;
 
     private LuaClassGenerator() {
     }
@@ -89,7 +92,9 @@ public final class LuaClassGenerator {
      * @return a class capable of overriding methods with a lua script
      */
     public static <T> Class<? extends T> luaUserContentClass(Class<T> originalClass) {
-        return (Class<? extends T>) CACHE.findOrInsert(LuaClassGenerator.class.getClassLoader(), originalClass, () -> build(originalClass));
+        return skipConversion
+		? originalClass
+		: (Class<? extends T>) CACHE.findOrInsert(LuaClassGenerator.class.getClassLoader(), originalClass, () -> build(originalClass));
     }
 
 	private static <T> Class<? extends T> build(Class<T> originalClass) {

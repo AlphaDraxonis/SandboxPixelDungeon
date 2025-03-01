@@ -76,15 +76,17 @@ public class WndSelectDungeon extends Window {
 
     private List<CustomDungeonSaves.Info> allInfos;
     private CustomDungeonSaves.Info featuredInfo;
+    private final String featuredLabel;
     private Set<String> dungeonNames;
 
     public WndSelectDungeon(List<CustomDungeonSaves.Info> allInfos, boolean showAddButton) {
-        this(allInfos, showAddButton, null);
+        this(allInfos, showAddButton, null, null);
     }
 
-    public WndSelectDungeon(List<CustomDungeonSaves.Info> allInfos, boolean showAddButton, CustomDungeonSaves.Info featuredInfo) {
+    public WndSelectDungeon(List<CustomDungeonSaves.Info> allInfos, boolean showAddButton, CustomDungeonSaves.Info featuredInfo, String featuredLabel) {
         this.allInfos = allInfos;
         this.featuredInfo = featuredInfo;
+        this.featuredLabel = featuredLabel;
 
         resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_SMALL.get());
 
@@ -197,7 +199,7 @@ public class WndSelectDungeon extends Window {
 			return 0;
 		});
         if (featuredInfo != null) {
-            listPane.addItemNoLayouting(new PlayAgain(featuredInfo));
+            listPane.addItemNoLayouting(new PlayAgain(featuredInfo, featuredLabel));
         }
         for (CustomDungeonSaves.Info info : allInfos) {
             if (createNewDungeonBtn != null || info.numLevels > 0)
@@ -600,11 +602,11 @@ public class WndSelectDungeon extends Window {
         protected RenderedTextBlock playAgain;
         protected ColorBlock separator;
 
-        public PlayAgain(CustomDungeonSaves.Info info) {
+        public PlayAgain(CustomDungeonSaves.Info info, String featuredLabel) {
             listItem = new ListItem(info);
             add(listItem);
 
-            playAgain = PixelScene.renderTextBlock(Messages.get(this, "label"), 10);
+            playAgain = PixelScene.renderTextBlock(featuredLabel, 10);
             playAgain.align(RenderedTextBlock.RIGHT_ALIGN);
             add(playAgain);
 

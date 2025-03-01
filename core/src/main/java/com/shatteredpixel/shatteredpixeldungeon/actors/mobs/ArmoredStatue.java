@@ -113,7 +113,16 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 		if (armor != null) damage = armor.proc(enemy, this, damage);
 		return super.defenseProc(enemy, damage);
 	}
-
+	
+	@Override
+	public float speed() {
+		float speed = super.speed();
+		if (armor != null) {
+			speed = armor.speedFactor(this, speed);
+		}
+		return speed;
+	}
+	
 	@Override
 	public int glyphLevel(Class<? extends Armor.Glyph> cls) {
 		if (armor != null && armor.hasGlyph(cls, this)){

@@ -117,7 +117,7 @@ public class WandOfInstability extends Wand {
 	}
 
 	@Override
-	protected void wandUsed() {
+	public void wandUsed() {
 		super.wandUsed();
 		curWandEffect = null;
 	}

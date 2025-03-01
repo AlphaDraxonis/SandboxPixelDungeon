@@ -27,6 +27,7 @@ package com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaClassGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaCustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.GameObjectCategory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
@@ -85,7 +86,9 @@ public abstract class CustomGameObject<T extends CustomGameObjectClass> extends 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
-		userContentClass = (T) bundle.get(USER_CONTENT_CLASS);
+		if (!LuaClassGenerator.skipConversion) {
+			userContentClass = (T) bundle.get(USER_CONTENT_CLASS);
+		}
 	}
 
 	@Override

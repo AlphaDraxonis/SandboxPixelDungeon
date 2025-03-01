@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaClassGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -305,6 +306,8 @@ public enum Rankings {
 	}
 
 	public void loadGameData(Record rec){
+		LuaClassGenerator.skipConversion = true;
+		
 		Bundle data = rec.gameData;
 
 		Actor.clear();
@@ -350,6 +353,8 @@ public enum Rankings {
 			Dungeon.customSeedText = "";
 			Dungeon.daily = Dungeon.dailyReplay = false;
 		}
+		
+		LuaClassGenerator.skipConversion = false;
 	}
 
 	private static final String RECORDS	= "records";

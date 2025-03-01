@@ -23,7 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.AscendedForm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.PowerOfMany;
@@ -45,18 +49,29 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.He
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.Shockwave;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
+import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
@@ -76,7 +91,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKn
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingSpike;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+
+import java.util.Collection;
 
 public enum HeroClass {
 
@@ -339,6 +357,125 @@ public enum HeroClass {
 		}
 	}
 
+	private static void collectStartEq(Hero hero, HeroSettings.HeroStartItemsData startItems) {
+		
+		if (startItems.weapon != null && !Challenges.isItemBlocked(startItems.weapon)) {
+			if (hero.belongings.weapon != null) overrideEq(hero, hero.belongings.weapon);
+			hero.belongings.weapon = startItems.weapon;
+			hero.belongings.weapon.activate(hero);
+		}
+		if (startItems.armor != null && !Challenges.isItemBlocked(startItems.armor)) {
+			if (hero.belongings.armor != null) overrideEq(hero, hero.belongings.armor);
+			hero.belongings.armor = startItems.armor;
+			hero.belongings.armor.activate(hero);
+		}
+		if (startItems.ring != null && !Challenges.isItemBlocked(startItems.ring)) {
+			if (hero.belongings.misc == null) {
+				hero.belongings.misc = startItems.ring;
+				hero.belongings.misc.activate(hero);
+			} else {
+				if (hero.belongings.ring != null) overrideEq(hero, hero.belongings.ring);
+				hero.belongings.ring = startItems.ring;
+				hero.belongings.ring.activate(hero);
+			}
+		}
+		if (startItems.artifact != null && !Challenges.isItemBlocked(startItems.artifact)) {
+			equipArtifact(startItems.artifact, hero);
+		}
+		if (startItems.misc != null && !Challenges.isItemBlocked(startItems.misc)) {
+			if (startItems.misc instanceof Artifact) {
+				equipArtifact((Artifact) startItems.misc, hero);
+			} else {
+				if (hero.belongings.ring == null) {
+					hero.belongings.ring = (Ring) startItems.misc;
+					hero.belongings.ring.activate(hero);
+				} else {
+					if (hero.belongings.misc != null) overrideEq(hero, hero.belongings.misc);
+					hero.belongings.misc = startItems.misc;
+					hero.belongings.misc.activate(hero);
+				}
+			}
+		}
+		
+		for (Item item : startItems.items) {
+			if (item instanceof Bag && !Challenges.isItemBlocked(item)) {
+				Bag b = (Bag) item;
+				b.collect();
+				if (b instanceof VelvetPouch) Dungeon.LimitedDrops.VELVET_POUCH.drop();
+				if (b instanceof ScrollHolder) Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
+				if (b instanceof PotionBandolier) Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
+				if (b instanceof MagicalHolster) Dungeon.LimitedDrops.MAGICAL_HOLSTER.drop();
+				maybePutIntoToolbar(b);
+			}
+		}
+	}
+	
+	private static void equipArtifact(Artifact artifact, Hero hero) {
+		if (hero.belongings.misc == null) {
+			if (hero.belongings.artifact == null || hero.belongings.artifact.getClass() == artifact.getClass()) {
+				if (hero.belongings.artifact != null) overrideEq(hero, hero.belongings.artifact);
+				hero.belongings.artifact = artifact;
+				hero.belongings.artifact.activate(hero);
+			} else {
+				hero.belongings.misc = artifact;
+				hero.belongings.misc.activate(hero);
+			}
+		} else if (hero.belongings.misc.getClass() != artifact.getClass()
+				&& hero.belongings.artifact != null && hero.belongings.artifact.getClass() != artifact.getClass()) {
+			overrideEq(hero, hero.belongings.misc);
+			hero.belongings.misc = artifact;
+			hero.belongings.misc.activate(hero);
+		} else if (hero.belongings.misc.getClass() == artifact.getClass()) {
+			overrideEq(hero, hero.belongings.misc);
+			hero.belongings.misc = artifact;
+			hero.belongings.misc.activate(hero);
+		} else {
+			if (hero.belongings.artifact != null) overrideEq(hero, hero.belongings.artifact);
+			hero.belongings.artifact = artifact;
+			hero.belongings.artifact.activate(hero);
+		}
+	}
+	
+	private static void overrideEq(Hero hero, EquipableItem toRemove){
+		boolean cursed = toRemove.cursed;
+		toRemove.cursed = false;
+		toRemove.doUnequip(hero, false);
+		toRemove.cursed = cursed;
+	}
+	
+	private static void collectStartItems(HeroSettings.HeroStartItemsData startItems) {
+		for (Item i : startItems.items) {
+			if (!Challenges.isItemBlocked(i)) {
+				i.reset();
+				if (i.identifyOnStart) i.identify();
+				if (i instanceof Key) Notes.add((Key) i);
+				else if (i instanceof Gold) Dungeon.gold += i.quantity();
+				else if (i instanceof EnergyCrystal) Dungeon.energy += i.quantity();
+				else {
+					i.collect();
+					maybePutIntoToolbar(i);
+				}
+			}
+		}
+	}
+	
+	private static void maybePutIntoToolbar(Item item){
+		if (item.reservedQuickslot > 0 && item.defaultAction() != null && !(item instanceof Key)) Dungeon.quickslot.setSlot(item.reservedQuickslot - 1, item);
+		else if (SPDSettings.quickslotWaterskin() && item instanceof Waterskin)
+			for (int s = 0; s < QuickSlot.SIZE; s++) {
+				if (Dungeon.quickslot.getItem(s) == null) {
+					Dungeon.quickslot.setSlot(s, item);
+					break;
+				}
+			}
+	}
+	
+	private static void addProperties(Char ch, Collection<Char.Property> properties) {
+		for (Char.Property prop : properties) {
+			ch.getPropertiesVar_ACCESS_ONLY_FOR_EDITING_UI().add(prop);
+		}
+	}
+	
 	public String title() {
 		return Messages.get(HeroClass.class, name());
 	}

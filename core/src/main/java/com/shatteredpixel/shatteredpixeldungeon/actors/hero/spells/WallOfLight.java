@@ -65,8 +65,8 @@ public class WallOfLight extends TargetedClericSpell {
 
 	@Override
 	public float chargeUse(Hero hero) {
-		if (Dungeon.level.blobs.get(LightWall.class) != null
-			&& Dungeon.level.blobs.get(LightWall.class).volume > 0){
+		if (Dungeon.level.blobs.getOnly(LightWall.class) != null
+			&& Dungeon.level.blobs.getOnly(LightWall.class).volume > 0){
 			return 0f;
 		}
 		return 3f;
@@ -79,9 +79,9 @@ public class WallOfLight extends TargetedClericSpell {
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
-		if (Dungeon.level.blobs.get(LightWall.class) != null
-				&& Dungeon.level.blobs.get(LightWall.class).volume > 0){
-			Dungeon.level.blobs.get(LightWall.class).fullyClear();
+		if (Dungeon.level.blobs.getOnly(LightWall.class) != null
+				&& Dungeon.level.blobs.getOnly(LightWall.class).volume > 0){
+			Dungeon.level.blobs.getOnly(LightWall.class).fullyClear();
 			GLog.i(Messages.get(this, "early_end"));
 			return;
 		}
@@ -116,7 +116,7 @@ public class WallOfLight extends TargetedClericSpell {
 		int rightDirX = 0;
 		int rightDirY = 0;
 
-		int steps = Dungeon.hero.pointsInTalent(Talent.WALL_OF_LIGHT);
+		int steps = hero.pointsInTalent(Talent.WALL_OF_LIGHT);
 
 		switch (closestIdx){
 			case 0: //top left
@@ -165,8 +165,8 @@ public class WallOfLight extends TargetedClericSpell {
 				break;
 		}
 
-		if (Dungeon.level.blobs.get(LightWall.class) != null){
-			Dungeon.level.blobs.get(LightWall.class).fullyClear();
+		if (Dungeon.level.blobs.getOnly(LightWall.class) != null){
+			Dungeon.level.blobs.getOnly(LightWall.class).fullyClear();
 		}
 
 		boolean placedWall = false;
@@ -226,7 +226,7 @@ public class WallOfLight extends TargetedClericSpell {
 		Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 
 		hero.sprite.zap(closest);
-		Dungeon.hero.spendAndNext(1f);
+		hero.spendAndNext(1f);
 	}
 
 	private void placeWall( int pos, int knockbackDIR){
@@ -235,7 +235,7 @@ public class WallOfLight extends TargetedClericSpell {
 
 			Char ch = Actor.findChar(pos);
 			if (ch != null && ch.alignment == Char.Alignment.ENEMY){
-				WandOfBlastWave.throwChar(ch, new Ballistica(pos, pos+knockbackDIR, Ballistica.PROJECTILE), 1, false, false, WallOfLight.INSTANCE);
+				WandOfBlastWave.throwChar(ch, new Ballistica(pos, pos+knockbackDIR, Ballistica.PROJECTILE, ch), 1, false, false, WallOfLight.INSTANCE);
 				Buff.affect(ch, Paralysis.class, ch.cooldown());
 			}
 		}
@@ -257,7 +257,7 @@ public class WallOfLight extends TargetedClericSpell {
 					volume += off[cell];
 
 					l.solid[cell] = off[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.SOLID) != 0;
-					l.passable[cell] = off[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0;
+					l.setPassableLater(cell, off[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0);
 					l.avoid[cell] = off[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.AVOID) != 0;
 				}
 			}
@@ -267,7 +267,7 @@ public class WallOfLight extends TargetedClericSpell {
 		public void seed(Level level, int cell, int amount) {
 			super.seed(level, cell, amount);
 			level.solid[cell] = cur[cell] > 0 || (Terrain.flags[level.map[cell]] & Terrain.SOLID) != 0;
-			level.passable[cell] = cur[cell] == 0 && (Terrain.flags[level.map[cell]] & Terrain.PASSABLE) != 0;
+			level.setPassableLater(cell, off[cell] == 0 && (Terrain.flags[level.map[cell]] & Terrain.PASSABLE) != 0);
 			level.avoid[cell] = cur[cell] == 0 && (Terrain.flags[level.map[cell]] & Terrain.AVOID) != 0;
 		}
 
@@ -277,7 +277,7 @@ public class WallOfLight extends TargetedClericSpell {
 			if (cur == null) return;
 			Level l = Dungeon.level;
 			l.solid[cell] = cur[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.SOLID) != 0;
-			l.passable[cell] = cur[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0;
+			l.setPassableLater(cell, off[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0);
 			l.avoid[cell] = cur[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.AVOID) != 0;
 		}
 
@@ -292,8 +292,10 @@ public class WallOfLight extends TargetedClericSpell {
 			if (volume > 0){
 				for (int i=0; i < l.length(); i++) {
 					l.solid[i] = l.solid[i] || cur[i] > 0;
-					l.passable[i] = l.passable[i] && cur[i] == 0;
 					l.avoid[i] = l.avoid[i] && cur[i] == 0;
+					if (l.isPassable(i)) {
+						l.setPassableLater(i, cur[i] == 0);
+					}
 				}
 			}
 		}

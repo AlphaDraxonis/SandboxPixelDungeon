@@ -550,10 +550,15 @@ public class HeroSettings extends Component {
         public static HeroStartItemsData[] getDefault(){
             HeroStartItemsData[] startItems = new HeroStartItemsData[HeroClass.values().length + 1];
             for (int i = 0; i < startItems.length; i++) {
-                startItems[i] = new HeroSettings.HeroStartItemsData();
-                startItems[i].needToAddDefaultConfiguration = true;
-                startItems[i].maybeInitDefault(i);
+                startItems[i] = getDefault(i);
             }
+            return startItems;
+        }
+        
+        public static HeroStartItemsData getDefault(int i) {
+            HeroStartItemsData startItems = new HeroSettings.HeroStartItemsData();
+            startItems.needToAddDefaultConfiguration = true;
+            startItems.maybeInitDefault(i);
             return startItems;
         }
 

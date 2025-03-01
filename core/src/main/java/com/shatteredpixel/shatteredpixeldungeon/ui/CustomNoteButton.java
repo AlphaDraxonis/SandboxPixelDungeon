@@ -148,7 +148,7 @@ public class CustomNoteButton extends IconButton {
 							levels = new LevelListPane.Content(new LevelListPane.Selector() {
 								@Override
 								protected void onSelect(LevelSchemeLike levelScheme, LevelListPane.ListItem listItem) {
-									addNote(new Notes.CustomRecord(levelScheme.getName(), "", ""),
+									addNote(WndDepthSelect.this, new Notes.CustomRecord(levelScheme.getName(), "", ""),
 											Messages.get(CustomNoteButton.class, "new_floor"),
 											Messages.get(CustomNoteButton.class, "new_floor_title", levelScheme.getName()));
 								}

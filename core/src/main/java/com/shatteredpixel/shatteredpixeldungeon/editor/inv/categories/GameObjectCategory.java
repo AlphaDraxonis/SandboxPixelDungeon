@@ -121,13 +121,19 @@ public abstract class GameObjectCategory<T> {
     }
     
     private void sortCustomObjects() {
-        Collections.sort(customObjectBag.items, new Comparator<Item>() {
-            @Override
-            public int compare(Item o1, Item o2) {
-                return Integer.compare(((CustomObjectClass) ((EditorItem<?>) o1).getObject()).getIdentifier(), ((CustomObjectClass) ((EditorItem<?>) o2).getObject()).getIdentifier());
-            }
-        });
+        Collections.sort(customObjectBag.items, SORT_COMPARATOR);
     }
+    
+    private static final Comparator<Item> SORT_COMPARATOR = new Comparator<Item>() {
+        @Override
+        public int compare(Item o1, Item o2) {
+            int id1 =  ((CustomObjectClass) ((EditorItem<?>) o1).getObject()).getIdentifier();
+            int id2 =  ((CustomObjectClass) ((EditorItem<?>) o2).getObject()).getIdentifier();
+            String n1 = CustomObjectManager.getName(id1);
+            String n2 = CustomObjectManager.getName(id2);
+            return n1 == null || n2 == null ? 0 : n1.compareTo(n2);
+        }
+    };
 
     public void updateCustomObject(CustomObject customObject) {
         Undo.startAction();

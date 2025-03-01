@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
@@ -119,15 +120,15 @@ public class StartScene extends PixelScene {
 				mainWindowComps = new Component[runsInEachDungeon.size() + 1];
 				int i = 0;
 				for (Map.Entry<String, List<GamesInProgress.Info>> entry : runsInEachDungeon.entrySet()) {
+					GamesInProgress.doSort(entry.getValue());
 					content.add(
 							mainWindowComps[i++] = new DungeonWithRuns(entry.getKey(), entry.getValue()) {
 								@Override
 								protected void onClick() {
-									changeContent(
-											PixelScene.renderTextBlock(entry.getKey(), 9),
-											getIDKHowToName(entry.getValue(), sp.height()),
-											getOutsideSp(entry.getKey()),
-											0.5f, 0.5f);
+									Component title = PixelScene.renderTextBlock(entry.getKey(), 9);
+									Component body = getIDKHowToName(entry.getValue(), sp.height());
+									Component outsideSp = getOutsideSp(entry.getKey(), entry.getValue(), () -> body.setPos(body.top(), body.left()));
+									changeContent(title, body, outsideSp, 0.5f, 0.5f);
 								}
 							}
 					);
@@ -176,7 +177,7 @@ public class StartScene extends PixelScene {
 		};
 		add(dungeonSelection);
 		
-		dungeonSelection.setRect(10, 0, w - 20, h - 20);
+		dungeonSelection.setRect(10, 0, w - 10, h - 20);
 		
 		GamesInProgress.curSlot = GamesInProgress.NO_SLOT;
 		
@@ -184,22 +185,76 @@ public class StartScene extends PixelScene {
 		
 	}
 	
-	private static Component getOutsideSp(String dungeon) {
+	private static Component getOutsideSp(String dungeon, List<GamesInProgress.Info> games, Runnable onSortingChanged) {
 		return new Component() {
+			
 			private SaveSlotButton newGame;
+			private SortBtn btnSort;
+			
 			{
 				newGame = new SaveSlotButton(dungeon);
 				newGame.set(GamesInProgress.firstEmpty());
 				add(newGame);
+				
+				btnSort = new SortBtn(games, onSortingChanged);
+				btnSort.setVisible(games.size() >= 2);
+				add(btnSort);
 			}
 			
 			@Override
 			protected void layout() {
 				newGame.setRect(x + (width - SLOT_WIDTH) / 2f, y, SLOT_WIDTH, SLOT_HEIGHT);
 				align(newGame);
-				height = SLOT_HEIGHT;
+				
+				if (btnSort.visible) {
+					btnSort.setRect(newGame.left(), newGame.bottom() + 2, btnSort.reqWidth() + 4, 12);
+					height = SLOT_HEIGHT;
+				} else {
+					height = SLOT_HEIGHT;
+				}
 			}
 		};
+	}
+	
+	private static class SortBtn extends StyledButton {
+		
+		private final List<GamesInProgress.Info> games;
+		private final Runnable onSortingChanged;
+		
+		public SortBtn(List<GamesInProgress.Info> games, Runnable onSortingChanged) {
+			super(Chrome.Type.TOAST_TR, createLabel(), 6);
+			textColor(0xCCCCCC);
+			
+			this.games = games;
+			this.onSortingChanged = onSortingChanged;
+		}
+		
+		public static String createLabel() {
+			switch (SPDSettings.gamesInProgressSort()) {
+				case "level":
+					return Messages.get(StartScene.class, "sort_level");
+				case "last_played":
+					return Messages.get(StartScene.class, "sort_recent");
+			}
+			return Messages.NO_TEXT_FOUND;
+		}
+		
+		@Override
+		protected void onClick() {
+			super.onClick();
+			
+			if (SPDSettings.gamesInProgressSort().equals("level")) {
+				SPDSettings.gamesInProgressSort("last_played");
+			} else {
+				SPDSettings.gamesInProgressSort("level");
+			}
+			
+			text(createLabel());
+			setSize(reqWidth() + 4, height);
+			
+			GamesInProgress.doSort(games);
+			onSortingChanged.run();
+		}
 	}
 	
 	private static Component getIDKHowToName(List<GamesInProgress.Info> games, float visibleHeight) {
@@ -216,15 +271,14 @@ public class StartScene extends PixelScene {
 		
 		final int finalSlotGap = slotGap;
 		return new Component() {
-			private SaveSlotButton[] btns;
 			{
-				btns = new SaveSlotButton[games.size()];
-				int i = 0;
 				for (GamesInProgress.Info game : games) {
-					SaveSlotButton existingGame = new SaveSlotButton(game.dungeonName);
-					existingGame.set(game.slot);
-					add(existingGame);
-					btns[i++] = existingGame;
+					if (game.btn != null) {
+						game.btn.killAndErase();
+					}
+					game.btn = new SaveSlotButton(game.dungeonName);
+					game.btn.set(game.slot);
+					add(game.btn);
 				}
 			}
 			
@@ -233,10 +287,10 @@ public class StartScene extends PixelScene {
 				
 				float yPos = y;
 				
-				for (SaveSlotButton btn : btns) {
-					btn.setRect(x + (width - SLOT_WIDTH) / 2f, yPos, SLOT_WIDTH, SLOT_HEIGHT);
+				for (GamesInProgress.Info game : games) {
+					game.btn.setRect(x + (width - SLOT_WIDTH) / 2f, yPos, SLOT_WIDTH, SLOT_HEIGHT);
 					yPos += SLOT_HEIGHT + finalSlotGap;
-					align(btn);
+					align(game.btn);
 				}
 				height = yPos - y - finalSlotGap;
 			}
@@ -282,7 +336,7 @@ public class StartScene extends PixelScene {
 	}
 	
 	
-	private static class SaveSlotButton extends Button {
+	public static class SaveSlotButton extends Button {
 		
 		private NinePatch bg;
 		
@@ -300,7 +354,7 @@ public class StartScene extends PixelScene {
 		
 		private final String dungeon;
 		
-		public SaveSlotButton(String dungeon) {
+		private SaveSlotButton(String dungeon) {
 			this.dungeon = dungeon;
 		}
 		
@@ -472,7 +526,7 @@ public class StartScene extends PixelScene {
 					GamesInProgress.curSlot = slot;
 					SandboxPixelDungeon.switchScene(HeroSelectScene.class);
 				} else {
-					showWndSelectDungeon(slot, null, dungeon);
+					showWndSelectDungeon(slot, null, dungeon, Messages.get(WndSelectDungeon.class, "play_this"));
 				}
 			} else {
 				SandboxPixelDungeon.scene().add( new WndGameInProgress(slot));
@@ -488,10 +542,10 @@ public class StartScene extends PixelScene {
 	}
 
 	public static void showWndSelectDungeon(int slot, HeroClass selectClass) {
-		showWndSelectDungeon(slot, selectClass, null);
+		showWndSelectDungeon(slot, selectClass, null, null);
 	}
 
-	public static void showWndSelectDungeon(int slot, HeroClass selectClass, String featuredDungeon) {
+	public static void showWndSelectDungeon(int slot, HeroClass selectClass, String featuredDungeon, String featuredLabel) {
 
 		EditorScene.close();
 		List<CustomDungeonSaves.Info> allInfos = CustomDungeonSaves.getAllInfos();
@@ -528,7 +582,7 @@ public class StartScene extends PixelScene {
 				}
 			}
 			if (featuredInfo != null) allInfos.remove(featuredInfo);
-			DungeonScene.show(new WndSelectDungeon(allInfos,false, featuredInfo) {
+			DungeonScene.show(new WndSelectDungeon(allInfos,false, featuredInfo, featuredLabel) {
 				@Override
 				protected void select(String customDungeonName) {
 					GamesInProgress.selectedClass = selectClass;
