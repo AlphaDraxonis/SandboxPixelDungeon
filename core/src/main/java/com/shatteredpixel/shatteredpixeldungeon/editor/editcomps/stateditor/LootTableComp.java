@@ -29,7 +29,7 @@ public class LootTableComp extends ItemsWithChanceDistrComp {
     }
 
     protected Component createTitle() {
-        return super.createTitle(Messages.get(LootTableComp.class, "title"));
+        return super.createTitle(Messages.get(LootTableComp.class, "title_loot"));
     }
 
     @Override
