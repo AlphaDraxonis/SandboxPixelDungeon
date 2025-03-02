@@ -95,7 +95,6 @@ import com.watabou.noosa.Game;
 import com.watabou.utils.BArray;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -191,14 +190,6 @@ public class Dungeon {
 					lim.count = 0;
 				}
 				
-			}
-
-			//pre-v2.2.0 saves
-			if (Dungeon.version < 750
-					&& Dungeon.isChallenged(Challenges.NO_SCROLLS)
-					&& UPGRADE_SCROLLS.count > 0){
-				//we now count SOU fully, and just don't drop every 2nd one
-				UPGRADE_SCROLLS.count += UPGRADE_SCROLLS.count-1;
 			}
 		}
 
@@ -857,7 +848,6 @@ public class Dungeon {
 		Bundle bundle = FileUtils.bundleFromFile( GamesInProgress.gameFile( save ) );
 
         initialVersion = bundle.getInt(INIT_VER);
-
 		version = bundle.getInt( VERSION );
 
 		seed = bundle.contains( SEED ) ? bundle.getLong( SEED ) : DungeonSeed.randomSeed();
@@ -896,51 +886,67 @@ public class Dungeon {
 
             LimitedDrops.restore(bundle.getBundle(LIMDROPS));
 
-            chapters = new HashSet<>();
-            int[] ids = bundle.getIntArray(CHAPTERS);
-            if (ids != null) {
-                for (int id : ids) {
-                    chapters.add(id);
-                }
-            }
+			chapters = new HashSet<>();
+			int ids[] = bundle.getIntArray( CHAPTERS );
+			if (ids != null) {
+				for (int id : ids) {
+					chapters.add( id );
+				}
+			}
+			
+			Bundle quests = bundle.getBundle( QUESTS );
+			if (!quests.isNull()) {
+				GhostQuest.restoreStatics( quests );
+				WandmakerQuest.restoreStatics( quests );
+				BlacksmithQuest.restoreStatics( quests );
+				ImpQuest.restoreStatics( quests );
+			} else {
+				GhostQuest.reset();
+				WandmakerQuest.reset();
+				BlacksmithQuest.reset();
+				ImpQuest.reset();
+			}
+			
+			BossHealthBar.restoreFromBundle(bundle);
+			
+			SpecialRoom.restoreRoomsFromBundle(bundle);
+			SecretRoom.restoreRoomsFromBundle(bundle);
+		}
 
-            Bundle quests = bundle.getBundle(QUESTS);
-            if (!quests.isNull()) {
-                GhostQuest.restoreStatics(quests);
-                WandmakerQuest.restoreStatics(quests);
-                BlacksmithQuest.restoreStatics(quests);
-                ImpQuest.restoreStatics(quests);
-            } else {
-                GhostQuest.reset();
-                WandmakerQuest.reset();
-                BlacksmithQuest.reset();
-                ImpQuest.reset();
-            }
+		droppedItems = new HashMap<>();
+		for (String level : customDungeon.floorNames()) {
 
-            BossHealthBar.restoreFromBundle(bundle);
+			//dropped items
+			ArrayList<Item> items = new ArrayList<>();
+			if (bundle.contains(Messages.format(DROPPED, level)))
+				for (Bundlable b : bundle.getCollection(Messages.format(DROPPED, level))) {
+					items.add((Item) b);
+				}
+			if (!items.isEmpty()) {
+				droppedItems.put(level, items);
+			}
 
-            SpecialRoom.restoreRoomsFromBundle(bundle);
-            SecretRoom.restoreRoomsFromBundle(bundle);
-        }
+		}
 
-        Bundle badges = bundle.getBundle(BADGES);
-        if (!badges.isNull()) {
-            Badges.loadLocal(badges);
-        } else {
-            Badges.reset();
-        }
-
-        Notes.restoreFromBundle(bundle);
-
-        hero = null;
-        hero = (Hero) bundle.get(HERO);
-
-        depth = bundle.getInt(DEPTH);
-        branch = bundle.getInt( BRANCH );
-        levelName = bundle.getString(LEVEL_NAME);
-
+		Bundle badges = bundle.getBundle(BADGES);
+		if (!badges.isNull()) {
+			Badges.loadLocal( badges );
+		} else {
+			Badges.reset();
+		}
+		
+		Notes.restoreFromBundle( bundle );
+		
+		hero = null;
+		hero = (Hero)bundle.get( HERO );
+		
+		depth = bundle.getInt( DEPTH );
+		branch = bundle.getInt( BRANCH );
+		levelName = bundle.getString( LEVEL_NAME );
+		
 		reachedCheckpoint = (Checkpoint.ReachedCheckpoint) bundle.get(REACHED_CHECKPOINT);
-
+		
+		
 		gold = bundle.getInt( GOLD );
 		energy = bundle.getInt( ENERGY );
 
@@ -952,26 +958,9 @@ public class Dungeon {
 
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
-
-        droppedItems = new HashMap<>();
-        for (String level : customDungeon.floorNames()) {
-
-            //dropped items
-            ArrayList<Item> items = new ArrayList<>();
-            if (bundle.contains(Messages.format(DROPPED, level)))
-                for (Bundlable b : bundle.getCollection(Messages.format(DROPPED, level))) {
-                    items.add((Item) b);
-                }
-            if (!items.isEmpty()) {
-                droppedItems.put(level, items);
-            }
-
-		}
 		
 		FileUtils.resetDefaultFileType();
-		if (!DeviceCompat.isDesktop() && initialVersion < 743) {//v0.6 and older
-			CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/dungeon_levels/");
-		} else CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/");
+		CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/");
 		
 		CustomTileLoader.loadTiles(true);
 		

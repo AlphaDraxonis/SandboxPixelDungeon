@@ -642,8 +642,8 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 
 		version = bundle.getInt( VERSION );
 		
-		//saves from before v1.4.3 are not supported
-		if (version < SandboxPixelDungeon.v1_4_3){
+		//saves from before v2.3.2 are not supported
+		if (version < SandboxPixelDungeon.v2_3_2){
 			throw new RuntimeException("old save");
 		}
 

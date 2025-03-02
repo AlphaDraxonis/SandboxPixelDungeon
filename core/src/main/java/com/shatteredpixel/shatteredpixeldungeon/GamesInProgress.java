@@ -154,8 +154,7 @@ public class GamesInProgress {
 				
 				Bundle bundle = FileUtils.bundleFromFile(gameFile(gameFolder));
 
-				//saves from before v1.4.3 are not supported
-				if (bundle.getInt( "version" ) < SandboxPixelDungeon.v1_4_3) {
+				if (bundle.getInt( "version" ) < SandboxPixelDungeon.v2_3_2) {
 					info = null;
 				} else {
 
