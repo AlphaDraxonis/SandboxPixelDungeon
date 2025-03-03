@@ -1,7 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
@@ -17,7 +16,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.Feeli
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableCompWithAdd;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerEnumModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerLikeButton;
@@ -34,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.builders.LoopBuilder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -43,10 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -67,10 +61,10 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
     protected RenderedTextBlock title;
 
-    protected StyledButton seed;
+//    protected StyledButton seed;
+//    private String currentSeed;
     protected FeelingSpinner feelingSpinner;
     protected BuilderSpinner builderSpinner;
-    private String currentSeed;
 
     protected FoldableComp challengeSettings;
 
@@ -87,39 +81,39 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         title.hardlight(Window.TITLE_COLOR);
         content.add(title);
 
-        if (newLevelScheme.isSeedSet()) currentSeed = DungeonSeed.convertToCode(newLevelScheme.getSeed());
-        seed = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, "") {
-            {
-                text.align(RenderedTextBlock.CENTER_ALIGN);
-            }
-            @Override
-            protected void onClick() {
-                EditorScene.show( new WndTextInput(Messages.get(HeroSelectScene.class, "custom_seed_title"),
-                        Messages.get(LevelGenComp.class, "enter_seed_prompt"),
-                        currentSeed == null ? "" : currentSeed,
-                        20,
-                        false,
-                        Messages.get(HeroSelectScene.class, "custom_seed_set"),
-                        Messages.get(HeroSelectScene.class, "custom_seed_clear")) {
-                    @Override
-                    public void onSelect(boolean positive, String text) {
-                        text = DungeonSeed.formatText(text);
-                        long s = DungeonSeed.convertFromText(text);
-                        if (positive && s != -1) {
-                            currentSeed = text;
-                            newLevelScheme.setSeed(s);
-                        } else {
-                            currentSeed = null;
-                            newLevelScheme.resetSeed();
-                        }
-                        updateSeedText();
-                    }
-                } );
-            }
-        };
-        seed.icon(new ItemSprite(ItemSpriteSheet.SEED_SUNGRASS));
-        updateSeedText();
-        content.add(seed);
+//        if (newLevelScheme.isSeedSet()) currentSeed = DungeonSeed.convertToCode(newLevelScheme.getSeed());
+//        seed = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, "") {
+//            {
+//                text.align(RenderedTextBlock.CENTER_ALIGN);
+//            }
+//            @Override
+//            protected void onClick() {
+//                EditorScene.show( new WndTextInput(Messages.get(HeroSelectScene.class, "custom_seed_title"),
+//                        Messages.get(LevelGenComp.class, "enter_seed_prompt"),
+//                        currentSeed == null ? "" : currentSeed,
+//                        20,
+//                        false,
+//                        Messages.get(HeroSelectScene.class, "custom_seed_set"),
+//                        Messages.get(HeroSelectScene.class, "custom_seed_clear")) {
+//                    @Override
+//                    public void onSelect(boolean positive, String text) {
+//                        text = DungeonSeed.formatText(text);
+//                        long s = DungeonSeed.convertFromText(text);
+//                        if (positive && s != -1) {
+//                            currentSeed = text;
+//                            newLevelScheme.setSeed(s);
+//                        } else {
+//                            currentSeed = null;
+//                            newLevelScheme.resetSeed();
+//                        }
+//                        updateSeedText();
+//                    }
+//                } );
+//            }
+//        };
+//        seed.icon(new ItemSprite(ItemSpriteSheet.SEED_SUNGRASS));
+//        updateSeedText();
+//        content.add(seed);
 
         feelingSpinner = new FeelingSpinner(newLevelScheme.getFeeling(), 9, true);
         feelingSpinner.addChangeListener(() -> {
@@ -435,9 +429,9 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         content.setSize(width, title.bottom() + 4 * MARGIN);
 
         if (builderSpinner == null) {
-            content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(MARGIN * 2, width, 2 , content, seed, feelingSpinner, builderSpinner) + 2);
+            content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(MARGIN * 2, width, 1, content, feelingSpinner, builderSpinner) + 2);
         } else {
-            content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(MARGIN * 2, width, content, seed, feelingSpinner, builderSpinner) + 2);
+            content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(MARGIN * 2, width, 2, content, feelingSpinner, builderSpinner) + 2);
         }
 
         content.setSize(width, EditorUtilities.layoutCompsLinear(MARGIN * 2, content, challengeSettings, sectionItems, sectionMobs, sectionRooms));
@@ -448,9 +442,9 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         }
     }
 
-    protected void updateSeedText() {
-        seed.text( Messages.get(this, "seed") + "\n" + (currentSeed == null ? Messages.get(this, "no_seed") : currentSeed) );
-    }
+//    protected void updateSeedText() {
+//        seed.text( Messages.get(this, "seed") + "\n" + (currentSeed == null ? Messages.get(this, "no_seed") : currentSeed) );
+//    }
 
     protected void onFeelingChange() {}
 
