@@ -274,6 +274,10 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
         if (a instanceof BuffWithDuration) {
             if (((BuffWithDuration) a).left != ((BuffWithDuration) b).left) return false;
         }
+        
+        if (a instanceof CustomGameObjectClass) {
+            if (((CustomGameObjectClass) a).getInheritStats() != ((CustomGameObjectClass) b).getInheritStats()) return false;
+        }
 
         return true;
     }

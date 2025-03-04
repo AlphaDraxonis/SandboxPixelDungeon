@@ -207,7 +207,7 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 	@Override
 	protected void onAddBtnClick() {
 		//reload files, instead of adding something
-		new LoadCustomObjects(null, true);
+		new LoadCustomObjects(null, null, true);
 		createCategories();
 		categoryScroller.updateItemsInCategories(false);
 		categoryScroller.selectCategory(categoryScroller.getSelectedCatIndex());
@@ -215,7 +215,7 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 
 	@Override
 	public Image createIcon() {
-		return new ItemSprite();
+		return new ItemSprite(ItemSpriteSheet.SEWER_PAGE);
 	}
 
 	@Override

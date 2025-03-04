@@ -609,9 +609,9 @@ public class DungeonTileSheet {
 				result = commonAltVisuals.get(visual);
 				if (result != null) return result;
 			case 1:
+			default:
 				return visual;
 		}
-		return 0;
 	}
 
 }

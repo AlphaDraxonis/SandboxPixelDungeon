@@ -30,6 +30,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
@@ -57,7 +58,7 @@ public class LoadCustomObjects {
 	
 	private final CountDownLatch latch = new CountDownLatch(1);
 
-	public LoadCustomObjects(Bundle bundle, boolean onlyLoadResourceFiles) {
+	public LoadCustomObjects(Bundle bundle, CustomDungeon curDungeon, boolean onlyLoadResourceFiles) {
 		
 		this.onlyLoadResourceFiles = onlyLoadResourceFiles;
 		
@@ -65,7 +66,7 @@ public class LoadCustomObjects {
 		CustomObjectManager.allUserContents.clear();
 		
 		if (bundle != null) {
-			CustomObjectManager.restorePre_v_1_3(bundle);
+			CustomObjectManager.restorePre_v_1_3(bundle, curDungeon);
 		}
 		
 		FileHandle localCustomObjectDir = FileUtils.getFileHandle(CustomDungeonSaves.getCurrentCustomObjectsPath());

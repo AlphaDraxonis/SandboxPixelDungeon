@@ -162,6 +162,19 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.SummonElemental;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.TelekineticGrab;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.UnstableSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.WildEnergy;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfBlast;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfBlink;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfClairvoyance;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfDeepSleep;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfDetectMagic;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfDisarming;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfFear;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfFlock;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfShock;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ChaoticCenser;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ExoticCrystals;
@@ -535,7 +548,21 @@ public final class Items extends GameObjectCategory<Item> {
     private static final class StoneCat extends ItemCategory {
 
         private StoneCat() {
-            super(STONE_HOLDER, Generator.Category.STONE.classes);
+            super(STONE_HOLDER, new Class[] {
+                    StoneOfEnchantment.class,
+                    StoneOfIntuition.class,
+                    StoneOfDetectMagic.class,
+                    StoneOfFlock.class,
+                    StoneOfShock.class,
+                    StoneOfBlink.class,
+                    StoneOfDeepSleep.class,
+                    StoneOfClairvoyance.class,
+                    StoneOfAggression.class,
+                    StoneOfBlast.class,
+                    StoneOfFear.class,
+                    StoneOfAugmentation.class,
+                    StoneOfDisarming.class,
+            });
         }
     }
 

@@ -238,7 +238,7 @@ public final class ChangeMapSizeActionPart implements ActionPart {
 	
 	private static final class TransitionChangesForOtherRegularLevels extends TransitionChangesForOtherLevels {
 		
-		private final LevelTransition entrance, exit;//tzz can these be changed without causing undo changes??!!
+		private final LevelTransition entrance, exit;
 		
 		private TransitionChangesForOtherRegularLevels(LevelTransition entrance, LevelTransition exit) {
 			this.entrance = entrance;

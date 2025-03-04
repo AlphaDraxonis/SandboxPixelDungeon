@@ -154,7 +154,7 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd implements Code
 	@Override
 	public void setCode(boolean forceChange, String code) {
 		if (code == null) {
-			if (forceChange && textInput != null) onRemove();//TODO tzz add a warning!
+			if (forceChange && textInput != null) onRemove();
 			return;
 		}
 

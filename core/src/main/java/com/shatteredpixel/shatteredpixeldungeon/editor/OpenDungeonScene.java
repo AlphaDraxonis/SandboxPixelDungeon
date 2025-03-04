@@ -326,7 +326,7 @@ public class OpenDungeonScene extends PixelScene {
 				else if (error instanceof IOException)          errorMsg = Messages.get(this, "io_error");
 				else if (error.getCause() instanceof CustomDungeonSaves.RenameRequiredException) errorMsg = error.getCause().getMessage();
 
-				else throw new RuntimeException("fatal error occurred during loading!");
+				else throw new RuntimeException("fatal error occurred during loading!", error);
 
 				add( new WndError( errorMsg ) {
 					{

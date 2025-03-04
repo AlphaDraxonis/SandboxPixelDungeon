@@ -958,6 +958,10 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
         if (a instanceof MobItem) return EditMobComp.areEqual(((MobItem) a).getObject(), ((MobItem) b).getObject());
         if (a instanceof TrapItem) return EditTrapComp.areEqual(((TrapItem) a).getObject(), ((TrapItem) b).getObject());
+		
+		if (a instanceof CustomGameObjectClass) {
+			if (((CustomGameObjectClass) a).getInheritStats() != ((CustomGameObjectClass) b).getInheritStats()) return false;
+		}
 
         return true;
     }

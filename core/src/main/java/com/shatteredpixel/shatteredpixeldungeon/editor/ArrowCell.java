@@ -88,7 +88,9 @@ public class ArrowCell implements Bundlable, Copyable<ArrowCell>, PathFinder.Arr
         enterMode = bundle.getEnum(ENTER_MODE, EnterMode.class);
         allowsWaiting = bundle.getBoolean(ALLOWS_WAITING);
         visible = bundle.getBoolean(VISIBLE);
-        affects = bundle.getInt(AFFECTS);
+        
+        if (!bundle.contains(AFFECTS)) affects = AFFECT_ALL;
+        else affects = bundle.getInt(AFFECTS);
     }
 
     @Override

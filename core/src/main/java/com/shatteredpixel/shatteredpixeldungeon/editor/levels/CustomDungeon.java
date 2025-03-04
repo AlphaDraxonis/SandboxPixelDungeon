@@ -58,6 +58,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomLayoutLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
@@ -142,6 +144,11 @@ public class CustomDungeon implements Bundlable {
         Arrays.fill(heroesEnabled, true);
         Arrays.fill(heroSubClassesEnabled, true);
         startItems = HeroSettings.HeroStartItemsData.getDefault();
+        
+        Dungeon.LimitedDrops.reset();
+        Generator.fullReset();
+        SpecialRoom.initForRun();
+        SecretRoom.initForRun();
     }
 
     public CustomDungeon() {
@@ -567,7 +574,10 @@ public class CustomDungeon implements Bundlable {
     private static final String BLOCKED_RECIPE_RESULTS = "blocked_recipe_results";
     private static final String PARTICLES = "particles";
     private static final String DUNGEON_SCRIPT_PATH = "dungeon_script_path";
-    private static final String DUNGEON_VARS = "dungeon_vars";
+    private static final String LIMITED_DROPS = "limited_drops";
+    private static final String GENERATOR = "generator";
+    private static final String SPECIAL_ROOMS = "special_rooms";
+    private static final String SECRET_ROOMS = "secret_rooms";
 
     private static final String RUNE_LABELS = "rune_labels";
     private static final String RUNE_CLASSES = "rune_classes";
@@ -621,6 +631,22 @@ public class CustomDungeon implements Bundlable {
         bundle.put(BLOCKED_RECIPE_RESULTS, blockedRecipeResults.toArray(EditorUtilities.EMPTY_CLASS_ARRAY));
 
         bundle.put(PARTICLES, particles.values());
+        
+        Bundle node = new Bundle();
+        Dungeon.LimitedDrops.store(node);
+        bundle.put(LIMITED_DROPS, node);
+        
+        node = new Bundle();
+        Generator.storeInBundle(node);
+        bundle.put(GENERATOR, node);
+        
+        node = new Bundle();
+        SpecialRoom.storeRoomsInBundle(node);
+        bundle.put(SPECIAL_ROOMS, node);
+        
+        node = new Bundle();
+        SecretRoom.storeRoomsInBundle(node);
+        bundle.put(SECRET_ROOMS, node);
 
 
         if (dungeonScriptPath != null)
@@ -781,6 +807,16 @@ public class CustomDungeon implements Bundlable {
         }
         updateNextParticleID();
         
+        if (bundle.contains(LIMITED_DROPS)) Dungeon.LimitedDrops.restore(bundle.getBundle(LIMITED_DROPS));
+        else Dungeon.LimitedDrops.reset();
+        if (bundle.contains(GENERATOR)) Generator.restoreFromBundle(bundle.getBundle(GENERATOR));
+        else Generator.fullReset();
+        
+        if (bundle.contains(SPECIAL_ROOMS)) SpecialRoom.restoreRoomsFromBundle(bundle.getBundle(SPECIAL_ROOMS));
+        else SpecialRoom.restoreRoomsFromBundle(new Bundle());
+        if (bundle.contains(SECRET_ROOMS)) SecretRoom.restoreRoomsFromBundle(bundle.getBundle(SECRET_ROOMS));
+        else SecretRoom.restoreRoomsFromBundle(new Bundle());
+        
         Dungeon.dungeonScript.unloadScript();
         if (bundle.contains(DUNGEON_SCRIPT_PATH)) {
             dungeonScriptPath = bundle.getString(DUNGEON_SCRIPT_PATH);
@@ -817,7 +853,7 @@ public class CustomDungeon implements Bundlable {
                 foundPages.add((CustomDocumentPage) b);
         }
 
-        CustomObjectManager.loadUserContentFromFiles(bundle);
+        CustomObjectManager.loadUserContentFromFiles(bundle, this);
 
         int i = 0;
         while (bundle.contains(LEVEL_SCHEME + "_" + i)) {

@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomG
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomMob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.LoadCustomObjects;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
@@ -69,11 +70,11 @@ public final class CustomObjectManager {
 	//Called when "synchronized manually", "game opened", "run has ended"
 	//"run ended" = press exit in SideControlPane; go to TitleScene via MenuPane or death screen; win run
 	public static void loadUserContentFromFiles() {
-		loadUserContentFromFiles(null);
+		loadUserContentFromFiles(null, null);
 	}
 	
-	public static void loadUserContentFromFiles(Bundle bundle) {
-		new LoadCustomObjects(bundle, false);
+	public static void loadUserContentFromFiles(Bundle bundle, CustomDungeon curDungeon) {
+		new LoadCustomObjects(bundle, curDungeon, false);
 		loadScripts(false);
 	}
 
@@ -212,7 +213,7 @@ public final class CustomObjectManager {
 	private static final String PRE_v_1_3_GLOBAL_VARS = "global_vars";
 	private static final String PRE_v_1_3_DUNGEON_SCRIPT_PATH = "dungeon_script_path";
 
-	public static void restorePre_v_1_3(Bundle bundle) {
+	public static void restorePre_v_1_3(Bundle bundle, CustomDungeon curDungeon) {
 
 		if (!bundle.contains(PRE_v_1_3_NODE)) {
 			return;
@@ -221,7 +222,7 @@ public final class CustomObjectManager {
 		Bundle node = bundle.getBundle(PRE_v_1_3_NODE);
 
 		if (node.contains(PRE_v_1_3_DUNGEON_SCRIPT_PATH))
-			Dungeon.customDungeon.dungeonScriptPath = node.getString(PRE_v_1_3_DUNGEON_SCRIPT_PATH);
+			curDungeon.dungeonScriptPath = node.getString(PRE_v_1_3_DUNGEON_SCRIPT_PATH);
 
 		Bundle[] array = node.getBundleArray(PRE_v_1_3_CUSTOM_OBJECTS);
 		for (Bundle b : array) {

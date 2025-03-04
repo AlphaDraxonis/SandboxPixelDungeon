@@ -111,6 +111,10 @@ public class EditRoomComp extends DefaultEditComp<Room> {
         if (a.itemsGenerated != b.itemsGenerated) return false;
         if (!EditItemComp.isItemListEqual(a.spawnItemsInRoom, b.spawnItemsInRoom)) return false;
         if (!EditItemComp.isItemListEqual(a.spawnItemsOnLevel, b.spawnItemsOnLevel)) return false;
+        
+        if (a instanceof CustomGameObjectClass) {
+            if (((CustomGameObjectClass) a).getInheritStats() != ((CustomGameObjectClass) b).getInheritStats()) return false;
+        }
 
         return true;
     }

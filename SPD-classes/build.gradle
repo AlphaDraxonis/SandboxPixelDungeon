@@ -12,6 +12,6 @@ dependencies {
     implementation "org.json:json:20170516"
 
     // Byte Buddy for bytecode manipulation
-    implementation 'net.bytebuddy:byte-buddy:1.16.1'
-    //implementation 'net.bytebuddy:byte-buddy-agent:1.16.1' //for redefining existing classes
+    implementation 'net.bytebuddy:byte-buddy:1.17.1'
+    //implementation 'net.bytebuddy:byte-buddy-agent:1.17.1' //for redefining existing classes
 }

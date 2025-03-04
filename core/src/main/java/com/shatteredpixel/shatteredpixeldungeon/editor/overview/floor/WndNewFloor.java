@@ -111,8 +111,8 @@ public class WndNewFloor extends WndTabbed {
 
             for (Room r : newLevelScheme.roomsToSpawn) {
                 r.doOnAllGameObjects(obj -> {
-                    if (obj instanceof Key && !floorNames.contains(((Key) obj).name()))
-                         return obj.onRenameLevelScheme(((Key) obj).name(), newLevelScheme.getName());
+                    if (obj instanceof Key && !floorNames.contains(((Key) obj).levelName))
+                         return obj.onRenameLevelScheme(((Key) obj).levelName, newLevelScheme.getName());
                     return GameObject.ModifyResult.noChange();
                 });
             }

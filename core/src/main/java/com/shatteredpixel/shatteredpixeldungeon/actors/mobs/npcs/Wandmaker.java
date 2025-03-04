@@ -151,7 +151,7 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 
 	@Override
 	public void place(RegularLevel level, List<Room> rooms) {
-//        Set<Room> entrances = new HashSet<>(4);// TODO maybe use just entranceRoom insted ?
+//        Set<Room> entrances = new HashSet<>(4);// TODO maybe use just entranceRoom instead ?
 //        for (Room room : rooms) {
 //            if (room.isEntrance()) {
 //                entrances.add(room);

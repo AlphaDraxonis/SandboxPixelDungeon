@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
@@ -123,7 +124,7 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 			} else {
 				weapon = (MeleeWeapon) Generator.randomUsingDefaults(Generator.Category.WEAPON);
 			}
-			levelGenStatue = useDecks;
+			levelGenStatue = useDecks || Dungeon.level instanceof CustomLevel;
 			weapon.cursed = false;
 			weapon.enchant(Enchantment.random());
 		}

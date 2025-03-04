@@ -105,7 +105,6 @@ public class IDEWindow extends Component {
 		pathLabel = PixelScene.renderTextBlock(Messages.get(IDEWindow.class, "path"),9);
 		add(pathLabel);
 
-		//tzz Anzeige des Wertes 'scriptPath'; Button zur Erstellung einer neuen THEORETISCHEN Instanz von scriptPath, erst beim SPEICHERN wird dieser auch eine ID zugewiesen
 		pathInput = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, PixelScene.uiCamera.zoom) {
 			@Override
 			protected void looseFocus() {
@@ -128,7 +127,6 @@ public class IDEWindow extends Component {
 		changeScript = new IconButton(Icons.CHANGES.get()) {
 			@Override
 			protected void onClick() {
-				//Show loaded LuaScript value of all existing and applicable RawLuaScripts tzz
 				showSelectScriptWindow(clazz, script -> {
 					if (script != null) {
 						selectScript(script.getPath(), script, true);
@@ -344,7 +342,7 @@ public class IDEWindow extends Component {
 	private void compile() {
 		String result = CodeInputPanelInterface.compileResult(codeInputPanels);
 		if (result != null) {
-			EditorScene.show(new WndError(result) {{setHighlightingEnabled(false);}});
+			EditorScene.show(new WndTitledMessage(Icons.WARNING.get(), Messages.get(IDEWindow.class, "compiling_error"), result) {{setHighlightingEnabled(false);}});
 		} else {
 			RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(IDEWindow.class, "compile_no_error_title"), 9);
 			title.hardlight(Window.TITLE_COLOR);
@@ -353,7 +351,13 @@ public class IDEWindow extends Component {
 	}
 
 	private void save(Consumer<String> onSuccessfulSave, Consumer<String> onError) {
-
+		
+		String compileResult = CodeInputPanelInterface.compileResult(codeInputPanels);
+		if (compileResult != null) {
+			EditorScene.show(new WndTitledMessage(Icons.WARNING.get(), Messages.get(IDEWindow.class, "compiling_error"), compileResult) {{setHighlightingEnabled(false);}});
+			return;
+		}
+		
 		String newPath;
 		if (pathInput.getText().isEmpty() || pathInput.getText().equals(".lua")) {
 			onError.accept(Messages.get(IDEWindow.class, "save_invalid_name_error"));

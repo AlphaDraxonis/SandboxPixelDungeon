@@ -590,97 +590,90 @@ public class Dungeon {
 	}
 
     public static boolean posNeeded() {
-        if (CustomDungeon.isEditing()) return Random.Int(2) == 0;
-        if (visitedDepths.contains(Dungeon.depth)) return false;
+        if (CustomDungeon.isEditing()) {
+			//2 POS each floor set
+			int posLeftThisSet = 2 - (LimitedDrops.STRENGTH_POTIONS.count - (depth / 5) * 2);
+			if (posLeftThisSet <= 0) return false;
+			
+			int floorThisSet = (depth % 5);
+			
+			//pos drops every two floors, (numbers 1-2, and 3-4) with a 50% chance for the earlier one each time.
+			int targetPOSLeft = 2 - floorThisSet / 2;
+			if (floorThisSet % 2 == 1 && Random.Int(2) == 0) targetPOSLeft--;
+			
+			if (targetPOSLeft < posLeftThisSet) return true;
+			else return false;
+		}
         return false;//uses ItemDistribution
-//        //2 POS each floor set
-//        int posLeftThisSet = 2 - (LimitedDrops.STRENGTH_POTIONS.count - (depth / 5) * 2);
-//        if (posLeftThisSet <= 0) return false;
-//
-//        int floorThisSet = (depth % 5);
-//
-//        //pos drops every two floors, (numbers 1-2, and 3-4) with a 50% chance for the earlier one each time.
-//        int targetPOSLeft = 2 - floorThisSet / 2;
-//        if (floorThisSet % 2 == 1 && Random.Int(2) == 0) targetPOSLeft--;
-//
-//        if (targetPOSLeft < posLeftThisSet) return true;
-//        else return false;
-
     }
 
     public static boolean souNeeded() {
-        if (CustomDungeon.isEditing()) return Random.Int(4) <= 2;
-        if (visitedDepths.contains(Dungeon.depth)) return false;
+        if (CustomDungeon.isEditing()) {
+			int souLeftThisSet;
+			//3 SOU each floor set, 1.5 (rounded) on forbidden runes challenge
+//			if (isChallenged(Challenges.NO_SCROLLS)) {
+//				souLeftThisSet = Math.round(1.5f - (LimitedDrops.UPGRADE_SCROLLS.count - (depth / 5) * 1.5f));
+//			} else {
+				souLeftThisSet = 3 - (LimitedDrops.UPGRADE_SCROLLS.count - (depth / 5) * 3);
+//			}
+			if (souLeftThisSet <= 0) return false;
+			
+			int floorThisSet = (depth % 5);
+			//chance is floors left / scrolls left
+			return Random.Int(5 - floorThisSet) < souLeftThisSet;
+		}
         return false;//uses ItemDistribution
-//        int souLeftThisSet;
-//        //3 SOU each floor set, 1.5 (rounded) on forbidden runes challenge
-//        if (isChallenged(Challenges.NO_SCROLLS)) {
-//            souLeftThisSet = Math.round(1.5f - (LimitedDrops.UPGRADE_SCROLLS.count - (depth / 5) * 1.5f));
-//        } else {
-//            souLeftThisSet = 3 - (LimitedDrops.UPGRADE_SCROLLS.count - (depth / 5) * 3);
-//        }
-//        if (souLeftThisSet <= 0) return false;
-//
-//        int floorThisSet = (depth % 5);
-//        //chance is floors left / scrolls left
-//        return Random.Int(5 - floorThisSet) < souLeftThisSet;
     }
 
     public static boolean asNeeded() {
-        if (CustomDungeon.isEditing()) return Random.Int(4) == 0;
-        if (visitedDepths.contains(Dungeon.depth)) return false;
+        if (CustomDungeon.isEditing()) {
+			//1 AS each floor set
+			int asLeftThisSet = 1 - (LimitedDrops.ARCANE_STYLI.count - (depth / 5));
+			if (asLeftThisSet <= 0) return false;
+			
+			int floorThisSet = (depth % 5);
+			//chance is floors left / scrolls left
+			return Random.Int(5 - floorThisSet) < asLeftThisSet;
+		}
         return false;//uses ItemDistribution
-//        //1 AS each floor set
-//        int asLeftThisSet = 1 - (LimitedDrops.ARCANE_STYLI.count - (depth / 5));
-//        if (asLeftThisSet <= 0) return false;
-//
-//        int floorThisSet = (depth % 5);
-//        //chance is floors left / scrolls left
-//        return Random.Int(5 - floorThisSet) < asLeftThisSet;
     }
 
     public static boolean enchStoneNeeded(){
 		if (CustomDungeon.isEditing()) {
-			if (region() == LevelScheme.REGION_PRISON || region() == LevelScheme.REGION_CAVES)
-				return Random.Int(4) == 0;
-			else return false;
+			//1 enchantment stone, spawns on chapter 2 or 3
+			if (!LimitedDrops.ENCH_STONE.dropped() && (region() == LevelScheme.REGION_PRISON || region() == LevelScheme.REGION_CAVES)) {
+				int region = 1 + depth / 5;
+				if (region > 1) {
+					int floorsVisited = depth - 5;
+					if (floorsVisited > 4) floorsVisited--; //skip floor 10
+					return Random.Int(9 - floorsVisited) == 0; //1/8 chance each floor
+				}
+			}
+			return false;
 		}
-		if (visitedDepths.contains(Dungeon.depth)) return false;
 		return false;//uses ItemDistribution
-//		//1 enchantment stone, spawns on chapter 2 or 3
-//		if (!LimitedDrops.ENCH_STONE.dropped()){
-//			int region = 1+depth/5;
-//			if (region > 1){
-//				int floorsVisited = depth - 5;
-//				if (floorsVisited > 4) floorsVisited--; //skip floor 10
-//				return Random.Int(9-floorsVisited) == 0; //1/8 chance each floor
-//			}
-//		}
-//		return false;
 	}
 
 	public static boolean intStoneNeeded(){
 		if (CustomDungeon.isEditing()) {
-			if (getSimulatedDepth() <= 3)
-				return Random.Int(3) == 0;
-			else return false;
+			//one stone on floors 1-3
+			if (!LimitedDrops.INT_STONE.dropped() && region() == LevelScheme.REGION_SEWERS) {
+				return Random.Int(4-depth) == 0;
+			}
+			return false;
 		}
-		if (visitedDepths.contains(Dungeon.depth)) return false;
 		return false;//uses ItemDistribution
-//		//one stone on floors 1-3
-//		return depth < 5 && !LimitedDrops.INT_STONE.dropped() && Random.Int(4-depth) == 0;
 	}
 
 	public static boolean trinketCataNeeded(){
 		if (CustomDungeon.isEditing()) {
-			if (getSimulatedDepth() <= 3)
-				return Random.Int(3) == 0;
-			else return false;
+			//one trinket catalyst on floors 1-3
+			if (!LimitedDrops.TRINKET_CATA.dropped() && region() == LevelScheme.REGION_SEWERS) {
+				return Random.Int(4-depth) == 0;
+			}
+			return false;
 		}
-		if (visitedDepths.contains(Dungeon.depth)) return false;
 		return false;//uses ItemDistribution
-//		//one trinket catalyst on floors 1-3
-//		return depth < 5 && !LimitedDrops.TRINKET_CATA.dropped() && Random.Int(4-depth) == 0;
 	}
 
 	public static boolean labRoomNeeded() {

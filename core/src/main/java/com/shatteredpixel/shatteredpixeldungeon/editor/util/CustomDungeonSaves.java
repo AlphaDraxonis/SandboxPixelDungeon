@@ -238,7 +238,6 @@ public class CustomDungeonSaves {
             for (CustomGameObjectClass template : CustomObjectManager.getAllCustomObjects(CustomGameObjectClass.class)) {
                 template.updateInheritStats(customLevel);
             }
-            //look for all custom game objects on the map that don't have an associated custom object, and tzz ??
         }
 
         return customLevel;

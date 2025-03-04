@@ -44,13 +44,17 @@ public class TransitionCompRow extends FoldableCompWithAdd {
 			transition = cell == CELL_DEFAULT_ENTRANCE
                     ? levelScheme.getEntranceTransitionRegular()
                     : levelScheme.getExitTransitionRegular();
+        } else {
+            transition = levelScheme.getLevel().transitions.get(cell);
+        }
+        if (cell < 0 || levelScheme.getLevel() != Dungeon.level || levelScheme.getLevel() == null) {
             icon = cell == CELL_DEFAULT_ENTRANCE
                     ? new TileSprite(Level.tilesTex(levelScheme), Terrain.ENTRANCE)
                     : new TileSprite(Level.tilesTex(levelScheme), Terrain.EXIT);
         } else {
-            transition = levelScheme.getLevel().transitions.get(cell);
-            icon = WndInfoCell.cellImage(cell);
+            icon = WndInfoCell.cellImage(levelScheme.getLevel(), cell);
         }
+        
         if (icon != null) {
             icon.scale.set(BUTTON_HEIGHT / icon.height());
             add(icon);

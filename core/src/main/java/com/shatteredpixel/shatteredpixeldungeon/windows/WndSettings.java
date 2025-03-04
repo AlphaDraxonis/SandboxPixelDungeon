@@ -34,7 +34,14 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.ui.GameLog;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.OptionSlider;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Toolbar;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.NotAllowedInLua;
 import com.watabou.input.ControllerHandler;
 import com.watabou.noosa.ColorBlock;
@@ -1127,6 +1134,7 @@ public class WndSettings extends WndTabbed {
 		RenderedTextBlock title;
 		ColorBlock sep1;
 		RenderedTextBlock txtLangInfo;
+		RenderedTextBlock specialThanksForSandboxTranslators;
 		ColorBlock sep2;
 		RedButton[] lanBtns;
 		ColorBlock sep3;
@@ -1162,6 +1170,12 @@ public class WndSettings extends WndTabbed {
 			if (currLang.status() == Languages.Status.__UNREVIEW) txtLangInfo.setHighlighting(true, CharSprite.WARNING);
 			else if (currLang.status() == Languages.Status.X_UNFINISH) txtLangInfo.setHighlighting(true, CharSprite.NEGATIVE);
 			add(txtLangInfo);
+			
+			String[] sandbox = currLang.sandbox();
+			if (sandbox.length > 0) {
+				specialThanksForSandboxTranslators = PixelScene.renderTextBlock(Messages.get(this, "special_thanks", sandbox[0]), 6);
+				add(specialThanksForSandboxTranslators);
+			}
 
 			sep2 = new ColorBlock(1, 1, 0xFF000000);
 			add(sep2);
@@ -1217,24 +1231,40 @@ public class WndSettings extends WndTabbed {
 					@Override
 					protected void onClick() {
 						super.onClick();
+						String[] sandbox = currLang.sandbox();
 						String[] reviewers = currLang.reviewers();
 						String[] translators = currLang.translators();
 
-						int totalCredits = 2*reviewers.length + translators.length;
+						int totalCredits = sandbox.length + 2*reviewers.length + translators.length;
 						int totalTokens = 2*totalCredits; //for spaces
 
 						//additional space for titles, and newline chars
+						if (sandbox.length > 0) totalTokens+=6;
 						if (reviewers.length > 0) totalTokens+=6;
 						totalTokens +=4;
 
 						String[] entries = new String[totalTokens];
 						int index = 0;
+						if (sandbox.length > 0){
+							entries[index++] = "_";
+							entries[index++] = "SandboxPD";
+							entries[index++] = "_";
+							entries[index++] = "\n";
+							for (int i = 0; i < sandbox.length; i++){
+								entries[index] = sandbox[i];
+								if (i < sandbox.length-1) entries[index] += ", ";
+								entries[index+1] = " ";
+								index += 2;
+							}
+							entries[index] = "\n";
+							entries[index+1] = "\n";
+							index += 2;
+						}
 						if (reviewers.length > 0){
-							entries[0] = "_";
-							entries[1] = Messages.titleCase(Messages.get(LangsTab.this, "reviewers"));
-							entries[2] = "_";
-							entries[3] = "\n";
-							index = 4;
+							entries[index++] = "_";
+							entries[index++] = Messages.titleCase(Messages.get(LangsTab.this, "reviewers"));
+							entries[index++] = "_";
+							entries[index++] = "\n";
 							for (int i = 0; i < reviewers.length; i++){
 								entries[index] = reviewers[i];
 								if (i < reviewers.length-1) entries[index] += ", ";
@@ -1302,8 +1332,15 @@ public class WndSettings extends WndTabbed {
 
 			txtLangInfo.setPos(0, sep1.y + 1 + GAP);
 			txtLangInfo.maxWidth((int)width);
-
-			y = txtLangInfo.bottom() + 2*GAP;
+			
+			if (specialThanksForSandboxTranslators != null) {
+				specialThanksForSandboxTranslators.setPos(0, txtLangInfo.bottom() + 2*GAP);
+				specialThanksForSandboxTranslators.maxWidth((int)width);
+				y = specialThanksForSandboxTranslators.bottom() + 2*GAP;
+			} else {
+				y = txtLangInfo.bottom() + 2*GAP;
+			}
+			
 			int x = 0;
 
 			sep2.size(width, 1);

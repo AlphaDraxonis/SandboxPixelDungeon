@@ -351,6 +351,10 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         if (a instanceof RandomItem) {
             if (!a.equals(b)) return false;
         }
+        
+        if (a instanceof CustomGameObjectClass) {
+            if (((CustomGameObjectClass) a).getInheritStats() != ((CustomGameObjectClass) b).getInheritStats()) return false;
+        }
         return true;
     }
 

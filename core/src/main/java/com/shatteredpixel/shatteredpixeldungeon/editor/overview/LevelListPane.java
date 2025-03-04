@@ -58,6 +58,7 @@ public class LevelListPane extends ScrollPane {
         ((Content) content).updateContent();
         layout();
         scrollToCurrentView();
+        givePointerPriority();
     }
 
     @Override

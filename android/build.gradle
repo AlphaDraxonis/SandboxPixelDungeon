@@ -115,7 +115,7 @@ tasks.matching { it.name.contains("merge") && it.name.contains("JniLibFolders") 
 
 dependencies {
     // Byte Buddy for bytecode manipulation
-    implementation 'net.bytebuddy:byte-buddy:1.16.1'
-    implementation 'net.bytebuddy:byte-buddy-android:1.16.1'
-    //implementation 'net.bytebuddy:byte-buddy-agent:1.16.1' //for redefining existing classes
+    implementation 'net.bytebuddy:byte-buddy:1.17.1'
+    implementation 'net.bytebuddy:byte-buddy-android:1.17.1'
+    //implementation 'net.bytebuddy:byte-buddy-agent:1.17.1' //for redefining existing classes
 }

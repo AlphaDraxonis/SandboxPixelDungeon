@@ -378,9 +378,9 @@ public class WndEditFloorInOverview extends WndTabbed {
                     };
                     content.add(comp);
                     transitionCompMap.put(cell, comp);
+                    comp.setRect(0, pos, width, -1);
+                    pos = comp.bottom() + 2;
                 }
-                comp.setRect(0, pos, width, -1);
-                pos = comp.bottom() + 2;
             }
             return pos;
         }

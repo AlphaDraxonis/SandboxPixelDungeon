@@ -127,40 +127,33 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
 
     public LevelScheme() {
-    }
-
-    //Wrapper for creating templates
-    LevelScheme(Level level, int numInRegion) {
-        this.name = Level.NONE;
-        this.level = level;
-        this.region = getRegion(level);
-        this.numInRegion = numInRegion;
-
+        zones = new HashSet<>(3);
+        
         mobsToSpawn = new ArrayList<>(4);
         roomsToSpawn = new ArrayList<>(4);
         itemsToSpawn = new ArrayList<>(4);
         prizeItemsToSpawn = new ArrayList<>(4);
-
+        
         exitCells = new ArrayList<>(3);
         entranceCells = new ArrayList<>(3);
     }
 
+    //Wrapper for creating templates
+    LevelScheme(Level level, int numInRegion) {
+        this();
+        this.name = Level.NONE;
+        this.level = level;
+        this.region = getRegion(level);
+        this.numInRegion = numInRegion;
+    }
+
     public LevelScheme(RoomLayoutLevel roomLayout) {
+        this();
         this.name = roomLayout.name = NO_LEVEL_SCHEME.getName();
         this.level = roomLayout;
         roomLayout.levelScheme = this;
 
         type = RoomLayoutLevel.class;
-
-        zones = new HashSet<>(3);
-
-        mobsToSpawn = new ArrayList<>(4);
-        roomsToSpawn = new ArrayList<>(4);
-        itemsToSpawn = new ArrayList<>(4);
-        prizeItemsToSpawn = new ArrayList<>(4);
-
-        exitCells = new ArrayList<>(3);
-        entranceCells = new ArrayList<>(3);
 
         Dungeon.customDungeon.addFloor(this);
         shopPriceMultiplier = Dungeon.getSimulatedDepth(this) / 5 + 1;
@@ -169,16 +162,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     @NotAllowedInLua
     public void initNewLevelScheme(String name, Class<? extends Level> levelTemplate) {
         this.name = name;
-
-        zones = new HashSet<>(3);
-
-        mobsToSpawn = new ArrayList<>(4);
-        roomsToSpawn = new ArrayList<>(4);
-        itemsToSpawn = new ArrayList<>(4);
-        prizeItemsToSpawn = new ArrayList<>(4);
-
-        exitCells = new ArrayList<>(3);
-        entranceCells = new ArrayList<>(3);
 
         if (depth == 6 || depth == 11 || depth == 16) roomsToSpawn.add(new ShopRoom());
 
@@ -649,7 +632,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
 
     public long getSeed() {
-        if (!seedSet && seed == 0) return 1234567;//TODO use random seed!
+        if (!seedSet && seed == 0) return 1234567;//TODO tzz use random seed!
         return seed;
     }
 

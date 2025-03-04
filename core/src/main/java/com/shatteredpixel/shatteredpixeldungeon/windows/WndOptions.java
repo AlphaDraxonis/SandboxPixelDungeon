@@ -22,7 +22,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -34,7 +39,7 @@ public class WndOptions extends Window {
 	protected static final int MARGIN 		= 2;
 	protected static final int BUTTON_HEIGHT	= 18;
 	
-	private ScrollPane sp;
+	private ScrollPane sp, spForButtons;
 	private Component content;
 	
 	protected RenderedTextBlock tfMessage;
@@ -70,7 +75,6 @@ public class WndOptions extends Window {
 		}
 		
 		tfMessage = PixelScene.renderTextBlock( message, 6 );
-		add(tfMessage);
 		
 		initBody(options);
 	}
@@ -110,7 +114,10 @@ public class WndOptions extends Window {
 			}
 		}
 		
-		sp = new ScrollPane(content);
+		spForButtons = new ScrollPane(content);
+		add(spForButtons);
+		
+		sp = new ScrollPane(tfMessage);
 		add(sp);
 		
 		layout(PixelScene.landscape() ? WIDTH_L : WIDTH_P);
@@ -130,20 +137,17 @@ public class WndOptions extends Window {
 		pos = tfTitle.bottom() + 2*MARGIN;
 		
 		tfMessage.maxWidth(width);
-		tfMessage.setPos(0, pos);
-		pos = tfMessage.bottom() + 2*MARGIN;
 		
 		
 		float spaceForButtons = layoutButtons(width);
+		content.setSize(width, spaceForButtons + MARGIN);
 		
+		float spHeight = Math.min(tfMessage.height(), PixelScene.uiCamera.height * 0.88f - pos - spaceForButtons) + MARGIN;
 		
-		content.setSize(width, spaceForButtons - MARGIN);
+		resize(width, (int)(pos + spHeight + spaceForButtons));
 		
-		float spHeight = Math.min(content.height(), PixelScene.uiCamera.height * 0.88f - pos);
-		
-		resize(width, (int)(pos + spHeight));
-		
-		sp.setRect(0, pos, width, spHeight);
+		sp.setRect(0, tfTitle.bottom() + MARGIN, width, spHeight);
+		spForButtons.setRect(0, sp.bottom() + MARGIN, width, content.height());
 		
 	}
 	

@@ -533,7 +533,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
         protected CheckBox stand, sec, spec;
 
-        public WndRoomSettings(boolean standart, boolean secret, boolean special) {
+        public WndRoomSettings(boolean standard, boolean secret, boolean special) {
 
             resize(WindowSize.WIDTH_SMALL.get(), 100);
 
@@ -542,7 +542,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             add(title);
 
             stand = new CheckBox(Messages.get(LevelGenComp.class, "room_settings_standard"));
-            stand.checked(standart);
+            stand.checked(standard);
             add(stand);
 
             sec = new CheckBox(Messages.get(LevelGenComp.class, "room_settings_secret"));

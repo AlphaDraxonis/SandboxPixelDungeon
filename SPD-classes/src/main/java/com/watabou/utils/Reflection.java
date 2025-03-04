@@ -83,8 +83,11 @@ public class Reflection {
 			} else if (name.endsWith("Larva")) {
 				name = "com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa$Larva";
 			}
-			Class<?> result = makeToUserContentClass.apply(forName(name));
-			if (result == null) {
+			Class<?> cl = forName(name);
+			Class<?> result;
+			if (cl != null) {
+				result = makeToUserContentClass.apply(cl);
+			} else {
 				name = name.replace(".actors.mobs.", ".actors.mobs.npcs.");
 				result = makeToUserContentClass.apply(forName(name));
 			}

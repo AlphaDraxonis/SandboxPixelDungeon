@@ -379,7 +379,7 @@ public class AndroidIDEWindow extends Activity {
 		String result = CodeInputPanelInterface.compileResult(codeInputPanels);
 
 		if (result != null) {
-			showErrorWindow(result);
+			showErrorWindow(Messages.get(IDEWindow.class, "compiling_error"), result);
 		} else {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(Messages.get(IDEWindow.class, "compile_no_error_title"));
@@ -423,6 +423,13 @@ public class AndroidIDEWindow extends Activity {
 	}
 	
 	private void save(Consumer<String> onSuccessfulSave, Consumer<String> onError) {
+		
+		String compileResult = CodeInputPanelInterface.compileResult(codeInputPanels);
+		if (compileResult != null) {
+			showErrorWindow(Messages.get(IDEWindow.class, "compiling_error"), compileResult);
+			return;
+		}
+		
 		String newPath;
 		if (pathInput.getText().toString().isEmpty() || pathInput.getText().toString().equals(".lua")) {
 			onError.accept(Messages.get(IDEWindow.class, "save_invalid_name_error"));
@@ -529,8 +536,12 @@ public class AndroidIDEWindow extends Activity {
 	}
 
 	private void showErrorWindow(String message) {
+		showErrorWindow(Messages.get(WndError.class, "title"), message);
+	}
+	
+	private void showErrorWindow(String title, String message) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(Messages.get(WndError.class, "title"));
+		builder.setTitle(title);
 		builder.setMessage(message);
 
 		AlertDialog dialog = builder.create();

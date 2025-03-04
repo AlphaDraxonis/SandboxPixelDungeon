@@ -147,6 +147,7 @@ public abstract class SpecialRoom extends Room implements Copyable<Room> {
 
 		if (Dungeon.labRoomNeeded()){
 			floorSpecials.add(0, LaboratoryRoom.class);
+			Dungeon.LimitedDrops.LAB_ROOM.count++;
 		}
 	}
 	
@@ -233,7 +234,9 @@ public abstract class SpecialRoom extends Room implements Copyable<Room> {
 			for (int i = 0; i < vals.length; i++) {
 				pitNeededLevel.put(keys[i], vals[i]);
 			}
-		} else pitNeededLevel.put(bundle.getString(PIT_OLD), 1);
+		} else {
+			pitNeededLevel.put(bundle.getString(PIT_OLD), 1);
+		}
 	}
 	
 	public static void storeRoomsInBundle( Bundle bundle ) {

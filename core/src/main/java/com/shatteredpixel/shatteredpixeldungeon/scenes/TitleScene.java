@@ -184,7 +184,7 @@ public class TitleScene extends PixelScene {
 		btnPlay.icon(Icons.get(Icons.ENTER));
 		add(btnPlay);
 
-		StyledButton btnSupport = new SupportButton(GREY_TR, "Dungeon Editor");
+		StyledButton btnSupport = new SupportButton(GREY_TR, Messages.get(this, "editor"));
 		add(btnSupport);
 
 		StyledButton btnRankings = new StyledButton(GREY_TR, Messages.get(this, "rankings")) {

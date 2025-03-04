@@ -22,7 +22,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomMobClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
@@ -1207,10 +1206,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (!EditItemComp.isItemListEqual(h1.potions(), h2.potions())) return false;
             if (!EditItemComp.isItemListEqual(h1.utilItems(), h2.utilItems())) return false;
         }
-
-        //TODO tzz wichtig add this to all other places as well!
-        if (a instanceof CustomMobClass) {
-            if (((CustomMobClass) a).getInheritStats() != ((CustomMobClass) b).getInheritStats()) return false;
+        
+        if (a instanceof CustomGameObjectClass) {
+            if (((CustomGameObjectClass) a).getInheritStats() != ((CustomGameObjectClass) b).getInheritStats()) return false;
         }
 
         return true;

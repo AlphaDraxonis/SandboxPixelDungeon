@@ -113,7 +113,7 @@ public abstract class RegularLevel extends Level {
 		} else {
 
 			initRooms = initRooms();
-
+//[standard.entrance.EntranceRoom@2b62651, standard.exit.WaterBridgeExitRoom@ae12eb6, standard.EmptyRoom@4e087b7, standard.SewerPipeRoom@b7dbb24, standard.EmptyRoom@565d68d, standard.EmptyRoom@1c98042, standard.SewerPipeRoom@cebe853, special.LaboratoryRoom@46d6590, special.CrystalChoiceRoom@4e64e89]
 			if (levelScheme.builder == null) {
 				boolean canUseFigureEight = false;
 				for (Room r : initRooms) {

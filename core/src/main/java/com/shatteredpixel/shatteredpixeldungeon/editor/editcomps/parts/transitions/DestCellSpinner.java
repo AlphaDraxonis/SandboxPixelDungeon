@@ -14,7 +14,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.tr
 public class DestCellSpinner extends StyledSpinner {
 
     public DestCellSpinner(List<Integer> cells, int levelWidth) {
-        super(new DestCellModel(cells, levelWidth), Messages.get(TransitionEditPart.class, "dest_cell"));
+        super(new DestCellModel(cells, levelWidth), Messages.get(TransitionEditPart.class, "dest_cell"), 7);
         setButtonWidth(13);
     }
 

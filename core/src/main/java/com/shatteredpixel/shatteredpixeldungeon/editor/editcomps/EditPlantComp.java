@@ -137,6 +137,10 @@ public class EditPlantComp extends DefaultEditComp<Plant> {
         if (!Objects.equals(a.getCustomDesc(), b.getCustomDesc())) return false;
 
         if (!EditItemComp.areEqual(a.dropItem, b.dropItem)) return false;
+        
+        if (a instanceof CustomGameObjectClass) {
+            if (((CustomGameObjectClass) a).getInheritStats() != ((CustomGameObjectClass) b).getInheritStats()) return false;
+        }
 
         return true;
     }

@@ -31,7 +31,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Supplier;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
@@ -291,7 +293,9 @@ public class CompactCategoryScroller extends AbstractCategoryScroller<CompactCat
 						}
 					}
 					else if (mode == CategoryAction.Action.REMOVE) {
-						DungeonScene.show(new WndOptionsCondensed(new ItemSprite(item), "Really remove tzz", "msg", "yes", "no") {
+						DungeonScene.show(new WndOptionsCondensed(new ItemSprite(item),
+								Messages.get(CompactCategoryScroller.class, "remove_title"), Messages.get(CompactCategoryScroller.class, "remove_body"),
+								Messages.get(HeroSelectScene.class, "daily_yes"), Messages.get(HeroSelectScene.class, "daily_no")) {
 							@Override
 							protected void onSelect(int index) {
 								if (index == 0) {

@@ -285,6 +285,8 @@ public class HolyTome extends Artifact {
 
 		@Override
 		public boolean act() {
+			Hero hero = targetHero(target);
+			
 			if (charge < chargeCap && !cursed && target.buff(MagicImmune.class) == null) {
 				if (Regeneration.regenOn()) {
 					float missing = (chargeCap - charge);
@@ -292,8 +294,8 @@ public class HolyTome extends Artifact {
 					float turnsToCharge = (45 - missing);
 					turnsToCharge /= RingOfEnergy.artifactChargeMultiplier(target);
 					float chargeToGain = (1f / turnsToCharge);
-					if (!isEquipped(Dungeon.hero)){
-						chargeToGain *= 0.75f*Dungeon.hero.pointsInTalent(Talent.LIGHT_READING)/3f;
+					if (!isEquipped(hero)){
+						chargeToGain *= 0.75f*hero.pointsInTalent(Talent.LIGHT_READING)/3f;
 					}
 					partialCharge += chargeToGain;
 				}
