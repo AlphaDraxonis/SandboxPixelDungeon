@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerInteger
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -62,6 +63,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     private RedButton addTransition;
     private RedButton editSignText;
     private StyledCheckBox signBurnOnRead;
+    private StyledCheckBox gateBroken;
     private WellWaterSpinner wellWaterSpinner;
     private EditBlobComp.VolumeSpinner volumeSpinner;
     private EditBlobComp.SacrificialFirePrize sacrificialFirePrize;
@@ -231,6 +233,16 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                     summonMobs = new ContainerWithLabel.ForMobs(marker.summons, this, EditMobComp.label("summon_mob"));
                     add(summonMobs);
                 }
+                if (customTile instanceof CavesBossLevel.MetalGate) {
+                    CavesBossLevel.MetalGate gate = (CavesBossLevel.MetalGate) customTile;
+                    gateBroken = new StyledCheckBox(Messages.get(EditCustomTileComp.class, "broken"));
+                    gateBroken.checked(gate.isBroken());
+                    gateBroken.addChangeListener(v -> {
+                        gate.setBroken(v);
+                        updateObj();
+                    });
+                    add(gateBroken);
+                }
             }
 
         }
@@ -311,7 +323,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     protected void layout() {
         super.layout();
         layoutOneRectCompInRow(tileVariance);
-        layoutCompsInRectangles(signBurnOnRead);
+        layoutCompsInRectangles(signBurnOnRead, gateBroken);
         layoutCompsLinear(//transitionEdit is later instantiated
                 transitionEdit, addTransition, editSignText, wellWaterSpinner, volumeSpinner, sacrificialFirePrize, summonMobs, coinDoorCost
         );
@@ -323,7 +335,8 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     @Override
     protected void updateStates() {
         super.updateStates();
-
+        
+        if (gateBroken != null) gateBroken.checked(((CavesBossLevel.MetalGate) obj.getObject()).isBroken());
         if (summonMobs != null) summonMobs.updateState(((RitualSiteRoom.RitualMarker) obj.getObject()).summons);
     }
 

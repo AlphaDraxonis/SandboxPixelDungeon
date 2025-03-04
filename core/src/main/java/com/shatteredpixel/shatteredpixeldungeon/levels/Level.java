@@ -1338,6 +1338,12 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 			if (Dungeon.hero.buff(LockedFloor.class) != null){
 				Dungeon.hero.buff(LockedFloor.class).detach();
 			}
+			
+			for (CustomTilemap cust : customTiles) {
+				if (cust instanceof CavesBossLevel.MetalGate) {
+					((CavesBossLevel.MetalGate) cust).open();
+				}
+			}
 		}
 	}
 

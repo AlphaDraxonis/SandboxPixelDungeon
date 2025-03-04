@@ -33,6 +33,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -52,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
@@ -1067,5 +1073,201 @@ public class CavesBossLevel extends Level {
 			emitter.pour(DIRECTED_SPARKS, 0.08f);
 		}
 
+	}
+	
+	public static class MetalGate extends CustomTilemap {
+		
+		{
+			texture = Assets.Environment.METAL_GATE;
+			
+			tileW = 5;
+			tileH = 2;
+			offsetCenterX = 2;
+			offsetCenterY = 1;
+		}
+		
+		private boolean broken;
+		
+		@Override
+		public String name() {
+			return Messages.get(CavesBossLevel.class, "gate_name");
+		}
+		
+		@Override
+		public String name(int tileX, int tileY) {
+			return name();
+		}
+		
+		@Override
+		public String desc() {
+			if (broken) {
+				return Messages.get(CavesBossLevel.class, "gate_desc_broken");
+			} else {
+				return Messages.get(CavesBossLevel.class, "gate_desc");
+			}
+		}
+		
+		@Override
+		public String desc(int tileX, int tileY) {
+			return desc();
+		}
+		
+		@Override
+		public Tilemap create() {
+			Tilemap v = super.create();
+			updateState( );
+			return v;
+		}
+		
+		private void updateState() {
+			if (vis != null) {
+				int[] data = new int[tileW * tileH];
+				Arrays.fill(data, -1);
+				
+				int centerColumnL, centerColumnR;
+				if (tileW % 2 == 0) {
+					centerColumnL = (tileW - 1) / 2;
+					centerColumnR = (tileW) / 2;
+				} else {
+					centerColumnL = centerColumnR = tileW / 2;
+				}
+				if (broken) {
+					int start = tileW * (tileH - 1);
+					for (int i = start; i < data.length; i++) {
+						if (i == 0) data[i] = 0;
+						else if (i == centerColumnL || i == centerColumnR) data[i] = 2;
+						else if (i == tileW - 1) data[i] = 4;
+						else if (i < centerColumnL) data[i] = 1;
+						else data[i] = 3;
+					}
+				} else {
+					int i = 0;
+					int xxx = 0;
+					for (int j = 0; j < tileH; j++) {
+						if (j == 1) {//enter second row
+							xxx = 5;
+						}
+						for (int k = 0; k < tileW; k++) {
+							if (k == 0) data[i] = 0 + xxx;
+							else if (k == centerColumnL || k == centerColumnR) data[i] = 2 + xxx;
+							else if (k == tileW - 1) data[i] = 4 + xxx;
+							else if (k < centerColumnL) data[i] = 1 + xxx;
+							else data[i] = 3 + xxx;
+							i++;
+						}
+					}
+				}
+				vis.map(data, tileW);
+				
+			}
+		}
+		
+		@NotAllowedInLua
+		public ActionPart placeBarriers() {
+			ActionPartList parts = new ActionPartList();
+			if (!broken) {
+				int start = (tileX - 1) + (tileY + 1) * Dungeon.level.width();
+				for (int i = 1; i < tileH; i++) {//skip first row
+					for (int j = 0; j < tileW; j++) {
+						int cell = start + i + j;
+						parts.addActionPart(new BarrierActionPart.Place(new Barrier(cell)));
+					}
+				}
+				parts.redo();
+			}
+			return parts;
+		}
+		
+		@NotAllowedInLua
+		public ActionPart removeBarriers() {
+			ActionPartList parts = new ActionPartList();
+			if (!broken) {
+				int start = (tileX - 1) + (tileY + 1) * Dungeon.level.width();
+				for (int i = 1; i < tileH; i++) {//skip first row
+					for (int j = 0; j < tileW; j++) {
+						int cell = start + i + j;
+						Barrier b = Dungeon.level.barriers.get(cell);
+						if (b != null) parts.addActionPart(new BarrierActionPart.Remove(b));
+					}
+				}
+				parts.redo();
+			}
+			return parts;
+		}
+		
+		public boolean isBroken() {
+			return broken;
+		}
+		
+		public void setBroken(boolean broken) {
+			if (this.broken == broken) {
+				return;
+			}
+			if (CustomDungeon.isEditing()) {
+				this.broken = broken;
+				updateState();
+				GameScene.updateMap();
+			} else {
+				if (broken) open();
+				else 	    close();
+			}
+		}
+		
+		public void open() {
+			if (!broken) {
+				
+				broken = true;
+				
+				int start = (tileX-1) + (tileY+1)*Dungeon.level.width();
+				for (int i = 1; i < tileH; i++) {
+					for (int j = 0; j < tileW; j++) {
+						int cell = start + i + j;
+						Dungeon.level.barriers.remove(cell);
+						Level.set(cell, Dungeon.level.map[cell]);
+						if (Dungeon.hero != null && Dungeon.level.heroFOV[cell]) {
+							CellEmitter.get(cell).burst(BlastParticle.FACTORY, 10);
+						}
+					}
+				}
+				
+				updateState();
+				GameScene.updateMap();
+				Dungeon.observe();
+			}
+		}
+		
+		public void close() {
+			if (broken) {
+				
+				broken = false;
+				
+				int start = (tileX-1) + (tileY+1)*Dungeon.level.width();
+				for (int i = 1; i < tileH; i++) {
+					for (int j = 0; j < tileW; j++) {
+						int cell = start + i + j;
+						Dungeon.level.barriers.put(cell, new Barrier(cell));
+						Level.set(cell, Dungeon.level.map[cell]);
+					}
+				}
+				
+				updateState();
+				GameScene.updateMap();
+				Dungeon.observe();
+			}
+		}
+		
+		private static final String BROKEN = "broken";
+		
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(BROKEN, broken);
+		}
+		
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			broken = bundle.getBoolean(BROKEN);
+		}
 	}
 }

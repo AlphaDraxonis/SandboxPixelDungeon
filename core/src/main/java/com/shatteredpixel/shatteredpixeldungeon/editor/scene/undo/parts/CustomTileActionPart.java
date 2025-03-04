@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomTerrain;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 
 public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPart {
@@ -65,6 +66,10 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
                 otherTerrainChanges.redo();
             }
             place(customTile, cell());
+            
+            if (customTile instanceof CavesBossLevel.MetalGate) {
+                addToMoreActions(((CavesBossLevel.MetalGate) customTile).placeBarriers());
+            }
         }
 
         private static int getFirstTerrain(int terrain, CustomTilemap customTile) {
@@ -103,6 +108,10 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
             offset = cell - customTile.tileX - customTile.tileY * Dungeon.level.width()
                     - customTile.offsetCenterX - customTile.offsetCenterY * Dungeon.level.width();
             remove(customTile);
+            
+            if (customTile instanceof CavesBossLevel.MetalGate) {
+                addToMoreActions(((CavesBossLevel.MetalGate) customTile).removeBarriers());
+            }
         }
 
         @Override

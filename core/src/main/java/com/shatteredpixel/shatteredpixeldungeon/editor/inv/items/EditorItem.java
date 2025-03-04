@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnchantmentLike;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
@@ -282,7 +283,11 @@ public abstract class EditorItem<T> extends Item implements CompactCategoryScrol
                 case TRAP: return TrapItem.remove(level.traps.get(cell));
                 case CHECKPOINT: return CheckpointItem.remove(cell);
                 case ARROW_CELL: return ArrowCellItem.remove(cell);
-                case BARRIER: return BarrierItem.remove(cell);
+                case BARRIER:
+                    if (CustomTileItem.findCustomTileAt(cell, false) instanceof CavesBossLevel.MetalGate) {
+                        return CustomTileItem.remove(cell);
+                    }
+                    return BarrierItem.remove(cell);
                 case CUSTOM_TILE: return CustomTileItem.remove(cell);
                 case PARTICLE: return ParticleItem.remove(cell);
             }

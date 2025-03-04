@@ -7,9 +7,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomTerrain;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ContainerWithLabel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -24,6 +26,7 @@ public class EditCustomTileComp extends EditTileComp {
 
     private final CustomTilemap customTile;
 
+    private StyledCheckBox gateBroken;
     private Spinner terrain;
     private RedButton editSimpleCustomTile;
 
@@ -58,6 +61,17 @@ public class EditCustomTileComp extends EditTileComp {
                 summonMobs = new ContainerWithLabel.ForMobs(marker.summons, this, EditMobComp.label("summon_mob"));
                 add(summonMobs);
             }
+            
+            if (customTile instanceof CavesBossLevel.MetalGate) {
+                CavesBossLevel.MetalGate gate = (CavesBossLevel.MetalGate) customTile;
+                gateBroken = new StyledCheckBox(Messages.get(this, "broken"));
+                gateBroken.checked(gate.isBroken());
+                gateBroken.addChangeListener(v -> {
+                    gate.setBroken(v);
+                    updateObj();
+                });
+                add(gateBroken);
+            }
 
             if (!(customTile instanceof CustomTerrain)) {
                 terrain = createTerrainSpinner(customTile.terrain, " " + Messages.get(this, "terrain") + ":", value -> {
@@ -78,6 +92,7 @@ public class EditCustomTileComp extends EditTileComp {
     protected void updateStates() {
         super.updateStates();
         if (terrain != null) terrain.setValue(customTile.terrain);
+        if (gateBroken != null) gateBroken.checked(((CavesBossLevel.MetalGate) customTile).isBroken());
         if (summonMobs != null) summonMobs.updateState(((RitualSiteRoom.RitualMarker) obj.getObject()).summons);
     }
 
@@ -159,6 +174,7 @@ public class EditCustomTileComp extends EditTileComp {
     @Override
     protected void layout() {
         super.layout();
+        layoutOneRectCompInRow(gateBroken);
         layoutCompsLinear(comps);
     }
 
@@ -206,6 +222,9 @@ public class EditCustomTileComp extends EditTileComp {
 //        }
         if (a instanceof RitualSiteRoom.RitualMarker) {
             if (!EditMobComp.isMobListEqual(((RitualSiteRoom.RitualMarker) a).summons, ((RitualSiteRoom.RitualMarker) b).summons)) return false;
+        }
+        if (a instanceof CavesBossLevel.MetalGate) {
+            if (((CavesBossLevel.MetalGate) a).isBroken() != ((CavesBossLevel.MetalGate) b).isBroken()) return false;
         }
         return !(a instanceof CustomTileLoader.UserCustomTile)
                 || ((CustomTileLoader.UserCustomTile) a).getIdentifier().equals(((CustomTileLoader.UserCustomTile) b).getIdentifier());

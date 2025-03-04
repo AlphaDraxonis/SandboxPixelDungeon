@@ -276,6 +276,7 @@ public enum Tiles {
         customTileBag.items.add(new CustomTileItem(new GooBossRoom.GooNest54(), -1));
         customTileBag.items.add(new CustomTileItem(new GooBossRoom.GooNest55(), -1));
         customTileBag.items.add(new CustomTileItem(new CavesBossLevel.TrapTile(), -1));
+        customTileBag.items.add(new CustomTileItem(new CavesBossLevel.MetalGate(), -1));
         customTileBag.items.add(new CustomTileItem(new CityBossLevel.KingsThrone(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExit(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExitOverhang(), -1));

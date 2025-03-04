@@ -62,6 +62,7 @@ public class Assets {
 		public static final String HALLS_SP         = "environment/custom_tiles/halls_special.png";
 		
 		public static final String HALLS_BOSS_LEVEL_CUSTOM_TILE_ICON         = "environment/custom_tiles/halls_boss_level_center_icon.png";
+		public static final String METAL_GATE       = "environment/custom_tiles/metal_gate.png";
 	}
 	
 	//TODO include other font assets here? Some are platform specific though...
