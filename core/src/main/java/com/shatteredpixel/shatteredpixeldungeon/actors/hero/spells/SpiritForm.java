@@ -205,11 +205,11 @@ public class SpiritForm extends ClericSpell {
 			ArrayList<Integer> spawnPoints = new ArrayList<>();
 			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 				int p = Dungeon.hero.pos + PathFinder.NEIGHBOURS8[i];
-				if (Barrier.canEnterCell(p, w, true, true)) {
+				if (Barrier.canEnterCell(p, w, w.isFlying(), true)) {
 					spawnPoints.add(p);
 				}
 			}
-			if (spawnPoints.size() > 0) {
+			if (!spawnPoints.isEmpty()) {
 				Wraith.spawnAt(Random.element(spawnPoints), w);
 				w.HP = w.HT = 20 + 8*artifactLevel();
 			}
