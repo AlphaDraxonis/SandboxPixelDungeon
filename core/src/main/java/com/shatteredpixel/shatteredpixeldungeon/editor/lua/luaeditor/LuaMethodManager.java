@@ -339,6 +339,7 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 
 			addMethod(2008, Trinket.class.getDeclaredMethod("upgradeEnergyCost"));
 
+			addMethod(2011, Wand.class.getMethod("cursedEffect", Char.class, Ballistica.class, boolean.class), "user", "bolt", "positiveOnly");
 			addMethod(2012, Wand.class.getMethod("onZap", Ballistica.class), "attack");
 			addMethod(2013, Wand.class.getMethod("onHit", MagesStaff.class, Char.class, Char.class, int.class), "staff", "attacker", "defender", "damage");
 			addMethod(2014, Wand.class.getMethod("tryToZap", Hero.class, int.class), "owner", "target");

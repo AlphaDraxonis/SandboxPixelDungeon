@@ -65,6 +65,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditPlantComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRoomComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTrapComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Buffs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.CursedWandEffects;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Enchantments;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.GameObjectCategory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
@@ -126,6 +127,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScrol
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Spell;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.SummonElemental;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.CursedWand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
@@ -1451,6 +1453,7 @@ public class LuaGlobals extends Globals {
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Buffs.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(MobSprites.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Enchantments.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(CursedWandEffects.instance().values()));
 		return result;
 	}
 
@@ -1472,6 +1475,7 @@ public class LuaGlobals extends Globals {
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Plants.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(MobSprites.instance().values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(Enchantments.instance().values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, GameObjectCategory.getAll(CursedWandEffects.instance().values()));
 		return result;
 	}
 
@@ -1657,6 +1661,8 @@ public class LuaGlobals extends Globals {
 		addOtherAccessibleClass(MissileWeapon.class);
 		addOtherAccessibleClass(TippedDart.class);
 		addOtherAccessibleClass(Wand.class);
+		addOtherAccessibleClass(CursedWand.class);
+		addOtherAccessibleClass(CursedWand.CursedEffect.class);
 
 		addOtherAccessibleClass(Runestone.class);
 		addOtherAccessibleClass(Scroll.class);

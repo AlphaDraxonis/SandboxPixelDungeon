@@ -167,6 +167,10 @@ public abstract class Wand extends Item {
 			return false;
 		}
 	}
+	
+	public CursedWand.CursedEffect cursedEffect(Char user, Ballistica bolt, boolean positiveOnly) {
+		return CursedWand.randomValidEffectNoComposition(this, user, bolt, positiveOnly);
+	}
 
 	@Override
 	public boolean collect( Bag container ) {

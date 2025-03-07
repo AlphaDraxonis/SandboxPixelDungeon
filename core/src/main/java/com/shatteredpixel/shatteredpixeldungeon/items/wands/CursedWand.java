@@ -102,9 +102,12 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TargetHealthIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.BArray;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
@@ -138,7 +141,7 @@ public class CursedWand {
 
 	//*** Cursed Effects ***
 
-	public static abstract class CursedEffect {
+	public static abstract class CursedEffect implements Bundlable {
 
 		public boolean valid(Item origin, Char user, Ballistica bolt, boolean positiveOnly){
 			return true;
@@ -154,7 +157,16 @@ public class CursedWand {
 		}
 
 		public abstract boolean effect(Item origin, Char user, Ballistica bolt, boolean positiveOnly);
-
+		
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			//we don't have to store anything atm
+		}
+		
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			//we don't have to store anything atm
+		}
 	}
 
 	// common/uncommon/rare/v.rare have a 60/30/9/1% chance respectively
@@ -174,6 +186,13 @@ public class CursedWand {
 	}
 
 	public static CursedEffect randomValidEffect(Item origin, Char user, Ballistica bolt, boolean positiveOnly){
+		return origin instanceof Wand
+				? ((Wand) origin).cursedEffect(user, bolt, positiveOnly)
+				: randomValidEffectNoComposition(origin, user, bolt, positiveOnly);
+	}
+	
+	@NotAllowedInLua
+	public static CursedEffect randomValidEffectNoComposition(Item origin, Char user, Ballistica bolt, boolean positiveOnly){
 		switch (Random.chances(EFFECT_CAT_CHANCES)){
 			case 0: default:
 				return randomValidCommonEffect(origin, user, bolt, positiveOnly);
@@ -1226,10 +1245,7 @@ public class CursedWand {
 		@Override
 		public boolean valid(Item origin, Char user, Ballistica bolt, boolean positiveOnly) {
 			//can't happen on floors where chasms aren't allowed
-			if( Dungeon.bossLevel() || Dungeon.depth > 25 || Dungeon.branch != 0){
-				return false;
-			}
-			return true;
+			return Dungeon.level.levelScheme.getChasm() != null;
 		}
 
 		@Override

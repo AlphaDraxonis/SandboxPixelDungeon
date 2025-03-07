@@ -79,6 +79,6 @@ public class HeroDisguise extends FlavourBuff {
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
-		cls = bundle.getEnum(CLASS, HeroClass.class);
+		if (bundle.contains(CLASS)) cls = bundle.getEnum(CLASS, HeroClass.class);
 	}
 }

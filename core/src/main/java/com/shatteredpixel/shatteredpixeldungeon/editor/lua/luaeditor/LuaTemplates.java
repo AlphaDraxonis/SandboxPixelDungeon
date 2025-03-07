@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
 import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.NotAllowedInLua;
@@ -46,6 +47,7 @@ public class LuaTemplates {
 
 	private static final LuaScript REPLACES_WALLS_WITH_EMBERS;
 	private static final LuaScript INSCRIBE_LOOT_TABLE;
+	private static final LuaScript SET_CURSED_EFFECTS;
 
 	private static final LuaScript[] TEMPLATES;
 
@@ -245,9 +247,90 @@ public class LuaTemplates {
 				"return {\n" +
 				"    vars = vars; static = static; createGlyphToInscribe = createGlyphToInscribe;\n" +
 				"}";
+		
+		SET_CURSED_EFFECTS = new LuaScript(Wand.class, "Select which curse effects can be used by the wand.");
+		SET_CURSED_EFFECTS.code = "vars = {} static = {} function cursedEffect(this, vars, user, bolt, positiveOnly)" +
+				"local list = new(\"List\");\n" +
+				
+				"\n" +
+				"--add an element multiple times to increase the odds!\n" +
+				
+				"\n" +
+				"--common (60% chance)\n" +
+				"local commons = new(\"List\");\n" +
+				"commons:add(\"BurnAndFreeze\");\n" +
+				"commons:add(\"SpawnRegrowth\");\n" +
+				"commons:add(\"RandomTeleport\");\n" +
+				"commons:add(\"RandomGas\");\n" +
+				"commons:add(\"RandomAreaEffect\");\n" +
+				"commons:add(\"Bubbles\");\n" +
+				"commons:add(\"RandomWand\");\n" +
+				"commons:add(\"SelfOoze\");\n" +
+				
+				"\n" +
+				"--uncommon (30% chance)\n" +
+				"local uncommons = new(\"List\");\n" +
+				"uncommons:add(\"RandomPlant\");\n" +
+				"uncommons:add(\"HealthTransfer\");\n" +
+				"uncommons:add(\"Explosion\");\n" +
+				"uncommons:add(\"LightningBolt\");\n" +
+				"uncommons:add(\"Geyser\");\n" +
+				"uncommons:add(\"SummonSheep\");\n" +
+				"uncommons:add(\"Levitate\");\n" +
+				"uncommons:add(\"Alarm\");\n" +
+				
+				"\n" +
+				"--rare (9% chance)\n" +
+				"local rares = new(\"List\");\n" +
+				"rares:add(\"SheepPolymorph\");\n" +
+				"rares:add(\"CurseEquipment\");\n" +
+				"rares:add(\"InterFloorTeleport\");\n" +
+				"rares:add(\"SummonMonsters\");\n" +
+				"rares:add(\"FireBall\");\n" +
+				"rares:add(\"ConeOfColors\");\n" +
+				"rares:add(\"MassInvuln\");\n" +
+				"rares:add(\"Petrify\");\n" +
+				
+				"\n" +
+				"--very rare (1% chance)\n" +
+				"local veryRares = new(\"List\");\n" +
+				"veryRares:add(\"ForestFire\");\n" +
+				"veryRares:add(\"SpawnGoldenMimic\");\n" +
+				"veryRares:add(\"AbortRetryFail\");\n" +
+				"veryRares:add(\"RandomTransmogrify\");\n" +
+				"veryRares:add(\"HeroShapeShift\");\n" +
+				"veryRares:add(\"SuperNova\");\n" +
+				"veryRares:add(\"SinkHole\");\n" +
+				"veryRares:add(\"GravityChaos\");\n" +
+				
+				"\n" +
+				"local roll = Random.int(100)\n" +
+				"local list;\n" +
+				"if roll < 60 then\n" +
+				"    list = commons;\n" +
+				"elseif roll < 90 then\n" +
+				"    list = uncommons;\n" +
+				"elseif roll < 99 then\n" +
+				"    list = rares;\n" +
+				"else\n" +
+				"    list = veryRares;\n" +
+				"end\n" +
+				"\n" +
+				
+				"local effect;\n" +
+				"repeat\n" +
+				"    effect = new( Random.element(list) )\n" +
+				"until effect:valid(this, user, bolt, positiveOnly)\n" +
+				"\n" +
+				"return effect;\n" +
+				"end\n" +
+				"\n" +
+				"return {\n" +
+				"    vars = vars; static = static; createGlyphToInscribe = createGlyphToInscribe;\n" +
+				"}";
 
 		TEMPLATES = new LuaScript[]{KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK,
-				REPLACES_WALLS_WITH_EMBERS, INSCRIBE_LOOT_TABLE};
+				REPLACES_WALLS_WITH_EMBERS, INSCRIBE_LOOT_TABLE, SET_CURSED_EFFECTS};
 	}
 
 	private static String name(LuaScript script) {
@@ -257,6 +340,7 @@ public class LuaTemplates {
 		if (script == RANGED_ATTACK) return Messages.get(LuaTemplates.class, "ranged_attack_name");
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_name");
 		if (script == INSCRIBE_LOOT_TABLE) return Messages.get(LuaTemplates.class, "inscribe_loot_table_name");
+		if (script == SET_CURSED_EFFECTS) return Messages.get(LuaTemplates.class, "set_cursed_effects_name");
 		return Messages.NO_TEXT_FOUND;
 	}
 
@@ -267,6 +351,7 @@ public class LuaTemplates {
 		if (script == RANGED_ATTACK) return Messages.get(LuaTemplates.class, "ranged_attack_desc");
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_desc");
 		if (script == INSCRIBE_LOOT_TABLE) return Messages.get(LuaTemplates.class, "inscribe_loot_table_desc");
+		if (script == SET_CURSED_EFFECTS) return Messages.get(LuaTemplates.class, "set_cursed_effects_desc");
 		return Messages.NO_TEXT_FOUND;
 	}
 

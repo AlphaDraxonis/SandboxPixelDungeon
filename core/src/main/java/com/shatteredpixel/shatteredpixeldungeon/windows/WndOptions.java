@@ -144,7 +144,7 @@ public class WndOptions extends Window {
 		
 		float spHeight = Math.min(tfMessage.height(), PixelScene.uiCamera.height * 0.88f - pos - spaceForButtons) + MARGIN;
 		
-		resize(width, (int)(pos + spHeight + spaceForButtons));
+		resize(width, (int)(pos + spHeight + spaceForButtons - MARGIN));
 		
 		sp.setRect(0, tfTitle.bottom() + MARGIN, width, spHeight);
 		spForButtons.setRect(0, sp.bottom() + MARGIN, width, content.height());
