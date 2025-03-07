@@ -43,6 +43,10 @@ public class VariablesPanel extends CodeInputPanel {
 	public VariablesPanel(String label, String tableName) {
 		title.text(label);
 		this.tableName = tableName;
+		
+		adder.setVisible(false);
+		remover.setVisible(false);
+		expandAndFold.setVisible(true);
 	}
 
 

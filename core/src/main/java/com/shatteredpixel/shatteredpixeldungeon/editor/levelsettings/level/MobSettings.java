@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -40,13 +41,10 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 
@@ -373,10 +371,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
         }
 
         private void selectBoss(Consumer<Mob> callBack) {
-            Window w = EditorUtilities.getParentWindow(this);
-            w.active = false;
-            if (w instanceof WndTabbed) ((WndTabbed) w).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
-            Game.scene().remove(w);
+            DungeonScene.hideWindowsTemporarily();
 
             EditorScene.selectCell(new CellSelector.Listener() {
                 @Override
@@ -408,11 +403,8 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
 
                             callBack.accept(l.findMob(cell));
                         } else callBack.accept(null);
-
-                        w.active = true;
-                        if (w instanceof WndTabbed) ((WndTabbed) w).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
-                        EditorScene.show(w);
                     }
+                    DungeonScene.reshowWindows();
                 }
 
                 @Override

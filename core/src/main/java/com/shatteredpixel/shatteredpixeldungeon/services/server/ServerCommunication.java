@@ -48,7 +48,7 @@ public final class ServerCommunication {
                 return false;
             }
 
-            String scriptLoadURL = "https://script.google.com/macros/s/AKfycbwrKEC3IN-d0spHExbHfOHzAYMD2mJh_7x3efW5l2fBYlidcIHNb19_CtGTmRJlrep8Ow/exec";
+            String scriptLoadURL = "https://script.google.com/macros/s/AKfycbxuykWaelTwPHzSdYk131C4e4AzFFl3zlTx7Cenz1FlbcJEwTHo1_I-sbn1UECBGsr10g/exec";
             Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
             httpRequest.setUrl(scriptLoadURL);
 
@@ -89,8 +89,7 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        //tzz change url in server file!!!! SEEEEEEHHHRRR WICHTIG!
-        return URL == null||true ? "https://script.google.com/macros/s/AKfycby5KmTrrbVonNFz32DRbrNzpgWQ_ooZoKqB52Kc9QSaZcc0R644MPTcGZQBRXjklXX8Zw/exec" : URL;
+        return URL == null||true ? "https://script.google.com/macros/s/AKfycbzZ5mT897D9QTauIIHThl_i4TietQVG8bY0n4aZKaoAusPBdP1M6zmNOOVwzO4sJ-Gg-Q/exec" : URL;
     }
 
     static String getUUID() {

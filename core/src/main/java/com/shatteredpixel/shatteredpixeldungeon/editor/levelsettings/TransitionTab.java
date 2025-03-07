@@ -19,6 +19,7 @@ import com.watabou.noosa.ui.Component;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -126,7 +127,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
     }
 
     private float layoutTransitionComps(List<Integer> cells, float pos) {
-        for (int cell : cells) {
+        for (int cell : new HashSet<>(cells)) {
             TransitionCompRow comp = transitionCompMap.get(cell);
             if (comp == null) {
                 comp = new TransitionCompRow(cell, Dungeon.level.levelScheme, true) {

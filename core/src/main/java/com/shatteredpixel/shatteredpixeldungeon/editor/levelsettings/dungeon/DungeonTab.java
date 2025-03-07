@@ -157,7 +157,7 @@ public class DungeonTab extends MultiWindowTabComp {
         autoRevealSecrets.addChangeListener(v -> Dungeon.customDungeon.notRevealSecrets = !v);
         content.add(autoRevealSecrets);
 
-        viewCustomObjects = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "view_custom_objects"), PixelScene.landscape() ? 8 : 6){
+        viewCustomObjects = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "custom_object_overview"), PixelScene.landscape() ? 8 : 6){
             @Override
             protected void onClick() {
                 DungeonScene.show(new WndAllCustomObjects());

@@ -9,7 +9,6 @@ import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.LuaLevelScript;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.CustomObjSelector;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndSelectResourceFile;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.editcomps.CustomObjectEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
@@ -249,7 +248,7 @@ public class LevelTab extends MultiWindowTabComp {
             lco = CustomObjectManager.getUserContent(levelScheme.luaScriptID, LuaLevelScript.class);
         }
 
-        luaScriptPath = new CustomObjSelector<String>(Messages.get(CustomObjectEditor.class, "script"), new CustomObjSelector.Selector<String>() {
+        luaScriptPath = new CustomObjSelector<String>(Messages.get(this, "script"), new CustomObjSelector.Selector<String>() {
 
             @Override
             public String getCurrentValue() {

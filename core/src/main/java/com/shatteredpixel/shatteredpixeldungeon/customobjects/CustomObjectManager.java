@@ -95,9 +95,8 @@ public final class CustomObjectManager {
 
 	private static void loadDungeonScript() {
 		if (Dungeon.dungeonScript != null) {
-		
+			Dungeon.dungeonScript.unloadScript();
 		}
-		Dungeon.dungeonScript.unloadScript();
 		if (Dungeon.customDungeon.dungeonScriptPath != null) {
 			LuaScript ls = CustomDungeonSaves.readLuaFile(Dungeon.customDungeon.dungeonScriptPath);
 			if (ls != null) {

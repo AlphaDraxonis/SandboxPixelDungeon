@@ -33,7 +33,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
-import com.watabou.noosa.Group;
 import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Bundle;
@@ -212,13 +211,6 @@ public class LastLevel extends Level {
 			default:
 				return super.tileDesc( tile, cell );
 		}
-	}
-
-	@Override
-	public Group addVisuals () {
-		super.addVisuals();
-		HallsLevel.addHallsVisuals(this, visuals);
-		return visuals;
 	}
 
 	@Override

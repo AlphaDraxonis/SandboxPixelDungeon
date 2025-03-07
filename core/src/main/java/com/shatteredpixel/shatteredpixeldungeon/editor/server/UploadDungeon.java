@@ -155,8 +155,8 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         }
         
         if (type == ServerCommunication.UploadType.UPLOAD) {
-            previewImageSelector = new PreviewImageSelector();
-            add(previewImageSelector);
+//            previewImageSelector = new PreviewImageSelector();
+//            add(previewImageSelector);
         }
 
         if (type != ServerCommunication.UploadType.REPORT_BUG) {

@@ -36,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.ImpShopRoo
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance.EntranceRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit.ExitRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.watabou.noosa.Group;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
@@ -175,10 +174,4 @@ public class LastShopLevel extends RegularLevel {
 		}
 	}
 
-	@Override
-	public Group addVisuals( ) {
-		super.addVisuals();
-		CityLevel.addCityVisuals(this, visuals);
-		return visuals;
-	}
 }

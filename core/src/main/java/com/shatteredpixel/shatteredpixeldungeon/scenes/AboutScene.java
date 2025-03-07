@@ -203,14 +203,13 @@ public class AboutScene extends PixelScene {
 		purigro.setRect(arcnor.right()+2, arcnor.top(), colWidth/2f, 0);
 		content.add(purigro);
 		
-		//*** ByteBuddy Credits ***
+		//*** ByteBuddy / Lua Credits ***
 		
 		final int BYTE_BUDDY_LUA_COLOR = 0xF0A020;
-		RenderedTextBlock byteBuddyAndLua = PixelScene.renderTextBlock("Lua-Implementation possible thanks to", 66);
-		byteBuddyAndLua.setRect(wata.left(), arcnor.bottom() + 8, colWidth, 0);
+		RenderedTextBlock byteBuddyAndLua = PixelScene.renderTextBlock("Lua-Implementation possible thanks to", 6);
 		content.add(byteBuddyAndLua);
 		
-		addLine(byteBuddyAndLua.top() - 4, content);
+		addLine(arcnor.bottom() + 4, content);
 		
 		CreditsBlock byteBuddy = new CreditsBlock(false, BYTE_BUDDY_LUA_COLOR,
 				"ByteBuddy:",
@@ -219,11 +218,6 @@ public class AboutScene extends PixelScene {
 				"github.com/raphw/byte-buddy",
 				"https://github.com/raphw/byte-buddy");
 		byteBuddy.setSize(colWidth/2f, 0);
-		if (landscape()){
-			byteBuddy.setPos(byteBuddyAndLua.right(), byteBuddyAndLua.top() + (byteBuddyAndLua.height() - byteBuddy.height())/2f);
-		} else {
-			byteBuddy.setPos(alex.left(), byteBuddyAndLua.bottom()+5);
-		}
 		content.add(byteBuddy);
 		
 		CreditsBlock lua = new CreditsBlock(false, BYTE_BUDDY_LUA_COLOR,
@@ -232,8 +226,19 @@ public class AboutScene extends PixelScene {
 				null,
 				"github.com/luaj/luaj",
 				"https://github.com/luaj/luaj");
-		lua.setRect(byteBuddy.right()+2, byteBuddy.top(), colWidth/2f, 0);
+		lua.setSize(colWidth/2f, 0);
 		content.add(lua);
+		
+		if (landscape()){
+			float hNeeded = Math.max(byteBuddy.height(), byteBuddyAndLua.height());
+			byteBuddyAndLua.setRect(wata.left(), arcnor.bottom() + 8 + (hNeeded-byteBuddyAndLua.height())*0.5f, colWidth, 0);
+			byteBuddy.setPos(byteBuddyAndLua.right(), arcnor.bottom() + 8 + (hNeeded - byteBuddy.height())*0.5f);
+			lua.setRect(byteBuddy.right()+2, arcnor.bottom() + 8 + (hNeeded - lua.height())*0.5f, colWidth/2f, 0);
+		} else {
+			byteBuddyAndLua.setRect(wata.left(), arcnor.bottom() + 8, colWidth, 0);
+			byteBuddy.setPos(alex.left(), byteBuddyAndLua.bottom()+5);
+			lua.setRect(byteBuddy.right()+2, byteBuddy.top(), colWidth/2f, 0);
+		}
 
 		//*** Transifex Credits ***
 
@@ -250,32 +255,6 @@ public class AboutScene extends PixelScene {
 		addLine(transifex.top() - 4, content);
 
 		addLine(transifex.bottom() + 4, content);
-
-		//*** SandboxPD translation Credits ***
-
-		CreditsBlock myTranslation = new CreditsBlock(true,
-				Window.TITLE_COLOR,
-				null,
-				null,
-				"SandboxPD is only translated by the developer, but you can contact him to add more languages.","",""
-				);
-		myTranslation.setRect(transifex.left(), transifex.bottom()+8, colWidth, -1);
-		content.add(myTranslation);
-
-		addLine(myTranslation.bottom(), content);
-
-		//*** *** ***
-
-//		CreditsBlock community = new CreditsBlock(true,
-//				Window.TITLE_COLOR,
-//				null,
-//				null,
-//				"Save crystal sprite and idea: Arachnentoma\n","",""
-//		);
-//		community.setRect((Camera.main.width - colWidth)/2f,  myTranslation.bottom()+10, colWidth, -1);
-//		content.add(community);
-//
-//		addLine(community.bottom(), content);
 
 		//*** Freesound Credits ***
 
@@ -308,7 +287,7 @@ public class AboutScene extends PixelScene {
 				"_Phone vibration.wav_ by _Breviceps_",
 				"www.freesound.org",
 				"https://www.freesound.org");
-		freesound.setRect(myTranslation.left()-10, myTranslation.bottom() + 4, colWidth+20, -1);
+		freesound.setRect(transifex.left()-10, transifex.bottom() + 8, colWidth+20, -1);
 		content.add(freesound);
 
 		content.setSize( fullWidth, freesound.bottom()+10 );

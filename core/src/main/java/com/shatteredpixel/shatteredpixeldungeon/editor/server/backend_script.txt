@@ -332,7 +332,7 @@ function uploadPreviewFile(e, userIDs, uploadTemp, action) {
       uploader: e.parameter.uploader,
       difficulty: e.parameter.difficulty,
       upload_time: new Date().getTime(),
-      is_debug: true,//tzz make it false
+      is_debug: false,
       userHash: userIDs.id1.substring(0, 10),
       preview_image_file_ids: getPreviewImageFileIds(e.parameter.dungeonID),
     };
@@ -443,6 +443,7 @@ function deleteDungeon(folderID, id1, id2, deleteDungeonFiles) {
   if (!isCreator(folderID, id1, id2)) return 'UserID is incorrect!';
 
   if (deleteDungeonFiles) DriveApp.getFileById(folderID).setTrashed(true);
+
 
   const allPreviewFiles = DriveApp.getFolderById(PREVIEW_FOLDER).getFiles();
   while (allPreviewFiles.hasNext()) {
@@ -650,7 +651,7 @@ function sendNotificationEmail(fileName, msg, description, int_version) {
 
 //SUPPLY URL SCRIPT (This is the script it first connects to so it can then read the URL for the actual script. That way, I can update the real script later.)
 const FOLDR     = "1miViNNWVeAaqg3GkCoO4HzcqolsRnKXc";
-const FILE_NAME = "url12.txt";
+const FILE_NAME = "url13.txt";
 
 function doGet(e) {
   const folder = DriveApp.getFolderById(FOLDR);

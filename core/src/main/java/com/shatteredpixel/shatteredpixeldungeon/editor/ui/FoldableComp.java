@@ -58,11 +58,11 @@ public class FoldableComp extends Component {
             }
             
             private final float defaultAngle = icon.angle;
-            private boolean animationEnabled;
+            private boolean animationActive;
             
             @Override
             protected void onClick() {
-                animationEnabled = true;
+                animationActive = true;
                 if (expanded) {
                     fold();
                 } else {
@@ -72,19 +72,19 @@ public class FoldableComp extends Component {
             
             @Override
             public void update() {
-                if (animationEnabled) {
+                if (animationActive) {
                     if (expanded) {
                         float angle = icon.angle + HALF_CIRCLE_DEGREES * Game.elapsed / EXPAND_ANIMATION_DURATION;
                         if (angle >= HALF_CIRCLE_DEGREES) {
                             angle = HALF_CIRCLE_DEGREES;
-                            animationEnabled = false;
+                            animationActive = false;
                         }
                         icon.angle = defaultAngle + angle;
                     } else {
                         float angle = icon.angle - HALF_CIRCLE_DEGREES * Game.elapsed / EXPAND_ANIMATION_DURATION;
                         if (angle <= 0) {
                             angle = 0;
-                            animationEnabled = false;
+                            animationActive = false;
                         }
                         icon.angle = defaultAngle + angle;
                     }
@@ -119,7 +119,7 @@ public class FoldableComp extends Component {
 
     protected void showBody(boolean flag) {
         expanded = flag;
-        body.visible = body.active = flag;
+        body.setVisible(flag);
     }
 
     public void setBody(Component body) {

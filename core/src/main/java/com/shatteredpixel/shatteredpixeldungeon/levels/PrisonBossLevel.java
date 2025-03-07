@@ -53,7 +53,6 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TargetHealthIndicator;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
-import com.watabou.noosa.Group;
 import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
@@ -379,13 +378,6 @@ public class PrisonBossLevel extends Level {
 		
 		GameScene.resetMap();
 		Dungeon.observe();
-	}
-	
-	@Override
-	public Group addVisuals() {
-		super.addVisuals();
-		PrisonLevel.addPrisonVisuals(this, visuals);
-		return visuals;
 	}
 	
 	public void progress(){

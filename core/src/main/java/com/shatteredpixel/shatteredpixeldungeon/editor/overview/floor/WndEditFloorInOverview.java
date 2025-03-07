@@ -18,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelec
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -25,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
@@ -38,6 +40,7 @@ import com.watabou.noosa.ui.Component;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +57,6 @@ public class WndEditFloorInOverview extends WndTabbed {
 
     private static LevelListPane.ListItem lastListItem;
     private static int lastIndex;
-
 
     public WndEditFloorInOverview(LevelScheme levelScheme, LevelListPane.ListItem listItem, LevelListPane listPane) {
         this.levelScheme = levelScheme;
@@ -106,7 +108,12 @@ public class WndEditFloorInOverview extends WndTabbed {
     public void hide() {
         super.hide();
         if (Dungeon.level != levelScheme.getLevel()) {
-            levelScheme.unloadLevel();
+			try {
+				levelScheme.saveLevel();
+			} catch (IOException e) {
+                DungeonScene.show(new WndError(e));
+			}
+			levelScheme.unloadLevel();
             EditorScene.updatePathfinder();
         }
     }
@@ -365,7 +372,7 @@ public class WndEditFloorInOverview extends WndTabbed {
         }
 
         private float layoutTransitionComps(List<Integer> cells, float pos) {
-            for (int cell : cells) {
+            for (int cell : new HashSet<>(cells)) {
                 TransitionCompRow comp = transitionCompMap.get(cell);
                 if (comp == null) {
                     comp = new TransitionCompRow(cell, levelScheme, false) {
@@ -378,9 +385,9 @@ public class WndEditFloorInOverview extends WndTabbed {
                     };
                     content.add(comp);
                     transitionCompMap.put(cell, comp);
-                    comp.setRect(0, pos, width, -1);
-                    pos = comp.bottom() + 2;
                 }
+                comp.setRect(x, pos, width, 0);
+                pos = comp.bottom() + 2;
             }
             return pos;
         }

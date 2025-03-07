@@ -59,7 +59,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
-import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
@@ -497,13 +496,6 @@ public class CavesBossLevel extends Level {
 			default:
 				return super.tileDesc( tile, cell );
 		}
-	}
-
-	@Override
-	public Group addVisuals() {
-		super.addVisuals();
-		CavesLevel.addCavesVisuals(this, visuals);
-		return visuals;
 	}
 
 	/**

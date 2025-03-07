@@ -136,6 +136,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Tipp
 import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.BranchesBuilder;
@@ -1639,6 +1640,8 @@ public class LuaGlobals extends Globals {
 		addOtherAccessibleClass(Checkpoint.class);
 		addOtherAccessibleClass(ArrowCell.class);
 		addOtherAccessibleClass(Barrier.class);
+		
+		addOtherAccessibleClass(CavesBossLevel.MetalGate.class);
 
 		addOtherAccessibleClass(EquipableItem.class);
 		addOtherAccessibleClass(Armor.class);

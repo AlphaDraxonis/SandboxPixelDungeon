@@ -216,13 +216,6 @@ public class SewerBossLevel extends SewerLevel {
 			});
 		}
 	}
-	
-	@Override
-	public Group addVisuals() {
-		super.addVisuals();
-		addSewerBossVisuals(this, visuals);
-		return visuals;
-	}
 
 	public static void addSewerBossVisuals(Level level, Group visuals) {
 		if (level.customTiles != null) {

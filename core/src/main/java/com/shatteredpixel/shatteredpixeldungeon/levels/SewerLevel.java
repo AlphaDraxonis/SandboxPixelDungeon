@@ -118,12 +118,6 @@ public class SewerLevel extends RegularLevel {
 						2, 2,
 						1, 1, 1, 1, 1};
 	}
-	@Override
-	public Group addVisuals() {
-		super.addVisuals();
-		addSewerVisuals(this, visuals);
-		return visuals;
-	}
 	
 	public static void addSewerVisuals( Level level, Group group ) {
 		boolean isSewerLevel = LevelScheme.getRegion(level) == LevelScheme.REGION_SEWERS;

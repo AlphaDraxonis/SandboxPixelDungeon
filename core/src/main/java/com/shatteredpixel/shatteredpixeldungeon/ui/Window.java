@@ -237,7 +237,7 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 		
 		public int get() {
 			switch (this) {
-				case WIDTH_VERY_SMALL: return gateWidth(160, (int) (PixelScene.uiCamera.width * 0.9f), Float.MAX_VALUE);
+				case WIDTH_VERY_SMALL: return gateWidth(160, 0, (int) (PixelScene.uiCamera.width * 0.9f));
 				case WIDTH_SMALL:  return gateWidth(140, 180, PixelScene.uiCamera.width * 0.7f);
 				case WIDTH_MEDIUM: return gateWidth(150, 200, PixelScene.uiCamera.width * 0.8f);
 				case WIDTH_LARGE:  return gateWidth(160, WndTitledMessage.WIDTH_MAX, PixelScene.uiCamera.width * 0.9f);

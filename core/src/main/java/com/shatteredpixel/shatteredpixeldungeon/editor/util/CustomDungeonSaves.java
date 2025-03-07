@@ -131,7 +131,7 @@ public class CustomDungeonSaves {
 	}
 
 	public static void completeDownloading(String downloadToDir, String dungeonName) throws IOException {
-		if (!downloadToDir.startsWith(TEMP_FOLDER)) throw new IOException("Error occurred around line 115.");
+		if (!downloadToDir.startsWith(TEMP_FOLDER)) throw new IOException("Error occurred around line 134.");
 
 		try {
 			FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());

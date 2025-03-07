@@ -9,6 +9,10 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
 
     protected IconButton remover, adder;
     protected boolean reverseBtnOrder;
+    
+    {
+        expandAndFold.setVisible(false);
+    }
 
     public FoldableCompWithAdd() {
         super();

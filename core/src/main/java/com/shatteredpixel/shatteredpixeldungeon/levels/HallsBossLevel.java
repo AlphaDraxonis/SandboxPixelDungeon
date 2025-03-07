@@ -44,7 +44,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.watabou.noosa.Game;
-import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
@@ -381,13 +380,6 @@ public class HallsBossLevel extends Level {
 			default:
 				return super.tileDesc( tile, cell );
 		}
-	}
-
-	@Override
-	public Group addVisuals () {
-		super.addVisuals();
-		HallsLevel.addHallsVisuals( this, visuals );
-		return visuals;
 	}
 
 	public static class CenterPieceVisuals extends CustomTilemap implements CustomTerrain {

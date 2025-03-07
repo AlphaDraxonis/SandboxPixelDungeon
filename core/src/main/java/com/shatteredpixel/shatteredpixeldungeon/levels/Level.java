@@ -1389,6 +1389,15 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 				}
 			}
 		}
+		
+		SewerLevel  .addSewerVisuals( this, visuals);
+		PrisonLevel .addPrisonVisuals(this, visuals);
+		CavesLevel  .addCavesVisuals( this, visuals);
+		CityLevel   .addCityVisuals(  this, visuals);
+		HallsLevel  .addHallsVisuals( this, visuals);
+		
+		SewerBossLevel.addSewerBossVisuals(this, visuals);
+		
 		return visuals;
 	}
 
