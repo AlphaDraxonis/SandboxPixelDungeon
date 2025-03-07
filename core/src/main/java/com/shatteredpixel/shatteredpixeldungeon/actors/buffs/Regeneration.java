@@ -79,7 +79,11 @@ public class Regeneration extends Buff {
 						delay /= RingOfEnergy.artifactChargeMultiplier(target);
 					}
 				}
-				delay /= SaltCube.healthRegenMultiplier(hero);
+
+				//salt cube is turned off while regen is disabled.
+				if (target.buff(LockedFloor.class) == null) {
+					delay /= SaltCube.healthRegenMultiplier(hero);
+				}
 				delay /= Dungeon.curLvlScheme().naturalRegenSpeed;
 
 				partialRegen += 1f / delay;
