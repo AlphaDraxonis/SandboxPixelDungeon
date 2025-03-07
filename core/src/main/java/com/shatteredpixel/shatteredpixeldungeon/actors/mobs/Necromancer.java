@@ -109,14 +109,14 @@ public class Necromancer extends SpawnerMob {
 	public float lootChance() {
 		return super.lootChance() * ((6f - Dungeon.LimitedDrops.NECRO_HP.count) / 6f);
 	}
-
+	
 	@Override
 	public void increaseLimitedDropCount(Item generatedLoot) {
 		if (generatedLoot instanceof PotionOfHealing)
 			Dungeon.LimitedDrops.NECRO_HP.count++;
 		super.increaseLimitedDropCount(generatedLoot);
 	}
-
+	
 	@Override
 	public void die(Object cause) {
 		if (storedSkeletonID != -1){
@@ -143,7 +143,7 @@ public class Necromancer extends SpawnerMob {
 	private static final String FIRST_SUMMON = "first_summon";
 	private static final String SUMMONING_POS = "summoning_pos";
 	private static final String MY_SKELETON = "my_skeleton";
-
+	
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
@@ -171,7 +171,7 @@ public class Necromancer extends SpawnerMob {
 			storedSkeletonID = bundle.getInt( MY_SKELETON );
 		}
 	}
-
+	
 	@Override
 	public void onZapComplete(){
 		if (mySummon == null || mySummon.sprite == null || !mySummon.isAlive()){
@@ -206,15 +206,6 @@ public class Necromancer extends SpawnerMob {
 	public Mob summonMinion(){
 		if (Actor.findChar(summoningPos) != null) {
 
-			//cancel if character cannot be moved
-			if (Char.hasProp(Actor.findChar(summoningPos), Property.IMMOVABLE)){
-				summoning = false;
-				if (sprite.extraCode instanceof NecromancerSprite.SummoningParticle)
-					((NecromancerSprite.SummoningParticle) sprite.extraCode).finishSummoning(sprite);
-				spend(TICK);
-				return null;
-			}
-
 			int pushPos = pos;
 			for (int c : PathFinder.NEIGHBOURS8) {
 				if (Actor.findChar(summoningPos + c) == null
@@ -223,6 +214,11 @@ public class Necromancer extends SpawnerMob {
 						&& Dungeon.level.trueDistance(pos, summoningPos + c) > Dungeon.level.trueDistance(pos, pushPos)) {
 					pushPos = summoningPos + c;
 				}
+			}
+
+			//no push if char is immovable
+			if (Char.hasProp(Actor.findChar(summoningPos), Property.IMMOVABLE)){
+				pushPos = pos;
 			}
 
 			//push enemy, or wait a turn if there is no valid pushing position
