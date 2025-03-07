@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.potions;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
@@ -39,7 +40,7 @@ public class PotionOfExperience extends Potion {
 	
 	@Override
 	public void apply( Hero hero ) {
-		identify();
+		if (hero == Dungeon.hero) identify();
 		hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(hero.maxExp()), FloatingText.EXPERIENCE);
 		hero.earnExp( hero.maxExp(), getClass() );
 		new Flare( 6, 32 ).color(0xFFFF00, true).show( hero.sprite, 2f );

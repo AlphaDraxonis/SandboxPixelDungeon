@@ -250,7 +250,6 @@ public class LuaTemplates {
 		
 		SET_CURSED_EFFECTS = new LuaScript(Wand.class, "Select which curse effects can be used by the wand.");
 		SET_CURSED_EFFECTS.code = "vars = {} static = {} function cursedEffect(this, vars, user, bolt, positiveOnly)" +
-				"local list = new(\"List\");\n" +
 				
 				"\n" +
 				"--add an element multiple times to increase the odds!\n" +

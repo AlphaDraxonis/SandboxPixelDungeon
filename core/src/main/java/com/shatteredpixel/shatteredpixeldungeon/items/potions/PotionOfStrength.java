@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.potions;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -41,12 +42,13 @@ public class PotionOfStrength extends Potion {
 	
 	@Override
 	public void apply( Hero hero ) {
-		identify();
+		if (hero == Dungeon.hero) {
+			identify();
+			GLog.p( Messages.get(this, "msg", hero.STR()) );
+		}
 
 		hero.STR++;
 		hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, "1", FloatingText.STRENGTH);
-
-		GLog.p( Messages.get(this, "msg", hero.STR()) );
 		
 		Badges.validateStrengthAttained();
 		Badges.validateDuelistUnlock();

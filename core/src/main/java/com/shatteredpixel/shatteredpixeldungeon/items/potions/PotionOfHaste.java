@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.potions;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -37,9 +38,10 @@ public class PotionOfHaste extends Potion {
 	
 	@Override
 	public void apply(Hero hero) {
-		identify();
-		
-		GLog.w( Messages.get(this, "energetic") );
+		if (hero == Dungeon.hero) {
+			identify();
+			GLog.w(Messages.get(this, "energetic"));
+		}
 		Buff.prolong( hero, Haste.class, Haste.DURATION());
 		SpellSprite.show(hero, SpellSprite.HASTE, 1, 1, 0);
 	}

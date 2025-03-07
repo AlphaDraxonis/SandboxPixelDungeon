@@ -56,9 +56,11 @@ public class PotionOfLevitation extends Potion {
 	
 	@Override
 	public void apply( Hero hero ) {
-		identify();
+		if (hero == Dungeon.hero) {
+			identify();
+			GLog.i(Messages.get(this, "float"));
+		}
 		Buff.affect( hero, Levitation.class, Levitation.DURATION() );
-		GLog.i( Messages.get(this, "float") );
 	}
 	
 	@Override

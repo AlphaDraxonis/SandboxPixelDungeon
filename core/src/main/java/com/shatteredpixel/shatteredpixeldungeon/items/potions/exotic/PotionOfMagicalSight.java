@@ -36,7 +36,7 @@ public class PotionOfMagicalSight extends ExoticPotion {
 	
 	@Override
 	public void apply(Hero hero) {
-		identify();
+		if (hero == Dungeon.hero) identify();
 		Buff.affect(hero, MagicalSight.class, MagicalSight.DURATION);
 		SpellSprite.show(hero, SpellSprite.VISION);
 		Dungeon.observe();

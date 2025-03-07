@@ -347,11 +347,16 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
         if (c == PotionOfPurity.class && internalHero.buff(BlobImmunity.class) == null) {
             HashSet<Class> immunities = new BlobImmunity().immunities();
+            oneBlob:
             for (Blob b : Dungeon.level.blobs.values()) {
                 if (b != null && b.volume > 0 && b.cur[pos] > 0) {
-                    if (immunities.contains(b.getClass())) {
-                        if (b instanceof Fire && buff(Burning.class) != null) continue;
-                        return true;
+                    Class<?> cl = b.getClass();
+                    while (cl != null) {
+                        if (immunities.contains(cl)) {
+                            if (b instanceof Fire && buff(Burning.class) != null) continue oneBlob;
+                            return true;
+                        }
+                        cl = cl.getSuperclass();
                     }
                 }
             }
@@ -550,7 +555,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
     @Override
     protected boolean canAttack( Char enemy ) {
-        return waitNextTurn || super.canAttack(enemy) || nextUseMeleeAttackItem() != null || nextUseDistanceAttackItem(enemy.pos, true) != null;
+        return waitNextTurn || super.canAttack(enemy) || internalHero.canAttack(enemy) || nextUseMeleeAttackItem() != null || nextUseDistanceAttackItem(enemy.pos, true) != null;
     }
 
     @Override

@@ -258,7 +258,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
-            }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
+            }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 9, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
             heroMobLvl.addChangeListener(() -> ((HeroMob) mob).setHeroLvl((int) heroMobLvl.getValue()));
             add(heroMobLvl);
 
@@ -267,7 +267,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
-            }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
+            }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 9, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
             heroMobStr.addChangeListener(() -> hero.STR = (int) heroMobStr.getValue());
             add(heroMobStr);
 

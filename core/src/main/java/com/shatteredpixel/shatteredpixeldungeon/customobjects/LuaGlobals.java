@@ -181,6 +181,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Visual;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -790,6 +791,15 @@ public class LuaGlobals extends Globals {
 				return LuaValue.valueOf(EditorUtilities.cellToString(cell.checkint()));
 			}
 		});
+		
+		set("playSound", new OneArgFunction() {
+			@Override
+			public LuaValue call(LuaValue soundFile) {
+				if (!soundFile.isstring()) throw new LuaError("Illegal arguments: use playSound(String soundFile)");
+				if (Sample.INSTANCE.play("sounds/" + soundFile.checkjstring() + ".mp3") == -1) throw new LuaError("Invalid sound file: you can only use existing sounds, values found are in Assets.Sounds (without sounds/ and .mp3)");
+				return LuaValue.TRUE;
+			}
+		});
 
 
 		set("spawnMob", new OneArgFunction() {
@@ -1059,6 +1069,7 @@ public class LuaGlobals extends Globals {
 		addEnum(Languages.class);
 
 		addStaticFinals(Assets.class);
+		addStaticFinals(Assets.Sounds.class);
 		addStaticFinals(Badges.class);
 		addStaticFinals(Challenges.class);
 		addStaticFinals(Chrome.class);

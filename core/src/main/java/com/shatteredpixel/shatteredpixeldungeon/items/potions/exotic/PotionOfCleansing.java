@@ -46,7 +46,7 @@ public class PotionOfCleansing extends ExoticPotion {
 	
 	@Override
 	public void apply( Hero hero ) {
-		identify();
+		if (hero == Dungeon.hero) identify();
 		
 		cleanse( hero );
 		new Flare( 6, 32 ).color(0xFF4CD2, true).show( curUser.sprite, 2f );
