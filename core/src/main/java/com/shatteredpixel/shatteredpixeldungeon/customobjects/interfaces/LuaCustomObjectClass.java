@@ -26,18 +26,13 @@ package com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.watabou.utils.Bundle;
 import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
 
 /**
  * UserContent that is capable of running own Lua code
@@ -58,32 +53,7 @@ public interface LuaCustomObjectClass extends CustomObjectClass {
 
 	public static final String VARS = "vars";
 
-	@Override
-	default boolean isOriginal() {
-		return CustomObjectManager.getLuaClass(getIdentifier()) == this;
-	}
-
 	//These are only meant to be accessible by the class itself (=private)
 	LuaTable getVars();
 	void setVars(LuaTable vars);
-
-	default void onStoreInBundle(Bundle bundle) {
-		bundle.put(IDENTIFIER, getIdentifier());
-		if (getVars() != null && !CustomDungeon.isEditing()) {
-			LuaManager.storeVarInBundle(bundle, getVars(), LuaCustomObjectClass.VARS);
-		}
-	}
-
-	default void onRestoreFromBundle(Bundle bundle) {
-		setIdentifier(bundle.getInt(IDENTIFIER));
-
-		LuaValue script;
-		if (!CustomDungeon.isEditing() && (script = CustomObjectManager.getScript(getIdentifier())) != null && script.get("vars").istable()) {
-			setVars( LuaManager.deepCopyLuaValue(script.get("vars")).checktable() );
-
-			LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, LuaCustomObjectClass.VARS);
-			if (loaded != null && loaded.istable()) setVars( loaded.checktable() );
-			if (script.get("static").istable()) getVars().set("static", script.get("static"));
-		}
-	}
 }

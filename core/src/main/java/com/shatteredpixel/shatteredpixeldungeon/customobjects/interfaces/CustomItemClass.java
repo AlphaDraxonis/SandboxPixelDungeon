@@ -35,10 +35,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 
 public interface CustomItemClass extends CustomGameObjectClass {
 
-	@Override
-	default void updateInheritStats(Level level) {
-		CustomGameObjectClass.super.updateInheritStats(level);
-		if (isOriginal() && Undo.alreadyHasContent()) {
+	static void updateInheritStats(CustomItemClass self, Level level) {
+		if (Undo.alreadyHasContent()) {
 			Undo.addActionPartToBeginning(new ActionPart() {
 				@Override
 				public void undo() {
@@ -69,9 +67,9 @@ public interface CustomItemClass extends CustomGameObjectClass {
 	}
 
 
-	default ActionPartModify doUpdateInheritStats(GameObject obj, CustomGameObjectClass customClass) {
+	static ActionPartModify doUpdateInheritStats(CustomGameObjectClass self, GameObject obj, CustomGameObjectClass customClass) {
 		Item item = (Item) obj;
-		Item template = (Item) this;
+		Item template = (Item) self;
 		ActionPartModify modify = new ItemActionPart.Modify(item);
 		if (customClass.getInheritStats()) {
 			obj.copyStats(template);

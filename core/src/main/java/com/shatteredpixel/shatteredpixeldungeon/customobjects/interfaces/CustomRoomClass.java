@@ -31,11 +31,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.RoomActi
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 
 public interface CustomRoomClass extends CustomGameObjectClass {
-
-	default ActionPartModify doUpdateInheritStats(GameObject obj, CustomGameObjectClass customClass) {
+	
+	static ActionPartModify doUpdateInheritStats(CustomGameObjectClass self, GameObject obj, CustomGameObjectClass customClass) {
 
 		Room m = (Room) obj;
-		Room template = (Room) this;
+		Room template = (Room) self;
 		ActionPartModify modify = new RoomActionPart.Modify(m);
 		if (customClass.getInheritStats()) {
 			obj.copyStats(template);

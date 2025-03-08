@@ -2,6 +2,8 @@
 -keepnames class com.shatteredpixel.** { *; }
 -keepnames class com.watabou.** { *; }
 
+-keep class net.bytebuddy.** { *; }
+
 # keep classes that are instantiated via reflection
 -keep class * extends com.watabou.glscripts.Script
 -keep class * implements com.watabou.utils.Bundlable
@@ -151,3 +153,21 @@
 -dontwarn org.apache.bcel.generic.Type
 -dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
 -dontwarn javax.annotation.Nonnull
+
+
+
+
+-dontwarn com.sun.jna.FunctionMapper
+-dontwarn com.sun.jna.JNIEnv
+-dontwarn com.sun.jna.Library
+-dontwarn com.sun.jna.Native
+-dontwarn com.sun.jna.NativeLibrary
+-dontwarn com.sun.jna.Platform
+-dontwarn java.lang.instrument.ClassDefinition
+-dontwarn java.lang.instrument.ClassFileTransformer
+-dontwarn java.lang.instrument.IllegalClassFormatException
+-dontwarn java.lang.instrument.Instrumentation
+-dontwarn java.lang.instrument.UnmodifiableClassException
+-dontwarn javax.annotation.meta.TypeQualifierDefault
+-dontwarn javax.annotation.meta.TypeQualifierNickname
+-dontwarn javax.annotation.meta.When

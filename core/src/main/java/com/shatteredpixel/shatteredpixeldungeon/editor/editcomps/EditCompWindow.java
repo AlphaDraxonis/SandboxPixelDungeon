@@ -52,7 +52,7 @@ public class EditCompWindow extends Window {
         if (content == null)
             throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
 
-        if (object instanceof EditorItem && ((EditorItem<?>) object).getObject() instanceof CustomObjectClass && ((CustomObjectClass) ((EditorItem<?>) object).getObject()).isOriginal()) {
+        if (object instanceof EditorItem && ((EditorItem<?>) object).getObject() instanceof CustomObjectClass && CustomObjectClass.isOriginal(((EditorItem<?>) object).getObject())) {
             actionPartModify = ActionPartModify.startNewModify(((EditorItem<?>) object).getObject());
         }
 
@@ -118,14 +118,14 @@ public class EditCompWindow extends Window {
     public void hide() {
         super.hide();
 
-        if (content.getObj() instanceof CustomGameObjectClass && ((CustomGameObjectClass) content.getObj()).isOriginal()) {
+        if (content.getObj() instanceof CustomGameObjectClass && CustomObjectClass.isOriginal(content.getObj())) {
 
             Undo.startAction();
 
             actionPartModify.finish();
             Undo.addActionPart(actionPartModify);
 
-            ((CustomGameObjectClass) content.getObj()).updateInheritStats(Dungeon.level);
+            CustomGameObjectClass.updateInheritStats((CustomGameObjectClass) content.getObj(), Dungeon.level);
 
             Undo.endAction();
 

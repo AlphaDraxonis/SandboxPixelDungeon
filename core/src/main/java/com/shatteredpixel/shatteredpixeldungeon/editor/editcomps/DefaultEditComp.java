@@ -161,7 +161,7 @@ public abstract class DefaultEditComp<T> extends Component {
             return;
         }
 
-        if (obj instanceof CustomGameObjectClass && !((CustomGameObjectClass) obj).isOriginal()) {
+        if (obj instanceof CustomGameObjectClass && !CustomObjectClass.isOriginal(obj)) {
             inheritStats = new CheckBox(Messages.get(this, "inherit_stats")) {
                 boolean initializing;
                 {

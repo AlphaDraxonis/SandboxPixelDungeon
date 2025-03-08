@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomCharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -337,7 +338,7 @@ public final class LuaClassGenerator {
 	public static class InterceptorStoreInBundleWithSuper {
 		@RuntimeType
 		public static void storeInBundle(@This LuaCustomObjectClass self, @Argument(0) Bundle bundle, @SuperCall Callable<?> originalMethod) throws Exception {
-			self.onStoreInBundle(bundle);
+			onStoreInBundle(self, bundle);
 			originalMethod.call();
 		}
 	}
@@ -345,7 +346,7 @@ public final class LuaClassGenerator {
 	public static class InterceptorRestoreFromBundleWithSuper {
 		@RuntimeType
 		public static void restoreFromBundle(@This LuaCustomObjectClass self, @Argument(0) Bundle bundle, @SuperCall Callable<?> originalMethod) throws Exception {
-			self.onRestoreFromBundle(bundle);
+			onRestoreFromBundle(self, bundle);
 			originalMethod.call();
 		}
 	}
@@ -353,14 +354,41 @@ public final class LuaClassGenerator {
 	public static class InterceptorStoreInBundle {
 		@RuntimeType
 		public static void storeInBundle(@This LuaCustomObjectClass self, @Argument(0) Bundle bundle) throws Exception {
-			self.onStoreInBundle(bundle);
+			onStoreInBundle(self, bundle);
 		}
 	}
 	
 	public static class InterceptorRestoreFromBundle {
 		@RuntimeType
 		public static void restoreFromBundle(@This LuaCustomObjectClass self, @Argument(0) Bundle bundle) throws Exception {
-			self.onRestoreFromBundle(bundle);
+			onRestoreFromBundle(self, bundle);
+		}
+	}
+	
+	//These should actually have been declared in LuaCustomObjectClass, but that throws an AbstractMethodError in signed Android apk
+	private static void onStoreInBundle(LuaCustomObjectClass self, Bundle bundle) {
+		if (self instanceof CustomGameObjectClass) {
+			((CustomGameObjectClass) self).setInheritStats(bundle.getBoolean("inherit_stats"));
+		}
+		
+		bundle.put("identifier", self.getIdentifier());
+		if (self.getVars() != null && !CustomDungeon.isEditing()) {
+			LuaManager.storeVarInBundle(bundle, self.getVars(), LuaCustomObjectClass.VARS);
+		}
+	}
+	private static void onRestoreFromBundle(LuaCustomObjectClass self, Bundle bundle) {
+		if (self instanceof CustomGameObjectClass) {
+			bundle.put("inherit_stats", ((CustomGameObjectClass) self).getInheritStats());
+		}
+		self.setIdentifier(bundle.getInt("identifier"));
+		
+		LuaValue script;
+		if (!CustomDungeon.isEditing() && (script = CustomObjectManager.getScript(self.getIdentifier())) != null && script.get("vars").istable()) {
+			self.setVars( LuaManager.deepCopyLuaValue(script.get("vars")).checktable() );
+			
+			LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, LuaCustomObjectClass.VARS);
+			if (loaded != null && loaded.istable()) self.setVars( loaded.checktable() );
+			if (script.get("static").istable()) self.getVars().set("static", script.get("static"));
 		}
 	}
 

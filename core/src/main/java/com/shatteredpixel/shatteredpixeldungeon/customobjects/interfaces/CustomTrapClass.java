@@ -30,10 +30,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TrapActi
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 
 public interface CustomTrapClass extends CustomGameObjectClass {
-
-	default ActionPartModify doUpdateInheritStats(GameObject obj, CustomGameObjectClass customClass) {
+	
+	static ActionPartModify doUpdateInheritStats(CustomGameObjectClass self, GameObject obj, CustomGameObjectClass customClass) {
 		Trap m = (Trap) obj;
-		Trap template = (Trap) this;
+		Trap template = (Trap) self;
 		ActionPartModify modify = new TrapActionPart.Modify(m);
 		if (customClass.getInheritStats()) {
 			obj.copyStats(template);

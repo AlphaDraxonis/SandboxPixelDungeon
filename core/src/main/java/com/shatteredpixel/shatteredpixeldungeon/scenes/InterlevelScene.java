@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
@@ -32,12 +31,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.effects.ShadowBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LostBackpack;
-import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
@@ -46,7 +43,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.GameLog;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
@@ -56,12 +52,10 @@ import com.watabou.input.KeyEvent;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.tweeners.Tweener;
 import com.watabou.utils.BArray;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.Random;
-import com.watabou.utils.Signal;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -274,140 +268,140 @@ public class InterlevelScene extends PixelScene {
 		add(loadingText);
 
 
-		if (mode == Mode.DESCEND && lastRegion <= LevelScheme.REGION_HALLS && !DeviceCompat.isDebug()){
-
-			LevelScheme ls = Dungeon.customDungeon.getFloor(curTransition.destLevel);
-			int region = ls.getVisualRegion();
-
-			if (Dungeon.hero == null || (ls.getDepth() > Statistics.deepestFloor && ls.getNumInRegion() == 1)){
-					storyMessage = PixelScene.renderTextBlock(Document.INTROS.pageBody(region), 6);
-					storyMessage.maxWidth( PixelScene.landscape() ? 180 : 125);
-					storyMessage.setPos((Camera.main.width-storyMessage.width())/2f, (Camera.main.height-storyMessage.height())/2f);
-
-					storyBG = new ShadowBox();
-					storyBG.boxRect(storyMessage.left()-10, storyMessage.top()-10, storyMessage.width()+20, storyMessage.height()+20);
-					storyBG.alpha(0.8f);
-					add(storyBG);
-					add(storyMessage);
-
-					btnContinue = new StyledButton(Chrome.Type.TOAST_TR, Messages.get(InterlevelScene.class, "continue"), 9){
-						@Override
-						protected void onClick() {
-							phase = Phase.FADE_OUT;
-							timeLeft = fadeTime;
-
-							btnContinue.enable(false);
-							Document.INTROS.readPage(region);
-						}
-					};
-					btnContinue.icon(Icons.STAIRS.get());
-					btnContinue.setSize(btnContinue.reqWidth()+10, 22);
-					btnContinue.visible = false;
-					btnContinue.enable(false);
-
-					KeyEvent.addKeyListener(new Signal.Listener<KeyEvent>() {
-						@Override
-						public boolean onSignal(KeyEvent keyEvent) {
-							if (!keyEvent.pressed && btnContinue.active){
-								if (btnHideStory.active && !btnHideStory.icon().visible){
-									btnHideStory.setRect(btnContinue.right()+2, btnContinue.top(), 20, 21);
-									align(btnHideStory);
-									btnHideStory.icon().visible = true;
-									btnHideStory.parent.add(new Tweener(parent, 0.5f) {
-										@Override
-										protected void updateValues(float progress) {
-											float uiAlpha = progress;
-											btnContinue.alpha(uiAlpha);
-											storyBG.alpha(uiAlpha*0.8f);
-											storyMessage.alpha(uiAlpha);
-											btnHideStory.icon().alpha(uiAlpha);
-											loadingText.alpha(uiAlpha);
-											im.am = uiAlpha;
-										}
-									});
-								} else {
-									phase = Phase.FADE_OUT;
-									timeLeft = fadeTime;
-									btnContinue.enable(false);
-									Document.INTROS.readPage(region);
-								}
-								return true;
-							}
-							return false;
-						}
-					});
-
-					btnContinue.setPos((Camera.main.width - btnContinue.width())/2f, storyMessage.bottom()+10);
-					add(btnContinue);
-
-					btnHideStory = new IconButton(Icons.CHEVRON.get()){
-						@Override
-						protected void onClick() {
-							if (btnContinue.alpha() != 0 && btnContinue.alpha() != 1){
-								return;
-							}
-							if (icon.visible) {
-								enable(false);
-								//button is effectively screen-sized, but invisible
-								parent.add(new Tweener(parent, 0.5f) {
-									@Override
-									protected void updateValues(float progress) {
-										float uiAlpha = 1 - progress;
-										btnContinue.alpha(uiAlpha);
-										storyBG.alpha(uiAlpha * 0.8f);
-										storyMessage.alpha(uiAlpha);
-										icon.alpha(uiAlpha);
-										loadingText.alpha(uiAlpha);
-										im.am = uiAlpha;
-									}
-
-									@Override
-									protected void onComplete() {
-										super.onComplete();
-										setRect(0, 0, Camera.main.width, Camera.main.height);
-										enable(true);
-										icon.visible = false;
-									}
-								});
-							} else {
-								setRect(btnContinue.right()+2, btnContinue.top(), 20, 21);
-								align(this);
-								icon.visible = true;
-								parent.add(new Tweener(parent, 0.5f) {
-									@Override
-									protected void updateValues(float progress) {
-										float uiAlpha = progress;
-										btnContinue.alpha(uiAlpha);
-										storyBG.alpha(uiAlpha*0.8f);
-										storyMessage.alpha(uiAlpha);
-										icon.alpha(uiAlpha);
-										loadingText.alpha(uiAlpha);
-										im.am = uiAlpha;
-									}
-								});
-							}
-						}
-
-						@Override
-						protected void onPointerDown() {
-							if (icon.visible) {
-								super.onPointerDown();
-							}
-						}
-					};
-					btnHideStory.icon().originToCenter();
-					btnHideStory.icon().angle = 180f;
-					btnHideStory.setRect(btnContinue.right()+2, btnContinue.top(), 20, 21);
-					align(btnHideStory);
-					btnHideStory.enable(false);
-					add(btnHideStory);
-
-					btnContinue.alpha(0);
-					storyBG.alpha(0);
-					storyMessage.alpha(0);
-					btnHideStory.icon().alpha(0);
-			}
-		}
+//		if (mode == Mode.DESCEND && lastRegion <= LevelScheme.REGION_HALLS && !DeviceCompat.isDebug()){
+//
+//			LevelScheme ls = Dungeon.customDungeon.getFloor(curTransition.destLevel);
+//			int region = ls.getVisualRegion();
+//
+//			if (Dungeon.hero == null || (ls.getDepth() > Statistics.deepestFloor && ls.getNumInRegion() == 1)){
+//					storyMessage = PixelScene.renderTextBlock(Document.INTROS.pageBody(region), 6);
+//					storyMessage.maxWidth( PixelScene.landscape() ? 180 : 125);
+//					storyMessage.setPos((Camera.main.width-storyMessage.width())/2f, (Camera.main.height-storyMessage.height())/2f);
+//
+//					storyBG = new ShadowBox();
+//					storyBG.boxRect(storyMessage.left()-10, storyMessage.top()-10, storyMessage.width()+20, storyMessage.height()+20);
+//					storyBG.alpha(0.8f);
+//					add(storyBG);
+//					add(storyMessage);
+//
+//					btnContinue = new StyledButton(Chrome.Type.TOAST_TR, Messages.get(InterlevelScene.class, "continue"), 9){
+//						@Override
+//						protected void onClick() {
+//							phase = Phase.FADE_OUT;
+//							timeLeft = fadeTime;
+//
+//							btnContinue.enable(false);
+//							Document.INTROS.readPage(region);
+//						}
+//					};
+//					btnContinue.icon(Icons.STAIRS.get());
+//					btnContinue.setSize(btnContinue.reqWidth()+10, 22);
+//					btnContinue.visible = false;
+//					btnContinue.enable(false);
+//
+//					KeyEvent.addKeyListener(new Signal.Listener<KeyEvent>() {
+//						@Override
+//						public boolean onSignal(KeyEvent keyEvent) {
+//							if (!keyEvent.pressed && btnContinue.active){
+//								if (btnHideStory.active && !btnHideStory.icon().visible){
+//									btnHideStory.setRect(btnContinue.right()+2, btnContinue.top(), 20, 21);
+//									align(btnHideStory);
+//									btnHideStory.icon().visible = true;
+//									btnHideStory.parent.add(new Tweener(parent, 0.5f) {
+//										@Override
+//										protected void updateValues(float progress) {
+//											float uiAlpha = progress;
+//											btnContinue.alpha(uiAlpha);
+//											storyBG.alpha(uiAlpha*0.8f);
+//											storyMessage.alpha(uiAlpha);
+//											btnHideStory.icon().alpha(uiAlpha);
+//											loadingText.alpha(uiAlpha);
+//											im.am = uiAlpha;
+//										}
+//									});
+//								} else {
+//									phase = Phase.FADE_OUT;
+//									timeLeft = fadeTime;
+//									btnContinue.enable(false);
+//									Document.INTROS.readPage(region);
+//								}
+//								return true;
+//							}
+//							return false;
+//						}
+//					});
+//
+//					btnContinue.setPos((Camera.main.width - btnContinue.width())/2f, storyMessage.bottom()+10);
+//					add(btnContinue);
+//
+//					btnHideStory = new IconButton(Icons.CHEVRON.get()){
+//						@Override
+//						protected void onClick() {
+//							if (btnContinue.alpha() != 0 && btnContinue.alpha() != 1){
+//								return;
+//							}
+//							if (icon.visible) {
+//								enable(false);
+//								//button is effectively screen-sized, but invisible
+//								parent.add(new Tweener(parent, 0.5f) {
+//									@Override
+//									protected void updateValues(float progress) {
+//										float uiAlpha = 1 - progress;
+//										btnContinue.alpha(uiAlpha);
+//										storyBG.alpha(uiAlpha * 0.8f);
+//										storyMessage.alpha(uiAlpha);
+//										icon.alpha(uiAlpha);
+//										loadingText.alpha(uiAlpha);
+//										im.am = uiAlpha;
+//									}
+//
+//									@Override
+//									protected void onComplete() {
+//										super.onComplete();
+//										setRect(0, 0, Camera.main.width, Camera.main.height);
+//										enable(true);
+//										icon.visible = false;
+//									}
+//								});
+//							} else {
+//								setRect(btnContinue.right()+2, btnContinue.top(), 20, 21);
+//								align(this);
+//								icon.visible = true;
+//								parent.add(new Tweener(parent, 0.5f) {
+//									@Override
+//									protected void updateValues(float progress) {
+//										float uiAlpha = progress;
+//										btnContinue.alpha(uiAlpha);
+//										storyBG.alpha(uiAlpha*0.8f);
+//										storyMessage.alpha(uiAlpha);
+//										icon.alpha(uiAlpha);
+//										loadingText.alpha(uiAlpha);
+//										im.am = uiAlpha;
+//									}
+//								});
+//							}
+//						}
+//
+//						@Override
+//						protected void onPointerDown() {
+//							if (icon.visible) {
+//								super.onPointerDown();
+//							}
+//						}
+//					};
+//					btnHideStory.icon().originToCenter();
+//					btnHideStory.icon().angle = 180f;
+//					btnHideStory.setRect(btnContinue.right()+2, btnContinue.top(), 20, 21);
+//					align(btnHideStory);
+//					btnHideStory.enable(false);
+//					add(btnHideStory);
+//
+//					btnContinue.alpha(0);
+//					storyBG.alpha(0);
+//					storyMessage.alpha(0);
+//					btnHideStory.icon().alpha(0);
+//			}
+//		}
 
 		phase = Phase.FADE_IN;
 		timeLeft = fadeTime;

@@ -24,6 +24,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces;
 
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.watabou.utils.Bundlable;
 
 /**
@@ -42,7 +43,10 @@ public interface CustomObjectClass extends Bundlable {
 	 * Returns if this object is the one associated in CustomObject
 	 * @return CustomObject.getLuaClass(getIdentifier()) == this
 	 */
-	default boolean isOriginal() {
+	static boolean isOriginal(Object self) {
+		if (self instanceof LuaCustomObjectClass) {
+			return CustomObjectManager.getLuaClass(((LuaCustomObjectClass) self).getIdentifier()) == self;
+		}
 		return true;
 	}
 

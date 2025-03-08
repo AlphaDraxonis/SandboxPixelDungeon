@@ -74,8 +74,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	}
 
 	public void disguise(HeroClass cls){
-		texture( cls.spritesheet() );
-		updateArmor();
+		updateArmor(Dungeon.hero, cls);
 	}
 	
 	public void updateArmor() {
@@ -83,6 +82,10 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	}
 
 	public void updateArmor(Hero hero) {
+		updateArmor(hero, hero.heroClass);
+	}
+	
+	public void updateArmor(Hero hero, HeroClass cls) {
 
 		if (hero.internalSpriteClass != null) {
 
@@ -113,7 +116,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 
 		} else {
 
-			texture( hero.heroClass.spritesheet() );
+			texture( cls.spritesheet() );
 
 			TextureFilm film = new TextureFilm( tiers(), hero.tier(), FRAME_WIDTH, FRAME_HEIGHT );
 

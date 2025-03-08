@@ -236,7 +236,7 @@ public class CustomDungeonSaves {
             }
 
             for (CustomGameObjectClass template : CustomObjectManager.getAllCustomObjects(CustomGameObjectClass.class)) {
-                template.updateInheritStats(customLevel);
+                CustomGameObjectClass.updateInheritStats(template, customLevel);
             }
         }
 

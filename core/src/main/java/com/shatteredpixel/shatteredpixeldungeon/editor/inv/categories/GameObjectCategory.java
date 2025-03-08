@@ -141,7 +141,7 @@ public abstract class GameObjectCategory<T> {
         for (Item i : customObjectBag.items) {
             CustomGameObjectClass obj = (CustomGameObjectClass) ((EditorItem<?>) i).getObject();
             if (obj.getIdentifier() == ident) {
-                obj.updateInheritStats(Dungeon.level);
+                CustomGameObjectClass.updateInheritStats(obj, Dungeon.level);
             }
         }
         Undo.endAction();

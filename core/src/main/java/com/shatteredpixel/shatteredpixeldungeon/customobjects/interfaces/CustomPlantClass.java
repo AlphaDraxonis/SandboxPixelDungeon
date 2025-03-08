@@ -30,10 +30,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlantAct
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 
 public interface CustomPlantClass extends CustomGameObjectClass {
-
-	default ActionPartModify doUpdateInheritStats(GameObject obj, CustomGameObjectClass customClass) {
+	
+	static ActionPartModify doUpdateInheritStats(CustomGameObjectClass self, GameObject obj, CustomGameObjectClass customClass) {
 		Plant m = (Plant) obj;
-		Plant template = (Plant) this;
+		Plant template = (Plant) self;
 		ActionPartModify modify = new PlantActionPart.Modify(m);
 		if (customClass.getInheritStats()) {
 			obj.copyStats(template);

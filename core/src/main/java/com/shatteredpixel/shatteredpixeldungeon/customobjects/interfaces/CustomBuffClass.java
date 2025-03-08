@@ -31,10 +31,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModi
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BuffActionPart;
 
 public interface CustomBuffClass extends CustomGameObjectClass {
-
-	default ActionPartModify doUpdateInheritStats(GameObject obj, CustomGameObjectClass customClass) {
+	
+	static ActionPartModify doUpdateInheritStats(CustomGameObjectClass self, GameObject obj, CustomGameObjectClass customClass) {
 		Buff m = (Buff) obj;
-		Buff template = (Buff) this;
+		Buff template = (Buff) self;
 		ActionPartModify modify = new BuffActionPart.Modify(m);
 		if (customClass.getInheritStats()) {
 			obj.copyStats(template);

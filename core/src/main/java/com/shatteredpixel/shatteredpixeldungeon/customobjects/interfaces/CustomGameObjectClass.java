@@ -31,7 +31,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.watabou.utils.Bundle;
 import com.watabou.utils.Function;
 
 import java.io.IOException;
@@ -46,28 +45,16 @@ public interface CustomGameObjectClass extends LuaCustomObjectClass {
 	boolean getInheritStats();
 	void setInheritStats(boolean inheritStats);
 
-	@Override
-	default void onStoreInBundle(Bundle bundle) {
-		bundle.put(INHERIT_STATS, getInheritStats());
-		LuaCustomObjectClass.super.onStoreInBundle(bundle);
-	}
+	static void updateInheritStats(CustomGameObjectClass self, Level level) {
+		if (CustomObjectClass.isOriginal(self)) {
 
-	@Override
-	default void onRestoreFromBundle(Bundle bundle) {
-		setInheritStats(bundle.getBoolean(INHERIT_STATS));
-		LuaCustomObjectClass.super.onRestoreFromBundle(bundle);
-	}
-
-	default void updateInheritStats(Level level) {
-		if (isOriginal()) {
-
-			final int ident = getIdentifier();
+			final int ident = self.getIdentifier();
 
 			Function<GameObject, GameObject.ModifyResult> whatToDo = obj -> {
 				if (obj instanceof CustomGameObjectClass) {
 					CustomGameObjectClass customClass = (CustomGameObjectClass) obj;
 					if (customClass.getIdentifier() == ident) {
-						ActionPartModify modify = doUpdateInheritStats(obj, customClass);
+						ActionPartModify modify = doUpdateInheritStats(self, obj, customClass);
 						modify.finish();
 						Undo.addActionPart(modify);
 					}
@@ -84,8 +71,17 @@ public interface CustomGameObjectClass extends LuaCustomObjectClass {
 			} catch (IOException e) {
 				//level should already be loaded
 			}
+			if (self instanceof CustomItemClass) CustomItemClass.updateInheritStats((CustomItemClass) self, level);
 		}
 	}
 
-	ActionPartModify doUpdateInheritStats(GameObject obj, CustomGameObjectClass customClass);
+	static ActionPartModify doUpdateInheritStats(CustomGameObjectClass self, GameObject obj, CustomGameObjectClass customClass) {
+		if (self instanceof CustomMobClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
+		if (self instanceof CustomItemClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
+		if (self instanceof CustomBuffClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
+		if (self instanceof CustomPlantClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
+		if (self instanceof CustomTrapClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
+		if (self instanceof CustomRoomClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
+		throw new RuntimeException("Must implement method doUpdateInheritStats() for each subclass of CustomGameObjectClass!");
+	}
 }

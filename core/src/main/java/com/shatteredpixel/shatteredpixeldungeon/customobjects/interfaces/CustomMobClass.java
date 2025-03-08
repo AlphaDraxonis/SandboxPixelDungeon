@@ -34,10 +34,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModi
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 
 public interface CustomMobClass extends CustomGameObjectClass {
-
-	default ActionPartModify doUpdateInheritStats(GameObject obj, CustomGameObjectClass customClass) {
+	
+	static ActionPartModify doUpdateInheritStats(CustomGameObjectClass self, GameObject obj, CustomGameObjectClass customClass) {
 		Mob m = (Mob) obj;
-		Mob template = (Mob) this;
+		Mob template = (Mob) self;
 		ActionPartModify modify = new MobActionPart.Modify(m);
 		if (customClass.getInheritStats()) {
 			m.spriteClass = template.spriteClass;
@@ -51,8 +51,8 @@ public interface CustomMobClass extends CustomGameObjectClass {
 		return modify;
 	}
 
-	default boolean usesCustomSprite() {
-		CustomMob customMob = CustomObjectManager.getUserContent(getIdentifier(), CustomMob.class);
+	static boolean usesCustomSprite(CustomMobClass self) {
+		CustomMob customMob = CustomObjectManager.getUserContent(self.getIdentifier(), CustomMob.class);
 		if (customMob.sprite != null) {
 			return customMob.sprite.getActualCustomCharSpriteOrNull() != null;
 		}
