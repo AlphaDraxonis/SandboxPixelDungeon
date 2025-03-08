@@ -817,7 +817,9 @@ public class CustomDungeon implements Bundlable {
         if (bundle.contains(SECRET_ROOMS)) SecretRoom.restoreRoomsFromBundle(bundle.getBundle(SECRET_ROOMS));
         else SecretRoom.restoreRoomsFromBundle(new Bundle());
         
-        Dungeon.dungeonScript.unloadScript();
+        if (Dungeon.dungeonScript != null) {
+            Dungeon.dungeonScript.unloadScript();
+        }
         if (bundle.contains(DUNGEON_SCRIPT_PATH)) {
             dungeonScriptPath = bundle.getString(DUNGEON_SCRIPT_PATH);
         }

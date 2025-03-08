@@ -279,7 +279,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 			return false;
 		}
 
-		if (Dungeon.level != null) {
+		if (Dungeon.level != null && !CustomDungeon.isEditing()) {
 			if (!Dungeon.dungeonScript.onItemCollected(this)) return false;
 		}
 
