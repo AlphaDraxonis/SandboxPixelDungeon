@@ -76,12 +76,12 @@ public interface CustomGameObjectClass extends LuaCustomObjectClass {
 	}
 
 	static ActionPartModify doUpdateInheritStats(CustomGameObjectClass self, GameObject obj, CustomGameObjectClass customClass) {
-		if (self instanceof CustomMobClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
+		if (self instanceof CustomMobClass) return CustomMobClass.doUpdateInheritStats(self, obj, customClass);
 		if (self instanceof CustomItemClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
-		if (self instanceof CustomBuffClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
-		if (self instanceof CustomPlantClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
-		if (self instanceof CustomTrapClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
-		if (self instanceof CustomRoomClass) return CustomItemClass.doUpdateInheritStats(self, obj, customClass);
+		if (self instanceof CustomBuffClass) return CustomBuffClass.doUpdateInheritStats(self, obj, customClass);
+		if (self instanceof CustomPlantClass) return CustomPlantClass.doUpdateInheritStats(self, obj, customClass);
+		if (self instanceof CustomTrapClass) return CustomTrapClass.doUpdateInheritStats(self, obj, customClass);
+		if (self instanceof CustomRoomClass) return CustomRoomClass.doUpdateInheritStats(self, obj, customClass);
 		throw new RuntimeException("Must implement method doUpdateInheritStats() for each subclass of CustomGameObjectClass!");
 	}
 }
