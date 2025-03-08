@@ -171,3 +171,4 @@
 -dontwarn javax.annotation.meta.TypeQualifierDefault
 -dontwarn javax.annotation.meta.TypeQualifierNickname
 -dontwarn javax.annotation.meta.When
+-dontwarn com.sun.jna.LastErrorException
