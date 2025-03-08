@@ -507,6 +507,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             setBody(this.container = container);
             container.setSize(LevelGenComp.this.width, -1);
             showBody(false);
+            expandAndFold.setVisible(true);
             setReverseBtnOrder(true);
 
             updateTitle(container.getNumSlots());
