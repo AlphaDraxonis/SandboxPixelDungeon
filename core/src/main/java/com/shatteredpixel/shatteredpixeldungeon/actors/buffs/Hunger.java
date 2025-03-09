@@ -76,7 +76,7 @@ public class Hunger extends Buff implements Hero.Doom {
 
 			if (isStarving()) {
 
-				partialDamage += hungerSpeed() * target.HT/1000f;
+				partialDamage += Dungeon.curLvlScheme().hungerSpeed * target.HT/1000f;
 
 				if (partialDamage > 1){
 					target.damage( (int)partialDamage, this);
@@ -113,7 +113,7 @@ public class Hunger extends Buff implements Hero.Doom {
 
 			}
 			
-			spend( hungerSpeed() );
+			spend( TICK );
 
 		} else {
 
@@ -217,6 +217,6 @@ public class Hunger extends Buff implements Hero.Doom {
 	}
 
 	private static float hungerSpeed() {
-		return TICK * Dungeon.curLvlScheme().hungerSpeed;
+		return TICK / Dungeon.curLvlScheme().hungerSpeed;
 	}
 }
