@@ -75,14 +75,14 @@ public class Dewdrop extends Item {
 
 
 		} else {
-			
+
 			int terr = Dungeon.level.map[pos];
 			if (!consumeDew(quantity, hero, TileItem.isExitTerrainCell(terr) || TileItem.isEntranceTerrainCell(terr))){
 				return false;
 			} else {
 				Catalog.countUse(getClass());
 			}
-
+			
 		}
 		
 		Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
@@ -90,32 +90,32 @@ public class Dewdrop extends Item {
 		
 		return true;
 	}
-	
+
 	public static boolean consumeDew(int quantity, Hero hero, boolean force){
 		//20 drops for a full heal
 		int effect = Math.round( hero.HT * 0.05f * quantity );
-		
+
 		int heal = Math.min( hero.HT - hero.HP, effect );
-		
+
 		int shield = 0;
 		if (hero.hasTalent(Talent.SHIELDING_DEW)){
-			
+
 			//When vial is present, this allocates exactly as much of the effect as is needed
 			// to get to 100% HP, and the rest is then given as shielding (without the vial boost)
 			if (quantity > 1 && heal < effect && VialOfBlood.delayBurstHealing(hero)){
 				heal = Math.round(heal/VialOfBlood.totalHealMultiplier(hero));
 			}
-			
+
 			shield = effect - heal;
-			
+
 			int maxShield = Math.round(hero.HT *0.2f*hero.pointsInTalent(Talent.SHIELDING_DEW));
 			int curShield = 0;
 			if (hero.buff(Barrier.class) != null) curShield = hero.buff(Barrier.class).shielding();
 			shield = Math.min(shield, maxShield-curShield);
 		}
-		
+
 		if (heal > 0 || shield > 0) {
-			
+
 			if (heal > 0 && quantity > 1 && VialOfBlood.delayBurstHealing(hero)){
 				Healing healing = Buff.affect(hero, Healing.class);
 				healing.setHeal(heal, 0, VialOfBlood.maxHealPerTurn(hero));
@@ -126,17 +126,17 @@ public class Dewdrop extends Item {
 					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(heal), FloatingText.HEALING);
 				}
 			}
-			
+
 			if (shield > 0) {
 				Buff.affect(hero, Barrier.class).incShield(shield);
 				hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(shield), FloatingText.SHIELDING );
 			}
-			
+
 		} else if (!force) {
 			GLog.i( Messages.get(Dewdrop.class, "already_full") );
 			return false;
 		}
-		
+
 		return true;
 	}
 
