@@ -259,9 +259,10 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
     @Override
     protected boolean act() {
-        updateInternalStats();
-        boolean ret = super.act();
+        //update order is reversed because this is where we actually want to act like a Mob, rather than delegating the call to the hero
         updateStats();
+        boolean ret = super.act();
+        updateInternalStats();
         return ret;
     }
 
