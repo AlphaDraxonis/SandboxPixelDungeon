@@ -157,6 +157,10 @@ public class CustomObject implements Bundlable {
 		}
 		return result;
 	}
+	
+	public void onDelete(CustomObject deleted) {
+		//do nothing, because we don't reference this obj here
+	}
 
 	public static final String BUNDLE_KEY = "user_content";
 

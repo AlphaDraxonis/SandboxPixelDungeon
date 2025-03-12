@@ -513,6 +513,9 @@ public class CustomDungeonSaves {
         FileUtils.deleteFile(fileName);
 
         CustomObjectManager.allUserContents.remove(customObject.getIdentifier());
+        for (CustomObject obj : CustomObjectManager.allUserContents.values()) {
+            obj.onDelete(customObject);
+        }
 
         if (customObject instanceof CustomGameObject)
             ((CustomGameObject<?>) customObject).inventoryCategory().updateCustomObjects();

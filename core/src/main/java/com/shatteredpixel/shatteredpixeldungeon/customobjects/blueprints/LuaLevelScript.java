@@ -42,7 +42,7 @@ public class LuaLevelScript extends AbstractAnyLuaCustomObj {
 
 	@Override
 	public String defaultSaveDir() {
-		return "level_scripts/script_";
+		return "level_scripts/script";
 	}
 	
 	public void validate(LevelScheme levelScheme) {

@@ -25,6 +25,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomMobClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaClassGenerator;
@@ -34,10 +35,14 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.GameObjectCategory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
+
+import java.io.IOException;
 
 public class CustomMob extends CustomGameObject<CustomMobClass> {
 
@@ -61,7 +66,22 @@ public class CustomMob extends CustomGameObject<CustomMobClass> {
 	public int[] allUsedUserContent() {
 		return userContentIDs(sprite);
 	}
-
+	
+	@Override
+	public void onDelete(CustomObject deleted) {
+		super.onDelete(deleted);
+		if (deleted == sprite) {
+			sprite = null;
+			Mobs.updateCustomMob(this);
+			try {
+				CustomDungeonSaves.storeCustomObject(this);
+			} catch (IOException e) {
+				Game.reportException(e);
+				//save failed
+			}
+		}
+	}
+	
 	@Override
 	public String defaultSaveDir() {
 		return "mobs/";

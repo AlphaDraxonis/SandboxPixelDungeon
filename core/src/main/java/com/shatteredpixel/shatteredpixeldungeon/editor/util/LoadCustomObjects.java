@@ -34,10 +34,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
+import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -97,12 +97,16 @@ public class LoadCustomObjects {
 			}
 		}
 		else {
-			if (ResourcePath.isCustomObject(file.extension())) {
-				if (!onlyLoadResourceFiles) {
-					loadCustomObject(file, quotedRootPath);
+			try {
+				if (ResourcePath.isCustomObject(file.extension())) {
+					if (!onlyLoadResourceFiles) {
+						loadCustomObject(file, quotedRootPath);
+					}
+				} else {
+					loadResourceFile(file, quotedRootPath);
 				}
-			} else {
-				loadResourceFile(file, quotedRootPath);
+			} catch (Exception e) {
+				Game.reportException(e);
 			}
 		}
 	}
@@ -122,7 +126,7 @@ public class LoadCustomObjects {
 				CustomObject customObject = (CustomObject) bundle.get(CustomObject.BUNDLE_KEY);
 				customObject.saveDirPath = file.path().replaceFirst(quotedRootPath, "");
 				decreaseOpenResponses(customObject);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				errors.add(e);
 				decreaseOpenResponses(null);
 			}

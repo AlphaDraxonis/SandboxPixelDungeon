@@ -136,7 +136,12 @@ public class CustomCharSprite extends LuaCustomObject {
 	public Class<? extends Bag> preferredBag() {
 		return Mobs.bag().getClass();
 	}
-
+	
+	@Override
+	public String defaultSaveDir() {
+		return "char_sprites/";
+	}
+	
 	@Override
 	public CustomObjectEditor<?> createCustomObjectEditor(Runnable onUpdateObj) {
 		return new CustomCharSpriteEditor(onUpdateObj, this);

@@ -89,7 +89,7 @@ public abstract class CustomGameObject<T extends CustomGameObjectClass> extends 
 		super.restoreFromBundle(bundle);
 		if (!LuaClassGenerator.skipConversion) {
 			userContentClass = (T) bundle.get(USER_CONTENT_CLASS);
-			userContentClass.setInheritStats(true);
+			if (userContentClass != null) userContentClass.setInheritStats(true);
 		}
 	}
 
