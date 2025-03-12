@@ -497,15 +497,16 @@ public class AlchemyScene extends PixelScene {
 		energyAdd.setRect(energyLeft.right(), energyLeft.top() - (16 - energyLeft.height())/2, 16, 16);
 		align(energyAdd);
 		add(energyAdd);
+		
+		sparkEmitter = new Emitter();
+		sparkEmitter.pos(energyLeft.left(), energyLeft.top(), energyLeft.width(), energyLeft.height());
+		sparkEmitter.autoKill = false;
+		add(sparkEmitter);
+		
 		StyledButton btnGuide = new StyledButton( Chrome.Type.TOAST_TR, Messages.get(AlchemyScene.class, "guide")){
 			@Override
 			protected void onClick() {
 				super.onClick();
-
-				sparkEmitter = new Emitter();
-				sparkEmitter.pos(energyLeft.left(), energyLeft.top(), energyLeft.width(), energyLeft.height());
-				sparkEmitter.autoKill = false;
-				add(sparkEmitter);
 				
 				if (Camera.main.width >= 300 && Camera.main.height >= PixelScene.MIN_HEIGHT_FULL){
 					splitAlchGuide = !splitAlchGuide;
