@@ -25,9 +25,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaGlobals;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.watabou.NotAllowedInLua;
-import com.watabou.noosa.Game;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
@@ -88,7 +89,7 @@ public class LuaRestrictionProxy extends LuaValue {
 			if (!name.endsWith("_v")) {
 				Map<Integer, Method> methods = ACCESSIBLE_METHODS_MAP.get(javaObject.getClass()).get(name);
 				if (methods != null) {
-					return new FunctionInterceptor(methods, javaObject);
+					return new FunctionInterceptor(name, methods, javaObject);
 				}
 			} else {
 				name = name.substring(0, name.length() - 2);
@@ -111,38 +112,45 @@ public class LuaRestrictionProxy extends LuaValue {
 							? javaObject.getClass().getSuperclass().getName()
 							: javaObject.getClass().getName());
 				}
-				return NIL;
+				throw new LuaError("unknown field or method: " + name);
 			}
 
 			return wrapObject(field.get(javaObject));
 
 		} catch (Exception e) {
-			Game.reportException(e);
-			return NIL;
+			LuaGlobals.throwError(e);
+			return null;
 		}
 	}
 	
 	private static final class FunctionInterceptor extends VarArgFunction {
 		
+		private final String name;
 		private final Map<Integer, Method> methods;
 		private final Object javaObject;
 		
-		private FunctionInterceptor(Map<Integer, Method> methods, Object javaObject) {
+		private FunctionInterceptor(String name, Map<Integer, Method> methods, Object javaObject) {
+			this.name = name;
 			this.methods = methods;
 			this.javaObject = javaObject;
 		}
 		
 		@Override
 		public Varargs invoke(Varargs varargs) {
-			Method method = methods.get( varargs.narg()-1 );
+			Object[] params = unwrapRestrictionProxiesAsJavaArray(varargs.subargs(2));
+			Method method = methods.get( params.length );
+			
+			if (method == null) {
+				method = LuaGlobals.findBestMatchingExecutableM(params, methods.values());
+			}
 			try {
-				Object[] javaArgs = new Object[method.getParameterCount()];
-				for (int i = 0; i < javaArgs.length; i++) {
-					javaArgs[i] = coerceLuaToJava(varargs.arg(i + 2), method.getParameterTypes()[i]);
+				if (method == null) {
+					throw new LuaError("unknown method: " + name + " with " + varargs.narg() + " arguments");
 				}
-				return wrapObject(method.invoke(javaObject, javaArgs));
+				return wrapObject(method.invoke(javaObject, LuaGlobals.makeParamsFitVarArgsMethods(params, method.getParameterTypes(), method.isVarArgs())));
 			} catch (Exception e) {
-				return new LuaRestrictionProxy(e);
+				LuaGlobals.throwError(e);
+				return null;
 			}
 		}
 	}
@@ -150,7 +158,16 @@ public class LuaRestrictionProxy extends LuaValue {
 	@Override
 	public void set(LuaValue key, LuaValue value) {
 		try {
-			Field field = getField(key.tojstring());
+			String name = key.tojstring();
+			if (name.endsWith("_v")) {
+				name = name.substring(0, name.length() - 2);
+			}
+			
+			Field field = getField(name);
+			
+			if (field == null) {
+				throw new LuaError("unknown field: " + name);
+			}
 
 			if (isFieldRestricted(field)) {
 				return;
@@ -160,7 +177,7 @@ public class LuaRestrictionProxy extends LuaValue {
 			field.set(javaObject, javaV);
 
 		} catch (Exception e) {
-			Game.reportException(e);
+			LuaGlobals.throwError(e);
 		}
 	}
 
