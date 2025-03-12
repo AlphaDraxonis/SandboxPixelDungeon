@@ -24,6 +24,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.editcomps;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomCharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomMob;
@@ -31,9 +33,11 @@ import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.CustomObjSelect
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndSelectCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Reflection;
 
 import java.util.Collections;
 
@@ -59,6 +63,10 @@ public class CustomMobEditor extends CustomObjectEditor<CustomMob> {
 			@Override
 			public void onSelect(CustomCharSprite sprite) {
 				obj.sprite = sprite;
+				Mob m = (Mob) obj.getUserContentClass();
+				Mob defMob = DefaultStatsCache.getDefaultObject(m.getClass());
+				if (defMob == null && MobSpriteItem.canChangeSprite(m)) defMob = Reflection.newInstance(m.getClass());
+				m.spriteClass = defMob.spriteClass;
 				updateObj();
 			}
 

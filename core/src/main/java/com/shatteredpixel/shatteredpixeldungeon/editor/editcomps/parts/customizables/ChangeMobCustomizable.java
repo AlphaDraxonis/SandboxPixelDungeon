@@ -60,8 +60,11 @@ public class ChangeMobCustomizable extends ChangeCustomizable<Mob> {
                         desc.setText(obj.getCustomDesc());
                     }
 
-                    if (obj.pos != -1)
+                    if (obj.pos != -1) {
                         EditorScene.replaceMobSprite(obj, i.getObject());
+                    } else {
+                        obj.spriteClass = i.getObject();
+                    }
                     currentSprite = i;
                     editMobComp.updateTitleIcon();
                     editMobComp.updateObj();

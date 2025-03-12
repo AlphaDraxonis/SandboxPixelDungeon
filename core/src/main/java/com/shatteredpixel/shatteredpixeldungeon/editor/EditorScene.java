@@ -552,6 +552,11 @@ public class EditorScene extends DungeonScene {
 
     @Override
     protected void addMobSprite(Mob mob) {
+        
+        if (mob.sprite != null && mob.sprite.parent == mobs) {
+            return;
+        }
+        
         CharSprite sprite = mob.createSprite();
         sprite.visible = true;
         mobs.add(sprite);
