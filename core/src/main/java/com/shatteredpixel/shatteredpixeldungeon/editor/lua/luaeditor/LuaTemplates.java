@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.watabou.NotAllowedInLua;
 import com.watabou.idewindowactions.LuaScript;
 import com.watabou.utils.Consumer;
@@ -48,6 +49,8 @@ public class LuaTemplates {
 	private static final LuaScript REPLACES_WALLS_WITH_EMBERS;
 	private static final LuaScript INSCRIBE_LOOT_TABLE;
 	private static final LuaScript SET_CURSED_EFFECTS;
+	
+	private static final LuaScript CUSTOM_CHAR_SPRITE;
 
 	private static final LuaScript[] TEMPLATES;
 
@@ -327,9 +330,49 @@ public class LuaTemplates {
 				"return {\n" +
 				"    vars = vars; static = static; createGlyphToInscribe = createGlyphToInscribe;\n" +
 				"}";
+		
+		CUSTOM_CHAR_SPRITE = new LuaScript(CharSprite.class, "Basic template to create own animations, uses RatSprite as example values.\\nRequires some editing to be usuable!");
+		CUSTOM_CHAR_SPRITE.code = "vars = {} static = {} \n" +
+				"\n" +
+				"function initAnimations(this, vars)\n" +
+				"\n" +
+				"--each animation frame is 16px width and 15px tall\n" +
+				"local frames = new(\"TextureFilm\", this.texture_v, 16, 15);\n" +
+				"\n" +
+				"--two parameters for the Animation constructor: 'fps' and 'looped'\n" +
+				"this.idle_v = new(\"Animation\", 2, true);\n" +
+				"\n" +
+				"--the numbers are the individual frames in the sprite atlas\n" +
+				"--you can add infinitely many of them\n" +
+				"this.idle_v:frames(frames, 0,0,0,1);\n" +
+				"\n" +
+				"this.run_v = new(\"Animation\", 10, true);\n" +
+				"this.run_v:frames(frames, 6,7,8,9,10);\n" +
+				"\n" +
+				"this.attack_v = new(\"Animation\", 15, false);\n" +
+				"this.attack_v:frames(frames, 11, 12, 13, 14);\n" +
+				"\n" +
+				"this.die_v = new(\"Animation\", 10, false);\n" +
+				"this.die_v:frames(frames, 11,12,13,14);\n" +
+				"\n" +
+				"\n" +
+				"--these are optional\n" +
+				"--this.zap_v = new(\"Animation\", 20, false);\n" +
+				"--this.zap_v:frames(frames, 0,0,0);\n" +
+				"--this.operate_v = new(\"Animation\", 20, false);\n" +
+				"--this.operate_v:frames(frames, 0,0,0);\n" +
+				"\n" +
+				"-- note: some mobs have even more animations!\n" +
+				"\n" +
+				"end\n" +
+				"\n" +
+				"\n" +
+				"return {\n" +
+				"    vars = vars; static = static; initAnimations = initAnimations;\n" +
+				"}";
 
 		TEMPLATES = new LuaScript[]{KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK,
-				REPLACES_WALLS_WITH_EMBERS, INSCRIBE_LOOT_TABLE, SET_CURSED_EFFECTS};
+				REPLACES_WALLS_WITH_EMBERS, INSCRIBE_LOOT_TABLE, SET_CURSED_EFFECTS, CUSTOM_CHAR_SPRITE};
 	}
 
 	private static String name(LuaScript script) {
@@ -340,6 +383,7 @@ public class LuaTemplates {
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_name");
 		if (script == INSCRIBE_LOOT_TABLE) return Messages.get(LuaTemplates.class, "inscribe_loot_table_name");
 		if (script == SET_CURSED_EFFECTS) return Messages.get(LuaTemplates.class, "set_cursed_effects_name");
+		if (script == CUSTOM_CHAR_SPRITE) return Messages.get(LuaTemplates.class, "custom_char_sprite_name");
 		return Messages.NO_TEXT_FOUND;
 	}
 
@@ -351,6 +395,7 @@ public class LuaTemplates {
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_desc");
 		if (script == INSCRIBE_LOOT_TABLE) return Messages.get(LuaTemplates.class, "inscribe_loot_table_desc");
 		if (script == SET_CURSED_EFFECTS) return Messages.get(LuaTemplates.class, "set_cursed_effects_desc");
+		if (script == CUSTOM_CHAR_SPRITE) return Messages.get(LuaTemplates.class, "custom_char_sprite_desc");
 		return Messages.NO_TEXT_FOUND;
 	}
 

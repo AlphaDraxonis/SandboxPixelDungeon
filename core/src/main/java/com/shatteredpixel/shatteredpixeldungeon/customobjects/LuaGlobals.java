@@ -180,6 +180,8 @@ import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
+import com.watabou.noosa.MovieClip;
+import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
@@ -1832,6 +1834,9 @@ public class LuaGlobals extends Globals {
 		addOtherAccessibleClass(LevelTransition.class);
 		addOtherAccessibleClass(Notes.LandmarkRecord.class);
 
+		addOtherAccessibleClass(MovieClip.Animation.class);
+		addOtherAccessibleClass(TextureFilm.class);
+		
 		addOtherAccessibleClass(Date.class);
 
 		addOtherAccessibleClass(Set.class);

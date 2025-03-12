@@ -224,7 +224,7 @@ public class CustomCharSpriteEditor extends CustomObjectEditor<CustomCharSprite>
 
 		public void set(String title, MovieClip.Animation animation, Object texture) {
 			this.title.text(title);
-			if (animation != null) {
+			if (animation != null && animation.frames != null) {
 				anim = animation.clone();
 				player.texture(texture);
 				player.paused = false;
