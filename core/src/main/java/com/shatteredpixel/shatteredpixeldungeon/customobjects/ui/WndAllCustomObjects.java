@@ -47,7 +47,7 @@ public class WndAllCustomObjects extends WndTabbed {
 
 		TabCustomObjs[] tbs = {
 				new com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.TabCustomObjs(null, null),
-				new TabResourceFiles(null)
+				new TabResourceFiles(null, false, true)
 		};
 
 		for (int i = 0; i < tbs.length; i++) {

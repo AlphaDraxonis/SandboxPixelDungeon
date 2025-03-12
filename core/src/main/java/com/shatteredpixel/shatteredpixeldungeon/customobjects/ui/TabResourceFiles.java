@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndImageViewer;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSoundFileViewer;
@@ -61,10 +62,12 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 	private /*final*/ CategoryScroller.Category[] categories;
 
 	protected List<Map.Entry<String, FileHandle>> imageFiles, soundFiles, luaFiles, textFiles;
+	private final boolean addNullOption;
 
-	public TabResourceFiles(EditorInventoryWindow window) {
+	public TabResourceFiles(EditorInventoryWindow window, boolean addNullOption, boolean useMoreThanOneCategory) {
 		super();
-		add( categoryScroller = new CategoryScroller(createCategories(), window) );
+		this.addNullOption = addNullOption;
+		add( categoryScroller = new CategoryScroller(createCategories(), window, useMoreThanOneCategory && categories.length > 1) );
 	}
 
 	protected CategoryScroller.Category[] createCategories() {
@@ -75,15 +78,17 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 
 		Map<String, FileHandle> pathsInFileSystem = new HashMap<>(CustomObjectManager.allResourcePaths);
 		for (Map.Entry<String, FileHandle> entry : CustomObjectManager.allResourcePaths.entrySet()) {
-			if (!includeExtension(entry.getValue().extension())) {
+			if (!includeFile(entry.getValue(), entry.getKey())) {
 				pathsInFileSystem.remove(entry.getKey());
 			}
 		}
-
-		imageFiles = new ArrayList<>();
-		soundFiles = new ArrayList<>();
-		luaFiles = new ArrayList<>();
-		textFiles = new ArrayList<>();
+		
+		List<Map.Entry<String, FileHandle>>[] lists = new List[]{
+				imageFiles = new ArrayList<>(),
+				soundFiles = new ArrayList<>(),
+				luaFiles = new ArrayList<>(),
+				textFiles = new ArrayList<>()
+		};
 
 		for (Map.Entry<String, FileHandle> entry : pathsInFileSystem.entrySet()) {
 			if (ResourcePath.isImage(entry.getValue().extension())) {
@@ -97,10 +102,13 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 			}
 		}
 
-		Collections.sort(imageFiles, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
-		Collections.sort(soundFiles, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
-		Collections.sort(luaFiles, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
-		Collections.sort(textFiles, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+		for (List<Map.Entry<String, FileHandle>> list : lists) {
+			Collections.sort(list, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+			
+			if (addNullOption && !list.isEmpty()) {
+				list.add(0, null);
+			}
+		}
 
 		for (int i = 0; i < categories.length; i++) {
 			final int index = i;
@@ -121,6 +129,14 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 
 				@Override
 				protected Component createListItem(Object object, EditorInventoryWindow window) {
+					if (object == null) {
+						return new ScrollingListPane.ListItem(new ItemSprite(ItemSpriteSheet.NO_ITEM), createNullOptionLabel()) {
+							@Override
+							protected void onClick() {
+								TabResourceFiles.this.onClick(null);
+							}
+						};
+					}
 					return new FilePathListItem(((Map.Entry<String, FileHandle>) object)) {
 						@Override
 						protected void onClick() {
@@ -164,9 +180,19 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 	protected boolean includeExtension(String extension) {
 		return true;
 	}
+	
+	protected boolean includeFile(FileHandle file, String path) {
+		return includeExtension(file.extension());
+	}
+	
+	protected String createNullOptionLabel() {
+		return Messages.NO_TEXT_FOUND;
+	}
 
 	protected void onClick(Map.Entry<String, FileHandle> path) {
-		viewResource(path);
+		if (path != null) {
+			viewResource(path);
+		}
 	}
 
 	protected boolean onLongClick(Map.Entry<String, FileHandle> path) {

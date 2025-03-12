@@ -1,7 +1,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndSelectResourceFile;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
@@ -10,11 +12,10 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 
-import java.util.List;
+import java.util.Map;
 
 @NotAllowedInLua
 public class WndSelectMusic extends WndChooseOneInCategories {
@@ -205,25 +206,15 @@ public class WndSelectMusic extends WndChooseOneInCategories {
     }
 
     private void chooseCustomMusic() {
-        List<String> audioFiles = CustomDungeonSaves.findAllFilePaths("ogg", "mp3", "wav");
-        String[] options = new String[audioFiles.size()];
-        int i = 0;
-        for (String m : audioFiles) {
-            options[i++] = m;
-        }
-        EditorScene.show(new WndOptions(
-                Messages.get(WndSelectMusic.class, "custom_music"),
-                Messages.get(WndSelectMusic.class, "custom_music_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()),
-                options
-        ) {
-            {
-                tfMessage.setHighlighting(false);
-            }
-
+        DungeonScene.show(new WndSelectResourceFile(Messages.get(WndSelectMusic.class, "custom_music_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()), null, false){
             @Override
-            protected void onSelect(int index) {
-                super.onSelect(index);
-                WndSelectMusic.this.onSelect(options[index]);
+            protected boolean acceptExtension(String extension) {
+                return ResourcePath.isSound(extension);
+            }
+            
+            @Override
+            protected void onSelect(Map.Entry<String, FileHandle> path) {
+                WndSelectMusic.this.onSelect(path.getKey());
                 finish();
             }
         });

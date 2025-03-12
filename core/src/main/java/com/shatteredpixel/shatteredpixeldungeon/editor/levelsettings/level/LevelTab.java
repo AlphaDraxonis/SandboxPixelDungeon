@@ -267,7 +267,7 @@ public class LevelTab extends MultiWindowTabComp {
 
             @Override
             public void onChangeClick() {
-                DungeonScene.show(new WndSelectResourceFile() {
+                DungeonScene.show(new WndSelectResourceFile(null, null, false) {
                     @Override
                     protected boolean acceptExtension(String extension) {
                         return ResourcePath.isLua(extension);

@@ -25,6 +25,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.ui;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.NotAllowedInLua;
 
@@ -33,17 +35,35 @@ import java.util.Map;
 @NotAllowedInLua
 public class WndSelectResourceFile extends Window {
 
+	protected RenderedTextBlock info;
 	protected TabResourceFiles body;
 
-	public WndSelectResourceFile() {
+	public WndSelectResourceFile(String prompt, String nullOptionLabel, boolean useMoreThanOneCategory) {
 		resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_SMALL.get());
-		body = new TabResourceFiles(null) {
+		
+		if (prompt != null) {
+			info = PixelScene.renderTextBlock(prompt, 6);
+			info.setHighlighting(false);
+			add(info);
+		}
+		
+		body = new TabResourceFiles(null, nullOptionLabel != null, useMoreThanOneCategory) {
 
 			@Override
 			protected boolean includeExtension(String extension) {
-				return acceptExtension(extension);
+				return super.includeExtension(extension) && acceptExtension(extension);
 			}
-
+			
+			@Override
+			protected boolean includeFile(FileHandle file, String path) {
+				return super.includeFile(file, path) && acceptFile(file, path);
+			}
+			
+			@Override
+			protected String createNullOptionLabel() {
+				return nullOptionLabel;
+			}
+			
 			@Override
 			protected void onClick(Map.Entry<String, FileHandle> path) {
 				onSelect(path);
@@ -58,10 +78,20 @@ public class WndSelectResourceFile extends Window {
 		};
 		add(body);
 
-		body.setRect(0, 0, width, height);
+		if (info == null) {
+			body.setRect(0, 0, width, height);
+		} else {
+			info.maxWidth(width);
+			info.setPos(0, 1);
+			body.setRect(0, info.bottom() + 2, width, height - info.height() - 3);
+		}
 	}
 
 	protected boolean acceptExtension(String extension) {
+		return true;
+	}
+	
+	protected boolean acceptFile(FileHandle file, String path) {
 		return true;
 	}
 
