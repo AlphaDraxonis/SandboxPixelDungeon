@@ -671,6 +671,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             static final String WATER_TEXTURE = "water_texture";
             static final String MUSIC_REGION = "music_region";
             static final String MUSIC_FILE = "music_file";
+    private static final String CUS_TILES_TEX = "cus_tiles_tex";
+    private static final String CUS_WATER_TEX = "cus_water_tex";
     private static final String NUM_IN_REGION = "num_in_region";
     private static final String FEELING = "feeling";
     private static final String SEED = "seed";
@@ -764,6 +766,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(WATER_TEXTURE, waterTexture);
         bundle.put(MUSIC_REGION, musicRegion);
         if (musicFile != null) bundle.put(MUSIC_FILE, musicFile);
+        if (customTilesTex != null) bundle.put(CUS_TILES_TEX, customTilesTex);
+        if (customWaterTex != null) bundle.put(CUS_WATER_TEX, customWaterTex);
 
         if (builder != null) bundle.put(BUILDER, builder);
     }
@@ -833,6 +837,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
         musicRegion = bundle.getInt(MUSIC_REGION) + bundle.getInt("music");
         if (bundle.contains(MUSIC_FILE)) musicFile = bundle.getString(MUSIC_FILE);
+        if (bundle.contains(CUS_TILES_TEX)) customTilesTex = bundle.getString(CUS_TILES_TEX);
+        if (bundle.contains(CUS_WATER_TEX)) customWaterTex = bundle.getString(CUS_WATER_TEX);
 
         numInRegion = bundle.getInt(NUM_IN_REGION);
         seed = bundle.getLong(SEED);
