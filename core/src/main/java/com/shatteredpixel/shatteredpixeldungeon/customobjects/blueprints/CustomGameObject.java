@@ -47,6 +47,7 @@ public abstract class CustomGameObject<T extends CustomGameObjectClass> extends 
 	public void setUserContentClass(T userContentClass) {
 		this.userContentClass = userContentClass;
 		userContentClass.setIdentifier(getIdentifier());
+		userContentClass.setInheritStats(true);
 	}
 
 	@Override
@@ -88,6 +89,7 @@ public abstract class CustomGameObject<T extends CustomGameObjectClass> extends 
 		super.restoreFromBundle(bundle);
 		if (!LuaClassGenerator.skipConversion) {
 			userContentClass = (T) bundle.get(USER_CONTENT_CLASS);
+			userContentClass.setInheritStats(true);
 		}
 	}
 

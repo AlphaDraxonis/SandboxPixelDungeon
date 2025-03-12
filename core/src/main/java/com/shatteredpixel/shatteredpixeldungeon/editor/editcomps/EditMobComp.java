@@ -1242,7 +1242,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             };
             add(rename);
 
-            rename.setVisible(!(mob instanceof CustomGameObjectClass) || !((CustomGameObjectClass) mob).getInheritStats());
+            rename.setVisible(!(mob instanceof CustomGameObjectClass) || !((CustomGameObjectClass) mob).getInheritStats() || CustomObjectClass.isOriginal(mob));
         }
 
         @Override

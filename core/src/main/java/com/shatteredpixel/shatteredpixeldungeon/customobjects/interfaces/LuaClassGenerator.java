@@ -368,7 +368,7 @@ public final class LuaClassGenerator {
 	//These should actually have been declared in LuaCustomObjectClass, but that throws an AbstractMethodError in signed Android apk
 	private static void onStoreInBundle(LuaCustomObjectClass self, Bundle bundle) {
 		if (self instanceof CustomGameObjectClass) {
-			((CustomGameObjectClass) self).setInheritStats(bundle.getBoolean("inherit_stats"));
+			bundle.put("inherit_stats", ((CustomGameObjectClass) self).getInheritStats());
 		}
 		
 		bundle.put("identifier", self.getIdentifier());
@@ -378,7 +378,7 @@ public final class LuaClassGenerator {
 	}
 	private static void onRestoreFromBundle(LuaCustomObjectClass self, Bundle bundle) {
 		if (self instanceof CustomGameObjectClass) {
-			bundle.put("inherit_stats", ((CustomGameObjectClass) self).getInheritStats());
+			((CustomGameObjectClass) self).setInheritStats(bundle.getBoolean("inherit_stats"));
 		}
 		self.setIdentifier(bundle.getInt("identifier"));
 		
