@@ -16,9 +16,13 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndE
 public class CategoryScroller extends AbstractCategoryScroller<RedButton> {
 
     private static final int MIN_WIDTH_PER_BUTTON = 20;
-
+    
     public CategoryScroller(Category[] categories, EditorInventoryWindow window) {
-        super(categories, new RedButton[categories.length], window);
+        this(categories, window, categories.length > 1);
+    }
+    
+    public CategoryScroller(Category[] categories, EditorInventoryWindow window, boolean createCategoryComps) {
+        super(categories, new RedButton[categories.length], window, createCategoryComps);
     }
 
     @Override
@@ -174,7 +178,7 @@ public class CategoryScroller extends AbstractCategoryScroller<RedButton> {
         updateList(selectedCatIndex);
         sp.givePointerPriority();
 
-        float bottom = categoryComps == null ? 0 : categoryComps[indicesWithNonEmptyCats[indicesWithNonEmptyCats.length - 1]].bottom() + 1;
+        float bottom = categoryComps == null ? y : categoryComps[indicesWithNonEmptyCats[indicesWithNonEmptyCats.length - 1]].bottom() + 1;
         sp.setRect(x, bottom, width,height - bottom + y);
     }
 

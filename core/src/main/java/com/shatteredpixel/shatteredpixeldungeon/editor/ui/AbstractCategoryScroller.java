@@ -45,6 +45,10 @@ public abstract class AbstractCategoryScroller<T extends Component> extends Comp
     private boolean isHolding;
 
     public AbstractCategoryScroller(Category[] categories, T[] categoryComps, EditorInventoryWindow window) {
+        this(categories, categoryComps, window, categories.length > 1);
+    }
+    
+    public AbstractCategoryScroller(Category[] categories, T[] categoryComps, EditorInventoryWindow window, boolean createCategoryComps) {
         super();
 		this.window = window;
 
@@ -53,7 +57,7 @@ public abstract class AbstractCategoryScroller<T extends Component> extends Comp
         sp = createSp();
         add(sp);
 
-        if (categories.length > minimumNumOfActiveCategoriesRequiredForFirstCategoryComp()) {
+        if (createCategoryComps) {
             this.categoryComps = categoryComps;
 
             for (int i = 0; i < this.categoryComps.length; i++) {
@@ -82,10 +86,6 @@ public abstract class AbstractCategoryScroller<T extends Component> extends Comp
         updateItemsInCategories(false);
 
         sp.givePointerPriority();
-    }
-
-    protected int minimumNumOfActiveCategoriesRequiredForFirstCategoryComp() {
-        return 1;
     }
 
     protected abstract ScrollPane createSp();

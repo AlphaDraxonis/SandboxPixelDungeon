@@ -61,13 +61,8 @@ public class CompactCategoryScroller extends AbstractCategoryScroller<CompactCat
 	}
 
 	public CompactCategoryScroller(Category[] categories, EditorInventoryWindow selectorWindow) {
-		super(categories, new CategoryComp[categories.length], selectorWindow);
+		super(categories, new CategoryComp[categories.length], selectorWindow, categories.length > 0);
 		this.selectorWindow = selectorWindow;
-	}
-
-	@Override
-	protected int minimumNumOfActiveCategoriesRequiredForFirstCategoryComp() {
-		return 0;
 	}
 
 	@Override
