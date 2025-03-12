@@ -39,6 +39,7 @@ import com.watabou.utils.FileUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -82,6 +83,7 @@ public class LoadCustomObjects {
 			
 			try {
 				latch.await();
+				maybeDisplayErrors();
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
@@ -148,6 +150,10 @@ public class LoadCustomObjects {
 			b.deleteCharAt(b.length()-1);
 			
 			DungeonScene.show(new WndError(b.toString()){{setHighlightingEnabled(false);}});
+		}
+		
+		for (CustomObject obj : new HashSet<>(CustomObjectManager.allUserContents.values())) {
+			obj.restoreIDs();
 		}
 	}
 }
