@@ -968,6 +968,7 @@ public class Toolbar extends Component {
 		}
 		
 		public void reset( Item item, int cell, float endX, float endY ) {
+			scale.set(1f);
 			view( item );
 			
 			active =
@@ -985,7 +986,7 @@ public class Toolbar extends Component {
 			this.endY = endY - width() / 2;
 			left = DURATION;
 			
-			scale.set( startScale = Camera.main.zoom / camera().zoom );
+			scale.set( startScale = Camera.main.zoom / camera().zoom * scale.x );
 			
 		}
 		
