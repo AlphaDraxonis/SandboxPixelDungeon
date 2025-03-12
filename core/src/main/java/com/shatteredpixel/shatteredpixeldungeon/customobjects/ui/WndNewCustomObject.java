@@ -168,7 +168,10 @@ public class WndNewCustomObject extends SimpleWindow {
 						if (CustomObjectClass.class.isAssignableFrom(c)) {
 							return false;
 						}
-						return selectedObject.isSuperclassValid(c);
+						if (!isValidSuperclass(c)) {
+							return false;
+						}
+						return true;
 					}
 
 					@Override
@@ -291,7 +294,7 @@ public class WndNewCustomObject extends SimpleWindow {
 		}
 		if (type.isAnonymousClass()) type = (Class<? extends CustomObject>) type.getSuperclass();
 		CustomObject obj = CustomObjectManager.createNewCustomObject(type, enteredName, enteredSuperClass);
-        WndEditorInv.updateCurrentTab();
+        if (!CustomCharSprite.class.isAssignableFrom(type)) WndEditorInv.updateCurrentTab();
 		return obj;
 	}
 
@@ -303,12 +306,15 @@ public class WndNewCustomObject extends SimpleWindow {
 		);
 	}
 
-	private boolean isValidSuperclass(String className) {
+	protected final boolean isValidSuperclass(String className) {
 		if (className == null) return false;
 		className = LuaManager.maybeAddMainPackageName(className);
-		Class<?> c = Reflection.forName(className);
-		return c != null
-				&& !LuaRestrictionProxy.isRestricted(c)
+		return isValidSuperclass(Reflection.forName(className));
+	}
+	
+	protected boolean isValidSuperclass(Class<?> c) {
+		if (c == null) return false;
+		return !LuaRestrictionProxy.isRestricted(c)
 				&& !Modifier.isAbstract(c.getModifiers())
 				&& selectedObject.isSuperclassValid(c);
 	}

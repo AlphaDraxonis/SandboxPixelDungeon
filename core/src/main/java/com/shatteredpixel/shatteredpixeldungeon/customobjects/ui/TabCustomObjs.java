@@ -140,6 +140,11 @@ public class TabCustomObjs extends WndAllCustomObjects.TabCustomObjs {
 											TabCustomObjs.this.layout();
 											return result;
 										}
+										
+										@Override
+										protected boolean isValidSuperclass(Class<?> c) {
+											return super.isValidSuperclass(c) && isClassSelectableAsTargetClassForNewObj(c);
+										}
 									});
 								}
 							};
@@ -195,7 +200,9 @@ public class TabCustomObjs extends WndAllCustomObjects.TabCustomObjs {
 	protected boolean showObject(CustomObject obj) {
 		return true;
 	}
-
-
+	
+	protected boolean isClassSelectableAsTargetClassForNewObj(Class<?> cl) {
+		return true;
+	}
 
 }

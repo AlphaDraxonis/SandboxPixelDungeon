@@ -84,7 +84,12 @@ public class CustomMobEditor extends CustomObjectEditor<CustomMob> {
 					protected boolean isSelectable(CustomObject sprite) {
 						return sprite instanceof CustomCharSprite && ((CustomCharSprite) sprite).isAvailableAsSprite(obj.getLuaTargetClass());
 					}
-
+					
+					@Override
+					protected boolean isClassSelectableAsTargetClassForNewObj(Class<?> cl) {
+						return super.isClassSelectableAsTargetClassForNewObj(cl) && CustomCharSprite.isAvailableAsSprite(obj.getLuaTargetClass(), cl);
+					}
+					
 					@Override
 					protected void onSelect(CustomObject sprite) {
 						charSprite.setValue((CustomCharSprite) sprite);

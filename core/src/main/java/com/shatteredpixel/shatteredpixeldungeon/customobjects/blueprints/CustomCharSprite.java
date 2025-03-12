@@ -175,6 +175,10 @@ public class CustomCharSprite extends LuaCustomObject {
 	}
 
 	public boolean isAvailableAsSprite(Class<? /*extends Char*/> ch) {
-		return targetClass == null || targetClass.isAssignableFrom(ch);
+		return isAvailableAsSprite(ch, targetClass);
+	}
+	
+	public static boolean isAvailableAsSprite(Class<? /*extends Char*/> ch, Class<?> spriteTargetClass) {
+		return spriteTargetClass == null || ch.isAssignableFrom(spriteTargetClass);
 	}
 }

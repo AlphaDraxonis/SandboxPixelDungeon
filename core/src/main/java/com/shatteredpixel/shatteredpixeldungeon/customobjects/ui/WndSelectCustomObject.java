@@ -97,6 +97,11 @@ public abstract class WndSelectCustomObject extends Window {
 			protected boolean showObject(CustomObject obj) {
 				return isSelectable(obj);
 			}
+			
+			@Override
+			protected boolean isClassSelectableAsTargetClassForNewObj(Class<?> cl) {
+				return WndSelectCustomObject.this.isClassSelectableAsTargetClassForNewObj(cl);
+			}
 		};
 		add(body);
 
@@ -104,6 +109,10 @@ public abstract class WndSelectCustomObject extends Window {
 	}
 
 	protected boolean isSelectable(CustomObject obj) {
+		return true;
+	}
+	
+	protected boolean isClassSelectableAsTargetClassForNewObj(Class<?> cl) {
 		return true;
 	}
 
