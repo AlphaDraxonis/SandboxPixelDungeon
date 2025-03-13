@@ -165,6 +165,7 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 			@Override
 			protected boolean act() {
 				Sample.INSTANCE.play(Assets.Sounds.DEWDROP, 1.6f);
+				GLog.p(Messages.get(Checkpoint.this, "reached"));
 
 				Dungeon.reachedCheckpoint = new ReachedCheckpoint();
 				Dungeon.reachedCheckpoint.set(pos);
