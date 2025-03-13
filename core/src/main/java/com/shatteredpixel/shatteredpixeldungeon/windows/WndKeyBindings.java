@@ -31,7 +31,11 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.NotAllowedInLua;
-import com.watabou.input.*;
+import com.watabou.input.ControllerHandler;
+import com.watabou.input.GameAction;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
+import com.watabou.input.PointerEvent;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.PointF;
@@ -507,7 +511,9 @@ public class WndKeyBindings extends Window {
 			}
 
 			//ignore controller buttons on key bindings, and vice-versa
-			if (ControllerHandler.icControllerKey(event.code) != controller){
+			if (controller && !ControllerHandler.icControllerKey(event.code)){
+				return true;
+			} else if (!controller && !KeyEvent.isKeyboardKey(event.code)){
 				return true;
 			}
 

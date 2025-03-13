@@ -248,6 +248,10 @@ public class ControllerHandler implements ControllerListener {
 	}
 
 	public static boolean icControllerKey(int keyCode){
+		if (keyCode == 0){
+			return true;
+		}
+
 		if (keyCode >= Input.Keys.BUTTON_A
 				&& keyCode <= Input.Keys.BUTTON_MODE){
 			return true;
