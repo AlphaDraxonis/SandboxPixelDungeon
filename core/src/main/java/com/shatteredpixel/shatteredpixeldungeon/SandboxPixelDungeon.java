@@ -60,11 +60,6 @@ public class SandboxPixelDungeon extends Game {
 	public SandboxPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
 
-		//pre-v2.5.3
-		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfDetectMagic.class,
-				"com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfDisarming" );
-
 		//pre-v2.5.2
 		com.watabou.utils.Bundle.addAlias(
 				com.shatteredpixel.shatteredpixeldungeon.items.bombs.FlashBangBomb.class,
