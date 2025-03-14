@@ -88,6 +88,8 @@ public class AndroidLauncher extends AndroidApplication {
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Thread.setDefaultUncaughtExceptionHandler(new UCEHandler(this));
 
 		//If opened via clicking on a .dun file
 		Intent data = getIntent();
