@@ -75,26 +75,13 @@ public class Dewdrop extends Item {
 
 
 		} else {
-
+			
 			int terr = Dungeon.level.map[pos];
-			boolean force = TileItem.isExitTerrainCell(terr) || TileItem.isEntranceTerrainCell(terr);;
-			int[] lastResult = new int[1];
-			int totalHealing = 0, totalShield = 0;
-			while (quantity > 0 && (lastResult = consumeDew(1, hero, force))[0] > 0){
-				quantity--;
-				totalHealing += lastResult[1];
-				totalShield += lastResult[2];
+			if (!consumeDew(quantity, hero, TileItem.isExitTerrainCell(terr) || TileItem.isEntranceTerrainCell(terr))){
+				return false;
+			} else {
 				Catalog.countUse(getClass());
 			}
-
-			if (totalHealing > 0 || totalShield > 0 || lastResult[0] == -1) {
-
-				applyEffect(hero, quantity, totalHealing, totalShield);
-
-				Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
-				hero.spendAndNext( TIME_TO_PICK_UP );
-			}
-			return quantity == 0;
 
 		}
 		
@@ -103,52 +90,54 @@ public class Dewdrop extends Item {
 		
 		return true;
 	}
-
-	public static int[] consumeDew(int quantity, Hero hero, boolean force){
+	
+	public static boolean consumeDew(int quantity, Hero hero, boolean force){
 		//20 drops for a full heal
-		int heal = Math.round( hero.HT * 0.05f * quantity );
-
-		int effect = Math.min( hero.HT - hero.HP, heal );
+		int effect = Math.round( hero.HT * 0.05f * quantity );
+		
+		int heal = Math.min( hero.HT - hero.HP, effect );
+		
 		int shield = 0;
 		if (hero.hasTalent(Talent.SHIELDING_DEW)){
-			shield = heal - effect;
+			
+			//When vial is present, this allocates exactly as much of the effect as is needed
+			// to get to 100% HP, and the rest is then given as shielding (without the vial boost)
+			if (quantity > 1 && heal < effect && VialOfBlood.delayBurstHealing(hero)){
+				heal = Math.round(heal/VialOfBlood.totalHealMultiplier(hero));
+			}
+			
+			shield = effect - heal;
+			
 			int maxShield = Math.round(hero.HT *0.2f*hero.pointsInTalent(Talent.SHIELDING_DEW));
 			int curShield = 0;
 			if (hero.buff(Barrier.class) != null) curShield = hero.buff(Barrier.class).shielding();
 			shield = Math.min(shield, maxShield-curShield);
 		}
-		if (effect > 0 || shield > 0) {
-			if (effect > 0 && shield > 0){
-				return new int[]{3, effect, shield};
-			} else if (effect > 0){
-				return new int[]{2, effect, shield};
+		
+		if (heal > 0 || shield > 0) {
+			
+			if (heal > 0 && quantity > 1 && VialOfBlood.delayBurstHealing(hero)){
+				Healing healing = Buff.affect(hero, Healing.class);
+				healing.setHeal(heal, 0, VialOfBlood.maxHealPerTurn(hero));
+				healing.applyVialEffect();
 			} else {
-				return new int[]{1, effect, shield};
+				hero.HP += heal;
+				if (heal > 0){
+					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(heal), FloatingText.HEALING);
+				}
 			}
-
+			
+			if (shield > 0) {
+				Buff.affect(hero, Barrier.class).incShield(shield);
+				hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(shield), FloatingText.SHIELDING );
+			}
+			
 		} else if (!force) {
 			GLog.i( Messages.get(Dewdrop.class, "already_full") );
-			return new int[]{0, effect, shield};
-		}
-
-		return new int[]{-1, effect, shield};
-	}
-	
-	public static void applyEffect(Hero hero, int quantity, int totalHealing, int totalShield) {
-		if (quantity > 1 && totalHealing > 0 && VialOfBlood.delayBurstHealing(hero)) {
-			Healing healing = Buff.affect(hero, Healing.class);
-			healing.setHeal(totalHealing, 0, VialOfBlood.maxHealPerTurn(hero));
-			healing.applyVialEffect();
-		}
-		else if (totalHealing > 0){
-			hero.HP += totalHealing;
-			hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalHealing), FloatingText.HEALING);
+			return false;
 		}
 		
-		if (totalShield > 0) {
-			Buff.affect(hero, Barrier.class).incShield(totalShield);
-			hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalShield), FloatingText.SHIELDING );
-		}
+		return true;
 	}
 
 	@Override
