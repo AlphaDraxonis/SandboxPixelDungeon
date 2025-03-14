@@ -89,20 +89,7 @@ public class Dewdrop extends Item {
 
 			if (totalHealing > 0 || totalShield > 0 || lastResult[0] == -1) {
 
-				if (quantity > 1 && totalHealing > 0 && VialOfBlood.delayBurstHealing(hero)) {
-					Healing healing = Buff.affect(hero, Healing.class);
-					healing.setHeal(totalHealing, 0, VialOfBlood.maxHealPerTurn(hero));
-					healing.applyVialEffect();
-				}
-				else if (totalHealing > 0){
-					hero.HP += totalHealing;
-					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalHealing), FloatingText.HEALING);
-				}
-
-				if (totalShield > 0) {
-					Buff.affect(hero, Barrier.class).incShield(totalShield);
-					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalShield), FloatingText.SHIELDING );
-				}
+				applyEffect(hero, quantity, totalHealing, totalShield);
 
 				Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
 				hero.spendAndNext( TIME_TO_PICK_UP );
@@ -145,6 +132,23 @@ public class Dewdrop extends Item {
 		}
 
 		return new int[]{-1, effect, shield};
+	}
+	
+	public static void applyEffect(Hero hero, int quantity, int totalHealing, int totalShield) {
+		if (quantity > 1 && totalHealing > 0 && VialOfBlood.delayBurstHealing(hero)) {
+			Healing healing = Buff.affect(hero, Healing.class);
+			healing.setHeal(totalHealing, 0, VialOfBlood.maxHealPerTurn(hero));
+			healing.applyVialEffect();
+		}
+		else if (totalHealing > 0){
+			hero.HP += totalHealing;
+			hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalHealing), FloatingText.HEALING);
+		}
+		
+		if (totalShield > 0) {
+			Buff.affect(hero, Barrier.class).incShield(totalShield);
+			hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalShield), FloatingText.SHIELDING );
+		}
 	}
 
 	@Override

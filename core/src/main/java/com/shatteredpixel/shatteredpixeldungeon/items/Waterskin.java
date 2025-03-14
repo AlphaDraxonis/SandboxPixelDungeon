@@ -104,7 +104,11 @@ public class Waterskin extends Item {
 				int dropsNeeded = (int)Math.ceil((missingHealthPercent / 0.05f) - 0.01f);
 				dropsNeeded = (int)GameMath.gate(1, dropsNeeded, volume);
 
-				if (Dewdrop.consumeDew(dropsNeeded, hero, true)[0] != 0){
+				int[] consumeResult = Dewdrop.consumeDew(dropsNeeded, hero, true);
+				if (consumeResult[0] != 0){
+					
+					Dewdrop.applyEffect(hero, quantity, consumeResult[1], consumeResult[2]);
+					
 					volume -= dropsNeeded;
 					Catalog.countUses(Dewdrop.class, dropsNeeded);
 
