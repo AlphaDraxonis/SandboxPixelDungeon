@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -225,7 +224,6 @@ public abstract class SpecialRoom extends Room implements Copyable<Room> {
 			}
 		} else {
 			initForRun();
-			SandboxPixelDungeon.reportException(new Exception("specials array didn't exist!"));
 		}
 
 		if (bundle.contains(PIT_VALUES)) {

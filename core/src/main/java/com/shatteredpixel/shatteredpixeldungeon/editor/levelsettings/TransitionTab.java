@@ -189,7 +189,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             public void selectObject(LevelSchemeLike object) {
                 super.selectObject(object);
                 if (object instanceof LevelScheme)
-                    Dungeon.level.levelScheme.setChasm(EditorUtilities.getCodeName((LevelScheme) object), true);
+                   levelScheme.setChasm(EditorUtilities.getCodeName((LevelScheme) object), true);
                 if (parent != null) {
                     layoutParent.run();
                 }

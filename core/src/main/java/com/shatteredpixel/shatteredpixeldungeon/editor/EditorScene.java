@@ -170,7 +170,7 @@ public class EditorScene extends DungeonScene {
     public static void close() {
         if (customLevel != null) {
             EditorScene.customLevel.levelScheme.unloadLevel();
-            customLevel = null;
+            Dungeon.level = customLevel = null;
         }
         isEditing = false;
     }

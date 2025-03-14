@@ -297,6 +297,9 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
 
         @Override
         protected void viewSprite(Item item) {
+            if (isDestroyed()) {
+                return;
+            }
             if (typeParameterClass == Item.class && !(item instanceof EditorItem)) {
                 super.viewSprite(item);
                 return;

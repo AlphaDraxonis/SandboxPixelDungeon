@@ -431,7 +431,7 @@ public class DungeonTileSheet {
 	public static final int MINE_CRYSTAL_OVERHANG_ALT   = OTHER_OVERHANG+11;
 	public static final int MINE_CRYSTAL_OVERHANG_ALT_2 = OTHER_OVERHANG+12;
 	public static final int MINE_BOULDER_OVERHANG       = OTHER_OVERHANG+13;
-	public static final int MINE_BOULDER_OVERHANG_ALT   = OTHER_OVERHANG+114;
+	public static final int MINE_BOULDER_OVERHANG_ALT   = OTHER_OVERHANG+14;
 	public static final int MINE_BOULDER_OVERHANG_ALT_2 = OTHER_OVERHANG+15;
 
 	public static final int HIGH_GRASS_UNDERHANG        = 30;
