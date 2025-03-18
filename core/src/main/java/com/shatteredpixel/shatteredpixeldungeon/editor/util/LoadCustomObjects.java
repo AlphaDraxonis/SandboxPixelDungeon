@@ -134,11 +134,12 @@ public class LoadCustomObjects {
 	}
 	
 	protected synchronized void decreaseOpenResponses(CustomObject customObject) {
-		openResponses--;
 		
 		if (customObject != null) {
 			CustomObjectManager.allUserContents.put(customObject.getIdentifier(), customObject);
 		}
+		
+		openResponses--;
 		
 		if (allExecutorsStarted && openResponses <= 0) {
 			latch.countDown();
