@@ -989,8 +989,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
              heroUtilityItems.setItemList(h.utilItems());
              heroMobLvl.setValue(h.lvl);
              heroMobStr.setValue(h.STR);
-             heroClassSpinner.setValue(h.heroClass.getIndex());
-             heroSubclassSpinner.setValue(h.subClass.getIndex()+1);
+             heroClassSpinner.setValue(h.heroClass);
+             heroSubclassSpinner.setValue(h.subClass);
          }
 
         if (buffs != null) {
