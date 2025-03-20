@@ -34,7 +34,7 @@ public interface RandomItem<T extends GameObject> {
 
     String INTERNAL_RANDOM_ITEM = "internal_random_item";
 
-    T[] generateItems();
+    GameObject[] generateItems();//actually returns T[] and not GameObject[]
 
     ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI();
 
@@ -142,7 +142,7 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public Item[] generateItems() {
+        public GameObject[] generateItems() {
             if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
@@ -213,7 +213,7 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public Weapon[] generateItems() {
+        public GameObject[] generateItems() {
             if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
@@ -293,7 +293,7 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public MeleeWeapon[] generateItems() {
+        public GameObject[] generateItems() {
             if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
@@ -362,7 +362,7 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public Armor[] generateItems() {
+        public GameObject[] generateItems() {
             if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
@@ -427,7 +427,7 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public Ring[] generateItems() {
+        public GameObject[] generateItems() {
             if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
@@ -498,7 +498,7 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public Artifact[] generateItems() {
+        public GameObject[] generateItems() {
             if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
@@ -564,7 +564,7 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public KindofMisc[] generateItems() {
+        public GameObject[] generateItems() {
             if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
@@ -634,7 +634,7 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public Wand[] generateItems() {
+        public GameObject[] generateItems() {
             if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
@@ -718,7 +718,7 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public Bag[] generateItems() {
+        public GameObject[] generateItems() {
             if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
@@ -783,7 +783,7 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public Trinket[] generateItems() {
+        public GameObject[] generateItems() {
             if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
@@ -855,7 +855,7 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public Trap[] generateItems() {
+        public GameObject[] generateItems() {
             if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
