@@ -488,10 +488,12 @@ public class TimekeepersHourglass extends Artifact {
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 
-			int[] values = new int[presses.size()];
-			for (int i = 0; i < values.length; i ++)
-				values[i] = presses.get(i);
-			bundle.put( PRESSES , values );
+			if (!presses.isEmpty()) {
+				int[] values = new int[presses.size()];
+				for (int i = 0; i < values.length; i++)
+					values[i] = presses.get(i);
+				bundle.put(PRESSES, values);
+			}
 
 			bundle.put( TURNSTOCOST , turnsToCost);
 		}
@@ -500,9 +502,11 @@ public class TimekeepersHourglass extends Artifact {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 
-			int[] values = bundle.getIntArray( PRESSES );
-			for (int value : values)
-				presses.add(value);
+			if (bundle.contains(PRESSES)) {
+				int[] values = bundle.getIntArray( PRESSES );
+				for (int value : values)
+					presses.add(value);
+			}
 
 			turnsToCost = bundle.getFloat( TURNSTOCOST );
 		}

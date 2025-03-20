@@ -212,7 +212,9 @@ public class Buff extends Actor {
 	
 	//creates a fresh instance of the buff and attaches that, this allows duplication.
     public static <T extends Buff> T append(Char target, Class<T> buffClass) {
-        return append(target, Reflection.newInstance(buffClass));
+		T buff = Reflection.newInstance(buffClass);
+		buff.attachTo(target);
+		return buff;
     }
 
 	public static <T extends Buff> T append(Char target, T buff) {

@@ -79,7 +79,7 @@ public class PinCushion extends Buff {
 
     @Override
     public void storeInBundle(Bundle bundle) {
-        bundle.put(ITEMS, items);
+        if (items != null) bundle.put(ITEMS, items);
         super.storeInBundle(bundle);
     }
 

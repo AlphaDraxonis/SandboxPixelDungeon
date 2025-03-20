@@ -359,8 +359,10 @@ public class Ghoul extends Mob {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			ghoul = (Ghoul) bundle.get(GHOUL);
-			ghoul.beingLifeLinked = true;
-			turnsToRevive = bundle.getInt(LEFT);
+			if (ghoul != null) {
+				ghoul.beingLifeLinked = true;
+				turnsToRevive = bundle.getInt(LEFT);
+			}
 		}
 
 		public static Ghoul searchForHost(Ghoul dieing){

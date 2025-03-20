@@ -102,7 +102,7 @@ public class DelayedRockFall extends FlavourBuff {
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
-		bundle.put(POSITIONS, rockPositions);
+		if (rockPositions != null) bundle.put(POSITIONS, rockPositions);
 	}
 
 	@Override
