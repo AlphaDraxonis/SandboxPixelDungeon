@@ -60,7 +60,7 @@ public class GnollGuard extends Mob {
 
 	public void linkSapper( GnollSapper sapper){
 		this.sapperID = sapper.id();
-		if (sprite.extraCode instanceof GnollGuardSprite.EarthArmor) {
+		if (sprite != null && sprite.extraCode instanceof GnollGuardSprite.EarthArmor) {
 			((GnollGuardSprite.EarthArmor) sprite.extraCode).setupArmor(sprite);
 		}
 	}
@@ -74,7 +74,7 @@ public class GnollGuard extends Mob {
 	public void loseSapper(){
 		if (sapperID != -1){
 			sapperID = -1;
-			if (sprite.extraCode instanceof GnollGuardSprite.EarthArmor){
+			if (sprite != null && sprite.extraCode instanceof GnollGuardSprite.EarthArmor){
 				((GnollGuardSprite.EarthArmor) sprite.extraCode).loseArmor();
 			}
 		}
