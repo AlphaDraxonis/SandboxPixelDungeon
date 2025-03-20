@@ -22,11 +22,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSelectL
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -188,11 +184,11 @@ public final class EditorUtilities {
         return numFound;
     }
 
-    public static int getNumKeys(Class<? extends Key> type, Level level) {
+    public static int getNumKeys(Key.Type type, Level level) {
         int numFound = 0;
         for (Heap h : level.heaps.values()) {
             for (Item i : h.items) {
-                if (i.getClass() == type
+                if (i instanceof Key && ((Key) i).type() == type
                         && (Level.ANY.equals(((Key) i).levelName) || level.name.equals(((Key) i).levelName))) numFound += i.quantity();
             }
         }
@@ -212,7 +208,7 @@ public final class EditorUtilities {
     public static String addIronKeyDescription(String desc, Level level) {
         int numLockedDoors = EditorUtilities.getNumTiles(Terrain.LOCKED_DOOR, level)
                 + EditorUtilities.getNumTiles(Terrain.SECRET_LOCKED_DOOR, level);
-        int numIronKeys = EditorUtilities.getNumKeys(IronKey.class, level);
+        int numIronKeys = EditorUtilities.getNumKeys(Key.Type.IRON, level);
         if (desc.length() > 0) desc += "\n";
         desc += "\n" + Messages.get(EditTileComp.class, "num_locked_doors") + ": " + numLockedDoors;
         desc += "\n" + Messages.get(EditTileComp.class, "num_iron_keys") + ": " + numIronKeys;
@@ -221,7 +217,7 @@ public final class EditorUtilities {
 
     public static String addGoldKeyDescription(String desc, Level level) {
         int numLockedChests = EditorUtilities.getNumContainer(Heap.Type.LOCKED_CHEST, level);
-        int numIronKeys = EditorUtilities.getNumKeys(GoldenKey.class, level);
+        int numIronKeys = EditorUtilities.getNumKeys(Key.Type.GOLD, level);
         if (desc.length() > 0) desc += "\n";
         desc += "\n" + Messages.get(EditTileComp.class, "num_gold_containers") + ": " + numLockedChests;
         desc += "\n" + Messages.get(EditTileComp.class, "num_gold_keys") + ": " + numIronKeys;
@@ -232,7 +228,7 @@ public final class EditorUtilities {
         int numLockedDoors = EditorUtilities.getNumTiles(Terrain.CRYSTAL_DOOR, level)
                 + EditorUtilities.getNumTiles(Terrain.SECRET_CRYSTAL_DOOR, level);
         int numCrystalContainers = EditorUtilities.getNumContainer(Heap.Type.CRYSTAL_CHEST, level);
-        int numCrystalKeys = EditorUtilities.getNumKeys(CrystalKey.class, level);
+        int numCrystalKeys = EditorUtilities.getNumKeys(Key.Type.CRYSTAL, level);
         if (desc.length() > 0) desc += "\n";
         desc += "\n" + Messages.get(EditTileComp.class, "num_crystal_doors") + ": " + numLockedDoors;
         desc += "\n" + Messages.get(EditTileComp.class, "num_crystal_containers") + ": " + numCrystalContainers;
@@ -242,7 +238,7 @@ public final class EditorUtilities {
 
     public static String addSkeletonKeyDescription(String desc, Level level) {
         int numLockedDoors = EditorUtilities.getNumTiles(Terrain.LOCKED_EXIT, level);
-        int numSkeleKeys = EditorUtilities.getNumKeys(SkeletonKey.class, level);
+        int numSkeleKeys = EditorUtilities.getNumKeys(Key.Type.SKELETON, level);
         if (desc.length() > 0) desc += "\n";
         desc += "\n" + Messages.get(EditTileComp.class, "num_locked_exits") + ": " + numLockedDoors;
         desc += "\n" + Messages.get(EditTileComp.class, "num_skeleton_keys") + ": " + numSkeleKeys;

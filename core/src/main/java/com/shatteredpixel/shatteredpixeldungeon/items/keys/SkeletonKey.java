@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 public class SkeletonKey extends Key {
 	
 	{
+		type = Type.SKELETON;
 		image = ItemSpriteSheet.SKELETON_KEY;
 	}
 	

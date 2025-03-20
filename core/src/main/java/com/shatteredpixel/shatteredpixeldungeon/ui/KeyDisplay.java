@@ -23,7 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.watabou.NotAllowedInLua;
@@ -54,12 +54,12 @@ public class KeyDisplay extends Visual {
 	//mapping of key types to slots in the array, 0 is reserved for black (missed) keys
 	//this also determines the order these keys will appear (lower first)
 	//and the order they will be truncated if there is no space (higher first, larger counts first)
-	private static final LinkedHashMap<Class<? extends Key>, Integer> keyMap = new LinkedHashMap<>();
+	private static final LinkedHashMap<Key.Type, Integer> keyMap = new LinkedHashMap<>();
 	static {
-		keyMap.put(SkeletonKey.class, 1);
-		keyMap.put(CrystalKey.class, 2);
-		keyMap.put(GoldenKey.class, 3);
-		keyMap.put(IronKey.class, 4);
+		keyMap.put(Key.Type.SKELETON, 1);
+		keyMap.put(Key.Type.CRYSTAL, 2);
+		keyMap.put(Key.Type.GOLD, 3);
+		keyMap.put(Key.Type.IRON, 4);
 	}
 	
 	private int totalKeys = 0;
@@ -130,9 +130,9 @@ public class KeyDisplay extends Visual {
 		
 		
 		while (totalKeys > maxKeys){
-			Class<? extends Key> mostType = null;
+			Key.Type mostType = null;
 			int mostNum = 0;
-			for (Class<?extends Key> k : keyMap.keySet()){
+			for (Key.Type k : keyMap.keySet()){
 				if (keys[keyMap.get(k)] >= mostNum){
 					mostType = k;
 					mostNum = keys[keyMap.get(k)];

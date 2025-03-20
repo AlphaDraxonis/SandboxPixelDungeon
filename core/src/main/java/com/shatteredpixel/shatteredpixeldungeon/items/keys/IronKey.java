@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 public class IronKey extends Key {
 
     {
+        type = Type.IRON;
         image = ItemSpriteSheet.IRON_KEY;
     }
 

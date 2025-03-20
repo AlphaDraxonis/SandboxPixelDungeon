@@ -41,6 +41,23 @@ import com.watabou.utils.IntFunction;
 import java.util.Objects;
 
 public abstract class Key extends Item {
+	
+	public enum Type {
+		IRON(IronKey.class),
+		GOLD(GoldenKey.class),
+		CRYSTAL(CrystalKey.class),
+		SKELETON(SkeletonKey.class);
+		
+		private final Class<? extends Key> asKeyClass;
+		
+		Type(Class<? extends Key> asKeyClass) {
+			this.asKeyClass = asKeyClass;
+		}
+		
+		public Class<? extends Key> asKeyClass() {
+			return asKeyClass;
+		}
+	}
 
 	public static final float TIME_TO_UNLOCK = 1f;
 	
@@ -49,8 +66,13 @@ public abstract class Key extends Item {
 		unique = true;
 	}
 
+	protected Type type;
 	public String levelName;
 	public int cell;
+	
+	public Type type() {
+		return type;
+	}
 	
 	@Override
 	public boolean isSimilar( Item item ) {

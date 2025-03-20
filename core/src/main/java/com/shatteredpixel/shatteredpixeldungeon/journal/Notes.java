@@ -39,7 +39,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -323,8 +322,8 @@ public final class Notes {
 			return key.desc();
 		}
 
-		public Class<? extends Key> type(){
-			return key.getClass();
+		public Key.Type type(){
+			return key.type();
 		}
 
 		@Override
@@ -567,22 +566,22 @@ public final class Notes {
 		int keyQuantityToRemove = key.quantity();
 
 		for (int i = 0; i < keyQuantityToRemove; i++) {
-			if (searchForKeyAndRemoveIt(key.levelName, key.cell, key.getClass())) continue;
+			if (searchForKeyAndRemoveIt(key.levelName, key.cell, key.type())) continue;
 			if (key.cell != -1) {
-				if (searchForKeyAndRemoveIt(Level.ANY, key.cell, key.getClass())) continue;
-				if (searchForKeyAndRemoveIt(key.levelName, -1, key.getClass())) continue;
+				if (searchForKeyAndRemoveIt(Level.ANY, key.cell, key.type())) continue;
+				if (searchForKeyAndRemoveIt(key.levelName, -1, key.type())) continue;
 			}
-			if (searchForKeyAndRemoveIt(Level.ANY, -1, key.getClass())) continue;
+			if (searchForKeyAndRemoveIt(Level.ANY, -1, key.type())) continue;
 			return Dungeon.customDungeon.permaKey;
 		}
 		return true;
 	}
 
-	private static boolean searchForKeyAndRemoveIt(String compareName, int compareCell, Class<? extends Key> compareClass){
+	private static boolean searchForKeyAndRemoveIt(String compareName, int compareCell, Key.Type type){
 		for (KeyRecord record : getRecords(KeyRecord.class)) {
 			if (record.keyCell() == compareCell && record.levelName().equals(compareName)
-					&& record.key.getClass() == compareClass) {
-				Catalog.countUses(compareClass, 1);
+					&& record.type() == type) {
+				Catalog.countUses(type.asKeyClass(), 1);
 				record.quantity(record.quantity() - 1);
 				if (record.quantity() <= 0) {
 					records.remove(record);
@@ -590,7 +589,7 @@ public final class Notes {
 				return true;
 			}
 		}
-		return compareClass != SkeletonKey.class && compareCell != -1 && searchForKeyAndRemoveIt(compareName, compareCell, SkeletonKey.class);
+		return type != Key.Type.SKELETON && compareCell != -1 && searchForKeyAndRemoveIt(compareName, compareCell, Key.Type.SKELETON);
 	}
 
 	public static int keyCount( Key key ){
@@ -600,7 +599,7 @@ public final class Notes {
 		for (KeyRecord record : getRecords(KeyRecord.class)) {
 			if (record.levelName().equals(Level.ANY) || record.levelName().equals(key.levelName)
 					&& (record.keyCell() == -1 || record.keyCell() == key.cell)
-					&& ((record.key.getClass() == SkeletonKey.class && record.keyCell() != -1) || key.getClass() == record.key.getClass())) {
+					&& ((record.key.type() == Key.Type.SKELETON && record.keyCell() != -1) || key.type() == record.key.type())) {
 				quantity += record.quantity();
 			}
 		}

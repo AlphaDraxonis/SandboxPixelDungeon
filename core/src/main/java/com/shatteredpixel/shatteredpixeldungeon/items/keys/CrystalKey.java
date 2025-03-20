@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 public class CrystalKey extends Key {
 
     {
+        type = Type.CRYSTAL;
         image = ItemSpriteSheet.CRYSTAL_KEY;
     }
 
