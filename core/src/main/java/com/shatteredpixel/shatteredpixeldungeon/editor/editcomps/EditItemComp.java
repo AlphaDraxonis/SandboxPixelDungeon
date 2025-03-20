@@ -18,6 +18,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.Wnd
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
@@ -62,6 +64,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfEnchantment;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.ReclaimTrap;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -72,6 +75,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -120,6 +124,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledCheckBox blessed;
     protected StyledCheckBox igniteBombOnDrop;
     protected StyledSpinner shockerDuration;
+    protected StyledItemSelector reclaimTrap;
     protected AugmentationSpinner augmentationSpinner;
     protected StyledButton enchantBtn;
     protected StyledSpinner numChoosableTrinkets;
@@ -459,7 +464,32 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 });
                 add(igniteBombOnDrop);
             }
-
+            
+            if (item instanceof ReclaimTrap) {
+                Trap storedTrap = ((ReclaimTrap) item).storedTrap;
+                reclaimTrap = new StyledItemSelector(label("reclaim_trap"), TrapItem.class, storedTrap == null ? EditorItem.NULL_ITEM : new TrapItem(storedTrap), ItemSelector.NullTypeSelector.NOTHING) {
+                    
+                    {
+                        selector.preferredBag = Traps.bag().getClass();
+                    }
+                    
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+                        super.setSelectedItem(selectedItem);
+                        if (selectedItem instanceof EditorItem.NullItemClass || selectedItem == null) ((ReclaimTrap) item).storedTrap = null;
+                        else ((ReclaimTrap) item).storedTrap = ((TrapItem) selectedItem).getObject();
+                        updateObj();
+                    }
+                    
+                    @Override
+                    public void change() {
+                        EditorScene.selectItem(selector);
+                    }
+                };
+                reclaimTrap.setShowWhenNull(ItemSpriteSheet.NO_ITEM);
+                add(reclaimTrap);
+            }
+            
             if (item instanceof FakeTenguShocker) {
                 shockerDuration = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((FakeTenguShocker) item).duration),
                         label("duration"));
@@ -670,7 +700,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(randomItem);
         }
 
-        rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
+        rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, reclaimTrap, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
                 augmentationSpinner, curseBtn, permaCursed, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, classArmorTier, blessed, igniteBombOnDrop, docPageType, spreadIfLoot, exactItemInRecipe};
         linearComps = new Component[]{rollTrinkets, summonMobs, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
 
@@ -937,6 +967,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
         if (a instanceof Bomb) {
             if (((Bomb) a).igniteOnDrop != ((Bomb) b).igniteOnDrop) return false;
+        }
+        if (a instanceof ReclaimTrap) {
+            if (!EditTrapComp.areEqual(((ReclaimTrap) a).storedTrap, ((ReclaimTrap) b).storedTrap)) return false;
         }
         if (a instanceof Bag) {
             if (!isItemListEqual(((Bag) a).items, ((Bag) b).items)) return false;
