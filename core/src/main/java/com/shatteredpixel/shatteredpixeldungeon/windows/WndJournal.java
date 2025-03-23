@@ -763,6 +763,7 @@ public class WndJournal extends WndTabbed {
 					sprite.lightness(0);
 					title = "???";
 					desc = Messages.get(CatalogTab.class, "not_seen_item");
+					desc += "\n\n" + Messages.get(item, "discover_hint");
 				} else {
 					title = Messages.titleCase( item.name() );
 					//some items don't include direct stats, generally when they're not applicable
@@ -812,6 +813,7 @@ public class WndJournal extends WndTabbed {
 					sprite.lightness(0f);
 					title = "???";
 					desc = Messages.get(CatalogTab.class, "not_seen_enchantment");
+					desc += "\n\n" + Messages.get(ench, "discover_hint");
 				}
 
 			} else if (Armor.Glyph.class.isAssignableFrom(itemClass)){
@@ -827,6 +829,7 @@ public class WndJournal extends WndTabbed {
 					sprite.lightness(0f);
 					title = "???";
 					desc = Messages.get(CatalogTab.class, "not_seen_glyph");
+					desc += "\n\n" + Messages.get(glyph, "discover_hint");
 				}
 
 			}
