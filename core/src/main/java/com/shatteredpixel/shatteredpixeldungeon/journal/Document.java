@@ -225,6 +225,10 @@ public enum Document {
 	public String title(){
 		return Messages.get( this, name() + ".title");
 	}
+
+	public String discoverHint(){
+		return Messages.get( this, name() + ".discover_hint");
+	}
 	
 	public String pageTitle( String page ){
 		return Messages.get( this, name() + "." + page + ".title");
