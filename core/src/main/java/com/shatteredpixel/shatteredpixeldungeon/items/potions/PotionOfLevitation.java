@@ -60,7 +60,7 @@ public class PotionOfLevitation extends Potion {
 			identify();
 			GLog.i(Messages.get(this, "float"));
 		}
-		Buff.affect( hero, Levitation.class, Levitation.DURATION() );
+		Buff.prolong( hero, Levitation.class, Levitation.DURATION() );
 	}
 	
 	@Override

@@ -46,7 +46,7 @@ public class PotionOfMindVision extends Potion {
 				GLog.i(Messages.get(this, "see_none"));
 			}
 		}
-		Buff.affect( hero, MindVision.class, MindVision.DURATION() );
+		Buff.prolong( hero, MindVision.class, MindVision.DURATION() );
 		SpellSprite.show(hero, SpellSprite.VISION, 1, 0.77f, 0.9f);
 		Dungeon.observe();
 		

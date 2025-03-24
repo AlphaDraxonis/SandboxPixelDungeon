@@ -39,7 +39,7 @@ public class PotionOfInvisibility extends Potion {
 
 	@Override
 	public void apply( Hero hero ) {
-		Buff.affect( hero, Invisibility.class, Invisibility.DURATION() );
+		Buff.prolong( hero, Invisibility.class, Invisibility.DURATION() );
 		if (hero == Dungeon.hero) {
 			identify();
 			GLog.i(Messages.get(this, "invisible"));
