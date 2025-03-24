@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.effects.ShadowBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LostBackpack;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
@@ -826,6 +827,8 @@ public class InterlevelScene extends PixelScene {
 			Dungeon.hero.resurrect();
 			level.drop(new LostBackpack(), invPos);
 		}
+
+		Notes.add(Notes.Landmark.LOST_PACK);
 
 		Dungeon.switchLevel( level, Dungeon.hero.pos );
 	}

@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPassage;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -91,12 +92,16 @@ public class BeaconOfReturning extends Spell {
 	@Override
 	protected void onThrow(int cell) {
 		returnLevel = Level.SURFACE;
+		if (Dungeon.hero.belongings.getItem(getClass()) == null){
+			Notes.remove(Notes.Landmark.BEACON_LOCATION);
+		}
 		super.onThrow(cell);
 	}
 	
 	@Override
 	public void doDrop(Hero hero) {
 		returnLevel = Level.SURFACE;
+		Notes.remove(Notes.Landmark.BEACON_LOCATION);
 		super.doDrop(hero);
 	}
 	
@@ -104,6 +109,8 @@ public class BeaconOfReturning extends Spell {
 		returnLevel = Dungeon.levelName;
 		returnBranch = Dungeon.branch;
 		returnPos = hero.pos;
+
+		Notes.add(Notes.Landmark.BEACON_LOCATION);
 		
 		hero.spend( 1f );
 		hero.busy();
@@ -173,6 +180,9 @@ public class BeaconOfReturning extends Spell {
 			InterlevelScene.returnBranch = returnBranch;
 			InterlevelScene.returnPos = returnPos;
 			Game.switchScene( InterlevelScene.class );
+		}
+		if (quantity == 1){
+			Notes.remove(Notes.Landmark.BEACON_LOCATION);
 		}
 		detach(hero.belongings.backpack);
 		Catalog.countUse(getClass());
