@@ -75,33 +75,32 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 
 		if (CustomDungeon.isEditing()
 				|| CustomTileItem.findAnyCustomTileAt(pos) == null) return -1;
-		
-		Zone.GrassType grassType = Zone.getGrassType(Dungeon.level, pos);
 
 		int stage = Dungeon.level.visualRegions[pos];
 		if(stage == 0) stage = Dungeon.curLvlScheme().getVisualRegion() - 1;
 		else stage--;
-		if (tile == Terrain.HIGH_GRASS || grassType == Zone.GrassType.HIGH_GRASS){
-			return 9 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
-		} else if (tile == Terrain.FURROWED_GRASS || grassType == Zone.GrassType.FURROWED_GRASS){
-			return 11 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
-		} else if (tile == Terrain.GRASS || grassType == Zone.GrassType.GRASS) {
-			return 13 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
-		} else if (tile == Terrain.EMBERS) {
-			return 9 + (16*5) + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
-		}
 		
-		int logicalTerrain = Dungeon.level.map[pos];
-		if (logicalTerrain == Terrain.HIGH_GRASS){
-			return 9 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
-		} else if (logicalTerrain == Terrain.FURROWED_GRASS){
-			return 11 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
-		} else if (logicalTerrain == Terrain.GRASS) {
-			return 13 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
-		} else if (logicalTerrain == Terrain.EMBERS) {
-			return 9 + (16*5) + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+		int result;
+		if ((result = getRaisedTerrainTileVisual(stage,  Zone.getGrassType(Dungeon.level, pos).terrain, pos)) != -1) return result;
+		
+		if (Dungeon.level.levelScheme.customTilesTex == null) {
+			if ((result = getRaisedTerrainTileVisual(stage, tile, pos)) != -1) return result;
+			if ((result = getRaisedTerrainTileVisual(stage, Dungeon.level.map[pos], pos)) != -1) return result;
 		}
 
+		return -1;
+	}
+	
+	private static int getRaisedTerrainTileVisual(int stage, int terrain, int pos) {
+		if (terrain == Terrain.HIGH_GRASS){
+			return 9 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+		} else if (terrain == Terrain.FURROWED_GRASS){
+			return 11 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+		} else if (terrain == Terrain.GRASS) {
+			return 13 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+		} else if (terrain == Terrain.EMBERS) {
+			return 9 + (16*5) + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+		}
 		return -1;
 	}
 

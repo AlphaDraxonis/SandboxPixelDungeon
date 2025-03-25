@@ -21,22 +21,27 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.IntFunction;
 import com.watabou.utils.Reflection;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class Zone implements Bundlable {
 
     public static final String NONE = "none";
 
     public enum GrassType {
-        NONE(0, 0),
-        GRASS(1, Terrain.GRASS),
-        HIGH_GRASS(2, Terrain.HIGH_GRASS),
-        FURROWED_GRASS(3, Terrain.FURROWED_GRASS);
+        NONE(Terrain.EMPTY),
+        GRASS(Terrain.GRASS),
+        HIGH_GRASS(Terrain.HIGH_GRASS),
+        FURROWED_GRASS(Terrain.FURROWED_GRASS);
 
-        public final int index, terrain;
+        public final int terrain;
 
-        GrassType(int index, int terrain) {
-            this.index = index;
+        GrassType(int terrain) {
             this.terrain = terrain;
         }
     }

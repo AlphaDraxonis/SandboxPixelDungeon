@@ -56,6 +56,8 @@ public class RaisedTerrainTilemap extends DungeonTilemap {
 		Zone.GrassType grassType = Zone.getGrassType(Dungeon.level, pos);
 		if (grassType != Zone.GrassType.NONE)
 			tile = grassType.terrain;
+//		else if (Dungeon.level.levelScheme.customTilesTex != null)
+//			return -1;
 
 		if (tile == Terrain.HIGH_GRASS){
 			return DungeonTileSheet.getVisualWithAlts(

@@ -32,7 +32,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndColorPicker;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerEnumModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerLikeButton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
@@ -112,8 +113,8 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         blocksVision.checked(zone.blocksVision);
         blocksVision.addChangeListener(v -> zone.blocksVision = v);
         blocksVision.icon(new BuffIcon(BuffIndicator.BLINDNESS, true));
-
-        StyledSpinner grassVisuals = new StyledSpinner(new SpinnerTextIconModel(true, zone.grassType.index, (Object[]) Zone.GrassType.values()) {
+        
+        SpinnerLikeButton grassVisuals = new SpinnerLikeButton(new SpinnerEnumModel<Zone.GrassType>(Zone.GrassType.class, zone.grassType, v -> {zone.grassType = v; updateObj();}) {
             @Override
             protected Image displayIcon(Object value) {
                 switch ((Zone.GrassType) value) {
@@ -139,8 +140,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
                 }
                 return Messages.NO_TEXT_FOUND;
             }
-        }, Messages.get(EditZoneComp.class, "grass_label"), 9, new TileSprite(Terrain.HIGH_GRASS));
-        grassVisuals.addChangeListener(() -> zone.setGrassType((Zone.GrassType) grassVisuals.getValue()));
+        }, Messages.get(EditZoneComp.class, "grass_label"), 9);
 
         StyledButton mobRotation = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditZoneComp.class, "custom_mob_cycle"), 9) {
             {
