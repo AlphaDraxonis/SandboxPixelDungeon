@@ -349,7 +349,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             if (!EditMobComp.isMobListEqual(((SummoningTrap) a).spawnMobs, ((SummoningTrap) b).spawnMobs)) return false;
         }
         if (a instanceof RandomItem) {
-            if (!a.equals(b)) return false;
+            if (!RandomItem.areEqual((RandomItem<?>) a, (RandomItem<?>) b)) return false;
         }
         
         if (a instanceof CustomGameObjectClass) {

@@ -126,10 +126,8 @@ public class ReorderHeapComp extends Component {
 
             int index1 = heap.items.indexOf(item);
             int index2 = heap.items.indexOf(other);
-            heap.items.remove(item);
-            heap.items.add(index2, item);
-            heap.items.remove(other);
-            heap.items.add(index1, other);
+            heap.items.set(index1, other);
+            heap.items.set(index2, item);
 
             EditorScene.updateHeapImage(heap);
             heap.updateSubicon();

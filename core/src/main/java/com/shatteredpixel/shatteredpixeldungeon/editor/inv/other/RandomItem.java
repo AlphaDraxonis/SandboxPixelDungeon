@@ -107,6 +107,13 @@ public interface RandomItem<T extends GameObject> {
             }
         }
     }
+    
+    static boolean areEqual(RandomItem<?> a, RandomItem<?> b) {
+        if (a == b) return true;
+        if (a == null || b == null) return false;
+        if (a.getClass() != b.getClass()) return false;
+        return a.getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI().equals(b.getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI());
+    }
 
     class RandomItemAny extends Item implements RandomItem<Item> {
 
@@ -127,13 +134,6 @@ public interface RandomItem<T extends GameObject> {
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomItemAny) obj).internalRandomItem);
         }
 
         @Override
@@ -198,13 +198,6 @@ public interface RandomItem<T extends GameObject> {
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomWeapon) obj).internalRandomItem);
         }
 
         @Override
@@ -281,13 +274,6 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomMeleeWeapon) obj).internalRandomItem);
-        }
-
-        @Override
         public boolean isUpgradable() {
             return false;
         }
@@ -350,13 +336,6 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomArmor) obj).internalRandomItem);
-        }
-
-        @Override
         public boolean isUpgradable() {
             return false;
         }
@@ -412,13 +391,6 @@ public interface RandomItem<T extends GameObject> {
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomRing) obj).internalRandomItem);
         }
 
         @Override
@@ -486,13 +458,6 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomArtifact) obj).internalRandomItem);
-        }
-
-        @Override
         public boolean isUpgradable() {
             return false;
         }
@@ -549,13 +514,6 @@ public interface RandomItem<T extends GameObject> {
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomEqMiscItem) obj).internalRandomItem);
         }
 
         @Override
@@ -619,13 +577,6 @@ public interface RandomItem<T extends GameObject> {
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomWand) obj).internalRandomItem);
         }
 
         @Override
@@ -706,13 +657,6 @@ public interface RandomItem<T extends GameObject> {
         }
 
         @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomBag) obj).internalRandomItem);
-        }
-
-        @Override
         public boolean isUpgradable() {
             return false;
         }
@@ -768,13 +712,6 @@ public interface RandomItem<T extends GameObject> {
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomTrinket) obj).internalRandomItem);
         }
 
         @Override
@@ -845,13 +782,6 @@ public interface RandomItem<T extends GameObject> {
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomTrap) obj).internalRandomItem);
         }
 
         @Override

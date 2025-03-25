@@ -986,7 +986,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             if (!isItemListEqual(((TrinketCatalyst) a).rolledTrinkets, ((TrinketCatalyst) b).rolledTrinkets)) return false;
         }
         if (a instanceof RandomItem) {
-            if (!a.equals(b)) return false;
+            if (!RandomItem.areEqual((RandomItem<?>) a, (RandomItem<?>) b)) return false;
         }
 
         if (a instanceof MobItem) return EditMobComp.areEqual(((MobItem) a).getObject(), ((MobItem) b).getObject());
