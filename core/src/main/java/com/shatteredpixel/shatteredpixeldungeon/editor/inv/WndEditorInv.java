@@ -92,7 +92,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         curBag = bag;
 
         offset(0, EditorUtilities.getMaxWindowOffsetYForVisibleToolbar() + (addTabs ? 0 : tabHeight() / 5));
-        resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_LARGE.get() - (addTabs ? tabHeight() : 0) - yOffset - tabHeight());
+        resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_LARGE.get() - (addTabs ? tabHeight() + yOffset : 0) - tabHeight());
 
         body = createBody(bag);
         add(body);

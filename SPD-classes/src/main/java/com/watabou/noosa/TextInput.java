@@ -176,14 +176,14 @@ public class TextInput extends Component {
 			
 			@Override
 			public boolean mouseMoved(int screenX, int screenY) {
-				if (isActive() && hasFocus && isInTopWindow() && catchClicks.overlapsScreenPoint(screenX, screenY))
+				if (isActive() && hasFocus() && isInTopWindow() && catchClicks.overlapsScreenPoint(screenX, screenY))
 					return super.mouseMoved(screenX, screenY);
 				return false;
 			}
 			
 			@Override
 			public boolean scrolled(float amountX, float amountY) {
-				if (isActive() && hasFocus && isInTopWindow())
+				if (isActive() && hasFocus() && isInTopWindow())
 					return super.scrolled(amountX, amountY);
 				return false;
 			}

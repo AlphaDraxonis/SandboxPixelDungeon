@@ -507,7 +507,7 @@ public enum Talent {
 			if (hero.belongings.misc instanceof Ring && !ShardOfOblivion.passiveIDDisabled()) {
 				hero.belongings.misc.identify();
 			}
-			for (Item item : Dungeon.hero.belongings){
+			for (Item item : hero.belongings){
 				if (item instanceof Ring){
 					((Ring) item).setKnown();
 				}
@@ -561,7 +561,7 @@ public enum Talent {
 			for (Item item : hero.belongings.backpack){
 				if (item instanceof HolyTome){
 					if (!hero.belongings.lostInventory() || item.keptThroughLostInventory()) {
-						((HolyTome) item).activate(Dungeon.hero);
+						((HolyTome) item).activate(hero);
 					}
 				}
 			}
@@ -799,24 +799,24 @@ public enum Talent {
 			Buff.prolong(hero, EnhancedRings.class, 3f*hero.pointsInTalent(ENHANCED_RINGS));
 		}
 
-		if (Dungeon.hero.heroClass != HeroClass.CLERIC
-				&& Dungeon.hero.hasTalent(Talent.DIVINE_SENSE)){
-			Buff.prolong(Dungeon.hero, DivineSense.DivineSenseTracker.class, Dungeon.hero.cooldown()+1);
+		if (hero.heroClass != HeroClass.CLERIC
+				&& hero.hasTalent(Talent.DIVINE_SENSE)){
+			Buff.prolong(hero, DivineSense.DivineSenseTracker.class, hero.cooldown()+1);
 		}
 
 		// 10/20/30%
-		if (Dungeon.hero.heroClass != HeroClass.CLERIC
-				&& Dungeon.hero.hasTalent(Talent.CLEANSE)
-				&& Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.CLEANSE)){
+		if (hero.heroClass != HeroClass.CLERIC
+				&& hero.hasTalent(Talent.CLEANSE)
+				&& Random.Int(10) < hero.pointsInTalent(Talent.CLEANSE)){
 			boolean removed = false;
-			for (Buff b : Dungeon.hero.buffs()) {
+			for (Buff b : hero.buffs()) {
 				if (b.type == Buff.buffType.NEGATIVE) {
 					b.detach();
 					removed = true;
 				}
 			}
-			if (removed && Dungeon.hero.sprite != null) {
-				new Flare( 6, 32 ).color(0xFF4CD2, true).show( Dungeon.hero.sprite, 2f );
+			if (removed && hero.sprite != null) {
+				new Flare( 6, 32 ).color(0xFF4CD2, true).show( hero.sprite, 2f );
 			}
 		}
 	}

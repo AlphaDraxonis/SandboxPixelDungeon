@@ -112,7 +112,7 @@ public class WndChooseEnchant extends WndChooseOneInCategories {
             }
 
             EnchantmentLike enchantmentLike = Reflection.newInstance(clazz);
-            ret[i] = new BtnRow(enchantmentLike.name(), enchantmentLike.desc()) {
+            ret[i] = new BtnRow(Messages.titleCase(Messages.get(enchantmentLike.getClass(), "pure_name")), enchantmentLike.desc()) {
                 @Override
                 protected void onClick() {
                     onSelect(enchantmentLike);
