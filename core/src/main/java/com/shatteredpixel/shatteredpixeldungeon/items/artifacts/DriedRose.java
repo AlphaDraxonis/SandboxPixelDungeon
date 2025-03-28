@@ -550,7 +550,8 @@ public class DriedRose extends Artifact {
 
 		{
 			alignment = Alignment.ALLY;
-			directableAlly = new GhostHeroDirectableAlly(this);
+			directableAlly = new GhostHeroDirectableAlly();
+			directableAlly.setMob(this);
 			state = WANDERING;
 
 			spriteClass = GhostSprite.class;
@@ -577,10 +578,6 @@ public class DriedRose extends Artifact {
 		}
 
 		public static class GhostHeroDirectableAlly extends DirectableAlly {
-
-			public GhostHeroDirectableAlly(Mob mob) {
-				super(mob);
-			}
 
 			@Override
 			public void defendPos(int cell) {
@@ -875,17 +872,22 @@ public class DriedRose extends Artifact {
 			immunities.add( ScrollOfPsionicBlast.class );
 			immunities.add( AllyBuff.class );
 		}
+		
+		private static final String DIRECTABLE = "directable";
 
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			directableAlly.restore(bundle);
+			if (!directableAlly.maybeRestore(bundle)) {
+				directableAlly = (DirectableAlly) bundle.get(DIRECTABLE);
+				directableAlly.setMob(this);
+			}
 		}
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
-			directableAlly.store(bundle);
+			bundle.put(DIRECTABLE, directableAlly);
 		}
 	}
 	

@@ -33,7 +33,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DirectableAlly;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -148,7 +147,8 @@ public class ShadowClone extends ArmorAbility {
 
 		{
 			alignment = Alignment.ALLY;
-			directableAlly = new ShadowDirectableAlly(this);
+			directableAlly = new ShadowDirectableAlly();
+			directableAlly.setMob(this);
 			state = WANDERING;
 
 			spriteClass = ShadowSprite.class;
@@ -187,10 +187,6 @@ public class ShadowClone extends ArmorAbility {
 		}
 
 		public static class ShadowDirectableAlly extends DirectableAlly {
-
-			public ShadowDirectableAlly(Mob mob) {
-				super(mob);
-			}
 
 			@Override
 			public void defendPos(int cell) {
@@ -357,21 +353,25 @@ public class ShadowClone extends ArmorAbility {
 				ch.sprite.emitter().burst(SmokeParticle.FACTORY, 10);
 			}
 		}
-
+		
+		private static final String DIRECTABLE = "directable";
 		private static final String DEF_SKILL = "def_skill";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put(DEF_SKILL, defenseSkill);
-			directableAlly.store(bundle);
+			bundle.put(DIRECTABLE, directableAlly);
 		}
 
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			defenseSkill = bundle.getInt(DEF_SKILL);
-			directableAlly.restore(bundle);
+			if (!directableAlly.maybeRestore(bundle)) {
+				directableAlly = (DirectableAlly) bundle.get(DIRECTABLE);
+				directableAlly.setMob(this);
+			}
 		}
 	}
 

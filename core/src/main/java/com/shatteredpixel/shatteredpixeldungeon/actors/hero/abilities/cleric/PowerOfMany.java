@@ -249,7 +249,8 @@ public class PowerOfMany extends ArmorAbility {
 		{
 			spriteClass = LightAllySprite.class;
 			
-			directableAlly = new LightAllyDirectableAlly(this);
+			directableAlly = new LightAllyDirectableAlly();
+			directableAlly.setMob(this);
 
 			HP = HT = 80;
 
@@ -271,10 +272,6 @@ public class PowerOfMany extends ArmorAbility {
 		}
 		
 		public static class LightAllyDirectableAlly extends DirectableAlly {
-			
-			public LightAllyDirectableAlly(Mob mob) {
-				super(mob);
-			}
 			
 			@Override
 			public void defendPos(int cell) {
@@ -361,6 +358,7 @@ public class PowerOfMany extends ArmorAbility {
 			return sprite;
 		}
 
+		private static final String DIRECTABLE = "directable";
 		private static final String HERO_CLS = "hero_cls";
 		private static final String DEF_SKILL = "def_skill";
 
@@ -369,6 +367,7 @@ public class PowerOfMany extends ArmorAbility {
 			super.storeInBundle(bundle);
 			bundle.put(HERO_CLS, cls);
 			bundle.put(DEF_SKILL, defenseSkill);
+			bundle.put(DIRECTABLE, directableAlly);
 		}
 
 		@Override
@@ -376,6 +375,10 @@ public class PowerOfMany extends ArmorAbility {
 			super.restoreFromBundle(bundle);
 			cls = bundle.getEnum(HERO_CLS, HeroClass.class);
 			defenseSkill = bundle.getInt(DEF_SKILL);
+			if (!directableAlly.maybeRestore(bundle)) {
+				directableAlly = (DirectableAlly) bundle.get(DIRECTABLE);
+				directableAlly.setMob(this);
+			}
 		}
 	}
 

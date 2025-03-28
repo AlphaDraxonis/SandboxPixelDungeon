@@ -35,7 +35,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DirectableAlly;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -149,7 +148,8 @@ public class SpiritHawk extends ArmorAbility {
 
 		{
 			alignment = Alignment.ALLY;
-			directableAlly = new HawkDirectableAlly(this);
+			directableAlly = new HawkDirectableAlly();
+			directableAlly.setMob(this);
 			state = WANDERING;
 
 			spriteClass = HawkSprite.class;
@@ -254,8 +254,7 @@ public class SpiritHawk extends ArmorAbility {
 
 		public static class HawkDirectableAlly extends DirectableAlly {
 
-			public HawkDirectableAlly(Mob mob) {
-				super(mob);
+			public HawkDirectableAlly() {
 				attacksAutomatically = false;
 			}
 
@@ -306,7 +305,8 @@ public class SpiritHawk extends ArmorAbility {
 			}
 			return message;
 		}
-
+		
+		private static final String DIRECTABLE = "directable";
 		private static final String DODGES_USED     = "dodges_used";
 		private static final String TIME_REMAINING  = "time_remaining";
 
@@ -315,7 +315,7 @@ public class SpiritHawk extends ArmorAbility {
 			super.storeInBundle(bundle);
 			bundle.put(DODGES_USED, dodgesUsed);
 			bundle.put(TIME_REMAINING, timeRemaining);
-			directableAlly.store(bundle);
+			bundle.put(DIRECTABLE, directableAlly);
 		}
 
 		@Override
@@ -323,7 +323,10 @@ public class SpiritHawk extends ArmorAbility {
 			super.restoreFromBundle(bundle);
 			dodgesUsed = bundle.getInt(DODGES_USED);
 			timeRemaining = bundle.getFloat(TIME_REMAINING);
-			directableAlly.restore(bundle);
+			if (!directableAlly.maybeRestore(bundle)) {
+				directableAlly = (DirectableAlly) bundle.get(DIRECTABLE);
+				directableAlly.setMob(this);
+			}
 		}
 	}
 

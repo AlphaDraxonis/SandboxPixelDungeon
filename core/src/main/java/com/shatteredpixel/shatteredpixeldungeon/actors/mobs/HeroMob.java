@@ -148,7 +148,10 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     @Override
     public void setLevel(int depth) {
 
-        if (alignment == Alignment.ALLY) directableAlly = new DriedRose.GhostHero.GhostHeroDirectableAlly(this);
+        if (alignment == Alignment.ALLY) {
+            directableAlly = new DriedRose.GhostHero.GhostHeroDirectableAlly();
+            directableAlly.setMob(this);
+        }
 
         internalHero.baseSpeed = baseSpeed;
         if (internalHero.belongings.weapon != null) {
@@ -905,7 +908,9 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         internalHero.setLvl(lvl);
         updateEXP();
     }
-
+    
+    private static final String DIRECTABLE = "directable";
+    
     private static final String INTERNAL_HERO = "internal_hero";
     private static final String BIND_EQUIPMENT = "bind_equipment";
 
@@ -919,7 +924,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         super.storeInBundle(bundle);
         bundle.put(INTERNAL_HERO, internalHero);
         bundle.put(BIND_EQUIPMENT, bindEquipment);
-        if (directableAlly != null) directableAlly.store(bundle);
+        bundle.put(DIRECTABLE, directableAlly);
 
         bundle.put(WANDS + "_cd", wandCD);
         bundle.put(POTIONS + "_cd", potionCD);
@@ -931,8 +936,14 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     @Override
     public void restoreFromBundle(Bundle bundle) {
         if (alignment == Alignment.ALLY) {
-            directableAlly = new DirectableAlly(this);
-            directableAlly.restore(bundle);
+            if (bundle.contains(DIRECTABLE)) {
+                directableAlly = (DirectableAlly) bundle.get(DIRECTABLE);
+                directableAlly.setMob(this);
+            } else {
+                directableAlly = new DirectableAlly();
+                directableAlly.setMob(this);
+                directableAlly.maybeRestore(bundle);
+            }
         }
         internalHero = null;
         super.restoreFromBundle(bundle);

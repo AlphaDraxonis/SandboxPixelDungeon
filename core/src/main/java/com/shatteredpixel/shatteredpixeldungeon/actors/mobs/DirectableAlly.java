@@ -28,10 +28,11 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
 //use composition instead of inheritance
-public class DirectableAlly {
+public class DirectableAlly implements Bundlable {
 
 	//**SUPER IMPORTANT METHODS!!! MAKE SURE TO OVERRIDE THESE 2 WITHOUT! CALLING SUPER!
 	//and getDirectableAlly()!!
+	//and don't forget to store/restore from bundle
 	public void aggroOverride(Char ch) {
 		mob.enemy = ch;
 		if (!movingToDefendPos && mob.state != mob.PASSIVE){
@@ -48,15 +49,23 @@ public class DirectableAlly {
 	//**SUPER IMPORTANT METHODS!!! MAKE SURE TO OVERRIDE THESE 2 WITHOUT! CALLING SUPER!
 
 
-	protected final Mob mob;
+	protected /*final*/ Mob mob;
 
-	public DirectableAlly(Mob mob) {
+	public DirectableAlly() {
+	}
+	
+	public void setMob(Mob mob) {
 		this.mob = mob;
-
+		
 		mob.intelligentAlly = true;
+		
+		Mob.AiState oldWandering = mob.WANDERING;
+		Mob.AiState oldHunting = mob.HUNTING;
 		mob.WANDERING = createWandering(mob);
 		mob.HUNTING = createHunting(mob);
-
+		if (mob.state == oldWandering) mob.state = mob.WANDERING;
+		else if (mob.state == oldHunting) mob.state = mob.HUNTING;
+		
 		//before other mobs
 		mob.setActPriority_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY(Actor.MOB_PRIO + 1);
 	}
@@ -110,31 +119,38 @@ public class DirectableAlly {
 		}
 	}
 
-	private static final String DIRECTABLE_ALLY = "directable_ally";
-
-	public void restore(Bundle bundle) {
-		if (bundle.contains(DIRECTABLE_ALLY)) {
-			StoreInBundle stored = (StoreInBundle) bundle.get(DIRECTABLE_ALLY);
+	private static final String DEFEND_POS = "defend_pos";
+	private static final String MOVING_TO_DEFEND = "moving_to_defend";
+	
+	@Deprecated/*(forRemoval = true)*/
+	public boolean maybeRestore(Bundle bundle) {
+		if (bundle.contains("directable_ally")) {
+			StoreInBundle stored = (StoreInBundle) bundle.get("directable_ally");
 			defendingPos = stored.defendingPos;
 			movingToDefendPos = stored.movingToDefendPos;
+			return true;
 		}
+		return false;
+	}
+	
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		if (bundle.contains(DEFEND_POS)) defendingPos = bundle.getInt(DEFEND_POS);
+		movingToDefendPos = bundle.getBoolean(MOVING_TO_DEFEND);
+	}
+	
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		bundle.put(DEFEND_POS, defendingPos);
+		bundle.put(MOVING_TO_DEFEND, movingToDefendPos);
 	}
 
-	public void store(Bundle bundle) {
-		StoreInBundle store = new StoreInBundle();
-		store.defendingPos = defendingPos;
-		store.movingToDefendPos = movingToDefendPos;
-		bundle.put(DIRECTABLE_ALLY, store);
-	}
 
-
+	@Deprecated/*(forRemoval = true)*/
 	public static class StoreInBundle implements Bundlable {
 
 		private int defendingPos;
 		private boolean movingToDefendPos;
-
-		private static final String DEFEND_POS = "defend_pos";
-		private static final String MOVING_TO_DEFEND = "moving_to_defend";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
