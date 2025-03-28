@@ -913,21 +913,6 @@ public class Dungeon {
 			SecretRoom.restoreRoomsFromBundle(bundle);
 		}
 
-		droppedItems = new HashMap<>();
-		for (String level : customDungeon.floorNames()) {
-
-			//dropped items
-			ArrayList<Item> items = new ArrayList<>();
-			if (bundle.contains(Messages.format(DROPPED, level)))
-				for (Bundlable b : bundle.getCollection(Messages.format(DROPPED, level))) {
-					items.add((Item) b);
-				}
-			if (!items.isEmpty()) {
-				droppedItems.put(level, items);
-			}
-
-		}
-
 		Bundle badges = bundle.getBundle(BADGES);
 		if (!badges.isNull()) {
 			Badges.loadLocal( badges );
@@ -951,6 +936,21 @@ public class Dungeon {
 		energy = bundle.getInt( ENERGY );
 
 		customDungeon = (CustomDungeon) bundle.get( CUSTOM_DUNGEON );
+		
+		droppedItems = new HashMap<>();
+		for (String level : customDungeon.floorNames()) {
+			
+			//dropped items
+			ArrayList<Item> items = new ArrayList<>();
+			if (bundle.contains(Messages.format(DROPPED, level)))
+				for (Bundlable b : bundle.getCollection(Messages.format(DROPPED, level))) {
+					items.add((Item) b);
+				}
+			if (!items.isEmpty()) {
+				droppedItems.put(level, items);
+			}
+			
+		}
 		
 		if (bundle.contains(DUNGEON_SCRIPT)) {
 			dungeonScript = (DungeonScript) bundle.get(DUNGEON_SCRIPT);
