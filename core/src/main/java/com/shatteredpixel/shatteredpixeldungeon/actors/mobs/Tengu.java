@@ -496,10 +496,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		attackedPlayer = bundle.getBoolean(ATTACKED_PLAYER);
 	}
 	
-	//don't bother bundling this, as its purely cosmetic
-	private boolean yelledCoward = false;
-	
-	//tengu is always hunting in Shattered
+	//tengu is always hunting
 	private class Hunting extends Mob.Hunting{
 		
 		@Override
@@ -519,25 +516,22 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				return doAttack( enemy );
 				
 			} else {
-				
-				if (enemyInFOV) {
-					target = enemy.pos;
-				} else {
-					chooseEnemy();
-					if (enemy == null){
-						if (playerAlignment == NORMAL_ALIGNMENT) {
-							//if nothing else can be targeted, target hero
-							enemy = Dungeon.hero;
-						} else {
-							looseEnemy();
-							spend(TICK);
-							return true;
-						}
+
+				//Try to switch targets to another enemy that is closer
+				//unless we have already done that and still can't attack them, then move on.
+				if (!recursing) {
+					Char oldEnemy = enemy;
+					enemy = null;
+					enemy = chooseEnemy();
+					if (enemy != null && enemy != oldEnemy) {
+						recursing = true;
+						boolean result = act(enemyInFOV, justAlerted);
+						recursing = false;
+						return result;
 					}
-					target = enemy.pos;
 				}
 				
-				//if not charmed, attempt to use an ability, even if the enemy can't be seen
+				//attempt to use an ability, even if enemy can't be decided
 				if (canUseAbility()){
 					return useAbility();
 				}
@@ -670,6 +664,10 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			} else {
 				abilityToUse = Random.Int(3);
 			}
+
+			//all abilities always target the hero in PrisonBossLevel, even if something else is taking Tengu's normal attacks
+			Char oldEnemy = enemy;
+			if (Dungeon.level instanceof PrisonBossLevel) enemy = Dungeon.hero;
 			
 			//If we roll the same ability as last time, 9/10 chance to reroll
 			if (abilityToUse != lastAbility || Random.Int(10) == 0){
@@ -699,6 +697,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 					throwFire(Tengu.this, enemy);
 				}
 			}
+			enemy = oldEnemy;
 			
 		}
 		

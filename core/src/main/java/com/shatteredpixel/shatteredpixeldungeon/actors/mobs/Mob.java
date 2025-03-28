@@ -1873,7 +1873,7 @@ public abstract class Mob extends Char implements Customizable {
 		public static final String TAG	= "HUNTING";
 
 		//prevents rare infinite loop cases
-		private boolean recursing = false;
+		protected boolean recursing = false;
 
 		@Override
 		public boolean act( boolean enemyInFOV, boolean justAlerted ) {
