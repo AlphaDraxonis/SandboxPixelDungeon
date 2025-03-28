@@ -954,7 +954,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (obj instanceof Guard) abilityCooldown.setValue(((Guard) obj).maxChainCooldown);
             else if (obj instanceof DM200) abilityCooldown.setValue(((DM200) obj).maxVentCooldown);
             else if (obj instanceof Golem) abilityCooldown.setValue(((Golem) obj).maxTeleCooldown);
-            else if (obj instanceof DemonSpawner) abilityCooldown.setValue(((DemonSpawner) obj).maxSpawnCooldown);
+            else if (obj instanceof DemonSpawner) abilityCooldown.setValue((int)((DemonSpawner) obj).maxSpawnCooldown);
             else if (obj instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner)
                 abilityCooldown.setValue(((com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) obj).maxWebCoolDown);
         }
@@ -1173,7 +1173,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (!isMobListEqual(((YogDzewa) a).challengeSummons, ((YogDzewa) b).challengeSummons)) return false;
         }
         if (a instanceof DemonSpawner) {
-            if (((DemonSpawner) a).maxSpawnCooldown != ((DemonSpawner) a).maxSpawnCooldown) return false;
+            if (((DemonSpawner) a).maxSpawnCooldown != ((DemonSpawner) b).maxSpawnCooldown) return false;
         }
         if (a instanceof SpawnerMob) {
             if (!EditMobComp.isMobListEqual(((SpawnerMob) a).summonTemplate, ((SpawnerMob) b).summonTemplate)) return false;
