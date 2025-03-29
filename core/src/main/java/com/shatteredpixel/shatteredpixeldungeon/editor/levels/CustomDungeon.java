@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.journal.CustomDocumentPage
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.Brew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.PotionCocktail;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.Elixir;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
@@ -233,7 +234,7 @@ public class CustomDungeon implements Bundlable {
         if (Dungeon.customDungeon == null) {
             if (item instanceof Scroll) {
                 return ItemSpriteSheet.SCROLL_HOLDER;
-            } else if (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew)) {
+            } else if (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew || item instanceof PotionCocktail)) {
                 return ItemSpriteSheet.POTION_HOLDER;
             } else if (item instanceof Ring) {
                 return ItemSpriteSheet.RING_HOLDER;
@@ -252,7 +253,7 @@ public class CustomDungeon implements Bundlable {
             code = (scrollRuneLabels == null || !scrollRuneLabels.containsKey(c)) ?
                     ItemSpriteSheet.SCROLL_HOLDER :
                     Scroll.runes.get(scrollRuneLabels.get(c)) + (item instanceof ExoticScroll ? 16 : 0);
-        } else if (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew)) {
+        } else if (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew || item instanceof PotionCocktail)) {
             if (item instanceof ExoticPotion) c = ExoticPotion.exoToReg.get(c);
             code = (potionColorLabels == null || !potionColorLabels.containsKey(c)) ?
                     ItemSpriteSheet.POTION_HOLDER :

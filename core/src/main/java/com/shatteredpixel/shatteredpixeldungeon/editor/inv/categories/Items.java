@@ -89,6 +89,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.AquaBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.BlizzardBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.CausticBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.InfernalBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.PotionCocktail;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.ShockingBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.UnstableBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfAquaticRejuvenation;
@@ -518,6 +519,8 @@ public final class Items extends GameObjectCategory<Item> {
 
                     UnstableBrew.class,
                     AquaBrew.class,
+                    
+                    PotionCocktail.class,
 
                     Pasty.PastyPride.class
             });

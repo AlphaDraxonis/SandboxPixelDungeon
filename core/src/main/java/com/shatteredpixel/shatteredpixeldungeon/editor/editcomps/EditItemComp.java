@@ -61,6 +61,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.PotionCocktail;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfMastery;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfEnchantment;
@@ -129,6 +132,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledButton enchantBtn;
     protected StyledSpinner numChoosableTrinkets;
     protected ItemContainer<Trinket> rollTrinkets;
+    protected ItemContainer<Potion> potionCocktailPotions;
+    protected StyledCheckBox potionsKnown;
     protected ItemContainer<MobItem> summonMobs;
     protected StyledSpinner docPageType;
     protected StringInputComp docPageText, docPageTitle;
@@ -264,6 +269,34 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     }
                 };
                 add(rollTrinkets);
+            }
+            
+            if (item instanceof PotionCocktail) {
+                
+                potionsKnown = new StyledCheckBox(label("show_potions"));
+                potionsKnown.checked(((PotionCocktail) item).potionsKnown);
+                potionsKnown.addChangeListener( v -> {
+                    ((PotionCocktail) item).potionsKnown = v;
+                    updateObj();
+                });
+                potionsKnown.icon(Icons.MAGNIFY.get());
+                add(potionsKnown);
+                
+                potionCocktailPotions = new ItemContainerWithLabel<Potion>(((PotionCocktail) item).potions, this, Messages.get(Items.class, "potion")) {
+                    
+                    @Override
+                    protected void onSlotNumChange() {
+                        if (potionCocktailPotions != null) {
+                            updateObj();
+                        }
+                    }
+                    
+                    @Override
+                    public boolean itemSelectable(Item item) {
+                        return item instanceof Potion && !(item instanceof PotionCocktail || item instanceof PotionOfDivineInspiration || item instanceof PotionOfMastery);
+                    }
+                };
+                add(potionCocktailPotions);
             }
 
             if (item instanceof Wand) {//Check ItemItem#status() if you change sth
@@ -700,9 +733,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(randomItem);
         }
 
-        rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, reclaimTrap, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
+        rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, potionsKnown, reclaimTrap, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
                 augmentationSpinner, curseBtn, permaCursed, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, classArmorTier, blessed, igniteBombOnDrop, docPageType, spreadIfLoot, exactItemInRecipe};
-        linearComps = new Component[]{rollTrinkets, summonMobs, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
+        linearComps = new Component[]{rollTrinkets, potionCocktailPotions, summonMobs, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
 
         initializeCompsForCustomObjectClass();
     }
@@ -844,6 +877,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (hasSeal != null)                hasSeal.checked(((Armor) obj).checkSeal() != null);
         if (blessed != null)                blessed.checked(((Ankh) obj).blessed);
         if (igniteBombOnDrop != null)       igniteBombOnDrop.checked(((Bomb) obj).igniteOnDrop);
+        if (potionsKnown != null)           potionsKnown.checked(((PotionCocktail)obj).potionsKnown);
         if (shockerDuration != null)        shockerDuration.setValue(((FakeTenguShocker) obj).duration);
         if (docPageType != null)            docPageType.setValue(CustomDocumentPage.types.get(((CustomDocumentPage) obj).type));
         if (docPageText != null)            docPageText.setText(((CustomDocumentPage) obj).text);
@@ -858,6 +892,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
         if (bagItems != null) bagItems.setItemList(((Bag)obj).items);
         if (rollTrinkets != null) rollTrinkets.setItemList(((TrinketCatalyst)obj).rolledTrinkets);
+        if (potionCocktailPotions != null) potionCocktailPotions.setItemList(((PotionCocktail)obj).potions);
         if (summonMobs != null) {
             List<MobItem> asMobItems = new ArrayList<>();
             if (((WandOfSummoning) obj).summonTemplate != null) {
@@ -967,6 +1002,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
         if (a instanceof Bomb) {
             if (((Bomb) a).igniteOnDrop != ((Bomb) b).igniteOnDrop) return false;
+        }
+        if (a instanceof PotionCocktail) {
+            if (!isItemListEqual(((PotionCocktail) a).potions, ((PotionCocktail) b).potions)) return false;
         }
         if (a instanceof ReclaimTrap) {
             if (!EditTrapComp.areEqual(((ReclaimTrap) a).storedTrap, ((ReclaimTrap) b).storedTrap)) return false;

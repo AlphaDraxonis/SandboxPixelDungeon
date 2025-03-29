@@ -650,6 +650,7 @@ public class ItemSpriteSheet {
 	public static final int BREW_CAUSTIC    = BREWS+3;
 	public static final int BREW_AQUA       = BREWS+4;
 	public static final int BREW_UNSTABLE   = BREWS+5;
+	public static final int BREW_COCKTAIL   = BREWS+6;
 
 	private static final int ELIXIRS        =                               xy(9, 25);  //8 slots
 	public static final int ELIXIR_HONEY    = ELIXIRS+0;
