@@ -437,7 +437,7 @@ public abstract class Mob extends Char implements Customizable {
 	public CharSprite createSprite() {
 		if (this instanceof CustomMobClass) {
 			CustomMob customMob = CustomObjectManager.getUserContent(((CustomMobClass) this).getIdentifier(), CustomMob.class);
-			if (customMob.sprite != null) {
+			if (customMob != null && customMob.sprite != null) {
 				CharSprite result = customMob.sprite.getActualCustomCharSpriteOrNull();
 				if (result != null) return result;
 			}
