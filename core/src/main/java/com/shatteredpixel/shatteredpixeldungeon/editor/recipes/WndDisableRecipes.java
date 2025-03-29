@@ -7,10 +7,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LiquidMetal;
+import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Blandfruit;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.StewedMeat;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.AquaBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.BlizzardBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.CausticBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.InfernalBrew;
@@ -26,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfIc
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfToxicEssence;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.BeaconOfReturning;
@@ -86,19 +90,19 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
                         @Override
                         public void checked(boolean value) {
                             super.checked(value);
-                            if (r.index == -1) {
+                            if (r.recipeClass == null) {
                                 if (value) Dungeon.customDungeon.blockedRecipeResults.add(r.item);
                                 else Dungeon.customDungeon.blockedRecipeResults.remove(r.item);
                             } else {
-                                if (value) Dungeon.customDungeon.blockedRecipes.add(r.index);
-                                else Dungeon.customDungeon.blockedRecipes.remove(r.index);
+                                if (value) Dungeon.customDungeon.blockedRecipes.add(r.recipeClass);
+                                else Dungeon.customDungeon.blockedRecipes.remove(r.recipeClass);
                             }
                         }
                     };
-                    if (r.index == -1) {
+                    if (r.recipeClass == null) {
                         ((CheckBox) btn).checked(Dungeon.customDungeon.blockedRecipeResults.contains(r.item));
                     } else {
-                        ((CheckBox) btn).checked(Dungeon.customDungeon.blockedRecipes.contains(r.index));
+                        ((CheckBox) btn).checked(Dungeon.customDungeon.blockedRecipes.contains(r.recipeClass));
                     }
                     add(btn);
                 }
@@ -112,23 +116,23 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
     private static class RecipeInfo {
 
         int sampleOutputImage;
-        int index;
+        Class<? extends Recipe> recipeClass;
         String name, desc;
         Class<? extends Item> item;
 
-        public RecipeInfo(int sampleOutputImage, int index, Class<? extends Item> item) {
+        public RecipeInfo(int sampleOutputImage, Class<? extends Recipe> recipeClass, Class<? extends Item> item) {
             this.sampleOutputImage = sampleOutputImage;
             this.item = item;
-            this.index = index;
+            this.recipeClass = recipeClass;
             this.name = Messages.get(item, "name");
             this.desc = Messages.get(item, "desc");
             if (this.desc.equals(Messages.NO_TEXT_FOUND)) this.desc = "";
         }
 
-        public RecipeInfo(int sampleOutputImage, int index, String name, Class<? extends Item> item) {
+        public RecipeInfo(int sampleOutputImage, String name, Class<? extends Recipe> recipeClass, Class<? extends Item> item) {
             this.sampleOutputImage = sampleOutputImage;
             this.item = item;
-            this.index = index;
+            this.recipeClass = recipeClass;
             this.name = name;
             this.desc = item == null ? "" : Messages.get(item, "desc");
         }
@@ -139,75 +143,125 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
         switch (index) {
             case 0:
             default:
-                result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, 300, Messages.get(WndDisableRecipes.class, "potions"), null));
-                result.add(new RecipeInfo(ItemSpriteSheet.STONE_HOLDER, 100, Messages.get(WndDisableRecipes.class, "runestones"), null));
-                result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, 101, Messages.get(WndDisableRecipes.class, "exotic_potions"), null));
-                result.add(new RecipeInfo(ItemSpriteSheet.SCROLL_HOLDER, 102, Messages.get(WndDisableRecipes.class, "exotic_scrolls"), null));
+                result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, Messages.get(WndDisableRecipes.class, "potions"), Potion.SeedToPotion.class, null));
+                result.add(new RecipeInfo(ItemSpriteSheet.STONE_HOLDER, Messages.get(WndDisableRecipes.class, "runestones"), Scroll.ScrollToStone.class, null));
+                result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, Messages.get(WndDisableRecipes.class, "exotic_potions"), ExoticPotion.PotionToExotic.class, null));
+                result.add(new RecipeInfo(ItemSpriteSheet.SCROLL_HOLDER, Messages.get(WndDisableRecipes.class, "exotic_scrolls"), ExoticScroll.ScrollToExotic.class, null));
                 return result;
             case 1:
-                result.add(new RecipeInfo(ItemSpriteSheet.STEWED, 105, "1x " + Messages.get(StewedMeat.class, "name"), StewedMeat.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.STEWED, 226, "2x " + Messages.get(StewedMeat.class, "name"), StewedMeat.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.STEWED, 301, "3x " + Messages.get(StewedMeat.class, "name"), StewedMeat.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.MEAT_PIE, 302, MeatPie.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.BLANDFRUIT, 200, Blandfruit.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.STEWED, "1x " + Messages.get(StewedMeat.class, "name"), StewedMeat.oneMeat.class, StewedMeat.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.STEWED, "2x " + Messages.get(StewedMeat.class, "name"), StewedMeat.twoMeat.class, StewedMeat.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.STEWED, "3x " + Messages.get(StewedMeat.class, "name"), StewedMeat.threeMeat.class, StewedMeat.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.MEAT_PIE, MeatPie.Recipe.class, MeatPie.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.BLANDFRUIT, Blandfruit.CookFruit.class, Blandfruit.class));
                 return result;
             case 2:
-                result.add(new RecipeInfo(ItemSpriteSheet.BOMB, 201, Bomb.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.LIQUID_METAL, 0, LiquidMetal.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.ARCANE_RESIN, 103, ArcaneResin.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.BOMB, Bomb.EnhanceBomb.class, Bomb.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.LIQUID_METAL, LiquidMetal.Recipe.class, LiquidMetal.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.ARCANE_RESIN, ArcaneResin.Recipe.class, ArcaneResin.class));
                 return result;
             case 3:
-                result.add(new RecipeInfo(ItemSpriteSheet.BREW_CAUSTIC, 211, CausticBrew.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.BREW_BLIZZARD, 212, BlizzardBrew.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.BREW_INFERNAL, 213, InfernalBrew.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.BREW_SHOCKING, 214, ShockingBrew.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.BREW_UNSTABLE, 202, UnstableBrew.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.BREW_COCKTAIL, 227, PotionCocktail.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.BREW_AQUA, 215, UnstableBrew.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_HONEY, 209, ElixirOfHoneyedHealing.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_AQUA, 205, ElixirOfAquaticRejuvenation.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_MIGHT, 208, ElixirOfMight.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_DRAGON, 206, ElixirOfDragonsBlood.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_ICY, 207, ElixirOfIcyTouch.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_TOXIC, 210, ElixirOfToxicEssence.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_ARCANE, 204, ElixirOfArcaneArmor.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_FEATHER, 218, ElixirOfFeatherFall.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.BREW_CAUSTIC, CausticBrew.Recipe.class, CausticBrew.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.BREW_BLIZZARD, BlizzardBrew.Recipe.class, BlizzardBrew.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.BREW_INFERNAL, InfernalBrew.Recipe.class, InfernalBrew.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.BREW_SHOCKING, ShockingBrew.Recipe.class, ShockingBrew.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.BREW_UNSTABLE, UnstableBrew.Recipe.class, UnstableBrew.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.BREW_COCKTAIL, PotionCocktail.Recipe.class, PotionCocktail.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.BREW_AQUA, AquaBrew.Recipe.class, AquaBrew.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_HONEY, ElixirOfHoneyedHealing.Recipe.class, ElixirOfHoneyedHealing.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_AQUA, ElixirOfAquaticRejuvenation.Recipe.class, ElixirOfAquaticRejuvenation.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_MIGHT, ElixirOfMight.Recipe.class, ElixirOfMight.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_DRAGON, ElixirOfDragonsBlood.Recipe.class, ElixirOfDragonsBlood.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_ICY, ElixirOfIcyTouch.Recipe.class, ElixirOfIcyTouch.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_TOXIC, ElixirOfToxicEssence.Recipe.class, ElixirOfToxicEssence.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_ARCANE, ElixirOfArcaneArmor.Recipe.class, ElixirOfArcaneArmor.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.ELIXIR_FEATHER, ElixirOfFeatherFall.Recipe.class, ElixirOfFeatherFall.class));
                 return result;
             case 4:
-                result.add(new RecipeInfo(ItemSpriteSheet.UNSTABLE_SPELL, 203, UnstableSpell.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.TELE_GRAB, 224, TelekineticGrab.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.PHASE_SHIFT, 220, PhaseShift.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.WILD_ENERGY, 223, WildEnergy.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.RETURN_BEACON, 216, BeaconOfReturning.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.SUMMON_ELE, 225, SummonElemental.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.RECLAIM_TRAP, 221, ReclaimTrap.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.ALCHEMIZE, 104, Alchemize.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.MAGIC_INFUSE, 219, MagicalInfusion.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.CURSE_INFUSE, 217, CurseInfusion.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.RECYCLE, 222, Recycle.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.WAND_YENDOR, 303, WandOfYendor.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.UNSTABLE_SPELL, UnstableSpell.Recipe.class, UnstableSpell.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.TELE_GRAB, TelekineticGrab.Recipe.class, TelekineticGrab.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.PHASE_SHIFT, PhaseShift.Recipe.class, PhaseShift.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.WILD_ENERGY, WildEnergy.Recipe.class, WildEnergy.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.RETURN_BEACON, BeaconOfReturning.Recipe.class, BeaconOfReturning.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.SUMMON_ELE, SummonElemental.Recipe.class, SummonElemental.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.RECLAIM_TRAP, ReclaimTrap.Recipe.class, ReclaimTrap.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.ALCHEMIZE, Alchemize.Recipe.class, Alchemize.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.MAGIC_INFUSE, MagicalInfusion.Recipe.class, MagicalInfusion.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.CURSE_INFUSE, CurseInfusion.Recipe.class, CurseInfusion.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.RECYCLE, Recycle.Recipe.class, Recycle.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.WAND_YENDOR, WandOfYendor.Recipe.class, WandOfYendor.class));
                 return result;
 
             case 5:
                 for (Class c : Generator.Category.POTION.classes){
-                    result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, -1, c));
+                    result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, null, c));
                 }
                 return result;
             case 6:
                 for (Class c : Generator.Category.STONE.classes){
-                    result.add(new RecipeInfo(ItemSpriteSheet.STONE_HOLDER, -1, c));
+                    result.add(new RecipeInfo(ItemSpriteSheet.STONE_HOLDER, null, c));
                 }
                 return result;
             case 7:
                 for (Class c : Generator.Category.POTION.classes){
-                    result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, -1, ExoticPotion.regToExo.get(c)));
+                    result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, null, ExoticPotion.regToExo.get(c)));
                 }
                 return result;
             case 8:
                 for (Class c : Generator.Category.SCROLL.classes){
-                    result.add(new RecipeInfo(ItemSpriteSheet.SCROLL_HOLDER, -1, ExoticScroll.regToExo.get(c)));
+                    result.add(new RecipeInfo(ItemSpriteSheet.SCROLL_HOLDER, null, ExoticScroll.regToExo.get(c)));
                 }
                 return result;
         }
+    }
+    
+    public static Class<? extends Recipe> indexToRecipe(int index) {
+        switch (index) {
+            case 0: return LiquidMetal.Recipe.class;
+            
+            case 300: return Potion.SeedToPotion.class;
+            case 100: return Scroll.ScrollToStone.class;
+            case 101: return ExoticPotion.PotionToExotic.class;
+            case 102: return ExoticScroll.ScrollToExotic.class;
+            
+            case 105: return StewedMeat.oneMeat.class;
+            case 226: return StewedMeat.twoMeat.class;
+            case 301: return StewedMeat.threeMeat.class;
+            case 302: return MeatPie.Recipe.class;
+            case 200: return Blandfruit.CookFruit.class;
+            
+            case 103: return ArcaneResin.Recipe.class;
+            case 104: return Alchemize.Recipe.class;
+            
+            case 201: return Bomb.EnhanceBomb.class;
+            case 202: return UnstableBrew.Recipe.class;
+            case 203: return UnstableSpell.Recipe.class;
+            case 204: return ElixirOfArcaneArmor.Recipe.class;
+            case 205: return ElixirOfAquaticRejuvenation.Recipe.class;
+            case 206: return ElixirOfDragonsBlood.Recipe.class;
+            case 207: return ElixirOfIcyTouch.Recipe.class;
+            case 208: return ElixirOfMight.Recipe.class;
+            case 209: return ElixirOfHoneyedHealing.Recipe.class;
+            case 210: return ElixirOfToxicEssence.Recipe.class;
+            case 211: return CausticBrew.Recipe.class;
+            case 212: return BlizzardBrew.Recipe.class;
+            case 213: return InfernalBrew.Recipe.class;
+            case 214: return ShockingBrew.Recipe.class;
+            case 215: return AquaBrew.Recipe.class;
+            case 218: return ElixirOfFeatherFall.Recipe.class;
+            
+            case 216: return BeaconOfReturning.Recipe.class;
+            case 217: return CurseInfusion.Recipe.class;
+            case 219: return MagicalInfusion.Recipe.class;
+            case 220: return PhaseShift.Recipe.class;
+            case 221: return ReclaimTrap.Recipe.class;
+            case 222: return Recycle.Recipe.class;
+            case 223: return WildEnergy.Recipe.class;
+            case 224: return TelekineticGrab.Recipe.class;
+            case 225: return SummonElemental.Recipe.class;
+            
+            case 303: return WandOfYendor.Recipe.class;
+        }
+        return Recipe.class;
     }
 }

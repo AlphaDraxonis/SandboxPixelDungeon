@@ -232,7 +232,7 @@ public abstract class Recipe {
 		int numIngredients = ingredients.size();
 
 		for (int i = 0; i < variableRecipes.length; i++) {
-			if (!Dungeon.customDungeon.blockedRecipes.contains(i)
+			if (!Dungeon.customDungeon.blockedRecipes.contains(variableRecipes[i].getClass())
 					&& variableRecipes[i].testIngredients(ingredients)){
 				result.add(variableRecipes[i]);
 			}
@@ -247,7 +247,7 @@ public abstract class Recipe {
 
 		if (numIngredients == 1){
 			for (int i = 0; i < oneIngredientRecipes.length; i++) {
-				if (!Dungeon.customDungeon.blockedRecipes.contains(i + 100)
+				if (!Dungeon.customDungeon.blockedRecipes.contains(oneIngredientRecipes[i].getClass())
 						&& oneIngredientRecipes[i].testIngredients(ingredients)){
 					result.add(oneIngredientRecipes[i]);
 				}
@@ -255,7 +255,7 @@ public abstract class Recipe {
 			
 		} else if (numIngredients == 2){
 			for (int i = 0; i < twoIngredientRecipes.length; i++) {
-				if (!Dungeon.customDungeon.blockedRecipes.contains(i + 200)
+				if (!Dungeon.customDungeon.blockedRecipes.contains(twoIngredientRecipes[i].getClass())
 						&& twoIngredientRecipes[i].testIngredients(ingredients)){
 					result.add(twoIngredientRecipes[i]);
 				}
@@ -263,7 +263,7 @@ public abstract class Recipe {
 
 		} else if (numIngredients == 3){
 			for (int i = 0; i < threeIngredientRecipes.length; i++) {
-				if (!Dungeon.customDungeon.blockedRecipes.contains(i + 300)
+				if (!Dungeon.customDungeon.blockedRecipes.contains(threeIngredientRecipes[i].getClass())
 						&& threeIngredientRecipes[i].testIngredients(ingredients)){
 					result.add(threeIngredientRecipes[i]);
 				}

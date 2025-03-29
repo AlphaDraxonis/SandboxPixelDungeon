@@ -132,6 +132,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         int i = 0;
         for (Bag baAag : bags) {
             EditorItemBag b = (EditorItemBag) baAag;
+            final int index = i;
             cats[i] = new CategoryScroller.Category() {
 
                 @Override
@@ -150,7 +151,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                         }
                     }
 
-                    if (!ret.isEmpty()) {
+                    if (index == 0 && !ret.isEmpty()) {
                         if (selector == null) {
                             ret.add(0, EditorItem.REMOVER_ITEM);
                         } else if (selector.acceptsNull()) {

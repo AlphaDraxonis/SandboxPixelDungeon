@@ -575,7 +575,7 @@ public class Potion extends Item {
 					seeds.add((Class<? extends Plant.Seed>) i.getClass());
 				}
 			}
-			if (seeds.size() == 1) {
+			if (seeds.size() == 1 && !Dungeon.customDungeon.blockedRecipeResults.contains(types.get(seeds.get(0)))) {
 				//this potion is automatically identified
 				Potion output = Reflection.newInstance(types.get(seeds.get(0)));
 				output.anonymize();

@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipe;
+import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.WndDisableRecipes;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
@@ -40,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.ItemStatusHandler;
+import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.CustomDocumentPage;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
@@ -119,7 +121,7 @@ public class CustomDungeon implements Bundlable {
     public Set<CustomTileLoader.SimpleCustomTile> customTiles;
 
     public List<CustomRecipe> recipes;
-    public Set<Integer> blockedRecipes;
+    public Set<Class<? extends Recipe>> blockedRecipes;
     public Set<Class<? extends Item>> blockedRecipeResults;
 
     public int nextParticleID = 1;
@@ -571,7 +573,7 @@ public class CustomDungeon implements Bundlable {
     private static final String DOWNLOADED = "downloaded";
     private static final String CUSTOM_TILES = "custom_tiles";
     private static final String RECIPES = "recipes";
-    private static final String BLOCKED_RECIPES = "blocked_recipes";
+    private static final String BLOCKED_RECIPES = "blocked_recipe_classes";
     private static final String BLOCKED_RECIPE_RESULTS = "blocked_recipe_results";
     private static final String PARTICLES = "particles";
     private static final String DUNGEON_SCRIPT_PATH = "dungeon_script_path";
@@ -621,14 +623,7 @@ public class CustomDungeon implements Bundlable {
 
         bundle.put(FOUND_PAGES, foundPages);
 
-        int[] intArray = new int[blockedRecipes.size()];
-        int index = 0;
-        for (int i : blockedRecipes) {
-            intArray[index] = i;
-            index++;
-        }
-        bundle.put(BLOCKED_RECIPES, intArray);
-
+        bundle.put(BLOCKED_RECIPES, blockedRecipes.toArray(EditorUtilities.EMPTY_CLASS_ARRAY));
         bundle.put(BLOCKED_RECIPE_RESULTS, blockedRecipeResults.toArray(EditorUtilities.EMPTY_CLASS_ARRAY));
 
         bundle.put(PARTICLES, particles.values());
@@ -790,12 +785,19 @@ public class CustomDungeon implements Bundlable {
                 recipes.add((CustomRecipe) b);
             }
         }
-        blockedRecipes = new HashSet<>(5);
-        int[] intArray = bundle.getIntArray(BLOCKED_RECIPES);
-        if (intArray != null) {
-            for (int i : intArray)
-                blockedRecipes.add(i);
+        blockedRecipes = new HashSet<>();
+        if (bundle.contains("blocked_recipes")) {
+            int[] intArray = bundle.getIntArray("blocked_recipes");
+            if (intArray != null) {
+                for (int i : intArray)
+                    blockedRecipes.add(WndDisableRecipes.indexToRecipe(i));
+            }
+        } else {
+            for (Class<?> c : bundle.getClassArray(BLOCKED_RECIPES))
+                blockedRecipes.add((Class<? extends Recipe>) c);
         }
+        
+        
         blockedRecipeResults = new HashSet<>(5);
         if (bundle.contains(BLOCKED_RECIPE_RESULTS))
             Collections.addAll(blockedRecipeResults, (Class<? extends Item>[]) bundle.getClassArray(BLOCKED_RECIPE_RESULTS));
