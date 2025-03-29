@@ -28,6 +28,7 @@ package com.shatteredpixel.shatteredpixeldungeon.customobjects;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaRestrictionProxy;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -42,9 +43,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaUserdata;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.lang.reflect.Modifier;
 
@@ -136,7 +135,7 @@ public class LuaManager {
 
 			Object obj = value.touserdata();
 			if (obj instanceof Copyable) obj = ((Copyable<?>) obj).getCopy();
-			return new LuaUserdata(obj);
+			return LuaRestrictionProxy.wrapObject(obj);
 
 		} else if (value.istable()) {
 
@@ -211,7 +210,7 @@ public class LuaManager {
 		switch (bundle.getInt(TYPE_OF_PREFIX + key)) {
 			default:
 			case 0: return null;
-			case TYPE_BUNDLABLE: return CoerceJavaToLua.coerce(bundle.get(key));
+			case TYPE_BUNDLABLE: return LuaRestrictionProxy.wrapObject(bundle.get(key));
 			case TYPE_INT: return LuaValue.valueOf(bundle.getInt(key));
 			case TYPE_BOOLEAN: return LuaValue.valueOf(bundle.getBoolean(key));
 			case TYPE_STRING: return LuaValue.valueOf(bundle.getString(key));
