@@ -490,7 +490,7 @@ public class EditorScene extends DungeonScene {
         if (visual instanceof CustomTileLoader.SimpleCustomTile) {
             int pos = visual.tileX + visual.tileY * customLevel.width();
             customLevel.visualMap[pos] = customLevel.map[pos];
-            customLevel.visualRegions[pos] = 0;
+            customLevel.visualRegions[pos] = LevelScheme.REGION_NONE;
         }
     }
 

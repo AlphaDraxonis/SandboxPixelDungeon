@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
@@ -30,8 +31,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
-import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
@@ -316,8 +315,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         }
 
         if (trapItem != null) {
-            ItemSlot slot = QuickSlotButton.containsItem(trapItem);
-            if (slot != null) slot.item(trapItem);
+            EToolbar.updateSlot(trapItem);
         }
 
         if (obj.pos != -1) EditorScene.updateMap(obj.pos);
