@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -50,6 +51,7 @@ public class EditCustomTileComp extends EditTileComp {
                             super.hide();
                             updateObj();
                             EditorScene.revalidateCustomTiles();
+                            EToolbar.updateLayout();
                         }
                     });
                 }
@@ -162,6 +164,8 @@ public class EditCustomTileComp extends EditTileComp {
                 Terrain.OPEN_DOOR,
                 Terrain.SECRET_DOOR,
                 Terrain.LOCKED_DOOR,
+                Terrain.CRYSTAL_DOOR,
+                Terrain.SECRET_LOCKED_DOOR,
                 Terrain.SECRET_CRYSTAL_DOOR,
                 Terrain.COIN_DOOR,
                 Terrain.MIMIC_DOOR,

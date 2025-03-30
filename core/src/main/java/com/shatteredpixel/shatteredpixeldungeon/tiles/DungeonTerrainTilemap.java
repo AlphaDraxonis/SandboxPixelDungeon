@@ -48,7 +48,7 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 	@Override
 	protected int getTileVisual(int pos, int tile, boolean flat) {
 
-		int region = pos >= 0 ? Dungeon.level.visualRegions[pos] : 0;
+		int region = pos >= 0 ? Dungeon.level.visualRegions[pos] : this.region;
 		if (region != this.region && !(this.region == 0 && region == Dungeon.visualRegion()))
 			return DungeonTileSheet.NULL_TILE;
 
