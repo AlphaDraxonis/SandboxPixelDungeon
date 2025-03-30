@@ -2662,8 +2662,8 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 
 	}
 
-	public boolean isLevelExplored( String levelName ){
-		return false;
+	public float levelExplorePercent( String levelName ){
+		return 0;
 	}
 	
 	public int distance( int a, int b ) {

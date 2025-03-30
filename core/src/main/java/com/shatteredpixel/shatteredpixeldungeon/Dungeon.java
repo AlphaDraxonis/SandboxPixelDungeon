@@ -1034,7 +1034,7 @@ public class Dungeon {
 
 	public static void updateLevelExplored(){
 		if (branch == 0 && level instanceof RegularLevel || level instanceof CustomLevel && !Dungeon.bossLevel()){
-			Statistics.floorsExplored.put( levelName, level.isLevelExplored(levelName));
+			Statistics.floorsExplored.put( levelName, level.levelExplorePercent(levelName));
 		}
 	}
 

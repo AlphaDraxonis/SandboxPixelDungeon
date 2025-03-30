@@ -197,29 +197,29 @@ public enum Rankings {
 
 		Statistics.exploreScore = 0;
 		int scorePerFloor = Statistics.floorsExplored.size() * 50;
-		for (Boolean b : Statistics.floorsExplored.values()){
-			if (b) Statistics.exploreScore += scorePerFloor;
+		for (float percentExplored : Statistics.floorsExplored.values()){
+			Statistics.exploreScore += Math.round(percentExplored*scorePerFloor);
 		}
 
-		Statistics.totalBossScore = 0;
-		for (int i : Statistics.bossScores){
-			if (i > 0) Statistics.totalBossScore += i;
-		}
+			Statistics.totalBossScore = 0;
+			for (int i : Statistics.bossScores){
+				if (i > 0) Statistics.totalBossScore += i;
+			}
 
-		Statistics.totalQuestScore = 0;
-		for (int i : Statistics.questScores){
-			if (i > 0) Statistics.totalQuestScore += i;
-		}
+			Statistics.totalQuestScore = 0;
+			for (int i : Statistics.questScores){
+				if (i > 0) Statistics.totalQuestScore += i;
+			}
 
-		Statistics.winMultiplier = 1f;
-		if (Statistics.gameWon)         Statistics.winMultiplier += 1f;
-		if (Statistics.ascended)        Statistics.winMultiplier += 0.5f;
+			Statistics.winMultiplier = 1f;
+			if (Statistics.gameWon)         Statistics.winMultiplier += 1f;
+			if (Statistics.ascended)        Statistics.winMultiplier += 0.5f;
 
         Statistics.chalMultiplier = (float) Math.pow(1.25, Challenges.activeChallenges());
         Statistics.chalMultiplier = Math.round(Statistics.chalMultiplier * 20f) / 20f;
 
-        Statistics.totalScore = Statistics.progressScore + Statistics.treasureScore + Statistics.exploreScore
-                + Statistics.totalBossScore + Statistics.totalQuestScore;
+		Statistics.totalScore = Statistics.progressScore + Statistics.treasureScore + Statistics.exploreScore
+					+ Statistics.totalBossScore + Statistics.totalQuestScore;
 
 		Statistics.totalScore *= Statistics.winMultiplier * Statistics.chalMultiplier;
 

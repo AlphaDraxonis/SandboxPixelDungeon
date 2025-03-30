@@ -51,6 +51,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.SupplyRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.DocumentPage;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.GuidePage;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.RegionLorePage;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
@@ -65,8 +66,10 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.PitRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SacrificeRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.StatueRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance.EntranceRoom;
@@ -91,6 +94,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -752,11 +756,16 @@ public abstract class RegularLevel extends Level {
 	
 	protected Room randomRoom( Class<?extends Room> type ) {
 		Random.shuffle( rooms );
+		return room( type );
+	}
+
+	public Room room (Class<?extends Room> type){
 		for (Room r : rooms) {
 			if (type.isInstance(r)) {
 				return r;
 			}
 		}
+
 		return null;
 	}
 	
@@ -833,57 +842,98 @@ public abstract class RegularLevel extends Level {
 	}
 
 	@Override
-	public boolean isLevelExplored( String levelName ) {
-		//A level is considered fully explored if:
+	public float levelExplorePercent( String levelName ) {
+		//A room is considered not explored if:
+		HashSet<Room> missedRooms = new HashSet<>();
 
-		//There are no levelgen heaps which are undiscovered, in an openable container, or which contain keys
+		//There are levelgen heaps which are undiscovered, in an openable container, or which contain keys
 		for (Heap h : heaps.valueList()){
 			if (h.autoExplored) continue;
 
+			//we ignore crystal chests too as not all are openable
 			if (!h.seen || (h.type != Heap.Type.HEAP && h.type != Heap.Type.FOR_SALE && h.type != Heap.Type.CRYSTAL_CHEST)){
-				return false;
-			}
-			for (Item i : h.items){
-				if (i instanceof Key){
-					return false;
+				missedRooms.add(room(h.pos));
+			} else {
+				for (Item i : h.items){
+					if (i instanceof Key){
+						missedRooms.add(room(h.pos));
+						break;
+					}
 				}
 			}
 		}
 
-		//There is no magical fire or sacrificial fire
+		//There is magical fire (blocks items) or sacrificial fire (contains items) in it
 		for (Blob b : blobs.values()){
-			if (b.volume > 0 && (b instanceof MagicalFireRoom.EternalFire || b instanceof SacrificialFire)){
-				return false;
+			if (b.volume > 0) {
+				if (b instanceof MagicalFireRoom.EternalFire) {
+					missedRooms.add(room(MagicalFireRoom.class));
+				} else if (b instanceof SacrificialFire) {
+					missedRooms.add(room(SacrificeRoom.class));
+				}
 			}
 		}
 
-		//There are no statues or mimics (unless they were made allies)
+		//There are undefeated statues or mimics in it
 		for (Mob m : mobs.toArray(new Mob[0])){
 			if (m.alignment != Char.Alignment.ALLY){
 				if (m instanceof Statue && ((Statue) m).levelGenStatue){
-					return false;
+					missedRooms.add(room(StatueRoom.class)); //use room the statue came from
 				} else if (m instanceof Mimic){
-					return false;
+					missedRooms.add(room(m.pos));
 				}
 			}
 		}
 
-		//There are no barricades, locked doors, or hidden doors
+		//it contains a barricade, locked door, or hidden door
 		for (int i = 0; i < length; i++){
 			if (map[i] == Terrain.BARRICADE || map[i] == Terrain.LOCKED_DOOR || map[i] == Terrain.COIN_DOOR || TileItem.isSecretDoor(map[i])){
-				return false;
+				//we use adjacent cells to find the room this is connected to
+				// we ignore connection rooms and prefer rooms already missed
+				// note that if the tile borders two non-connection rooms, it only counts one
+				Room candidate = null;
+				for (int j : PathFinder.NEIGHBOURS4){
+					if (room(i+j) != null){
+						if (candidate == null || !missedRooms.contains(candidate)){
+							candidate = room(i+j);
+						}
+					}
+				}
+				if (candidate != null) {
+					missedRooms.add(candidate);
+				}
+
 			}
 		}
 
-		//There are no unused keys for this depth in the journal
+		//There are unused crystal keys for this room (only one crystal key room can be on each floor)
+		// we ignore regular and golden keys as earlier checks would have already caught them
 		for (Notes.KeyRecord rec : Notes.getRecords(Notes.KeyRecord.class)){
-			if (rec.levelName().equals(levelName)){
-				return false;
+			if (rec.levelName().equals(levelName) && rec.type() == CrystalKey.class){
+				for (Room r : rooms()){
+					if (SpecialRoom.CRYSTAL_KEY_SPECIALS.contains(r.getClass())){
+						missedRooms.add(r);
+					}
+				}
 			}
 		}
 
 		//Note that it is NOT required for the player to see every tile or discover every trap.
-		return true;
+
+		//score is reduced by 50%/30%/20% for each room missed
+		// at 3 rooms missed this gives a score of 0 for the floor.
+		//Yes this is a bit harsh, but it's to preserve balance from older versions
+		// where a single missed room gave a score of 0.
+		switch (missedRooms.size()){
+			case 0:
+				return 1f;
+			case 1:
+				return 0.5f;
+			case 2:
+				return 0.2f;
+			default:
+				return 0f;
+		}
 	}
 
 	@Override

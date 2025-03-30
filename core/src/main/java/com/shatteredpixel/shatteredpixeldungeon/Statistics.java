@@ -46,7 +46,7 @@ public class Statistics {
 	public static int progressScore;
 	public static int heldItemValue;
 	public static int treasureScore;
-	public static Map<String, Boolean> floorsExplored = new HashMap<>();
+	public static Map<String, Float> floorsExplored = new HashMap<>();
 	public static int exploreScore;
 	public static int[] bossScores = new int[5];
 	public static int totalBossScore;
@@ -129,8 +129,8 @@ public class Statistics {
 	private static final String PROG_SCORE	    = "prog_score";
 	private static final String ITEM_VAL	    = "item_val";
 	private static final String TRES_SCORE      = "tres_score";
-	private static final String FLR_EXPL        = "flr_expl";
-	private static final String FLR_EXPL_KEYS = "flr_expl_keys";
+	private static final String FLR_EXPL        = "flr_expl_";
+	private static final String FLR_EXPL_KEYS   = "flr_expl_keys";
 	private static final String EXPL_SCORE      = "expl_score";
 	private static final String BOSS_SCORES		= "boss_scores";
 	private static final String TOT_BOSS		= "tot_boss";
@@ -226,7 +226,12 @@ public class Statistics {
 		floorsExplored.clear();
 		int i = 0;
 		while (bundle.contains(FLR_EXPL + i)) {
-			floorsExplored.put(floorsExploredKeys[i], bundle.getBoolean(FLR_EXPL + i));
+			floorsExplored.put(floorsExploredKeys[i], bundle.getFloat(FLR_EXPL + i));
+			i++;
+		}
+		i = 0;
+		while (bundle.contains("flr_expl" + i)) {
+			floorsExplored.put(floorsExploredKeys[i], bundle.getBoolean( "flr_expl"+i ) ? 1f : 0f);
 			i++;
 		}
 		exploreScore    = bundle.getInt( EXPL_SCORE );
