@@ -59,6 +59,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.Bulk;
@@ -966,6 +967,17 @@ public abstract class Char extends Actor {
 		
 		if (buff( Paralysis.class ) != null) {
 			buff( Paralysis.class ).processDamage(dmg);
+		}
+
+		BrokenSeal.WarriorShield shield = buff(BrokenSeal.WarriorShield.class);
+		if (!(src instanceof Hunger)
+				&& dmg > 0
+				//either HP is already half or below (ignoring shield)
+				// or the hit will reduce it to half or below
+				&& (HP <= HT/2 || HP + shielding() - dmg <= HT/2)
+				&& shield != null && !shield.coolingDown()){
+			sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(buff(BrokenSeal.WarriorShield.class).maxShield()), FloatingText.SHIELDING);
+			shield.activate();
 		}
 
 		int shielded = dmg;
