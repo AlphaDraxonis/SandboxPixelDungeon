@@ -100,6 +100,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuest;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.BArray;
@@ -176,6 +177,7 @@ public abstract class Mob extends Char implements Customizable {
 	protected boolean firstAdded = true;
 	protected boolean hpSet = false;
 
+	@NotAllowedInLua
 	public void setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME() {
 		firstAdded = true;
 	}

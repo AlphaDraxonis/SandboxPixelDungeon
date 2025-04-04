@@ -1630,26 +1630,26 @@ public class LuaGlobals extends Globals {
 				matchesFirst = true;
 				int i = 0;
 				for (; i < paramTypes.length - 1; i++) {
-					if (!isArgumentApplicable(paramTypes[i], params[i].getClass())) {
+					if (!isArgumentApplicable(paramTypes[i], params[i])) {
 						matchesFirst = false;
 						break;
 					}
 				}
-				if (paramTypes.length == 0 || isArgumentApplicable(paramTypes[i], params[i].getClass())) return exe;
+				if (paramTypes.length == 0 || isArgumentApplicable(paramTypes[i], params[i])) return exe;
 			} else {
 				matchesFirst = false;
 			}
 			if (exe.isVarArgs()) {
 				if (!matchesFirst) {
 					for (int i = 0; i < paramTypes.length - 1; i++) {
-						if (!isArgumentApplicable(paramTypes[i], params[i].getClass())) {
+						if (!isArgumentApplicable(paramTypes[i], params[i])) {
 							continue oneExe;
 						}
 					}
 				}
 				Class<?> lastParamType = paramTypes[paramTypes.length-1].getComponentType();
 				for (int i = paramTypes.length-1; i < params.length - 1; i++) {
-					if (!lastParamType.isAssignableFrom(params[i].getClass())) {
+					if (!isArgumentApplicable(lastParamType, params[i])) {
 						continue oneExe;
 					}
 				}
@@ -1671,26 +1671,26 @@ public class LuaGlobals extends Globals {
 				matchesFirst = true;
 				int i = 0;
 				for (; i < paramTypes.length - 1; i++) {
-					if (!isArgumentApplicable(paramTypes[i], params[i].getClass())) {
+					if (!isArgumentApplicable(paramTypes[i], params[i])) {
 						matchesFirst = false;
 						break;
 					}
 				}
-				if (paramTypes.length == 0 || isArgumentApplicable(paramTypes[i], params[i].getClass())) return exe;
+				if (paramTypes.length == 0 || isArgumentApplicable(paramTypes[i], params[i])) return exe;
 			} else {
 				matchesFirst = false;
 			}
 			if (exe.isVarArgs()) {
 				if (!matchesFirst) {
 					for (int i = 0; i < paramTypes.length - 1; i++) {
-						if (!isArgumentApplicable(paramTypes[i], params[i].getClass())) {
+						if (!isArgumentApplicable(paramTypes[i], params[i])) {
 							continue oneExe;
 						}
 					}
 				}
 				Class<?> lastParamType = paramTypes[paramTypes.length-1].getComponentType();
 				for (int i = paramTypes.length-1; i < params.length - 1; i++) {
-					if (!lastParamType.isAssignableFrom(params[i].getClass())) {
+					if (!isArgumentApplicable(lastParamType, params[i])) {
 						continue oneExe;
 					}
 				}
@@ -1717,6 +1717,10 @@ public class LuaGlobals extends Globals {
 			Array.set(result[i], j, params[i + j]);
 		}
 		return result;
+	}
+	
+	private static boolean isArgumentApplicable(Class<?> methodParam, Object argumentClass) {
+		return argumentClass != null && isArgumentApplicable(methodParam, argumentClass.getClass());
 	}
 	
 	private static boolean isArgumentApplicable(Class<?> methodParam, Class<?> argumentClass) {

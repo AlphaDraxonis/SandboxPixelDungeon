@@ -108,6 +108,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MobSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TargetHealthIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -1165,6 +1166,7 @@ public abstract class Char extends Actor {
 		super.spend( time / timeScale );
 	}
 
+	@NotAllowedInLua
 	public void spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY( float time ){
 		spend(time);
 	}
@@ -1242,6 +1244,7 @@ public abstract class Char extends Actor {
 
 	}
 
+	@NotAllowedInLua
 	protected void moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob(Buff buff, Char ch) {
 		buffs.remove(buff);
 		ch.buffs.add(buff);
@@ -1432,6 +1435,7 @@ public abstract class Char extends Actor {
 		return props;
 	}
 
+	@NotAllowedInLua
 	public HashSet<Property> getPropertiesVar_ACCESS_ONLY_FOR_EDITING_UI() {
 		return properties;
 	}

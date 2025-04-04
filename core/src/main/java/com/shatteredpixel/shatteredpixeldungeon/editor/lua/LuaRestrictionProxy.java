@@ -41,19 +41,21 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class LuaRestrictionProxy extends LuaValue {
 
 	private final Object javaObject; // Original Java object
 
-	private static final Map<Class<?>, Map<String, Map<Integer, Method>> > ACCESSIBLE_METHODS_MAP = new HashMap<>();
+	private static final Map<Class<?>, Map<String, Set<Method>> > ACCESSIBLE_METHODS_MAP = new HashMap<>();
 
 	public LuaRestrictionProxy(Object javaObject) {
 		this.javaObject = javaObject;
 
 		if (!ACCESSIBLE_METHODS_MAP.containsKey(javaObject.getClass())) {
-			Map<String, Map<Integer, Method>> methods = new HashMap<>();
+			Map<String, Set<Method>> methods = new HashMap<>();
 			Class<?> clazz = javaObject.getClass();
 			do {
 				for (Method m : clazz.getDeclaredMethods()) {
@@ -62,14 +64,14 @@ public class LuaRestrictionProxy extends LuaValue {
 					}
 					int mods = m.getModifiers();
 					
-					Map<Integer, Method> methodsWithSameName = methods.get(m.getName());
+					Set<Method> methodsWithSameName = methods.get(m.getName());
 					if (methodsWithSameName == null) {
-						methodsWithSameName = new HashMap<>();
+						methodsWithSameName = new HashSet<>();
 						methods.put(m.getName(), methodsWithSameName);
 					}
 					
 					if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
-						methodsWithSameName.put(m.getParameterCount(), m);
+						methodsWithSameName.add(m);
 					}
 				}
 
@@ -87,7 +89,7 @@ public class LuaRestrictionProxy extends LuaValue {
 			String name = key.tojstring();
 			
 			if (!name.endsWith("_v")) {
-				Map<Integer, Method> methods = ACCESSIBLE_METHODS_MAP.get(javaObject.getClass()).get(name);
+				Set<Method> methods = ACCESSIBLE_METHODS_MAP.get(javaObject.getClass()).get(name);
 				if (methods != null) {
 					return new FunctionInterceptor(name, methods, javaObject);
 				}
@@ -126,10 +128,10 @@ public class LuaRestrictionProxy extends LuaValue {
 	private static final class FunctionInterceptor extends VarArgFunction {
 		
 		private final String name;
-		private final Map<Integer, Method> methods;
+		private final Set<Method> methods;
 		private final Object javaObject;
 		
-		private FunctionInterceptor(String name, Map<Integer, Method> methods, Object javaObject) {
+		private FunctionInterceptor(String name, Set<Method> methods, Object javaObject) {
 			this.name = name;
 			this.methods = methods;
 			this.javaObject = javaObject;
@@ -138,14 +140,12 @@ public class LuaRestrictionProxy extends LuaValue {
 		@Override
 		public Varargs invoke(Varargs varargs) {
 			Object[] params = unwrapRestrictionProxiesAsJavaArray(varargs.subargs(2));
-			Method method = methods.get( params.length );
 			
-			if (method == null) {
-				method = LuaGlobals.findBestMatchingExecutableM(params, methods.values());
-			}
+			Method method = LuaGlobals.findBestMatchingExecutableM(params, methods);
+			
 			try {
 				if (method == null) {
-					throw new LuaError("unknown method: " + name + " with " + varargs.narg() + " arguments");
+					throw new LuaError("unknown method: " + name + " with " + (varargs.narg()-1) + " arguments");
 				}
 				return wrapObject(method.invoke(javaObject, LuaGlobals.makeParamsFitVarArgsMethods(params, method.getParameterTypes(), method.isVarArgs())));
 			} catch (Exception e) {

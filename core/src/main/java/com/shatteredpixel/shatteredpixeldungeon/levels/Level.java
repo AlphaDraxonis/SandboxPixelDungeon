@@ -142,6 +142,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
@@ -454,6 +455,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		visualRegions = new int[map.length];
 	}
 	
+	@NotAllowedInLua
 	public void setSize(int w, int h){
 		
 		width = w;
@@ -1442,6 +1444,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 	private MobSpawner respawner;
 	private ZoneRespawner[] zoneRespawner;
 
+	@NotAllowedInLua
 	public Actor addRespawner() {
 		if (respawner == null){
 			respawner = new MobSpawner();
@@ -1454,7 +1457,8 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		}
 		return respawner;
 	}
-
+	
+	@NotAllowedInLua
 	public Actor[] addZoneRespawner() {
 		if (zoneRespawner == null){
 			Collection<Zone> zones = new HashSet<>(5);
