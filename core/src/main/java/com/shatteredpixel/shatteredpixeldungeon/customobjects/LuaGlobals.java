@@ -824,17 +824,29 @@ public class LuaGlobals extends Globals {
 					Char ch = (Char) LuaRestrictionProxy.coerceLuaToJava(target, Char.class);
 					if (ch != null) {
 						Object b = LuaRestrictionProxy.coerceLuaToJava(buff);
-						Class<?> buffClass = b instanceof Class ? (Class<?>) b : b.getClass();
-
-						if (duration.isnil() || !duration.isnumber() || !FlavourBuff.class.isAssignableFrom(buffClass)) {
-
-							if (Buff.class.isAssignableFrom(buffClass)) {
-								return LuaRestrictionProxy.wrapObject(Buff.affect(ch, ((Class<? extends Buff>) buffClass)));
+						
+						if (b instanceof Class) {
+							Class<?> buffClass = (Class<?>) b;
+							if (duration.isnil() || !duration.isnumber() || !FlavourBuff.class.isAssignableFrom(buffClass)) {
+								if (Buff.class.isAssignableFrom(buffClass)) {
+									return LuaRestrictionProxy.wrapObject(Buff.affect(ch, ((Class<? extends Buff>) buffClass)));
+								}
+							} else {
+								return LuaRestrictionProxy.wrapObject(Buff.affect(ch, ((Class<? extends FlavourBuff>) buffClass), duration.tofloat()));
 							}
-
-						} else {
-							return LuaRestrictionProxy.wrapObject(Buff.affect(ch, ((Class<? extends FlavourBuff>) buffClass), duration.tofloat()));
+							
+						} else if (b instanceof Buff) {
+							Buff javaBuff = (Buff) b;
+							if (duration.isnil() || !duration.isnumber() || !(javaBuff instanceof FlavourBuff)) {
+								return LuaRestrictionProxy.wrapObject(Buff.affect(ch, javaBuff));
+							} else {
+								return LuaRestrictionProxy.wrapObject(Buff.affect(ch, ((FlavourBuff) javaBuff), duration.tofloat()));
+							}
+							
 						}
+						
+						//this contains extra info that the buff is wrong
+						throw new LuaError("Illegal arguments: use affectBuff(Char target, Buff buff) or affectBuff(Char target, Class<? extends Buff> buff) or affectBuff(Char target, Buff buff, float duration) or affectBuff(Char target, Class<? extends Buff> buff, float duration)\nIn this case, you did not provide a valid buff instance!");
 
 					}
 				}
