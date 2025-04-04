@@ -879,6 +879,8 @@ public class Dungeon {
         int[] visitedDepthsArray = bundle.getIntArray(VISITED_DEPTHS);
         visitedDepths = new HashSet<>();
         if (visitedDepthsArray != null) for (int d : visitedDepthsArray) visitedDepths.add(d);
+		
+		customDungeon = (CustomDungeon) bundle.get( CUSTOM_DUNGEON );
 
         quickslot.restorePlaceholders(bundle);
 
@@ -934,8 +936,6 @@ public class Dungeon {
 		
 		gold = bundle.getInt( GOLD );
 		energy = bundle.getInt( ENERGY );
-
-		customDungeon = (CustomDungeon) bundle.get( CUSTOM_DUNGEON );
 		
 		droppedItems = new HashMap<>();
 		for (String level : customDungeon.floorNames()) {
