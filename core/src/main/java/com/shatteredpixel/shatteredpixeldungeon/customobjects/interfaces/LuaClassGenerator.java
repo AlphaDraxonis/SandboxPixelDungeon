@@ -24,6 +24,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces;
 
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
@@ -32,16 +33,22 @@ import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomCharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaRestrictionProxy;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.Visual;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Point;
 import com.watabou.utils.Reflection;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.TypeCache;
@@ -66,9 +73,11 @@ import org.luaj.vm2.LuaValue;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 public final class LuaClassGenerator {
@@ -234,86 +243,87 @@ public final class LuaClassGenerator {
 
     //lua code cannot override these methods
     private static Collection<Method> methodsToIntercept(Class<?> originalClass) {
-		Map<String, Method> methods = new HashMap<>();
-
-        if (Char.class.isAssignableFrom(originalClass)) {
-
-			findAllMethodsToOverride(originalClass, Actor.class, methods);
-
-			methods.remove("onRenameLevelScheme");
-			methods.remove("onDeleteLevelScheme");
-			methods.remove("setDurationForBuff");
-			methods.remove("moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob");
-			methods.remove("getPropertiesVar_ACCESS_ONLY_FOR_EDITING_UI");
-			methods.remove("spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY");
-			methods.remove("setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME");
+		Map<MethodIdentifier, Method> methods = new HashMap<>();
+		try {
+			if (Char.class.isAssignableFrom(originalClass)) {
+				
+				findAllMethodsToOverride(originalClass, Actor.class, methods);
+				
+				methods.remove(new MethodIdentifier(Actor.class.getDeclaredMethod("setDurationForFlavourBuff", int.class)));
+				
+			} else if (Level.class.isAssignableFrom(originalClass)) {
+				
+				findAllMethodsToOverride(originalClass, Level.class, methods);
+				
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("width")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("height")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("adjacent", int.class, int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("distance", int.class, int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("trueDistance", int.class, int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("cellToPoint", int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("pointToCell", Point.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("tilesTex")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("waterTex")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("getTransition", int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("getTransition", LevelTransition.Type.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("getTransitionFromSurface")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("setLevelScheme", LevelScheme.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("addVisuals")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("addWallVisuals")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("cleanWalls")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("cleanWallCell", int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("removeSimpleCustomTile", int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("findMob", int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("addRespawner")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("buildFlagMaps")));
+				
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("isPassable", int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("isPassable", int.class, Char.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("isPassableAlly", int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("isPassableHero", int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("isPassableMob", int.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("getPassableVar")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("getPassableHeroVar")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("getPassableMobVar")));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("getPassableAndAvoidVar", Char.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("getPassableAndAvoidVar", Char.class, boolean[].class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("getPassableAndAvoidVarForBoth", Char.class, Char.class)));
+				methods.remove(new MethodIdentifier(Level.class.getDeclaredMethod("getPassableAndAvoidVarForBoth", Char.class, Char.class, boolean[].class)));
+				
+				// CustomLevel
+				methods.remove(new MethodIdentifier(CustomLevel.class.getDeclaredMethod("updateTransitionCells")));
+				
+			} else if (CharSprite.class.isAssignableFrom(originalClass)) {
+				
+				findAllMethodsToOverride(originalClass, Visual.class, methods);
+				
+				methods.remove(new MethodIdentifier(Image.class.getDeclaredMethod("texture", Object.class)));
+			} else {
+				//null means all classes except Object.class
+				findAllMethodsToOverride(originalClass, null, methods);
+			}
+			
+			methods.remove(new MethodIdentifier(Bundlable.class.getDeclaredMethod("storeInBundle", Bundle.class)));
+			methods.remove(new MethodIdentifier(Bundlable.class.getDeclaredMethod("restoreFromBundle", Bundle.class)));
+			
+			//will be force-added later
+			methods.remove(new MethodIdentifier("name"));
+			
+			//interface NameCustomizable
+			methods.remove(new MethodIdentifier("getCustomName"));
+			methods.remove(new MethodIdentifier("setCustomName", String.class));
+			
+			if (GameObject.class.isAssignableFrom(originalClass)) {
+				methods.remove(new MethodIdentifier(GameObject.class.getDeclaredMethod("onRenameLevelScheme", String.class, String.class)));
+				methods.remove(new MethodIdentifier(GameObject.class.getDeclaredMethod("onDeleteLevelScheme", String.class)));
+				methods.remove(new MethodIdentifier(GameObject.class.getDeclaredMethod("initAsInventoryItem")));
+			}
+			
+			methods.remove(new MethodIdentifier("getCopy"));
+			
+		} catch (NoSuchMethodException e) {
+			Game.reportException(e);
 		}
-
-		else if (Level.class.isAssignableFrom(originalClass)) {
-
-			findAllMethodsToOverride(originalClass, Level.class, methods);
-
-			methods.remove("setSize");
-			methods.remove("width");
-			methods.remove("height");
-			methods.remove("tilesTex");
-			methods.remove("waterTex");
-			methods.remove("getTransition");
-			methods.remove("addVisuals");
-			methods.remove("addWallVisuals");
-			methods.remove("findMob");
-			methods.remove("addRespawner");
-			methods.remove("addZoneRespawner");
-			methods.remove("buildFlagMaps");
-			methods.remove("isPassable");
-			methods.remove("isPassableHero");
-			methods.remove("isPassableMob");
-			methods.remove("isPassableAlly");
-			methods.remove("getPassableVar");
-			methods.remove("getPassableHeroVar");
-			methods.remove("getPassableMobVar");
-			methods.remove("getPassableAllyVar");
-			methods.remove("getPassableAndAnyVarForBoth");
-			methods.remove("getPassableAndAvoidVar");
-			methods.remove("removeSimpleCustomTile");
-			methods.remove("cleanWalls");
-			methods.remove("cleanWallCell");
-			methods.remove("distance");
-			methods.remove("adjacent");
-			methods.remove("trueDistance");
-			methods.remove("insideMap");
-			methods.remove("cellToPoint");
-			methods.remove("pointToCell");
-			methods.remove("appendNoTransWarning");
-			methods.remove("setLevelScheme");
-
-			// CustomLevel
-			methods.remove("updateTransitionCells");
-		}
-		else if (CharSprite.class.isAssignableFrom(originalClass)) {
-
-			findAllMethodsToOverride(originalClass, Visual.class, methods);
-
-			methods.remove("texture");
-		}
-		else {
-			//null means all classes except Object.class
-			findAllMethodsToOverride(originalClass, null, methods);
-		}
-
-		methods.remove("storeInBundle");
-		methods.remove("restoreFromBundle");
-		
-		methods.remove("getCopy");
-		methods.remove("initAsInventoryItem");
-
-		//will be force-added later
-		methods.remove("name");
-
-		//interface NameCustomizable
-		methods.remove("getCustomName");
-		methods.remove("setCustomName");
-
 		return methods.values();
     }
 
@@ -481,15 +491,16 @@ public final class LuaClassGenerator {
 
 
 
-    private static void findAllMethodsToOverride(Class<?> currentClass, Class<?> highestClass, Map<String, Method> currentMethods) {
+    private static void findAllMethodsToOverride(Class<?> currentClass, Class<?> highestClass, Map<MethodIdentifier, Method> currentMethods) {
         for (Method m : currentClass.getDeclaredMethods()) {
             int mods = m.getModifiers();
-            if (Modifier.isPrivate(mods) || Modifier.isFinal(mods) || Modifier.isStatic(mods)) {
+            if (Modifier.isPrivate(mods) || Modifier.isFinal(mods) || Modifier.isStatic(mods) || m.isAnnotationPresent(NotAllowedInLua.class)) {
                 //don't override these
                 continue;
             }
-            if (!currentMethods.containsKey(m.getName()))
-                currentMethods.put(m.getName(), m);
+			MethodIdentifier identifier = new MethodIdentifier(m);
+            if (!currentMethods.containsKey(identifier))
+                currentMethods.put(identifier, m);
         }
         if (currentClass != highestClass) {
 			Class<?> superClass = currentClass.getSuperclass();
@@ -499,5 +510,33 @@ public final class LuaClassGenerator {
             findAllMethodsToOverride(superClass, highestClass, currentMethods);
         }
     }
+	
+	private static final class MethodIdentifier {
+		
+		private final String name;
+		private final Class<?>[] params;
+		
+		private MethodIdentifier(Method method) {
+			this.name = method.getName();
+			this.params = method.getParameterTypes();
+		}
+		
+		private MethodIdentifier(String methodName, Class<?>... params) {
+			this.name = methodName;
+			this.params = params;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (o == null || getClass() != o.getClass()) return false;
+			MethodIdentifier that = (MethodIdentifier) o;
+			return Objects.equals(name, that.name) && Objects.deepEquals(params, that.params);
+		}
+		
+		@Override
+		public int hashCode() {
+			return Objects.hash(name, Arrays.hashCode(params));
+		}
+	}
 
 }
