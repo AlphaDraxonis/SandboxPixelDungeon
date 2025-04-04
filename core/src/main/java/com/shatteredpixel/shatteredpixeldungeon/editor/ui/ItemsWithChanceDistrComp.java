@@ -220,11 +220,9 @@ public abstract class ItemsWithChanceDistrComp extends Component {
     }
 
     private void updateSpinners(ItemWithCount exclude) {
-        for (ItemWithCount item : randomItemData.distrSlots) {
-            Slot slot = itemToSlot.get(item);
-            if (slot != null && item != exclude) {
+        for (Slot slot : slots) {
+            if (slot != null && slot.item != exclude) {
                 int count = (int) slot.countSpinner.getValue();
-                item.setCount(count);
                 slot.setCount(count);
             }
         }
