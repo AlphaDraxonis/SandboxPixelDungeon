@@ -22,6 +22,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.HolyLance;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -182,6 +185,48 @@ public class MissileSprite extends ItemSprite implements Tweener.Listener {
 		kill();
 		if (callback != null) {
 			callback.call();
+		}
+	}
+	
+	//convenience method for the common case of a missile going from one position to a tile or enemy
+	//similar logic as MagicMissile.boltFromChar()
+	public static MissileSprite missileFromChar(Item item, Visual userSprite, int to, Callback callback){
+		
+		Char enemy = Actor.findChar( to );
+		
+		//same condition as in doAttack()
+		if (!( userSprite != null && (userSprite.visible || enemy != null && enemy.sprite.visible) )) {
+			//we don't see that shot
+			callback.call();
+			return null;
+		} else {
+			MissileSprite missile = ((MissileSprite) userSprite.parent.recycle(MissileSprite.class));
+			if (enemy != null) {
+				missile.reset(userSprite, enemy.sprite, item, callback);
+			} else {
+				missile.reset(userSprite, to, item, callback);
+			}
+			return missile;
+		}
+	}
+	
+	public static MissileSprite missileFromPos(Item item, int from, int to, Callback callback){
+		
+		Char enemy = Actor.findChar( to );
+		
+		//same condition as in doAttack()
+		if (!( Dungeon.level.heroFOV[from] || Dungeon.level.heroFOV[to] || enemy != null && enemy.sprite.visible)) {
+			//we don't see that shot
+			callback.call();
+			return null;
+		} else {
+			MissileSprite missile = ((MissileSprite) SandboxPixelDungeon.scene().recycle(MissileSprite.class));
+			if (enemy != null) {
+				missile.reset(from, enemy.sprite, item, callback);
+			} else {
+				missile.reset(from, to, item, callback);
+			}
+			return missile;
 		}
 	}
 }

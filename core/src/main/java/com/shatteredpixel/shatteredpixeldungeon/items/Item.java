@@ -869,24 +869,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 			};
 		}
 		
-		//same condition as in doAttack()
-		if (!( user.sprite != null && (user.sprite.visible || enemy != null && enemy.sprite.visible) )) {
-			callback.call();
-		} else {
-			MissileSprite missileSprite = ((MissileSprite) user.sprite.parent.recycle(MissileSprite.class));
-			
-			if (enemy != null) {
-				missileSprite.reset(user.sprite,
-						enemy.sprite,
-						this,
-						callback);
-			} else {
-				missileSprite.reset(user.sprite,
-						cell,
-						this,
-						callback);
-			}
-		}
+		MissileSprite.missileFromChar(this, user.sprite, cell, callback);
 	}
 	
 	public float castDelay( Char user, int dst ){

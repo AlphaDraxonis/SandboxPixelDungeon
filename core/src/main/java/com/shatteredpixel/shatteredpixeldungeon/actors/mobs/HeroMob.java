@@ -1165,7 +1165,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
                     @Override
                     public boolean itemSelectable(Item item) {
-                        return item instanceof MeleeWeapon;
+                        return item instanceof MeleeWeapon || item instanceof SpiritBow;
                     }
 
                     @Override

@@ -420,56 +420,56 @@ public class SpiritBow extends Weapon {
 				
 				throwSound();
 
-				if (user.sprite != null)
+				Callback callback = new Callback() {
+					@Override
+					public void call() {
+						if (enemy.isAlive()) {
+							curUser = user;
+							onThrow(cell);
+						}
+						
+						flurryCount--;
+						if (flurryCount > 0){
+							Actor.add(new Actor() {
+								
+								{
+									actPriority = VFX_PRIO-1;
+								}
+								
+								@Override
+								protected boolean act() {
+									flurryActor = this;
+									int target = QuickSlotButton.autoAim(enemy, SpiritArrow.this);
+									if (target == -1) target = cell;
+									cast(user, target);
+									Actor.remove(this);
+									return false;
+								}
+							});
+							curUser.next();
+						} else {
+							if (user.buff(Talent.LethalMomentumTracker.class) != null){
+								user.buff(Talent.LethalMomentumTracker.class).detach();
+								user.next();
+							} else {
+								user.spendAndNext(castDelay(user, dst));
+							}
+							sniperSpecial = false;
+							flurryCount = -1;
+						}
+						
+						if (flurryActor != null){
+							flurryActor.next();
+							flurryActor = null;
+						}
+					}
+				};
+				if (user.sprite != null) {
 					user.sprite.zap(cell);
-				((MissileSprite) user.sprite.parent.recycle(MissileSprite.class)).
-						reset(user.sprite,
-								cell,
-								this,
-								new Callback() {
-									@Override
-									public void call() {
-										if (enemy.isAlive()) {
-											curUser = user;
-											onThrow(cell);
-										}
-
-										flurryCount--;
-										if (flurryCount > 0){
-											Actor.add(new Actor() {
-
-												{
-													actPriority = VFX_PRIO-1;
-												}
-
-												@Override
-												protected boolean act() {
-													flurryActor = this;
-													int target = QuickSlotButton.autoAim(enemy, SpiritArrow.this);
-													if (target == -1) target = cell;
-													cast(user, target);
-													Actor.remove(this);
-													return false;
-												}
-											});
-											curUser.next();
-										} else {
-											if (user.buff(Talent.LethalMomentumTracker.class) != null){
-												user.buff(Talent.LethalMomentumTracker.class).detach();
-												user.next();
-											} else {
-												user.spendAndNext(castDelay(user, dst));
-											}
-											sniperSpecial = false;
-											flurryCount = -1;
-										}
-
-										if (flurryActor != null){
-											flurryActor.next();
-											flurryActor = null;
-										}
-									}
-								});
+					MissileSprite.missileFromChar(this, user.sprite, cell, callback);
+				} else {
+					callback.call();
+				}
 				
 			} else {
 
