@@ -75,6 +75,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.PatchRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DartTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PoisonDartTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.RageTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
@@ -384,7 +385,7 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(2504, Trap.class.getMethod("disarm"));
 			addMethod(2505, Trap.class.getMethod("activate"));
 			addMethod(2511, PoisonDartTrap.class.getDeclaredMethod("poisonAmount"));
-			addMethod(2512, PoisonDartTrap.class.getDeclaredMethod("canTarget", Char.class), "ch");
+			addMethod(2512, DartTrap.class.getDeclaredMethod("canTarget", Char.class), "ch");
 			addMethod(2513, RageTrap.class.getDeclaredMethod("affectsChar", Char.class, int.class, int.class), "ch", "x", "y");
 
 
