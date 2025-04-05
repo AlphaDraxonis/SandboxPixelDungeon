@@ -792,6 +792,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         
         depth = bundle.getInt(DEPTH);
         if (bundle.contains(FEELING)) feeling = bundle.getEnum(FEELING, Level.Feeling.class);
+        else feeling = null;
         shopPriceMultiplier = bundle.getFloat(SHOP_PRICE_MULTIPLIER);
         allowPickaxeMining = bundle.getBoolean(ALLOW_PICKAXE_MINING);
         rememberLayout = !bundle.contains(REMEMBER_LAYOUT) || bundle.getBoolean(REMEMBER_LAYOUT);
