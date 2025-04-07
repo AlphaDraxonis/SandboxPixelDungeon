@@ -132,6 +132,13 @@ public class AscensionChallenge extends Buff {
 		return speed;
 	}
 
+	public static boolean qualifiedForPacifist(){
+		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
+			return !Dungeon.hero.buff(AscensionChallenge.class).stacksLowered;
+		}
+		return false;
+	}
+
 	public static void processEnemyKill(Char enemy){
 		AscensionChallenge chal = Dungeon.hero.buff(AscensionChallenge.class);
 		if (chal == null) return;
@@ -161,6 +168,7 @@ public class AscensionChallenge extends Buff {
 		} else {
 			chal.stacks -= 1;
 		}
+		chal.stacksLowered = true;
 		chal.stacks = Math.max(0, chal.stacks);
 		if (chal.stacks < 8f && (int)(chal.stacks/2) != (int)(oldStacks/2f)){
 			GLog.p(Messages.get(AscensionChallenge.class, "weaken"));
@@ -209,6 +217,8 @@ public class AscensionChallenge extends Buff {
 
 	private float stacks = 0;
 	private float damageInc = 0;
+
+	private boolean stacksLowered = false;
 
 	public void onLevelSwitch(){
 		if (Dungeon.depth < Statistics.highestAscent){
@@ -342,11 +352,14 @@ public class AscensionChallenge extends Buff {
 	public static final String STACKS = "enemy_stacks";
 	public static final String DAMAGE = "damage_inc";
 
+	public static final String STACKS_LOWERED = "stacks_lowered";
+
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(STACKS, stacks);
 		bundle.put(DAMAGE, damageInc);
+		bundle.put(STACKS_LOWERED, stacksLowered);
 	}
 
 	@Override
@@ -354,6 +367,12 @@ public class AscensionChallenge extends Buff {
 		super.restoreFromBundle(bundle);
 		stacks = bundle.getFloat(STACKS);
 		damageInc = bundle.getFloat(DAMAGE);
+		if (bundle.contains(STACKS_LOWERED)){
+			stacksLowered = bundle.getBoolean(STACKS_LOWERED);
+		//pre-v3.1 saves
+		} else {
+			stacksLowered = true;
+		}
 	}
 
 	//chars with this buff are not boosted by the ascension challenge
