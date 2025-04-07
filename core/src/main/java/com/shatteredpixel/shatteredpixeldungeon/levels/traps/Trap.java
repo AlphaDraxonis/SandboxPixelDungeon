@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
@@ -210,5 +211,10 @@ public abstract class Trap extends GameObject {
 //		if (replaceSprite && sprite != null) {
 //			EditorScene.replaceMobSprite(this, ((Mob) template).spriteClass);
 //		}
+	}
+
+	//this buff is used to keep track of hazards recently affecting a character
+	public static class HazardAssistTracker extends FlavourBuff{
+		public static final float DURATION = 50f;
 	}
 }

@@ -541,6 +541,14 @@ public class Badges {
 		
 		displayBadge( badge );
 	}
+
+	public static void validateHazardAssists() {
+		if (!DeviceCompat.isDebug()) return;
+		if (!local.contains( Badge.PIRANHAS ) && Statistics.hazardAssistedKills >= 10) {
+			local.add( Badge.ENEMY_HAZARDS );
+			displayBadge( Badge.ENEMY_HAZARDS );
+		}
+	}
 	
 	public static void validatePiranhasKilled() {
 		Badge badge = null;
