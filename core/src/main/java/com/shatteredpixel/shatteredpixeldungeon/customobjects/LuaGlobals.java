@@ -217,6 +217,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -1702,13 +1703,14 @@ public class LuaGlobals extends Globals {
 	}
 	
 	public static Object[] makeParamsFitVarArgsMethods(Object[] params, Class<?>[] paramTypes, boolean isVarArgs) {
-		if (!isVarArgs) {
-			return params;
-		}
 		Object[] result = new Object[paramTypes.length];
 		int i = 0;
 		for (; i < result.length-1; i++) {
-			result[i] = params[i];
+			result[i] = castArgumentAccordingly(params[i], paramTypes[i]);
+		}
+		if (!isVarArgs) {
+			if (i < result.length) result[i] = castArgumentAccordingly(params[i], paramTypes[i]);
+			return result;
 		}
 		int numVarArgs = params.length - result.length;
 		Class<?> componentType = paramTypes[i].getComponentType();
@@ -1720,39 +1722,76 @@ public class LuaGlobals extends Globals {
 	}
 	
 	private static boolean isArgumentApplicable(Class<?> methodParam, Object argumentClass) {
-		return argumentClass != null && isArgumentApplicable(methodParam, argumentClass.getClass());
+		return argumentClass == null || isArgumentApplicable(methodParam, argumentClass.getClass());
 	}
 	
 	private static boolean isArgumentApplicable(Class<?> methodParam, Class<?> argumentClass) {
 		if (methodParam.isAssignableFrom(argumentClass)) {
 			return true;
 		}
-		if (methodParam.isPrimitive()) {
-			switch (methodParam.getName()) {
-				case "int": return argumentClass == Integer.class || argumentClass == int.class;
+		if (methodParam.isPrimitive() || Number.class.isAssignableFrom(methodParam)) {
+			switch (methodParam.getSimpleName().toLowerCase(Locale.ENGLISH)) {
+				case "float":
+				case "double":
+					if (argumentClass == Float.class || argumentClass == float.class  ||  argumentClass == Double.class || argumentClass == double.class)
+						return true;
+				
+				case "byte":
+				case "short":
+				case "long":
+				case "integer":
+				case "int": return argumentClass == Integer.class || argumentClass == int.class
+						|| argumentClass == Long.class || argumentClass == long.class
+						|| argumentClass == Short.class || argumentClass == short.class
+						|| argumentClass == Byte.class || argumentClass == byte.class;
+				
+				
 				case "boolean": return argumentClass == Boolean.class || argumentClass == boolean.class;
-				case "long": return argumentClass == Long.class || argumentClass == long.class;
+				
 				case "char": return argumentClass == Character.class || argumentClass == char.class;
-				case "byte": return argumentClass == Byte.class || argumentClass == byte.class;
-				case "short": return argumentClass == Short.class || argumentClass == short.class;
-				case "float": return argumentClass == Float.class || argumentClass == float.class;
-				case "double": return argumentClass == Double.class || argumentClass == double.class;
+				
 			}
 		}
-		if (argumentClass.isPrimitive()) {
-			switch (argumentClass.getName()) {
-				case "int": return methodParam == Integer.class || methodParam == int.class;
+		if (argumentClass.isPrimitive() || Number.class.isAssignableFrom(argumentClass)) {
+			switch (argumentClass.getSimpleName().toLowerCase(Locale.ENGLISH)) {
+				case "byte":
+				case "short":
+				case "long":
+				case "integer":
+				case "int":
+					if (methodParam == Integer.class || methodParam == int.class
+							|| methodParam == Long.class || methodParam == long.class
+							|| methodParam == Short.class || methodParam == short.class
+							|| methodParam == Byte.class || methodParam == byte.class)
+						return true;
+					
+				case "float":
+				case "double":
+					return methodParam == Float.class || methodParam == float.class  ||  methodParam == Double.class || methodParam == double.class;
+				
 				case "boolean": return methodParam == Boolean.class || methodParam == boolean.class;
-				case "long": return methodParam == Long.class || methodParam == long.class;
+				
 				case "char": return methodParam == Character.class || methodParam == char.class;
-				case "byte": return methodParam == Byte.class || methodParam == byte.class;
-				case "short": return methodParam == Short.class || methodParam == short.class;
-				case "float": return methodParam == Float.class || methodParam == float.class;
-				case "double": return methodParam == Double.class || methodParam == double.class;
 			}
 		}
 		
 		return false;
+	}
+	
+	private static Object castArgumentAccordingly(Object param, Class<?> paramType) {
+		if (param instanceof Number) {
+			switch (paramType.getSimpleName().toLowerCase(Locale.ENGLISH)) {
+				case "byte": 	return ((Number) param).byteValue();
+				case "short": 	return ((Number) param).shortValue();
+				case "long": 	return ((Number) param).longValue();
+				case "int":
+				case "integer": return ((Number) param).intValue();
+				case "float": 	return ((Number) param).floatValue();
+				case "double": 	return ((Number) param).doubleValue();
+				default: 		return param;
+			}
+		}
+		return param;
 	}
 	
 //	private static LuaTable arrayToTable(Object array) {

@@ -316,6 +316,7 @@ public class WndNewCustomObject extends SimpleWindow {
 		if (c == null) return false;
 		return !LuaRestrictionProxy.isRestricted(c)
 				&& !Modifier.isAbstract(c.getModifiers())
+				&& !Modifier.isPrivate(c.getModifiers())
 				&& selectedObject.isSuperclassValid(c);
 	}
 
