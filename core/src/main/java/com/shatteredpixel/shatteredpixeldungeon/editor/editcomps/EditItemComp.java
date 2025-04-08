@@ -988,7 +988,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             if (((Wand) a).rechargeRule != ((Wand) b).rechargeRule) return false;
         }
         if (a instanceof MagesStaff) {
-            if (areEqual(((MagesStaff) a).wand, ((MagesStaff) b).wand)) return false;
+            if (!areEqual(((MagesStaff) a).wand, ((MagesStaff) b).wand)) return false;
         }
         if (a instanceof WandOfSummoning) {
             if (!EditMobComp.isMobListEqual(((WandOfSummoning) a).summonTemplate, ((WandOfSummoning) b).summonTemplate)) return false;
