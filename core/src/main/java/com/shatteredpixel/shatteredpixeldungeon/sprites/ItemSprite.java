@@ -109,6 +109,13 @@ public class ItemSprite extends MovieClip {
 		view(image, glowing);
 	}
 	
+	//emitter is not visible because it would only work of the sprite already had a parent!
+	public ItemSprite( int image, Glowing glowing, Emitter emitter ) {
+		super( Assets.Sprites.ITEMS );
+		
+		view(image, glowing, emitter);
+	}
+	
 	public void link() {
 		link(heap);
 	}
@@ -243,39 +250,55 @@ public class ItemSprite extends MovieClip {
     }
 
     public ItemSprite view(Item item, Glowing glowing) {
+		return view(item, glowing, item.emitter());
+		
+	}
+	
+    public ItemSprite view(Item item, Glowing glowing, Emitter emitter) {
+		
+		if (this.emitter != null) this.emitter.killAndErase();
+		this.emitter = null;
+		
         SmartTexture tx;
         if (item.customImage == null
-                || (tx = TextureCache.getFromCurrentSavePath(CustomDungeonSaves.getExternalFilePath(item.customImage))) == null)
-            return view(item.image(), glowing);
-
-        if (this.emitter != null) this.emitter.killAndErase();
-        emitter = null;
-
-        boolean setOriginToCenter = origin.x == width / 2 && origin.y == height / 2;
-
-        usesItemSpriteSheet = false;
-        texture(tx);
-		if (Math.max(tx.width, tx.height) > ItemSpriteSheet.SIZE) {
-			scale.set(ItemSpriteSheet.SIZE / (float) (Math.max(tx.width, tx.height)));
-		} else {
-			scale.set(1f);
+                || (tx = TextureCache.getFromCurrentSavePath(CustomDungeonSaves.getExternalFilePath(item.customImage))) == null) {
+			
+			view(item.image(), glowing, emitter);
 		}
-
-        if (setOriginToCenter) originToCenter();
-
-        glow(glowing);
+		else {
+			boolean setOriginToCenter = origin.x == width / 2 && origin.y == height / 2;
+			
+			usesItemSpriteSheet = false;
+			texture(tx);
+			if (Math.max(tx.width, tx.height) > ItemSpriteSheet.SIZE) {
+				scale.set(ItemSpriteSheet.SIZE / (float) (Math.max(tx.width, tx.height)));
+			} else {
+				scale.set(1f);
+			}
+			
+			if (setOriginToCenter) originToCenter();
+			
+			glow(glowing);
+		}
+        
+		
         return this;
     }
 
     public ItemSprite view(int image, Glowing glowing) {
+		return view(image, glowing, null);
+	}
+	
+    public ItemSprite view(int image, Glowing glowing, Emitter emitter) {
         if (!usesItemSpriteSheet) {
             texture(Assets.Sprites.ITEMS);
             scale.set(1f);
         }
         if (this.emitter != null) this.emitter.killAndErase();
-        emitter = null;
+        this.emitter = null;
         frame(image);
         glow(glowing);
+		useEmitter(emitter);
         return this;
     }
 
@@ -292,6 +315,14 @@ public class ItemSprite extends MovieClip {
 	public synchronized void glow( Glowing glowing ){
 		this.glowing = glowing;
 		if (glowing == null) resetColor();
+	}
+	
+	public void useEmitter( Emitter emitter ) {
+		if (emitter != null && parent != null) {
+			emitter.pos(this);
+			parent.add(emitter);
+			this.emitter = emitter;
+		}
 	}
 
 	@Override
