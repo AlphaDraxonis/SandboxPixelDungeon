@@ -55,11 +55,11 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
-import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
@@ -105,7 +105,7 @@ public class EditorScene extends DungeonScene {
 
 
     private Group transitionIndicators;
-    private Map<LevelTransition, BitmapText> transitionIndicatorsMap;
+    private Map<LevelTransition, RenderedTextBlock> transitionIndicatorsMap;
     private Group realMobs;
 
     private static boolean displayZones = false;
@@ -496,7 +496,7 @@ public class EditorScene extends DungeonScene {
 
     private void addTransitionSprite(LevelTransition transition) {
         if (transitionIndicatorsMap.containsKey(transition)) return;
-        BitmapText text = new BitmapText(PixelScene.pixelFont);
+        RenderedTextBlock text = PixelScene.renderTextBlock(12);
         transitionIndicators.add(text);
         transitionIndicatorsMap.put(transition, text);
         updateTransitionIndicator(transition);
@@ -504,7 +504,7 @@ public class EditorScene extends DungeonScene {
 
     public static void remove(LevelTransition transition) {
         if (scene == null || transition == null) return;
-        BitmapText text = scene.transitionIndicatorsMap.get(transition);
+        RenderedTextBlock text = scene.transitionIndicatorsMap.get(transition);
         if (text == null) {
             for (LevelTransition trans : scene.transitionIndicatorsMap.keySet()) {
                 if (trans.departCell == transition.departCell && trans.destCell == transition.destCell
@@ -525,22 +525,40 @@ public class EditorScene extends DungeonScene {
 		if (scene == null) return;
 		scene.addTransitionSprite(transition);
 	}
+    
+    private static final float TRANSITION_INDICATOR_SCALE = 0.28f;
 
 	public static void updateTransitionIndicator(LevelTransition transition) {
         if (scene == null || transition == null) return;
-        BitmapText text = scene.transitionIndicatorsMap.get(transition);
+        RenderedTextBlock text = scene.transitionIndicatorsMap.get(transition);
         if (text == null) return;
-        text.text(Messages.get(LevelTransition.class, "to") + ": "
-                + (transition.destLevel == null && transition.destBranch == 0 ? "" : EditorUtilities.getDispayName(transition)));
-        text.hardlight(Window.TITLE_COLOR);
-        text.scale.set(0.55f);
-        text.measure();
-
-        PointF pos = new PointF(
-                PixelScene.align(Camera.main, ((transition.cell() % Dungeon.level.width()) + 0.5f) * DungeonTilemap.SIZE - text.width() * 0.5f),
-                PixelScene.align(Camera.main, ((transition.cell() / Dungeon.level.width()) + 1.0f) * DungeonTilemap.SIZE - text.height() - DungeonTilemap.SIZE * 5 / 16f));
-        text.point(pos);
-        text.y += 5.5f;
+//        if (text instanceof BitmapText) {
+//            BitmapText bitmapText = (BitmapText) text;
+//            bitmapText.text(Messages.get(LevelTransition.class, "to") + ": "
+//                    + (transition.destLevel == null && transition.destBranch == 0 ? "" : EditorUtilities.getDispayName(transition)));
+//            bitmapText.hardlight(Window.TITLE_COLOR);
+//            bitmapText.scale.set(0.55f);
+//            bitmapText.measure();
+//
+//            PointF pos = new PointF(
+//                    PixelScene.align(Camera.main, ((transition.cell() % Dungeon.level.width()) + 0.5f) * DungeonTilemap.SIZE - bitmapText.width() * 0.5f),
+//                    PixelScene.align(Camera.main, ((transition.cell() / Dungeon.level.width()) + 1.0f) * DungeonTilemap.SIZE - bitmapText.height() - DungeonTilemap.SIZE * 5 / 16f));
+//            bitmapText.point(pos);
+//            bitmapText.y += 5.5f;
+//        } else {
+            RenderedTextBlock textBlock = (RenderedTextBlock) text;
+            textBlock.text(Messages.get(LevelTransition.class, "to") + ": "
+                    + (transition.destLevel == null && transition.destBranch == 0 ? "" : EditorUtilities.getDispayName(transition)));
+            textBlock.hardlight(Window.TITLE_COLOR);
+            textBlock.setScale(TRANSITION_INDICATOR_SCALE);
+            
+            PointF pos = new PointF(
+                    PixelScene.align(Camera.main, ((transition.cell() % Dungeon.level.width()) + 0.5f) * DungeonTilemap.SIZE - textBlock.width()*TRANSITION_INDICATOR_SCALE * 0.5f),
+                    PixelScene.align(Camera.main, ((transition.cell() / Dungeon.level.width()) + 1.0f) * DungeonTilemap.SIZE - textBlock.height()*TRANSITION_INDICATOR_SCALE - DungeonTilemap.SIZE * 5 / 16f));
+            textBlock.setPos(pos.x, pos.y + 5.5f);
+//        }
+        
+        
     }
 
     public static void updateTransitionIndicators() {

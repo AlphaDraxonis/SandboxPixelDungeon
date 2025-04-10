@@ -48,6 +48,7 @@ public class RenderedTextBlock extends Component {
 	private int color = -1;
 	private float alpha = 1f;
 	private boolean colorsInverted;
+	private float scale = 1f;
 	
 	private int hightlightColor = Window.TITLE_COLOR;
 	private boolean highlightingEnabled = true;
@@ -156,7 +157,7 @@ public class RenderedTextBlock extends Component {
 				if (highlighting) word.hardlight(hightlightColor);
 				else if (currentMarkingColor != -1) word.hardlight(currentMarkingColor);
 				else if (color != -1) word.hardlight(color);
-				word.scale.set(zoom);
+				word.scale.set(zoom * scale);
 				word.alpha(alpha);
 				
 				words.add(word);
@@ -200,6 +201,13 @@ public class RenderedTextBlock extends Component {
 		this.alpha = value;
 		for (RenderedText word : words) {
 			if (word != null) word.alpha( value );
+		}
+	}
+	
+	public synchronized void setScale(float scale) {
+		this.scale = scale;
+		for (RenderedText word : words) {
+			if (word != null) word.scale.set( zoom * scale );
 		}
 	}
 	
