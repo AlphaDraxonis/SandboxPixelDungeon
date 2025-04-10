@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomB
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndNewCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfFeatherFall;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCleansing;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfSirensSong;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
@@ -172,6 +173,7 @@ public final class Buffs extends GameObjectCategory<Buff> {
                     MagicImmune.class,
                     Drowsy.class,
                     MagicalSleep.class,
+                    ScrollOfSirensSong.Enthralled.class,
                     Recharging.class,
                     ArtifactRecharge.class,
 //                  EnhancedRings.class,

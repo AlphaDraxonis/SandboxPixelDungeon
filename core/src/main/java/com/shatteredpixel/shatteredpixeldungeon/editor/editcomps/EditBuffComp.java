@@ -54,7 +54,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
 
         if (!buff.zoneBuff){
 
-            if (!(buff instanceof ChampionEnemy)) {
+            if (!(buff instanceof ChampionEnemy || buff instanceof ScrollOfSirensSong.Enthralled)) {
                 permanent = new StyledCheckBox(Messages.get(this, "permanent"));
                 permanent.checked(buff.permanent);
                 permanent.addChangeListener(v -> {
