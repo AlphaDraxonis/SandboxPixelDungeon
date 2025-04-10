@@ -427,6 +427,9 @@ public class SideControlPane extends Component {
 
         @Override
         protected void onClick() {
+            if (!Dungeon.hero.isAlive()) {
+                return;
+            }
             EditorScene.show(new WndSelectFloor() {
                 @Override
                 public boolean onSelect(LevelSchemeLike levelScheme) {
