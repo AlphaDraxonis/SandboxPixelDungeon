@@ -329,9 +329,9 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(2001, Scroll.class.getDeclaredMethod("doRead"));
 			addMethod(2002, Scroll.class.getDeclaredMethod("readAnimation"));
 
-			addMethod(2003, Spell.class.getDeclaredMethod("onCast", Hero.class));
+			addMethod(2003, Spell.class.getDeclaredMethod("onCast", Hero.class), "hero");
 
-			addMethod(2004, Runestone.class.getDeclaredMethod("activate", int.class));
+			addMethod(2004, Runestone.class.getDeclaredMethod("activate", int.class), "cell");
 			addMethod(2005, StoneOfEnchantment.class.getDeclaredMethod("createEnchantmentToInscribe", Weapon.class), "weapon");
 			addMethod(2006, StoneOfEnchantment.class.getDeclaredMethod("createGlyphToInscribe", Armor.class), "armor");
 			addMethod(2007, InventoryStone.class.getDeclaredMethod("inventoryTitle"));
