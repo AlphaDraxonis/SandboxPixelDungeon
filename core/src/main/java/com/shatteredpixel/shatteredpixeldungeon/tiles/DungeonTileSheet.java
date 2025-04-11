@@ -99,6 +99,7 @@ public class DungeonTileSheet {
 		chasmStitcheable.put( Terrain.EMPTY_WELL,   CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.WELL,         CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.STATUE,       CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.REGION_DECO,  CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.SECRET_TRAP,  CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.INACTIVE_TRAP,CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.TRAP,         CHASM_FLOOR );
@@ -112,6 +113,7 @@ public class DungeonTileSheet {
 		//special floor
 		chasmStitcheable.put( Terrain.EMPTY_SP,     CHASM_FLOOR_SP );
 		chasmStitcheable.put( Terrain.STATUE_SP,    CHASM_FLOOR_SP );
+		chasmStitcheable.put( Terrain.REGION_DECO_SP,CHASM_FLOOR_SP );
 
 		//wall
 		chasmStitcheable.put( Terrain.WALL,         CHASM_WALL );
@@ -148,7 +150,7 @@ public class DungeonTileSheet {
 			Terrain.BARRICADE, Terrain.HIGH_GRASS, Terrain.FURROWED_GRASS, Terrain.SECRET_TRAP,
 			Terrain.TRAP, Terrain.INACTIVE_TRAP, Terrain.EMPTY_DECO,
 			Terrain.SIGN, Terrain.SIGN_SP, Terrain.CUSTOM_DECO, Terrain.WELL, Terrain.STATUE,
-			Terrain.ALCHEMY, Terrain.CUSTOM_DECO_EMPTY, Terrain.MINE_CRYSTAL, Terrain.MINE_BOULDER,
+			Terrain.REGION_DECO,Terrain.ALCHEMY, Terrain.CUSTOM_DECO_EMPTY, Terrain.MINE_CRYSTAL, Terrain.MINE_BOULDER,
 			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.MIMIC_DOOR, Terrain.COIN_DOOR, Terrain.LOCKED_DOOR, Terrain.CRYSTAL_DOOR
 	));
 	public static HashSet<Integer> waterStitcheableWithSecretDoor = new HashSet<>(Arrays.asList(
@@ -156,7 +158,7 @@ public class DungeonTileSheet {
 			Terrain.ENTRANCE, Terrain.EXIT, Terrain.EMBERS,
 			Terrain.BARRICADE, Terrain.HIGH_GRASS, Terrain.FURROWED_GRASS, Terrain.SECRET_TRAP,
 			Terrain.TRAP, Terrain.INACTIVE_TRAP, Terrain.EMPTY_DECO,
-			Terrain.SIGN, Terrain.SIGN_SP, Terrain.CUSTOM_DECO, Terrain.WELL, Terrain.STATUE,
+			Terrain.SIGN, Terrain.SIGN_SP, Terrain.CUSTOM_DECO, Terrain.WELL, Terrain.STATUE, Terrain.REGION_DECO,
 			Terrain.ALCHEMY, Terrain.CUSTOM_DECO_EMPTY, Terrain.MINE_CRYSTAL, Terrain.MINE_BOULDER,
 			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.MIMIC_DOOR, Terrain.COIN_DOOR, Terrain.LOCKED_DOOR, Terrain.CRYSTAL_DOOR,
 			Terrain.SECRET_DOOR, Terrain.SECRET_LOCKED_DOOR, Terrain.SECRET_CRYSTAL_DOOR
@@ -221,6 +223,8 @@ public class DungeonTileSheet {
 	public static final int FLAT_STATUE_SP      = FLAT_OTHER+7;
 	public static final int FLAT_SIGN           = FLAT_OTHER+8;
 	public static final int FLAT_SIGN_SP        = FLAT_OTHER+9;
+	public static final int FLAT_REGION_DECO    = FLAT_OTHER+10;
+	public static final int FLAT_REGION_DECO_SP = FLAT_OTHER+11;
 
 	public static final int FLAT_MINE_CRYSTAL         = FLAT_OTHER+10;
 	public static final int FLAT_MINE_CRYSTAL_ALT     = FLAT_OTHER+11;
@@ -329,6 +333,8 @@ public class DungeonTileSheet {
 	public static final int RAISED_STATUE_SP        = RAISED_OTHER+7;
 	public static final int RAISED_SIGN             = RAISED_OTHER+8;
 	public static final int RAISED_SIGN_SP          = RAISED_OTHER+9;
+	public static final int RAISED_REGION_DECO      = RAISED_OTHER+10;
+	public static final int RAISED_REGION_DECO_SP   = RAISED_OTHER+11;
 
 	public static final int RAISED_MINE_CRYSTAL     = RAISED_OTHER+10;
 	public static final int RAISED_MINE_CRYSTAL_ALT = RAISED_OTHER+11;
@@ -426,6 +432,8 @@ public class DungeonTileSheet {
 
 	public static final int STATUE_OVERHANG             = OTHER_OVERHANG+6;
 	public static final int STATUE_SP_OVERHANG          = OTHER_OVERHANG+7;
+	public static final int REGION_DECO_OVERHANG        = OTHER_OVERHANG+10;
+	public static final int REGION_DECO_SP_OVERHANG     = OTHER_OVERHANG+11;
 
 	public static final int MINE_CRYSTAL_OVERHANG       = OTHER_OVERHANG+10;
 	public static final int MINE_CRYSTAL_OVERHANG_ALT   = OTHER_OVERHANG+11;
@@ -493,6 +501,8 @@ public class DungeonTileSheet {
 		directFlatVisuals.put(Terrain.STATUE_SP,        FLAT_STATUE_SP);
 		directFlatVisuals.put(Terrain.SIGN,             FLAT_SIGN);
 		directFlatVisuals.put(Terrain.SIGN_SP,          FLAT_SIGN_SP);
+		directFlatVisuals.put(Terrain.REGION_DECO,      FLAT_REGION_DECO);
+		directFlatVisuals.put(Terrain.REGION_DECO_SP,   FLAT_REGION_DECO_SP);
 
 		directFlatVisuals.put(Terrain.MINE_CRYSTAL,     FLAT_MINE_CRYSTAL);
 		directFlatVisuals.put(Terrain.MINE_BOULDER,     FLAT_MINE_BOULDER);
