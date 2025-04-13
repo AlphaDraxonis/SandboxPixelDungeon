@@ -326,6 +326,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		}
 		
 		if (enemy == null) enemy = chooseEnemy();
+		if (enemy == null && playerAlignment == NORMAL_ALIGNMENT) enemy = Dungeon.hero; //jump away from hero if nothing else is being targeted
 		if (enemy == null && targetPos == -1) return;
 		else if (enemy != null) targetPos = enemy.pos;
 		
