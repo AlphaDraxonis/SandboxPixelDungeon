@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ToxicGasRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 
 public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileActionPart {
@@ -31,10 +32,18 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
 
     protected static void place(Trap trap) {
         Dungeon.level.setTrap(trap, trap.pos);
+        
+        if (trap instanceof ToxicGasRoom.ToxicVent) {
+            BlobActionPart.place(trap.pos, ToxicGasRoom.ToxicGasSeed.class, ((ToxicGasRoom.ToxicVent) trap).strength);
+        }
     }
 
     protected static void remove(Trap trap) {
         Dungeon.level.traps.remove(trap.pos);
+        
+        if (trap instanceof ToxicGasRoom.ToxicVent) {
+            BlobActionPart.clearBlobAtCell(ToxicGasRoom.ToxicGasSeed.class, trap.pos);
+        }
     }
 
     public static final class Place extends TrapActionPart {

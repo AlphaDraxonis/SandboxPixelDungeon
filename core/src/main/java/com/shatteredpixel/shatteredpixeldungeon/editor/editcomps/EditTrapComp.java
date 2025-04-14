@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItemDistrComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
@@ -18,6 +19,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerInteger
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ToxicGasRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GatewayTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.RageTrap;
@@ -45,6 +47,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
     protected StyledCheckBox searchable, searchableByMagic, revealedWhenTriggered, disarmedByActivation;
     protected StyledButton gatewayTelePos;
     protected Spinner radius, pitfallDelay;
+    protected Spinner toxicVentStrength;
     protected ContainerWithLabel.ForMobs summonMobs;
     protected Component randomTrap;
 
@@ -209,6 +212,17 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                 pitfallDelay.addChangeListener(() -> ((PitfallTrap) obj).delay = (int) pitfallDelay.getValue());
                 add(pitfallDelay);
             }
+            
+            if (obj instanceof ToxicGasRoom.ToxicVent) {
+                toxicVentStrength = new StyledSpinner(new SpinnerIntegerModel(0, 1000, ((ToxicGasRoom.ToxicVent) obj).strength),
+                        Messages.get(EditTrapComp.class, "vent_strength"));
+                toxicVentStrength.addChangeListener(() -> {
+                    ((ToxicGasRoom.ToxicVent) obj).strength = (int) toxicVentStrength.getValue();
+                    BlobActionPart.clearBlobAtCell(ToxicGasRoom.ToxicGasSeed.class, obj.pos);
+                    BlobActionPart.place(obj.pos, ToxicGasRoom.ToxicGasSeed.class, ((ToxicGasRoom.ToxicVent) obj).strength);
+                });
+                add(toxicVentStrength);
+            }
 
             if (obj instanceof SummoningTrap) {
                 summonMobs = new ContainerWithLabel.ForMobs(((SummoningTrap) obj).spawnMobs, this, Messages.get(EditTrapComp.class, "summon_mobs"));
@@ -220,14 +234,15 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             rectComps = new Component[] {
                     visible, active, disarmedByActivation,
                     pitfallDelay, radius, revealedWhenTriggered,
-                    searchable, searchableByMagic, gatewayTelePos};
+                    searchable, searchableByMagic, gatewayTelePos,
+					toxicVentStrength};
         } else {
             rectComps = new Component[] {
                     visible, active,
                     pitfallDelay, radius,
                     searchable, searchableByMagic,
                     revealedWhenTriggered, disarmedByActivation,
-                    gatewayTelePos};
+                    gatewayTelePos, toxicVentStrength};
         }
 
         linearComps = new Component[] {
@@ -249,6 +264,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         if (searchableByMagic != null) searchableByMagic.checked(obj.canBeSearchedByMagic);
 
         if (pitfallDelay != null) pitfallDelay.setValue(((PitfallTrap) obj).delay);
+        if (toxicVentStrength != null) toxicVentStrength.setValue(((ToxicGasRoom.ToxicVent) obj).strength);
         if (radius != null) {
             if (obj instanceof PitfallTrap) radius.setValue(((PitfallTrap) obj).radius);
             else if (obj instanceof RageTrap) radius.setValue(((RageTrap) obj).radius);
@@ -342,6 +358,9 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         if (a instanceof PitfallTrap) {
             if (((PitfallTrap) a).radius != ((PitfallTrap) b).radius) return false;
             if (((PitfallTrap) a).delay != ((PitfallTrap) b).delay) return false;
+        }
+        if (a instanceof ToxicGasRoom.ToxicVent) {
+            if (((ToxicGasRoom.ToxicVent) a).strength != ((ToxicGasRoom.ToxicVent) b).strength) return false;
         }
         if (a instanceof SummoningTrap) {
             if (!EditMobComp.isMobListEqual(((SummoningTrap) a).spawnMobs, ((SummoningTrap) b).spawnMobs)) return false;

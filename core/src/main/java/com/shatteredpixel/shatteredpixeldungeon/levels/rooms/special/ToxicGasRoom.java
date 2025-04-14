@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
 
 import java.util.ArrayList;
@@ -73,8 +74,9 @@ public class ToxicGasRoom extends SpecialRoom {
 			do {
 				cell = level.pointToCell(random(2));
 			} while (level.map[cell] != Terrain.EMPTY);
-			level.setTrap(new ToxicVent().reveal(), cell);
-			Blob.seed(cell, 12, ToxicGasSeed.class, level);
+			ToxicVent vent = new ToxicVent();
+			level.setTrap(vent.reveal(), cell);
+			Blob.seed(cell, vent.strength, ToxicGasSeed.class, level);
 			Painter.set(level, cell, Terrain.INACTIVE_TRAP);
 		}
 
@@ -189,6 +191,8 @@ public class ToxicGasRoom extends SpecialRoom {
 
 	public static class ToxicVent extends Trap {
 
+		public int strength = 12;
+		
 		{
 			color = BLACK;
 			shape = GRILL;
@@ -200,6 +204,20 @@ public class ToxicGasRoom extends SpecialRoom {
 		@Override
 		public void activate() {
 			//does nothing, this trap is just decoration and is always deactivated
+		}
+		
+		private static final String STRENGTH = "strength";
+		
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(STRENGTH, strength);
+		}
+		
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			strength = bundle.getInt(STRENGTH);
 		}
 
 	}

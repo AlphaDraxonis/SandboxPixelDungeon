@@ -1,13 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomTrap;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndNewCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ToxicGasRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomTrap;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndNewCustomObject;
 import com.watabou.noosa.Image;
 
 import java.util.Locale;
@@ -100,6 +101,7 @@ public final class Traps extends GameObjectCategory<Trap> {
         private Gas() {
             super(new ToxicTrap(), new Class[] {
                     ToxicTrap.class,
+                    ToxicGasRoom.ToxicVent.class,
                     CorrosionTrap.class,
                     ConfusionTrap.class,
                     ParalyticTrap.class,

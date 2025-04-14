@@ -1,7 +1,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfAwareness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfHealth;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfTransmutation;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
@@ -112,11 +118,7 @@ public class BlobActionPart {
 
     public static void clearAllAtCell(int cell) {
         for (int i = 0; i < BlobData.BLOB_CLASSES.length; i++) {
-            Blob b = Dungeon.level.blobs.getOnly(BlobData.BLOB_CLASSES[i]);
-            if (b != null && b.cur != null) {
-                b.volume -= b.cur[cell];
-                b.cur[cell] = 0;
-            }
+			clearBlobAtCell(BlobData.BLOB_CLASSES[i], cell);
         }
     }
 
@@ -138,6 +140,14 @@ public class BlobActionPart {
                 b.cur[cell] = 0;
             }
         }
+    }
+	
+    public static void clearBlobAtCell(Class<? extends Blob> blob, int cell) {
+        Blob b = Dungeon.level.blobs.getOnly(blob);
+		if (b != null && b.cur != null) {
+			b.volume -= b.cur[cell];
+			b.cur[cell] = 0;
+		}
     }
 
 }
