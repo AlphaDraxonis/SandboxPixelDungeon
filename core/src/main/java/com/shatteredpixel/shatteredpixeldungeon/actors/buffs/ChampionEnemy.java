@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
@@ -168,10 +167,9 @@ public abstract class ChampionEnemy extends Buff {
 				return false;
 			} else {
 				boolean[] passable = BArray.not(Dungeon.level.solid, null);
-				for (Char ch : Actor.chars()) {
-					//our own tile is always passable
-					passable[ch.pos] = ch == target;
-				}
+
+				//our own tile is always passable
+				passable[target.pos] = true;
 
 				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, passable, 4);
 
@@ -215,10 +213,9 @@ public abstract class ChampionEnemy extends Buff {
 				return false;
 			} else {
 				boolean[] passable = BArray.not(Dungeon.level.solid, null);
-				for (Char ch : Actor.chars()) {
-					//our own tile is always passable
-					passable[ch.pos] = ch == target;
-				}
+
+				//our own tile is always passable
+				passable[target.pos] = true;
 
 				PathFinder.buildDistanceMapForEnvironmentals(enemy.pos, passable, 2);
 

@@ -49,19 +49,21 @@ public class GnollTricksterSprite extends MobSprite {
 	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 12, 15 );
 
+		int c = 42;
+
 		idle = new MovieClip.Animation( 2, true );
-		idle.frames( frames, 21, 21, 21, 22, 21, 21, 22, 22 );
+		idle.frames( frames, 0+c, 0+c, 0+c, 1+c, 0+c, 0+c, 1+c, 1+c );
 
 		run = new MovieClip.Animation( 12, true );
-		run.frames( frames, 25, 26, 27, 28 );
+		run.frames( frames, 4+c, 5+c, 6+c, 7+c );
 
 		attack = new MovieClip.Animation( 12, false );
-		attack.frames( frames, 23, 24, 21 );
+		attack.frames( frames, 2+c, 3+c, 0+c );
 
 		zap = attack.clone();
 
-		die = new MovieClip.Animation( 12, false );
-		die.frames( frames, 29, 30, 31 );
+		die = new Animation( 12, false );
+		die.frames( frames, 8+c, 9+c, 10+c );
 	}
 
 	@Override
