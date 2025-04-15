@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -36,7 +35,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class SpecialRoom extends Room implements Copyable<Room> {
+public abstract class SpecialRoom extends Room {
 	
 	@Override
 	public int minWidth() { return 5; }
@@ -85,7 +84,7 @@ public abstract class SpecialRoom extends Room implements Copyable<Room> {
 	}
 
 	@Override
-	public Room getCopy() {
+	public SpecialRoom getCopy() {
 		SpecialRoom r = (SpecialRoom) super.getCopy();
 		if (entrance == null) r.entrance = null;
 		return r;

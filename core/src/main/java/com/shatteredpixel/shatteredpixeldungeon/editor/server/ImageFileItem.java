@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.TabResourceFile
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.noosa.Image;
 import com.watabou.utils.FileUtils;
 
@@ -54,7 +53,7 @@ public class ImageFileItem extends EditorItem<FileHandle> {
 	}
 	
 	@Override
-	public Item getCopy() {
+	public ImageFileItem getCopy() {
 		return new ImageFileItem(obj);
 	}
 	

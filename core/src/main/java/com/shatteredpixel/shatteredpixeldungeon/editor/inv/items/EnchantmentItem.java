@@ -6,9 +6,18 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditEnchantmentComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnchantmentLike;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Sacrificial;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blazing;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blocking;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blooming;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Chilling;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Corrupting;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Grim;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Kinetic;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Lucky;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Projecting;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocking;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampiric;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -43,7 +52,7 @@ public class EnchantmentItem extends EditorItem<EnchantmentLike> {
     }
 
     @Override
-    public Item getCopy() {
+    public EnchantmentItem getCopy() {
         return new EnchantmentItem(getObject());
     }
 

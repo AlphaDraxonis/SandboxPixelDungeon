@@ -24,6 +24,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
@@ -32,13 +33,14 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ModifyInInv;
 
 public interface CustomMobClass extends CustomGameObjectClass {
 	
 	static ActionPartModify doUpdateInheritStats(CustomGameObjectClass self, GameObject obj, CustomGameObjectClass customClass) {
 		Mob m = (Mob) obj;
 		Mob template = (Mob) self;
-		ActionPartModify modify = new MobActionPart.Modify(m);
+		ActionPartModify modify = m.pos == -1 || Dungeon.level == null ? new ModifyInInv(m) : new MobActionPart.Modify(m);
 		if (customClass.getInheritStats()) {
 			m.spriteClass = template.spriteClass;
 			obj.copyStats(template);

@@ -105,7 +105,7 @@ public abstract class EditorItem<T> extends Item implements CompactCategoryScrol
     }
 
     @Override
-    public abstract Item getCopy();
+    public abstract EditorItem getCopy();
 
     public abstract void place(int cell);
 
@@ -203,7 +203,7 @@ public abstract class EditorItem<T> extends Item implements CompactCategoryScrol
         }
 
         @Override
-        public Item getCopy() {
+        public NullItemClass getCopy() {
             return this;
         }
 

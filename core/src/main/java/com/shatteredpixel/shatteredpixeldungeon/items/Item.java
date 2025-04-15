@@ -34,7 +34,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.Customizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -68,7 +67,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class Item extends GameObject implements Customizable, Copyable<Item> {
+public class Item extends GameObject implements Customizable {
 
 	protected static final String TXT_TO_STRING_LVL		= "%s %+d";
 	protected static final String TXT_TO_STRING_X		= "%s x%d";

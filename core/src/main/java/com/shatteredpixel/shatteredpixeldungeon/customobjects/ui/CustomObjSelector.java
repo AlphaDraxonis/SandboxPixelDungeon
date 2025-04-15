@@ -86,7 +86,7 @@ public class CustomObjSelector<T> extends Component {
 				return null;
 			}
 			@Override
-			public Item getCopy() {
+			public EditorItem<Object> getCopy() {
 				return null;
 			}
 			@Override

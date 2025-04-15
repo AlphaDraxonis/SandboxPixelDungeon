@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
@@ -75,7 +74,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
-public class Heap extends GameObject implements Copyable<Heap> {
+public class Heap extends GameObject {
 	
 	public enum Type {
 		HEAP,

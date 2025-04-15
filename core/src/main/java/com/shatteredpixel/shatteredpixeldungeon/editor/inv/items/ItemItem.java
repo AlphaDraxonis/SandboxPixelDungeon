@@ -76,7 +76,7 @@ public class ItemItem extends EditorItem<Item> {
     }
 
     @Override
-    public Item getCopy() {
+    public ItemItem getCopy() {
         return new ItemItem(getObject().getCopy());
     }
 

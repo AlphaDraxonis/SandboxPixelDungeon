@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.watabou.noosa.Image;
@@ -32,7 +31,7 @@ import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Tilemap;
 import com.watabou.utils.Bundle;
 
-public abstract class CustomTilemap extends GameObject implements Copyable<CustomTilemap> {
+public abstract class CustomTilemap extends GameObject {
 
 	protected static final int SIZE = DungeonTilemap.SIZE;
 

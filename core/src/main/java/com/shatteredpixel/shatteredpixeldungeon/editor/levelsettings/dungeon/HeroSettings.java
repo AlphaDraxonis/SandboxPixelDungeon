@@ -8,7 +8,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.PropertyListContainer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
@@ -423,7 +422,7 @@ public class HeroSettings extends Component {
                 + " (" + activeSubCls + "/" + heroClass.subClasses().length + ")";
     }
 
-    public static class HeroStartItemsData extends GameObject implements Copyable<HeroStartItemsData> {
+    public static class HeroStartItemsData extends GameObject {
         public Weapon weapon;
         public Armor armor;
         public Ring ring;

@@ -7,7 +7,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.DefaultListItemWithRemoveBtn;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
@@ -54,7 +53,7 @@ public class CustomObjectItem extends EditorItem<CustomObject> {
     }
 
     @Override
-    public Item getCopy() {
+    public CustomObjectItem getCopy() {
         return new CustomObjectItem(getObject());
     }
 

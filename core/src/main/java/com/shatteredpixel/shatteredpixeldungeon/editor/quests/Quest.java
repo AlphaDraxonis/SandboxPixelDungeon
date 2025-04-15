@@ -76,6 +76,13 @@ public abstract class Quest extends GameObject {
         given = bundle.getBoolean(GIVEN);
         completed = bundle.getBoolean(PROCESSED);
     }
+    
+    @Override
+    public Quest getCopy() {
+        Bundle bundle = new Bundle();
+        bundle.put("QUEST",this);
+        return (Quest) bundle.get("QUEST");
+    }
 
 
 }

@@ -1,12 +1,15 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobSpriteComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
@@ -51,8 +54,8 @@ public class MobSpriteItem extends EditorItem<Class<? extends CharSprite>> {
     }
 
     @Override
-    public Item getCopy() {
-        Mob copy = (Mob) mob.getCopy();
+    public MobSpriteItem getCopy() {
+        Mob copy = mob.getCopy();
         copy.spriteClass = obj;
         return new MobSpriteItem(copy);
     }

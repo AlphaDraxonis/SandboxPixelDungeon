@@ -291,7 +291,7 @@ public class Buff extends Actor {
 
 
     @Override
-    public Actor getCopy() {
+    public Buff getCopy() {
         Buff b = (Buff) super.getCopy();
         b.target = null;//Need to add later!
         return b;

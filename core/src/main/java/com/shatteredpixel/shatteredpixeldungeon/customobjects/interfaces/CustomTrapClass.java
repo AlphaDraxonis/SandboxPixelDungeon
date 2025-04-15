@@ -24,8 +24,10 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ModifyInInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TrapActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 
@@ -34,7 +36,7 @@ public interface CustomTrapClass extends CustomGameObjectClass {
 	static ActionPartModify doUpdateInheritStats(CustomGameObjectClass self, GameObject obj, CustomGameObjectClass customClass) {
 		Trap m = (Trap) obj;
 		Trap template = (Trap) self;
-		ActionPartModify modify = new TrapActionPart.Modify(m);
+		ActionPartModify modify = m.pos == -1 || Dungeon.level == null ? new ModifyInInv(m) : new TrapActionPart.Modify(m);
 		if (customClass.getInheritStats()) {
 			obj.copyStats(template);
 		}

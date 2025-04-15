@@ -7,7 +7,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCheckpointC
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.CheckpointActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.noosa.Image;
 
 public class CheckpointItem extends EditorItem<Checkpoint> {
@@ -35,7 +34,7 @@ public class CheckpointItem extends EditorItem<Checkpoint> {
     }
 
     @Override
-    public Item getCopy() {
+    public CheckpointItem getCopy() {
         return new CheckpointItem(getObject().getCopy());
     }
 

@@ -407,7 +407,7 @@ public abstract class Mob extends Char implements Customizable {
 	}
 
 	@Override
-	public Actor getCopy() {
+	public Mob getCopy() {
 		Mob mob = (Mob) super.getCopy();
 		mob.firstAdded = true;
 		return mob;

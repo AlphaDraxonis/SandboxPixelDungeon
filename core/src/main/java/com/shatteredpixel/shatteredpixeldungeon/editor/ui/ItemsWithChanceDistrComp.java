@@ -441,6 +441,13 @@ public abstract class ItemsWithChanceDistrComp extends Component {
             bundle.put(ITEMS, items);
             bundle.put(COUNT, count);
         }
+        
+        @Override
+        public ItemWithCount getCopy() {
+            Bundle bundle = new Bundle();
+            bundle.put("ITEM",this);
+            return (ItemWithCount) bundle.get("ITEM");
+        }
     }
 
     public static class RandomItemData implements Bundlable {

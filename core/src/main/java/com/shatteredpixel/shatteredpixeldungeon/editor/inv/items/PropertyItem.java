@@ -4,9 +4,22 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditPropertyComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CausticSlimeSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.GhostSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.GolemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.GreatCrabSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.KingSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.LarvaSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.PiranhaSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.RipperSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.RotHeartSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SwarmSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.WandmakerSprite;
 import com.watabou.noosa.Image;
 
 import java.util.Locale;
@@ -38,7 +51,7 @@ public class PropertyItem extends EditorItem<Char.Property> {
     }
 
     @Override
-    public Item getCopy() {
+    public PropertyItem getCopy() {
         return new PropertyItem(getObject());
     }
 

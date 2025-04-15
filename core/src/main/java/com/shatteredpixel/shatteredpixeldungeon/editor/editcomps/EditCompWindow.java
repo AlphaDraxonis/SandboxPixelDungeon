@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
@@ -13,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ModifyInInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
@@ -20,7 +22,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -52,8 +56,11 @@ public class EditCompWindow extends Window {
         if (content == null)
             throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
 
-        if (object instanceof EditorItem && ((EditorItem<?>) object).getObject() instanceof CustomObjectClass && CustomObjectClass.isOriginal(((EditorItem<?>) object).getObject())) {
-            actionPartModify = ActionPartModify.startNewModify(((EditorItem<?>) object).getObject());
+        if (object instanceof EditorItem
+                && ((EditorItem<?>) object).getObject() instanceof CustomObjectClass
+                && CustomObjectClass.isOriginal(((EditorItem<?>) object).getObject())
+                && ((EditorItem<?>) object).getObject() instanceof GameObject) {
+            actionPartModify = new ModifyInInv(((EditorItem<GameObject>) object).getObject());
         }
 
         content.advancedListPaneItem = advancedListPaneItem;
@@ -118,7 +125,7 @@ public class EditCompWindow extends Window {
     public void hide() {
         super.hide();
 
-        if (content.getObj() instanceof CustomGameObjectClass && CustomObjectClass.isOriginal(content.getObj())) {
+        if (actionPartModify != null) {
 
             Undo.startAction();
 

@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
@@ -359,7 +358,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 	}
 
 	@Override
-	public Actor getCopy() {
+	public Blacksmith getCopy() {
 		int prevQuestId = questId;
 		questId = -2;//Do not take the quest from the storage
 		Blacksmith blacksmith = (Blacksmith) super.getCopy();

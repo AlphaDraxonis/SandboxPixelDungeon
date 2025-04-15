@@ -4,7 +4,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditBuffComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
@@ -38,8 +37,8 @@ public class BuffItem extends EditorItem<Buff> {
     }
 
     @Override
-    public Item getCopy() {
-        return new BuffItem((Buff) getObject().getCopy());
+    public BuffItem getCopy() {
+        return new BuffItem(getObject().getCopy());
     }
 
     private static final String BUFF = "buff";

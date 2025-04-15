@@ -7,7 +7,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditArrowCellCo
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ArrowCellActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.noosa.Image;
 
 public class ArrowCellItem extends EditorItem<ArrowCell> {
@@ -35,7 +34,7 @@ public class ArrowCellItem extends EditorItem<ArrowCell> {
     }
 
     @Override
-    public Item getCopy() {
+    public ArrowCellItem getCopy() {
         return new ArrowCellItem(getObject().getCopy());
     }
 

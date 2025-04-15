@@ -13,7 +13,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.CustomTileActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.GooBossRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -67,7 +66,7 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
     }
 
     @Override
-    public Item getCopy() {
+    public CustomTileItem getCopy() {
         return new CustomTileItem(getObject().getCopy(), cell);
     }
 

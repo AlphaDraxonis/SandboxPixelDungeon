@@ -26,7 +26,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlaceCel
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
@@ -82,7 +81,7 @@ public class TileItem extends EditorItem {
     }
 
     @Override
-    public Item getCopy() {
+    public TileItem getCopy() {
         return new TileItem(terrainType, image, cell);
     }
 

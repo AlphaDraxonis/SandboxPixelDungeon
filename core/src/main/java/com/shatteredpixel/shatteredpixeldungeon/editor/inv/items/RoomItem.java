@@ -5,14 +5,24 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRoomComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RotGardenRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.RatKingRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretArtilleryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretChestChasmRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretGardenRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretHoardRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretHoneypotRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretLaboratoryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretLarderRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretLibraryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRunestoneRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretSummoningRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretWellRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance.EntranceRoom;
@@ -20,7 +30,17 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance.E
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit.ExitRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit.ExitRoomInterface;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.BlacksmithSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ImpSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.MimicSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.PiranhaSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.RatKingSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ShopkeeperSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SpawnerSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.WraithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
@@ -53,7 +73,7 @@ public class RoomItem extends EditorItem<Room> {
     }
 
     @Override
-    public Item getCopy() {
+    public RoomItem getCopy() {
         return new RoomItem(getObject().getCopy());
     }
 

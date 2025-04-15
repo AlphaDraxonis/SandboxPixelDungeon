@@ -153,4 +153,9 @@ public class RoomRect extends GameObject {
 		public void storeInBundle(Bundle bundle) {
 			throw new RuntimeException("RoomRect should be abstract, and this method is not callable!");
 		}
+	
+		@Override
+		public RoomRect getCopy() {
+			throw new RuntimeException("RoomRect should be abstract, and this method is not callable!");
+		}
 	}

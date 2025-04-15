@@ -6,7 +6,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditPlantComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlantActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
@@ -42,7 +41,7 @@ public class PlantItem extends EditorItem<Plant> {
     }
 
     @Override
-    public Item getCopy() {
+    public PlantItem getCopy() {
         return new PlantItem(getObject().getCopy());
     }
 

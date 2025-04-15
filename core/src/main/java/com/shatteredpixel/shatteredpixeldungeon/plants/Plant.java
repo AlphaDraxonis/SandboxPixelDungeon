@@ -32,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.Customizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -56,7 +55,7 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
-public abstract class Plant extends GameObject implements Customizable, Copyable<Plant> {
+public abstract class Plant extends GameObject implements Customizable {
 
     public int image;
     public int pos;

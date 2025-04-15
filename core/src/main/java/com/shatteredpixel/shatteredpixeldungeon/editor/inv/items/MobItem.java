@@ -12,7 +12,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
@@ -57,8 +56,8 @@ public class MobItem extends EditorItem<Mob> {
     }
 
     @Override
-    public Item getCopy() {
-        return new MobItem((Mob) getObject().getCopy());
+    public MobItem getCopy() {
+        return new MobItem(getObject().getCopy());
     }
 
     @Override
