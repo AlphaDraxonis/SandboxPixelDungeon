@@ -236,7 +236,6 @@ public final class Rooms extends GameObjectCategory<Room> {
                     GrassyGraveRoom.class,
                     StripedRoom.class,
                     StudyRoom.class,
-                    LibraryRoom.class,
                     SuspiciousChestRoom.class,
                     MinefieldRoom.class
             });
@@ -258,6 +257,7 @@ public final class Rooms extends GameObjectCategory<Room> {
                     StorageRoom.class,
                     TreasuryRoom.class,
                     LaboratoryRoom.class,
+                    LibraryRoom.class,
                     RunestoneRoom.class,
                     MagicWellRoom.class,
                     SacrificeRoom.class,

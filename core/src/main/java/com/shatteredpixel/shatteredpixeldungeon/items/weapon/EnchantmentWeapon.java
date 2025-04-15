@@ -8,7 +8,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class EnchantmentWeapon extends MeleeWeapon {
 
@@ -50,8 +53,8 @@ public class EnchantmentWeapon extends MeleeWeapon {
     @Override
     public void restoreFromBundle(Bundle bundle) {
         level( bundle.getInt( LEVEL) );
-        Collection<Bundlable> collection = bundle.getCollection(ENCHANTMENTS);
-        for (Bundlable ench : collection) {
+        enchantments.clear();
+        for (Bundlable ench : bundle.getCollection(ENCHANTMENTS)) {
             addEnchantment((Enchantment) ench);
         }
     }

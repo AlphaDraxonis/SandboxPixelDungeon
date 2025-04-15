@@ -30,9 +30,11 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 //shops probably shouldn't extend special room, because of cases like this.
 public class ImpShopRoom extends ShopRoom {
@@ -116,8 +118,7 @@ public class ImpShopRoom extends ShopRoom {
 
 		if (bundle.contains("items")) {
 			itemsGenerated = true;
-			for (Bundlable item : bundle.getCollection("items"))
-				spawnItemsInRoom.add((Item) item);
+			spawnItemsInRoom = new ArrayList<>((Collection<Item>) ((Collection<?>) bundle.getCollection("items")));
 		}
 	}
 

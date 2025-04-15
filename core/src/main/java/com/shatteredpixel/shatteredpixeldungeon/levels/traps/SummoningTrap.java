@@ -32,7 +32,10 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.utils.*;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -149,9 +152,7 @@ public class SummoningTrap extends Trap {
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
-		Collection<Bundlable> collection = bundle.getCollection( SPAWN_MOBS );
-		for (Bundlable b : collection)
-			spawnMobs.add((Mob) b);
+		spawnMobs = new ArrayList<>((Collection<Mob>) ((Collection<?>) bundle.getCollection( SPAWN_MOBS )));
 	}
 
 	@Override

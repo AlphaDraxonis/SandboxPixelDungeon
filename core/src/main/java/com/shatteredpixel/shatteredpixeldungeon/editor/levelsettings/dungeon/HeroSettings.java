@@ -482,7 +482,8 @@ public class HeroSettings extends Component {
             needToAddDefaultConfiguration = !bundle.contains(LVL);
             plusLvl = bundle.getInt(LVL);
             plusStr = bundle.getInt(STR);
-
+            
+            items.clear();
             if (bundle.contains("bags")) {
                 for (Bundlable b : bundle.getCollection("bags")) {
                     items.add((Item) b);

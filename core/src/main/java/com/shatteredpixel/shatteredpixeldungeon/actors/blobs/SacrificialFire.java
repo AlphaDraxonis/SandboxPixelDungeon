@@ -161,6 +161,7 @@ public class SacrificialFire extends Blob {
 		bonusSpawns = bundle.getInt(BONUS_SPAWNS);
 
 		if (bundle.contains(PRIZES)) {
+			prizes.clear();
 			Collection<Bundlable> prizesWithPos = bundle.getCollection(PRIZES);
 			for (Bundlable b : prizesWithPos) {
 				ItemWithPos iWP = (ItemWithPos) b;

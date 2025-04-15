@@ -163,6 +163,7 @@ public class PotionCocktail extends Potion {
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
+		potions.clear();
 		potions.addAll((Collection<Potion>) ((Collection<?>) bundle.getCollection( POTIONS )));
 		potionsKnown = bundle.getBoolean(POTIONS_KNOWN);
 	}

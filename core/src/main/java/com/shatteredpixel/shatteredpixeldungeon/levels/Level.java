@@ -729,6 +729,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		Zone.setupZoneArray(this);
 		
 		collection = bundle.getCollection( HEAPS );
+		heaps.clear();
 		for (Bundlable h : collection) {
 			Heap heap = (Heap)h;
 			if (!heap.isEmpty())
@@ -736,36 +737,42 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		}
 		
 		collection = bundle.getCollection( PLANTS );
+		plants.clear();
 		for (Bundlable p : collection) {
 			Plant plant = (Plant)p;
 			plants.put( plant.pos, plant );
 		}
 
 		collection = bundle.getCollection( TRAPS );
+		traps.clear();
 		for (Bundlable p : collection) {
 			Trap trap = (Trap)p;
 			traps.put( trap.pos, trap );
 		}
 
 		collection = bundle.getCollection(SIGNS);
+		signs.clear();
 		for (Bundlable p : collection) {
 			Sign sign = (Sign) p;
 			signs.put(sign.pos, sign);
 		}
 
 		collection = bundle.getCollection(BARRIERS);
+		barriers.clear();
 		for (Bundlable p : collection) {
 			Barrier barrier = (Barrier) p;
 			barriers.put(barrier.pos, barrier);
 		}
 
 		collection = bundle.getCollection(ARROW_CELLS);
+		arrowCells.clear();
 		for (Bundlable p : collection) {
 			ArrowCell arrowCell = (ArrowCell) p;
 			arrowCells.put(arrowCell.pos, arrowCell);
 		}
 
 		collection = bundle.getCollection(CHECKPOINTS);
+		checkpoints.clear();
 		for (Bundlable p : collection) {
 			Checkpoint cp = (Checkpoint) p;
 			checkpoints.put(cp.pos, cp);
@@ -774,6 +781,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		visualMap = map.clone();
 		visualRegions = new int[map.length];
 		collection = bundle.getCollection( CUSTOM_TILES );
+		customTiles.clear();
 		for (Bundlable p : collection) {
 			CustomTilemap vis = (CustomTilemap)p;
 			if (vis instanceof CustomTileLoader.UserCustomTile) {
@@ -789,6 +797,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		}
 
 		collection = bundle.getCollection( CUSTOM_WALLS );
+		customWalls.clear();
 		for (Bundlable p : collection) {
 			CustomTilemap vis = (CustomTilemap)p;
 			if(!(vis instanceof CustomTileLoader.UserCustomTile) || ((CustomTileLoader.UserCustomTile) vis).getIdentifier() != null)
@@ -796,12 +805,14 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		}
 
 		collection = bundle.getCollection(COIN_DOORS);
+		coinDoors.clear();
 		for (Bundlable c : collection) {
 			CoinDoor cost = (CoinDoor) c;
 			coinDoors.put(cost.pos, cost);
 		}
 
 		collection = bundle.getCollection( MOBS );
+		mobs.clear();
 		for (Bundlable m : collection) {
 			Mob mob = (Mob)m;
 			if (mob != null) {
@@ -812,12 +823,14 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		bossMob = bossMobStatic;
 
 		collection = bundle.getCollection( BLOBS );
+		blobs.clear();
 		for (Bundlable b : collection) {
 			Blob blob = (Blob)b;
 			blobs.put( blob.getClass(), blob );
 		}
 
 		collection = bundle.getCollection( PARTICLES );
+		particles.clear();
 		for (Bundlable b : collection) {
 			CustomParticle p = (CustomParticle) b;
 			particles.put(p.particleID, p);

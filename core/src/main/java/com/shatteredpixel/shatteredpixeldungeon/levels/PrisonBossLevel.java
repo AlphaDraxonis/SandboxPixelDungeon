@@ -135,6 +135,7 @@ public class PrisonBossLevel extends Level {
 			}
 		}
 		
+		storedItems.clear();
 		for (Bundlable item : bundle.getCollection(STORED_ITEMS)){
 			storedItems.add( (Item)item );
 		}

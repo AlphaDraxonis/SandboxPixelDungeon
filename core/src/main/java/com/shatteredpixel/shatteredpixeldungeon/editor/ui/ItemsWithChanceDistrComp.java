@@ -460,6 +460,7 @@ public abstract class ItemsWithChanceDistrComp extends Component {
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
+            distrSlots.clear();
             for (Bundlable b : bundle.getCollection(LOOT))
                 distrSlots.add((ItemWithCount) b);
             noLootCount = bundle.getInt(NO_LOOT);

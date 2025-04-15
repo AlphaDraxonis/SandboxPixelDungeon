@@ -122,6 +122,8 @@ public class Zone implements Bundlable {
             else music = Level.SPECIAL_MUSIC[0][variant];
         } else if (bundle.contains(MUSIC)) music = bundle.getString(MUSIC);
 
+        heroBuffs.clear();
+        mobBuffs.clear();
         if (bundle.contains("hero_buffs"))
             for (Class c : bundle.getClassArray("hero_buffs")) heroBuffs.put(c, (Buff) Reflection.newInstance(c));
         if (bundle.contains("mob_buffs"))

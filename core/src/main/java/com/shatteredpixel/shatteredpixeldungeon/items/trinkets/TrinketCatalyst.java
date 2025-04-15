@@ -113,10 +113,7 @@ public class TrinketCatalyst extends Item {
 		super.restoreFromBundle(bundle);
 		numChoosableTrinkets = bundle.getInt(NUM_CHOOSABLE_TRINKETS);
 		paidEnergy = bundle.getBoolean(PAID_ENERGY);
-		rolledTrinkets.clear();
-		if (bundle.contains(ROLLED_TRINKETS)){
-			rolledTrinkets.addAll((Collection<Trinket>) ((Collection<?>)bundle.getCollection( ROLLED_TRINKETS )));
-		}
+		rolledTrinkets = new ArrayList<>((Collection<Trinket>) ((Collection<?>) bundle.getCollection( ROLLED_TRINKETS )));
 	}
 
 	public static class Recipe extends com.shatteredpixel.shatteredpixeldungeon.items.Recipe {
