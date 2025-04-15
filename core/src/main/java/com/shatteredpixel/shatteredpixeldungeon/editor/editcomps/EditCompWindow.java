@@ -128,7 +128,11 @@ public class EditCompWindow extends Window {
         if (actionPartModify != null) {
 
             Undo.startAction();
-
+            
+            if (((GameObject) content.getObj()).detectRecursion()) {
+                DungeonScene.show(new WndTitledMessage(null, Messages.get(this, "recursion_title"), Messages.get(this, "recursion_body")));
+            }
+            
             actionPartModify.finish();
             Undo.addActionPart(actionPartModify);
 
