@@ -470,6 +470,9 @@ public class CavesBossLevel extends Level {
 			case Terrain.STATUE:
 				//city statues are used
 				return Messages.get(CityLevel.class, "statue_name");
+			case Terrain.REGION_DECO:
+			case Terrain.REGION_DECO_SP:
+				return Messages.get(CavesLevel.class, "region_deco_name");
 			default:
 				return super.tileName( tile );
 		}
@@ -495,6 +498,9 @@ public class CavesBossLevel extends Level {
 			//city statues are used
 			case Terrain.STATUE:
 				return Messages.get(CityLevel.class, "statue_desc");
+			case Terrain.REGION_DECO:
+			case Terrain.REGION_DECO_SP:
+				return Messages.get(CavesLevel.class, "region_deco_desc");
 			default:
 				return super.tileDesc( tile, cell );
 		}
