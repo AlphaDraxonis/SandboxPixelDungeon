@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PhysicalEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
@@ -800,7 +801,8 @@ public enum Talent {
 				&& Random.Int(10) < hero.pointsInTalent(Talent.CLEANSE)){
 			boolean removed = false;
 			for (Buff b : hero.buffs()) {
-				if (b.type == Buff.buffType.NEGATIVE) {
+				if (b.type == Buff.buffType.NEGATIVE
+						&& !(b instanceof LostInventory)) {
 					b.detach();
 					removed = true;
 				}
