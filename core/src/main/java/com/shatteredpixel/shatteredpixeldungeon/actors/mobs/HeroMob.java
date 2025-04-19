@@ -868,8 +868,9 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         dest.viewDistance = src.viewDistance;
         dest.baseSpeed = src.baseSpeed;
         dest.attackSpeed = src.attackSpeed;
-        dest.pos = src.pos;
         dest.alignment = src.alignment;
+        
+        if (src.pos != 0) dest.pos = src.pos;
     }
 
     public void setInternalHero(InternalHero hero) {
