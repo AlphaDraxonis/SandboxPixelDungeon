@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.DungeonScript;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.ui.InventoryPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ItemJournalButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 
@@ -36,19 +37,25 @@ public class WndUseItem extends WndInfoItem {
 	private static final float BUTTON_HEIGHT	= 16;
 	
 	private static final float GAP	= 2;
-	
+
+	public Window owner;
+	public Item item;
+
 	public WndUseItem( final Window owner, final Item item ) {
 		
 		super(item);
+
+		this.owner = owner;
+		this.item = item;
 
 		float y = height;
 		
 		if (Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(item)) {
 			y += GAP;
 			ArrayList<RedButton> buttons = new ArrayList<>();
-			for (final String action : item.actions( Dungeon.hero )) {
-				
-				RedButton btn = new RedButton( item.actionName(action, Dungeon.hero), 8 ) {
+			for (final String action : item.actions(Dungeon.hero)) {
+
+				RedButton btn = new RedButton(item.actionName(action, Dungeon.hero), 8) {
 					@Override
 					protected void onClick() {
 						hide();
@@ -69,18 +76,22 @@ public class WndUseItem extends WndInfoItem {
 						}
 					}
 				};
-				btn.setSize( btn.reqWidth(), BUTTON_HEIGHT );
+				btn.setSize(btn.reqWidth(), BUTTON_HEIGHT);
 				buttons.add(btn);
-				add( btn );
+				add(btn);
 
 				if (action.equals(item.defaultAction())) {
-					btn.textColor( TITLE_COLOR );
+					btn.textColor(TITLE_COLOR);
 				}
-				
+
 			}
 			y = layoutButtons(buttons, width, y);
+
+			ItemJournalButton btn = new ItemJournalButton(item, this);
+			btn.setRect(width - 16, 0, 16, 16);
+			add(btn);
 		}
-		
+
 		resize( width, (int)(y) );
 	}
 

@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournalItem;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Reflection;
 
@@ -307,7 +308,7 @@ public class CustomNoteButton extends IconButton {
 
 	public static class CustomNoteWindow extends WndJournalItem {
 
-		public CustomNoteWindow(Notes.CustomRecord rec) {
+		public CustomNoteWindow(Notes.CustomRecord rec, Window parentWindow) {
 			super(rec.icon(), rec.title(), rec.desc());
 
 			RedButton title = new RedButton( Messages.get(CustomNoteWindow.class, "edit_title") ){
@@ -325,7 +326,13 @@ public class CustomNoteButton extends IconButton {
 							if (positive && !text.isEmpty()){
 								rec.editText(text, rec.desc());
 								CustomNoteWindow.this.hide();
-								SandboxPixelDungeon.scene().addToFront(new CustomNoteWindow(rec));
+								if (parentWindow instanceof WndUseItem){
+									WndUseItem newParent = new WndUseItem(((WndUseItem) parentWindow).owner, ((WndUseItem) parentWindow).item);
+									GameScene.show(newParent);
+									GameScene.show(new CustomNoteWindow(rec, newParent));
+								} else {
+									GameScene.show(new CustomNoteWindow(rec, parentWindow));
+								}
 							}
 						}
 					});
@@ -350,7 +357,7 @@ public class CustomNoteButton extends IconButton {
 							if (positive){
 								rec.editText(rec.title(), text);
 								CustomNoteWindow.this.hide();
-								SandboxPixelDungeon.scene().addToFront(new CustomNoteWindow(rec));
+								DungeonScene.show(new CustomNoteWindow(rec, parentWindow));
 							}
 						}
 					});
@@ -372,7 +379,11 @@ public class CustomNoteButton extends IconButton {
 							if (index == 0){
 								Notes.remove(rec);
 								CustomNoteWindow.this.hide();
-								SandboxPixelDungeon.scene().addToFront(new WndJournal());
+								if (parentWindow instanceof WndJournal || parentWindow == null){
+									SandboxPixelDungeon.scene().addToFront(new WndJournal());
+								} else if (parentWindow instanceof WndUseItem){
+									GameScene.show(new WndUseItem(((WndUseItem) parentWindow).owner, ((WndUseItem) parentWindow).item));
+								}
 							}
 						}
 					});
@@ -413,8 +424,9 @@ public class CustomNoteButton extends IconButton {
 						NOTE_SELECT_INSTANCE.onBackPressed();
 					}
 					hide();
-					DungeonScene.show(new WndJournal());
-					DungeonScene.show(new CustomNoteWindow(note));
+					WndJournal wnd = new WndJournal();
+					DungeonScene.show(wnd);
+					DungeonScene.show(new CustomNoteWindow(note, wnd));
 				}
 			}
 		});
