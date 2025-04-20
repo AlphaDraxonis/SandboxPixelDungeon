@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.ImpShopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LostBackpack;
@@ -379,7 +380,8 @@ public final class Notes {
 	public enum CustomType {
 		TEXT,
 		LEVEL_NAME,
-		ITEM,
+		ITEM_TYPE,
+		SPECIFIC_ITEM,
 	}
 
 	public static class CustomRecord extends Record {
@@ -407,8 +409,15 @@ public final class Notes {
 			body = desc;
 		}
 
+		public CustomRecord(Class itemCls, String title, String desc) {
+			type = CustomType.ITEM_TYPE;
+			itemClass = itemCls;
+			this.title = title;
+			body = desc;
+		}
+
 		public CustomRecord(Item item, String title, String desc) {
-			type = CustomType.ITEM;
+			type = CustomType.SPECIFIC_ITEM;
 			itemClass = item.getClass();
 			this.title = title;
 			body = desc;
@@ -440,7 +449,8 @@ public final class Notes {
 					return Icons.SCROLL_COLOR.get();
 				case LEVEL_NAME:
 					return Icons.STAIRS.get();
-				case ITEM:
+				case ITEM_TYPE:
+				case SPECIFIC_ITEM:
 					Item i = (Item) Reflection.newInstance(itemClass);
 					return new ItemSprite(i);
 			}
@@ -455,7 +465,8 @@ public final class Notes {
 					BitmapText text = new BitmapText(levelName(), PixelScene.pixelFont);
 					text.measure();
 					return text;
-				case ITEM:
+				case ITEM_TYPE:
+				case SPECIFIC_ITEM:
 					Item item = (Item) Reflection.newInstance(itemClass);
 					if (item.isIdentified() && item.icon != -1) {
 						Image secondIcon = new Image(Assets.Sprites.ITEM_ICONS);
@@ -512,10 +523,26 @@ public final class Notes {
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			type = bundle.getEnum(TYPE, CustomType.class);
+			try {
+				type = bundle.getEnum(TYPE, CustomType.class);
+			} catch (Exception e){
+				//prior to v3.1 specific item notes and item type notes were the same
+				type = null;
+			}
 			ID = bundle.getInt(ID_NUMBER);
 
-			if (bundle.contains(ITEM_CLASS)) itemClass = bundle.getClass(ITEM_CLASS);
+			if (bundle.contains(ITEM_CLASS)) {
+				itemClass = bundle.getClass(ITEM_CLASS);
+				if (type == null){
+					//prior to v3.1 specific item notes and item type notes were the same
+					//we assume notes are for a specific item if they're for an equipment
+					if (EquipableItem.class.isAssignableFrom(itemClass)){
+						type = CustomType.SPECIFIC_ITEM;
+					} else {
+						type = CustomType.ITEM_TYPE;
+					}
+				}
+			}
 
 			title = bundle.getString(TITLE);
 			body = bundle.getString(BODY);
@@ -677,7 +704,9 @@ public final class Notes {
 	public static CustomRecord findCustomRecord( Class itemClass ){
 		if (records != null) {
 			for (Record rec : records) {
-				if (rec instanceof CustomRecord && ((CustomRecord) rec).itemClass == itemClass) {
+				if (rec instanceof CustomRecord
+					&& ((CustomRecord) rec).type == CustomType.ITEM_TYPE
+					&& ((CustomRecord) rec).itemClass == itemClass) {
 					return (CustomRecord) rec;
 				}
 			}

@@ -113,6 +113,8 @@ public class Item extends GameObject implements Customizable {
 	// whether an item can be included in heroes remains
 	public boolean bones = false;
 
+	public int customNoteID = -1;
+	
 	// only for hero start items, 0 means not in toolbar, first index is 1
 	public int reservedQuickslot;
 
@@ -614,14 +616,15 @@ public class Item extends GameObject implements Customizable {
 	public String info() {
 
 		if (Dungeon.hero != null) {
-			Notes.CustomRecord note;
-			if (this instanceof EquipableItem) {
-				note = Notes.findCustomRecord(((EquipableItem) this).customNoteID);
+			Notes.CustomRecord note = Notes.findCustomRecord(customNoteID);
+			if (note != null) {
+				//we swap underscore(0x5F) with low macron(0x2CD) here to avoid highlighting in the item window
+				return Messages.get(this, "custom_note", note.title().replace('_', 'ˍ')) + "\n\n" + desc();
 			} else {
 				note = Notes.findCustomRecord(getClass());
-			}
-			if (note != null){
-				return Messages.get(this, "custom_note", note.title()) + "\n\n" + desc();
+				if (note != null) {
+					return Messages.get(this, "custom_note_type", note.title()) + "\n\n" + desc();
+				}
 			}
 		}
 
@@ -710,6 +713,8 @@ public class Item extends GameObject implements Customizable {
 	private static final String IDENTIFY_ON_START = "identify_on_start";
 	private static final String QUICKSLOT		= "quickslotpos";
 	private static final String KEPT_LOST       = "kept_lost";
+	private static final String CUSTOM_NOTE_ID = "custom_note_id";
+	
 	private static final String RESERVED_QUICKSLOT = "reserved_quickslot";
 	private static final String SPREAD_IF_LOOT = "spread_if_loot";
 	private static final String ONLY_CHECK_TYPE_IF_RECIPE = "only_check_type_if_recipe";
@@ -733,6 +738,7 @@ public class Item extends GameObject implements Customizable {
 			bundle.put( QUICKSLOT, Dungeon.quickslot.getSlot(this) );
 		}
 		bundle.put( KEPT_LOST, keptThoughLostInvent );
+		if (customNoteID != -1)     bundle.put(CUSTOM_NOTE_ID, customNoteID);
 		bundle.put( RESERVED_QUICKSLOT, reservedQuickslot );
 		bundle.put( SPREAD_IF_LOOT, spreadIfLoot );
 		bundle.put( ONLY_CHECK_TYPE_IF_RECIPE, onlyCheckTypeIfRecipe );
@@ -777,6 +783,8 @@ public class Item extends GameObject implements Customizable {
 			}
 		}
 
+		keptThoughLostInvent = bundle.getBoolean( KEPT_LOST );
+		if (bundle.contains(CUSTOM_NOTE_ID))    customNoteID = bundle.getInt(CUSTOM_NOTE_ID);
         keptThoughLostInvent = bundle.getBoolean(KEPT_LOST);
         reservedQuickslot = bundle.getInt(RESERVED_QUICKSLOT);
         spreadIfLoot = bundle.getBoolean(SPREAD_IF_LOOT);
