@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.CircleBasinRoom;
 
 public class CircleBasinExitRoom extends CircleBasinRoom implements ExitRoomInterface {
@@ -47,13 +46,6 @@ public class CircleBasinExitRoom extends CircleBasinRoom implements ExitRoomInte
 		Painter.set( level, exit, Terrain.EXIT );
 
 		level.addRegularExit(exit);
-	}
-
-	@Override
-	public boolean connect(Room room) {
-		//cannot connect to exit, otherwise works normally
-		if (room.isExit())  return false;
-		else                return super.connect(room);
 	}
 
 }

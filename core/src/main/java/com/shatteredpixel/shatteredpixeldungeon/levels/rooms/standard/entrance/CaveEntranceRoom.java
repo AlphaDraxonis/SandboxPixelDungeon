@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.CaveRoom;
 import com.watabou.utils.PathFinder;
 
@@ -80,13 +79,6 @@ public class CaveEntranceRoom extends CaveRoom implements EntranceRoomInterface 
 		}
 
 		level.addRegularEntrance(entrance);
-	}
-
-	@Override
-	public boolean connect(Room room) {
-		//cannot connect to exit, otherwise works normally
-		if (room.isExit())  return false;
-		else                return super.connect(room);
 	}
 
 }

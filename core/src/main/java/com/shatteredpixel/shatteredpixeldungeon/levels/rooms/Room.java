@@ -225,6 +225,11 @@ public abstract class Room extends RoomRect implements Graph.Node, Bundlable {
 	
 	//considers both direction and point limits
 	public boolean canConnect( Room r ){
+		if (isExit() && r.isEntrance() || isEntrance() && r.isExit()){
+			//entrance and exit rooms cannot directly connect
+			return false;
+		}
+
 		RoomRect i = intersect( r );
 		
 		boolean foundPoint = false;
@@ -272,10 +277,6 @@ public abstract class Room extends RoomRect implements Graph.Node, Bundlable {
 	}
 	
 	public boolean connect( Room room ) {
-		if (isExit() && room.isEntrance() || isEntrance() && room.isExit()){
-			//entrance and exit rooms cannot directly connect
-			return false;
-		}
 
 		if ((neigbours.contains(room) || addNeigbour(room))
 				&& !connected.containsKey( room ) && canConnect(room)) {
