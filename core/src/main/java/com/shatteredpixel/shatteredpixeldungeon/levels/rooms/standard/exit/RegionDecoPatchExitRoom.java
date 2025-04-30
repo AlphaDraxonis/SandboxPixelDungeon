@@ -23,15 +23,22 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.CircleBasinRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RegionDecoPatchRoom;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 
-public class CircleBasinExitRoom extends CircleBasinRoom implements ExitRoomInterface {
+public class RegionDecoPatchExitRoom extends RegionDecoPatchRoom {
 
 	@Override
-	public float[] sizeCatProbs() {
-		return new float[]{0, 1, 0};
+	public int minHeight() {
+		return Math.max(7, super.minHeight());
+	}
+
+	@Override
+	public int minWidth() {
+		return Math.max(7, super.minWidth());
 	}
 
 	@Override
@@ -43,10 +50,32 @@ public class CircleBasinExitRoom extends CircleBasinRoom implements ExitRoomInte
 	public void paint(Level level) {
 		super.paint(level);
 
-		int exit = level.pointToCell(center());
+		int exit;
+		int tries = 30;
+		boolean valid;
+		do {
+			exit = level.pointToCell(random(2));
+
+			//need extra logic here as these rooms can spawn small and cramped in very rare cases
+			if (tries-- > 0){
+				valid = level.map[exit] != Terrain.WALL && level.findMob(exit) == null;
+			} else {
+				valid = false;
+				for (int i : PathFinder.NEIGHBOURS4){
+					if (level.map[exit+i] != Terrain.WALL){
+						valid = true;
+					}
+				}
+				valid = valid && level.findMob(exit) == null;
+			}
+		} while (!valid);
 		Painter.set( level, exit, Terrain.EXIT );
 
-		level.addRegularExit(exit);
+		for (int i : PathFinder.NEIGHBOURS8){
+			Painter.set( level, exit+i, Terrain.EMPTY );
+		}
+
+		level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
 	}
 
 	@Override

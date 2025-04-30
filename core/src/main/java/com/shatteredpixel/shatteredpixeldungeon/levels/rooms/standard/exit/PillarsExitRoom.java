@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.PillarsRoom;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
 
 public class PillarsExitRoom extends PillarsRoom implements ExitRoomInterface {
 
@@ -60,6 +61,11 @@ public class PillarsExitRoom extends PillarsRoom implements ExitRoomInterface {
 		Painter.set( level, exit, Terrain.EXIT );
 
 		level.addRegularExit(exit);
+	}
+
+	@Override
+	public boolean canPlaceCharacter(Point p, Level l) {
+		return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
 	}
 
 }

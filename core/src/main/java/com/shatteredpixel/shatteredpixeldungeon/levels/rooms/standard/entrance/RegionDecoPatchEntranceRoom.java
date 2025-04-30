@@ -19,35 +19,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
+package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.LibraryRingRoom;
-import com.watabou.utils.Point;
-import com.watabou.utils.Random;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RegionDecoPatchRoom;
+import com.watabou.utils.PathFinder;
 
-public class LibraryRingExitRoom extends LibraryRingRoom {
-
-	@Override
-	public int minWidth() {
-		return Math.max(super.minWidth(), 13);
-	}
+public class RegionDecoPatchEntranceRoom extends RegionDecoPatchRoom {
 
 	@Override
 	public int minHeight() {
-		return Math.max(super.minHeight(), 13);
+		return Math.max(7, super.minHeight());
 	}
 
 	@Override
-	public float[] sizeCatProbs() {
-		return new float[]{0, 1, 0};
+	public int minWidth() {
+		return Math.max(7, super.minWidth());
 	}
 
 	@Override
-	public boolean isExit() {
+	public boolean isEntrance() {
 		return true;
 	}
 
@@ -55,31 +49,32 @@ public class LibraryRingExitRoom extends LibraryRingRoom {
 	public void paint(Level level) {
 		super.paint(level);
 
-		Painter.fill(level, this, 5, Terrain.EMPTY_SP);
+		int entrance;
+		int tries = 30;
+		boolean valid;
+		do {
+			entrance = level.pointToCell(random(2));
 
-		Point p = center();
-		Painter.set(level, p, Terrain.EXIT);
-		level.transitions.add(new LevelTransition(level, level.pointToCell(p), LevelTransition.Type.REGULAR_EXIT));
+			//need extra logic here as these rooms can spawn small and cramped in very rare cases
+			if (tries-- > 0){
+				valid = level.map[entrance] != Terrain.WALL && level.findMob(entrance) == null;
+			} else {
+				valid = false;
+				for (int i : PathFinder.NEIGHBOURS4){
+					if (level.map[entrance+i] != Terrain.WALL){
+						valid = true;
+					}
+				}
+				valid = valid && level.findMob(entrance) == null;
+			}
+		} while (!valid);
+		Painter.set( level, entrance, Terrain.ENTRANCE );
 
-		int dirX = 0, dirY = 0;
-		if (Random.Int(2) == 0){
-			dirX = Random.Int(2) == 0 ? +1 : -1;
-		} else {
-			dirY = Random.Int(2) == 0 ? +1 : -1;
+		for (int i : PathFinder.NEIGHBOURS8){
+			Painter.set( level, entrance+i, Terrain.EMPTY );
 		}
 
-		p.x += dirX;
-		p.y += dirY;
-		while (level.map[level.pointToCell(p)] != Terrain.EMPTY){
-			Painter.set(level, p, Terrain.EMPTY_SP);
-			p.x += dirX;
-			p.y += dirY;
-		}
-	}
-
-	@Override
-	public boolean canPlaceCharacter(Point p, Level l) {
-		return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
+		level.transitions.add(new LevelTransition(level, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
 	}
 
 }

@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.ChasmRoom;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
 
 public class ChasmExitRoom extends ChasmRoom implements ExitRoomInterface {
 
@@ -79,6 +80,11 @@ public class ChasmExitRoom extends ChasmRoom implements ExitRoomInterface {
 		}
 
 		level.addRegularExit(exit);
+	}
+
+	@Override
+	public boolean canPlaceCharacter(Point p, Level l) {
+		return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
 	}
 
 }
