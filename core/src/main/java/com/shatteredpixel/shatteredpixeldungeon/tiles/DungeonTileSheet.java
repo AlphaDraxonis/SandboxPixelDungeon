@@ -113,7 +113,6 @@ public class DungeonTileSheet {
 		//special floor
 		chasmStitcheable.put( Terrain.EMPTY_SP,     CHASM_FLOOR_SP );
 		chasmStitcheable.put( Terrain.STATUE_SP,    CHASM_FLOOR_SP );
-		chasmStitcheable.put( Terrain.REGION_DECO_SP,CHASM_FLOOR_SP );
 
 		//wall
 		chasmStitcheable.put( Terrain.WALL,         CHASM_WALL );
@@ -132,6 +131,13 @@ public class DungeonTileSheet {
 	}
 
 	public static int stitchChasmTile(int above){
+		//alt region deco has different visuals per region, but most commonly FLOOR_SP
+		if (above == Terrain.REGION_DECO_ALT){
+			if (Dungeon.depth <= 5)     return CHASM_FLOOR_SP;
+			if (Dungeon.depth <= 10)    return CHASM;
+			if (Dungeon.depth <= 20)    return CHASM_FLOOR_SP;
+			else                        return CHASM_FLOOR;
+		}
 		return chasmStitcheable.get(above, CHASM);
 	}
 
@@ -164,6 +170,15 @@ public class DungeonTileSheet {
 			Terrain.SECRET_DOOR, Terrain.SECRET_LOCKED_DOOR, Terrain.SECRET_CRYSTAL_DOOR
 	));
 
+	public static boolean waterStitcheable(int tile){
+		//alt region deco has different visuals per region, is stitcheable in demon halls
+		if (tile == Terrain.REGION_DECO_ALT){
+			if (Dungeon.depth <= 20)    return false;
+			else                        return true;
+		}
+		return waterStitcheable.contains(tile);
+	}
+
 	//+1 for ground above, +2 for ground right, +4 for ground below, +8 for ground left.
 	public static int stitchWaterTile(int top, int right, int bottom, int left){
 		int result = WATER;
@@ -173,10 +188,10 @@ public class DungeonTileSheet {
 			if (waterStitcheableWithSecretDoor.contains(bottom)) result += 4;
 			if (waterStitcheableWithSecretDoor.contains(left)) result += 8;
 		} else {
-			if (waterStitcheable.contains(top)) result += 1;
-			if (waterStitcheable.contains(right)) result += 2;
-			if (waterStitcheable.contains(bottom)) result += 4;
-			if (waterStitcheable.contains(left)) result += 8;
+			if (waterStitcheable(top)) result += 1;
+			if (waterStitcheable(right)) result += 2;
+			if (waterStitcheable(bottom)) result += 4;
+			if (waterStitcheable(left)) result += 8;
 		}
 		return result;
 	}
@@ -224,7 +239,7 @@ public class DungeonTileSheet {
 	public static final int FLAT_SIGN           = FLAT_OTHER+8;
 	public static final int FLAT_SIGN_SP        = FLAT_OTHER+9;
 	public static final int FLAT_REGION_DECO    = FLAT_OTHER+10;
-	public static final int FLAT_REGION_DECO_SP = FLAT_OTHER+11;
+	public static final int FLAT_REGION_DECO_ALT= FLAT_OTHER+11;
 
 	public static final int FLAT_MINE_CRYSTAL         = FLAT_OTHER+10;
 	public static final int FLAT_MINE_CRYSTAL_ALT     = FLAT_OTHER+11;
@@ -334,7 +349,7 @@ public class DungeonTileSheet {
 	public static final int RAISED_SIGN             = RAISED_OTHER+8;
 	public static final int RAISED_SIGN_SP          = RAISED_OTHER+9;
 	public static final int RAISED_REGION_DECO      = RAISED_OTHER+10;
-	public static final int RAISED_REGION_DECO_SP   = RAISED_OTHER+11;
+	public static final int RAISED_REGION_DECO_ALT  = RAISED_OTHER+11;
 
 	public static final int RAISED_MINE_CRYSTAL     = RAISED_OTHER+10;
 	public static final int RAISED_MINE_CRYSTAL_ALT = RAISED_OTHER+11;
@@ -433,7 +448,7 @@ public class DungeonTileSheet {
 	public static final int STATUE_OVERHANG             = OTHER_OVERHANG+6;
 	public static final int STATUE_SP_OVERHANG          = OTHER_OVERHANG+7;
 	public static final int REGION_DECO_OVERHANG        = OTHER_OVERHANG+10;
-	public static final int REGION_DECO_SP_OVERHANG     = OTHER_OVERHANG+11;
+	public static final int REGION_DECO_ALT_OVERHANG    = OTHER_OVERHANG+11;
 
 	public static final int MINE_CRYSTAL_OVERHANG       = OTHER_OVERHANG+10;
 	public static final int MINE_CRYSTAL_OVERHANG_ALT   = OTHER_OVERHANG+11;
@@ -502,7 +517,7 @@ public class DungeonTileSheet {
 		directFlatVisuals.put(Terrain.SIGN,             FLAT_SIGN);
 		directFlatVisuals.put(Terrain.SIGN_SP,          FLAT_SIGN_SP);
 		directFlatVisuals.put(Terrain.REGION_DECO,      FLAT_REGION_DECO);
-		directFlatVisuals.put(Terrain.REGION_DECO_SP,   FLAT_REGION_DECO_SP);
+		directFlatVisuals.put(Terrain.REGION_DECO_ALT,  FLAT_REGION_DECO_ALT);
 
 		directFlatVisuals.put(Terrain.MINE_CRYSTAL,     FLAT_MINE_CRYSTAL);
 		directFlatVisuals.put(Terrain.MINE_BOULDER,     FLAT_MINE_BOULDER);
