@@ -92,6 +92,11 @@ public class EntranceRoom extends StandardRoom implements EntranceRoomInterface 
 
 		level.addRegularEntrance(entrance);
 
+		placeEarlyGuidePages(level, this);
+
+	}
+
+	public static void placeEarlyGuidePages(Level level, Room r){
 		//use a separate generator here so meta progression doesn't affect levelgen
 		Random.pushGenerator();
 
@@ -101,9 +106,9 @@ public class EntranceRoom extends StandardRoom implements EntranceRoomInterface 
 			int pos;
 			do {
 				//can't be on bottom row of tiles
-				pos = level.pointToCell(new Point( Random.IntRange( left + 1, right - 1 ),
-						Random.IntRange( top + 1, bottom - 2 )));
-			} while (pos == level.entrance() || level.findMob(level.entrance()) != null);
+				pos = level.pointToCell(new Point( Random.IntRange( r.left + 1, r.right - 1 ),
+						Random.IntRange( r.top + 1, r.bottom - 2 )));
+			} while (pos == level.entrance() || level.map[pos] == Terrain.REGION_DECO);
 			level.drop( new Guidebook(), pos );
 			Document.ADVENTURERS_GUIDE.deletePage(Document.GUIDE_INTRO);
 		}
@@ -113,16 +118,15 @@ public class EntranceRoom extends StandardRoom implements EntranceRoomInterface 
 			int pos;
 			do {
 				//can't be on bottom row of tiles
-				pos = level.pointToCell(new Point( Random.IntRange( left + 1, right - 1 ),
-						Random.IntRange( top + 1, bottom - 2 )));
-			} while (pos == level.entrance() || level.findMob(level.entrance()) != null);
+				pos = level.pointToCell(new Point( Random.IntRange( r.left + 1, r.right - 1 ),
+						Random.IntRange( r.top + 1, r.bottom - 2 )));
+			} while (pos == level.entrance() || level.map[pos] == Terrain.REGION_DECO);
 			GuidePage p = new GuidePage();
 			p.page(Document.GUIDE_SEARCHING);
 			level.drop( p, pos );
 		}
 
 		Random.popGenerator();
-
 	}
 
 	private static ArrayList<Class<?extends StandardRoom>> rooms = new ArrayList<>();
