@@ -21,11 +21,14 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.WaterBridgeRoom;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
 
 public class WaterBridgeEntranceRoom extends WaterBridgeRoom implements EntranceRoomInterface {
 
@@ -42,6 +45,24 @@ public class WaterBridgeEntranceRoom extends WaterBridgeRoom implements Entrance
 	@Override
 	public boolean isEntrance() {
 		return true;
+	}
+
+	@Override
+	public boolean canMerge(Level l, Room other, Point p, int mergeTerrain) {
+		if (Dungeon.depth <= 2) {
+			return false;
+		} else {
+			return super.canMerge(l, other, p, mergeTerrain);
+		}
+	}
+
+	@Override
+	public boolean canPlaceTrap(Point p) {
+		if (Dungeon.depth == 1) {
+			return false;
+		} else {
+			return super.canPlaceTrap(p);
+		}
 	}
 
 	@Override
