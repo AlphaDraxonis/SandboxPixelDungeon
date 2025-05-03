@@ -1330,7 +1330,7 @@ public class Hero extends Char {
 				hasKey = true;
 
 			} else if (door == Terrain.COIN_DOOR
-					&& Dungeon.gold >= Dungeon.level.getCoinDoorCost(doorCell)) {
+					&& (Dungeon.gold >= Dungeon.level.getCoinDoorCost(doorCell) || Dungeon.customDungeon.permaKey)) {
 
 				hasKey = true;
 
