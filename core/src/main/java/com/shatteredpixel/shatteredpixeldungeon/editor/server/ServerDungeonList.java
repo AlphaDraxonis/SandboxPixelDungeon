@@ -331,7 +331,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			this.preview = preview;
 
 			title.text( preview.title );
-			by.text(Messages.get(ServerDungeonList.class, "title_entry"));
+			by.text(Messages.get(ServerDungeonList.class, "title_entry") + "  ");
 			creator.text(preview.uploader);
 			creator.setHighlighting(false);
 			creator.hardlight(Window.TITLE_COLOR);
