@@ -202,7 +202,9 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 
 	@Override
 	public void beckon( int cell ) {
-		// Do nothing
+		if (state != PASSIVE){
+			super.beckon(cell);
+		}
 	}
 
 	@Override
