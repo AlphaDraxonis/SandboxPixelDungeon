@@ -24,23 +24,16 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.watabou.noosa.TextureFilm;
 
-public class GreatCrabSprite extends MobSprite {
+public class HermitCrabSprite extends MobSprite {
 
-	public GreatCrabSprite() {
+	public HermitCrabSprite() {
 		super();
 
 		texture( Assets.Sprites.CRAB );
 
-		initAnimations();
-
-		play( idle );
-	}
-
-	@Override
-	public void initAnimations() {
 		TextureFilm frames = new TextureFilm( texture, 16, 16 );
 
-		int c = 32;
+		int c = 16;
 
 		idle = new Animation( 5, true );
 		idle.frames( frames, 0+c, 1+c, 0+c, 2+c );
@@ -53,10 +46,13 @@ public class GreatCrabSprite extends MobSprite {
 
 		die = new Animation( 12, false );
 		die.frames( frames, 10+c, 11+c, 12+c, 13+c );
+
+		play( idle );
 	}
 
 	@Override
 	public int blood() {
 		return 0xFFFFEA80;
 	}
+
 }

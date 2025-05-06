@@ -130,7 +130,7 @@ public enum Bestiary {
 
 		UNIVERSAL.addEntities(Wraith.class, Piranha.class, Mimic.class, GoldenMimic.class, EbonyMimic.class, Statue.class, GuardianTrap.Guardian.class, SentryRoom.Sentry.class);
 
-		RARE.addEntities(Albino.class, GnollExile.class, CausticSlime.class,
+		RARE.addEntities(Albino.class, GnollExile.class, HermitCrab.class, CausticSlime.class,
 				Bandit.class, SpectralNecromancer.class,
 				ArmoredBrute.class, DM201.class,
 				Elemental.ChaosElemental.class, Senior.class,
