@@ -30,7 +30,6 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.os.Build;
 
 public class UCEHandler implements Thread.UncaughtExceptionHandler {
 	
@@ -63,10 +62,10 @@ public class UCEHandler implements Thread.UncaughtExceptionHandler {
 			}
 		}
 		
-		b.append("\n\n");
-		
-		//Also useful, but more personal: Build.BRAND,  Build.DEVICE,  Build.MODEL,  Build.PRODUCT,
-		b.append("Android API version: ").append(Build.VERSION.SDK_INT).append('\n');
+//		b.append("\n\n");
+//
+//		//Also useful, but more personal: Build.BRAND,  Build.DEVICE,  Build.MODEL,  Build.PRODUCT,
+//		b.append("Android API version: ").append(Build.VERSION.SDK_INT).append('\n');
 		
 		ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 		ClipData clip = ClipData.newPlainText("Copied crash report to clipboard!", b.toString());
