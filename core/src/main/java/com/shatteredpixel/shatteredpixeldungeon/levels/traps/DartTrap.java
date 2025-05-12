@@ -49,9 +49,10 @@ public abstract class DartTrap extends Trap {
 		return true;
 	}
 	
-	protected int range() {
+	protected float range() {
 		//can't target beyond view distance, with a min of 6 (torch range)
-		return Math.max(6, Dungeon.level.viewDistance);
+		//add 0.5 for better consistency with vision radius shape
+		return Math.max(6, Dungeon.level.viewDistance)+0.5f;
 	}
 	
 	protected int dartDamage(Char target) {
@@ -80,7 +81,7 @@ public abstract class DartTrap extends Trap {
 				}
 
 				//find the closest char that can be aimed at
-				int range = range();
+				float range = range();
 				if (target == null){
 					float closestDist = Float.MAX_VALUE;
 					for (Char ch : Actor.chars()){
