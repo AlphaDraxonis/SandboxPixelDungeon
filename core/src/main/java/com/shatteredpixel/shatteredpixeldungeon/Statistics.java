@@ -235,6 +235,7 @@ public class Statistics {
 			i++;
 		}
 		i = 0;
+		//pre-3.1 saves. The bundle key does have an underscore and is a boolean
 		while (bundle.contains("flr_expl" + i)) {
 			floorsExplored.put(floorsExploredKeys[i], bundle.getBoolean( "flr_expl"+i ) ? 1f : 0f);
 			i++;
