@@ -1578,7 +1578,9 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 
 		Mob mob = zone == null ? createMob() : zone.createMob();
 		if (mob == null) return false;
-		mob.state = mob.WANDERING;
+		if (mob.state != mob.PASSIVE) {
+			mob.state = mob.WANDERING;
+		}
 
 		return spawnMob(mob, disLimit, zone);
 	}
