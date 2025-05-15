@@ -351,7 +351,7 @@ abstract public class Weapon extends KindOfWeapon {
 			reach += 2;
 		}
 		if (hasEnchant(Projecting.class, owner)){
-			return reach + Math.round(enchantment.procChanceMultiplier(owner));
+			return reach + Math.round(Enchantment.genericProcChanceMultiplier(owner));
 		} else {
 			return reach;
 		}
@@ -476,11 +476,10 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 
 	public boolean hasEnchant(Class<?extends Enchantment> type, Char owner) {
-		if (enchantment == null){
+		if (owner.buff(MagicImmune.class) != null) {
 			return false;
-		} else if (owner.buff(MagicImmune.class) != null) {
-			return false;
-		} else if (!enchantment.curse()
+		} else if (enchantment != null
+				&& !enchantment.curse()
 				&& owner instanceof Hero
 				&& isEquipped((Hero) owner)
 				&& owner.buff(HolyWeapon.HolyWepBuff.class) != null
@@ -490,8 +489,10 @@ abstract public class Weapon extends KindOfWeapon {
 				&& owner.buff(BodyForm.BodyFormBuff.class).enchant() != null
 				&& owner.buff(BodyForm.BodyFormBuff.class).enchant().getClass().equals(type)){
 			return true;
-		} else {
+		} else if (enchantment != null) {
 			return enchantment.getClass() == type;
+		} else {
+			return false;
 		}
 	}
 	
