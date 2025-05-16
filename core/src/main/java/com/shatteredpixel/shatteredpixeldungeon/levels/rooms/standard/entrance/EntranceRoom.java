@@ -131,8 +131,8 @@ public class EntranceRoom extends StandardRoom implements EntranceRoomInterface 
 
 	private static ArrayList<Class<?extends StandardRoom>> rooms = new ArrayList<>();
 	static {
-		rooms.add(RegionDecoPatchEntranceRoom.class);
 		rooms.add(WaterBridgeEntranceRoom.class);
+		rooms.add(RegionDecoPatchEntranceRoom.class);
 		rooms.add(RingEntranceRoom.class);
 		rooms.add(CircleBasinEntranceRoom.class);
 
