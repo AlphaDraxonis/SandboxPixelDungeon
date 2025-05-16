@@ -302,19 +302,34 @@ public abstract class RegularLevel extends Level {
 			Random.shuffle(stdRooms);
 			Iterator<Room> stdRoomIter = stdRooms.iterator();
 
-			//enemies cannot be within an 8-tile FOV of the entrance
-		// or a 6-tile open space distance from the entrance
+			//enemies cannot be within a 8-tile FOV or 8-tile open space walk from the entrance
 		boolean[] entranceFOV = new boolean[length()];
 		Point c = cellToPoint(entrance());
-		ShadowCaster.castShadow(c.x, c.y, width(), entranceFOV, losBlocking, 6, false);
-		PathFinder.buildDistanceMapForEnvironmentals(entrance(), BArray.not(solid, null), 8);Mob mob = null;while (mobsToSpawn > 0) {
-				if (mob == null) mob = createMob();
-				Room roomToSpawn;
+		ShadowCaster.castShadow(c.x, c.y, width(), entranceFOV, losBlocking, 8);
 
-				if (!stdRoomIter.hasNext()) {
-					stdRoomIter = stdRooms.iterator();
+		boolean[] entranceWalkable = BArray.not(solid, null);
+
+		//doors within the entrance room are ignored for this walk, but doors on the edge are not
+		for (int y = roomEntrance.top+1; y < roomEntrance.bottom; y++){
+			for (int x = roomEntrance.left+1; x < roomEntrance.right; x++){
+				int cell = x + y*width();
+				if (isPassable(cell)){
+					entranceWalkable[cell] = true;
 				}
-				roomToSpawn = stdRoomIter.next();
+			}
+		}
+
+		PathFinder.buildDistanceMapForEnvironmentals(entrance(), entranceWalkable, 8);
+
+		Mob mob = null;
+		while (mobsToSpawn > 0) {
+			if (mob == null) mob = createMob();
+			Room roomToSpawn;
+			
+			if (!stdRoomIter.hasNext()) {
+				stdRoomIter = stdRooms.iterator();
+			}
+			roomToSpawn = stdRoomIter.next();
 
 				int tries = 30;
 				do {
