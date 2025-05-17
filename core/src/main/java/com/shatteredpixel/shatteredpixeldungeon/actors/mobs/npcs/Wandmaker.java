@@ -41,7 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuest;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndWandmaker;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
-import com.watabou.utils.Point;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.List;
@@ -174,11 +174,11 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 		do {
 			validPos = true;
 			pos = level.pointToCell(roomEntrance.random((roomEntrance.width() > 6 && roomEntrance.height() > 6) ? 2 : 1));
-			if (pos == level.entrance()) {
+			if (pos == level.entrance() || level.solid[pos]) {
 				validPos = false;
 			}
-			for (Point door : roomEntrance.connected.values()) {
-				if (level.trueDistance(pos, level.pointToCell(door)) <= 1) {
+			for (int i : PathFinder.NEIGHBOURS4){
+				if (level.map[pos+i] == Terrain.DOOR){
 					validPos = false;
 				}
 			}
