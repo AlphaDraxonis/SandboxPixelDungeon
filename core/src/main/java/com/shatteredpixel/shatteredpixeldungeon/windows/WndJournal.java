@@ -858,7 +858,7 @@ public class WndJournal extends WndTabbed {
 				gridItem.addSecondIcon(secondIcon);
 			}
 			if (!seen) {
-				gridItem.hardLightBG(2f, 0.8f, 2f);
+				gridItem.hardLightBG(2f, 1f, 2f);
 			}
 			grid.addItem(gridItem);
 		}
@@ -991,7 +991,7 @@ public class WndJournal extends WndTabbed {
 				}
 			};
 			if (!seen) {
-				gridItem.hardLightBG(2f, 0.8f, 2f);
+				gridItem.hardLightBG(2f, 1f, 2f);
 			}
 			grid.addItem(gridItem);
 		}
@@ -1036,10 +1036,10 @@ public class WndJournal extends WndTabbed {
 				text.measure();
 				gridItem.addSecondIcon( text );
 				if (!read) {
-					gridItem.hardLightBG(0.9f, 0.9f, 2f);
+					gridItem.hardLightBG(0.6f, 1f, 2f);
 				}
 			} else {
-				gridItem.hardLightBG(2f, 0.8f, 2f);
+				gridItem.hardLightBG(2.2f, 1f, 2.2f);
 			}
 			grid.addItem(gridItem);
 		}
