@@ -570,11 +570,15 @@ public final class Notes {
 			records.add( (Record) rec );
 		}
 	}
-	
+
 	public static boolean add( Landmark landmark ) {
-		LandmarkRecord l = new LandmarkRecord( landmark, Dungeon.levelName );
+		return add( landmark, Dungeon.levelName );
+	}
+	
+	public static boolean add( Landmark landmark, String levelName ) {
+		LandmarkRecord l = new LandmarkRecord( landmark, levelName );
 		if (!records.contains(l)) {
-			boolean result = records.add(new LandmarkRecord(landmark, Dungeon.levelName));
+			boolean result = records.add(l);
 			Collections.sort(records, comparator);
 			return result;
 		}
@@ -582,10 +586,19 @@ public final class Notes {
 	}
 
 	public static boolean contains( Landmark landmark ){
-		return records.contains(new LandmarkRecord( landmark, Dungeon.levelName));
+		return contains( landmark, Dungeon.levelName );
 	}
+
+	public static boolean contains( Landmark landmark, String levelName ){
+		return records.contains(new LandmarkRecord( landmark, levelName));
+	}
+
 	public static boolean remove( Landmark landmark ) {
-		return records.remove( new LandmarkRecord(landmark, Dungeon.levelName) );
+		return remove( landmark, Dungeon.levelName );
+	}
+
+	public static boolean remove( Landmark landmark, String levelName ) {
+		return records.remove( new LandmarkRecord(landmark, levelName) );
 	}
 	
 	public static boolean add( Key key ){
