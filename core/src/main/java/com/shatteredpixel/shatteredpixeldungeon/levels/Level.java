@@ -2030,7 +2030,13 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		level.avoid[cell]			= (flags & Terrain.AVOID) != 0;
 		level.pit[cell]			    = (flags & Terrain.PIT) != 0;
 		level.water[cell]			= terrain == Terrain.WATER;
-
+		
+		if (level instanceof SewerLevel){
+			if (level.map[cell] == Terrain.REGION_DECO || level.map[cell] == Terrain.REGION_DECO_ALT){
+				level.flamable[cell] = true;
+			}
+		}
+		
 		if (!level.insideMap(cell)) {
 			level.passable[cell] = level.passableHero[cell] = level.passableMob[cell] = level.passableAlly[cell] = level.avoid[cell] = false;
 			level.losBlocking[cell] = level.solid[cell] = true;
