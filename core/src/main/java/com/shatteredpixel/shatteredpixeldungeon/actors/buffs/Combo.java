@@ -414,10 +414,8 @@ public class Combo extends HeroSubclassAbilityBuff {
 							ch.sprite.bloodBurstA(target.sprite.center(), aoeHit);
 							ch.sprite.flash();
 
-							if (!ch.isAlive()
-									&& hero.hasTalent(Talent.LETHAL_DEFENSE)
-									&& hero.buff(BrokenSeal.WarriorShield.class) != null) {
-								hero.buff(BrokenSeal.WarriorShield.class).reduceCooldown(hero.pointsInTalent(Talent.LETHAL_DEFENSE)/3f);
+							if (!ch.isAlive() && hero.hasTalent(Talent.LETHAL_DEFENSE)) {
+								Buff.affect(hero, BrokenSeal.WarriorShield.class).reduceCooldown(hero.pointsInTalent(Talent.LETHAL_DEFENSE)/3f);
 							}
 						}
 					}
@@ -470,7 +468,7 @@ public class Combo extends HeroSubclassAbilityBuff {
 
 		if (!enemy.isAlive() || (!wasAlly && enemy.alignment == target.alignment)) {
 			if (hero.hasTalent(Talent.LETHAL_DEFENSE)){
-				hero.buff(BrokenSeal.WarriorShield.class).reduceCooldown(hero.pointsInTalent(Talent.LETHAL_DEFENSE)/3f);
+				Buff.affect(hero, BrokenSeal.WarriorShield.class).reduceCooldown(hero.pointsInTalent(Talent.LETHAL_DEFENSE)/3f);
 			}
 		}
 
