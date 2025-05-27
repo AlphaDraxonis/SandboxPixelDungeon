@@ -54,7 +54,7 @@ public class Waterskin extends Item {
 		unique = true;
 	}
 
-	private int volume = 0;
+	public int volume = 0;
 
 	private static final String VOLUME	= "volume";
 
@@ -192,7 +192,7 @@ public class Waterskin extends Item {
 		updateQuickslot();
 	}
 
-	protected int maxVolume() {
+	public int maxVolume() {
 		return MAX_VOLUME;
 	}
 

@@ -48,6 +48,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
@@ -128,6 +129,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledCheckBox igniteBombOnDrop;
     protected StyledSpinner shockerDuration;
     protected StyledItemSelector reclaimTrap;
+    protected StyledSpinner volume;
     protected AugmentationSpinner augmentationSpinner;
     protected StyledButton enchantBtn;
     protected StyledSpinner numChoosableTrinkets;
@@ -523,6 +525,16 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 add(reclaimTrap);
             }
             
+            if (item instanceof Waterskin) {
+                volume = new StyledSpinner(new SpinnerIntegerModel(0, ((Waterskin) item).maxVolume(), ((Waterskin) item).volume), label("volume"));
+                ((SpinnerIntegerModel) volume.getModel()).setAbsoluteMaximum(2_000_000_000f);
+                volume.addChangeListener(() -> {
+                    ((Waterskin) item).volume = (int) volume.getValue();
+                    updateObj();
+                });
+                add(volume);
+            }
+            
             if (item instanceof FakeTenguShocker) {
                 shockerDuration = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((FakeTenguShocker) item).duration),
                         label("duration"));
@@ -733,7 +745,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(randomItem);
         }
 
-        rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, potionsKnown, reclaimTrap, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
+        rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, potionsKnown, reclaimTrap, volume, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
                 augmentationSpinner, curseBtn, permaCursed, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, classArmorTier, blessed, igniteBombOnDrop, docPageType, spreadIfLoot, exactItemInRecipe};
         linearComps = new Component[]{rollTrinkets, potionCocktailPotions, summonMobs, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
 
@@ -877,6 +889,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (hasSeal != null)                hasSeal.checked(((Armor) obj).checkSeal() != null);
         if (blessed != null)                blessed.checked(((Ankh) obj).blessed);
         if (igniteBombOnDrop != null)       igniteBombOnDrop.checked(((Bomb) obj).igniteOnDrop);
+        if (volume != null)                 volume.setValue(((Waterskin) obj).volume);
         if (potionsKnown != null)           potionsKnown.checked(((PotionCocktail)obj).potionsKnown);
         if (shockerDuration != null)        shockerDuration.setValue(((FakeTenguShocker) obj).duration);
         if (docPageType != null)            docPageType.setValue(CustomDocumentPage.types.get(((CustomDocumentPage) obj).type));
@@ -1008,6 +1021,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
         if (a instanceof ReclaimTrap) {
             if (!EditTrapComp.areEqual(((ReclaimTrap) a).storedTrap, ((ReclaimTrap) b).storedTrap)) return false;
+        }
+        if (a instanceof Waterskin) {
+            if (((Waterskin) a).volume != ((Waterskin) b).volume) return false;
         }
         if (a instanceof Bag) {
             if (!isItemListEqual(((Bag) a).items, ((Bag) b).items)) return false;
