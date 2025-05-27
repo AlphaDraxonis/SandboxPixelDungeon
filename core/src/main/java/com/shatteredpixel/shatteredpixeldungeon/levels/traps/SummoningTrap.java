@@ -111,7 +111,9 @@ public class SummoningTrap extends Trap {
 			if (mob != null) {
 				mob = (Mob) mob.getCopy();
 				if (useCustomConfig && mob instanceof MobBasedOnDepth) ((MobBasedOnDepth) mob).setLevel(Dungeon.depth);
-				mob.state = mob.WANDERING;
+				if (mob.state != mob.PASSIVE) {
+					mob.state = mob.WANDERING;
+				}
 				mob.pos = point;
 				mob.setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME();
 				GameScene.add(mob, DELAY);
