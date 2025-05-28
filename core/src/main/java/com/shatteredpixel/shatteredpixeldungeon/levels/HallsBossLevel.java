@@ -122,10 +122,13 @@ public class HallsBossLevel extends Level {
 
 		}
 
+		int exitCell = width/2 + ((ROOM_TOP+1) * width);
+		int bossPos = exitCell + width*3;
+
 		boolean[] patch = Patch.generate(width, height, 0.20f, 0, true);
 		for (int i = 0; i < length(); i++) {
 			if (map[i] == Terrain.EMPTY && patch[i]) {
-				map[i] = Terrain.STATUE;
+				map[i] = distance(i, bossPos)+Random.Int(5) >= 10 ? Terrain.REGION_DECO : Terrain.STATUE;
 			}
 		}
 
@@ -135,7 +138,7 @@ public class HallsBossLevel extends Level {
 
 		patch = Patch.generate(width, height, 0.30f, 3, true);
 		for (int i = 0; i < length(); i++) {
-			if ((map[i] == Terrain.EMPTY || map[i] == Terrain.STATUE) && patch[i]) {
+			if ((map[i] == Terrain.EMPTY || map[i] == Terrain.STATUE || map[i] == Terrain.REGION_DECO) && patch[i]) {
 				map[i] = Terrain.WATER;
 			}
 		}
