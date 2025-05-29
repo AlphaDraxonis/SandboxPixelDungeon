@@ -34,7 +34,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Tooltip;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Holiday;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
-import com.watabou.NotAllowedInLua;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.ControllerHandler;
@@ -60,7 +59,6 @@ import com.watabou.utils.Signal;
 
 import java.util.ArrayList;
 
-@NotAllowedInLua
 public class PixelScene extends Scene {
 
 	// Minimum virtual display size for mobile portrait orientation

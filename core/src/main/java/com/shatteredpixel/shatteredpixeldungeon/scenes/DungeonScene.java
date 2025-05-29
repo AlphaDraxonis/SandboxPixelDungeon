@@ -63,7 +63,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.InventoryPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
-import com.watabou.NotAllowedInLua;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
@@ -86,7 +85,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@NotAllowedInLua
 public abstract class DungeonScene extends PixelScene {
 
 	private static DungeonScene scene;

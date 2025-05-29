@@ -28,7 +28,9 @@ import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaGlobals;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.watabou.NotAllowedInLua;
+import com.watabou.utils.Reflection;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
@@ -37,6 +39,7 @@ import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -141,13 +144,13 @@ public class LuaRestrictionProxy extends LuaValue {
 		public Varargs invoke(Varargs varargs) {
 			Object[] params = unwrapRestrictionProxiesAsJavaArray(varargs.subargs(2));
 			
-			Method method = LuaGlobals.findBestMatchingExecutableM(params, methods);
+			Method method = Reflection.findBestMatchingExecutableM(params, methods);
 			
 			try {
 				if (method == null) {
 					throw new LuaError("unknown method: " + name + " with " + (varargs.narg()-1) + " arguments");
 				}
-				return wrapObject(method.invoke(javaObject, LuaGlobals.makeParamsFitVarArgsMethods(params, method.getParameterTypes(), method.isVarArgs())));
+				return wrapObject(method.invoke(javaObject, Reflection.makeParamsFitVarArgsMethods(params, method.getParameterTypes(), method.isVarArgs())));
 			} catch (Exception e) {
 				LuaGlobals.throwError(e);
 				return null;
@@ -231,7 +234,36 @@ public class LuaRestrictionProxy extends LuaValue {
 	// WARNING: NEVER use CoerceLuaToJava.coerce anywhere else! use LuaRestrictionPolicy.coerceLuaToJava(obj) instead!
 	public static Object coerceLuaToJava(LuaValue luaValue, Class<?> aClass) {
 		if (luaValue instanceof LuaRestrictionProxy) return luaValue.touserdata();
+		if (luaValue instanceof LuaTable) return convertLuaTableToArray(luaValue.checktable());
 		return CoerceLuaToJava.coerce(luaValue, aClass);
+	}
+	
+	public static Object[] convertLuaTableToArray(LuaTable table) {
+		Object[] javaArray = new Object[table.length()];
+		if (javaArray.length == 0) return javaArray;
+		
+		Class<?> commonType = null;
+		for (int i = 0; i < javaArray.length; i++) {
+			javaArray[i] = coerceLuaToJava( table.get(i+1) );
+			if (javaArray[i] == null) continue;
+			if (commonType == null) commonType = javaArray[i].getClass();
+			else {
+				Class<?> c = javaArray[i].getClass();
+				
+				while (c != null) {
+					if (c.isAssignableFrom(commonType)) {
+						commonType = c;
+						break;
+					}
+					c = c.getSuperclass();
+				}
+			}
+			
+		}
+		
+		Object[] result = (Object[]) Array.newInstance(commonType, javaArray.length);
+		System.arraycopy(javaArray, 0, result, 0, javaArray.length);
+		return result;
 	}
 
 	//WARNING! use carefully or else this is a security leak!

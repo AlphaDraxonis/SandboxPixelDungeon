@@ -102,9 +102,9 @@ public class CustomCharSprite extends LuaCustomObject {
 	}
 
 	@Override
-	public LuaCustomObjectClass newInstance() {
+	public LuaCustomObjectClass newInstance(Object[] params) {
 		Class<?> clazz = LuaClassGenerator.luaUserContentClass(targetClass);
-		LuaCustomObjectClass instance = (LuaCustomObjectClass) Reflection.newInstance(clazz);
+		LuaCustomObjectClass instance = (LuaCustomObjectClass) Reflection.newInstance(clazz, params);
 		instance.setIdentifier(getIdentifier());
 		return instance;
 	}

@@ -77,7 +77,7 @@ public abstract class CustomGameObject<T extends CustomGameObjectClass> extends 
 	public abstract GameObjectCategory<?> inventoryCategory();
 
 	@Override
-	public LuaCustomObjectClass newInstance() {
+	public LuaCustomObjectClass newInstance(Object[] params) {
 		return (LuaCustomObjectClass) userContentClass.newInstance();
 	}
 

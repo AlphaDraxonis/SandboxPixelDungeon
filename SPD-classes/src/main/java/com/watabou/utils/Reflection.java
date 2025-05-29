@@ -25,6 +25,11 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Locale;
+
 //wrapper for libGDX reflection
 @NotAllowedInLua
 public class Reflection {
@@ -44,6 +49,21 @@ public class Reflection {
 //			throw new RuntimeException(">>>"+cls+"<<<");
 			Game.reportException(e);
 			return null;
+		}
+	}
+	
+	public static <T> T newInstance( Class<T> cls, Object[] params ){
+		Constructor constructor = findBestMatchingExecutableC(params, cls.getConstructors());
+		if (constructor == null) {
+			Game.reportException(new NoSuchMethodException("No matching constructor found: " + cls.getSimpleName()));
+			return null;
+		} else {
+			try {
+				return (T) constructor.newInstance(makeParamsFitVarArgsMethods(params, constructor.getParameterTypes(), constructor.isVarArgs()));
+			} catch (Exception e) {
+				Game.reportException(e);
+				throw new RuntimeException(e);
+			}
 		}
 	}
 	
@@ -105,6 +125,190 @@ public class Reflection {
 	
 	public static Class forNameUnhandled( String name ) throws Exception {
 		return ClassReflection.forName( name );
+	}
+	
+	
+	
+	public static Method findBestMatchingExecutableM(Object[] params, Iterable<? extends Method> executables) {
+		oneExe:
+		for (Method exe : executables) {
+			Class<?>[] paramTypes = exe.getParameterTypes();
+			
+			boolean matchesFirst;
+			if (paramTypes.length == params.length) {
+				
+				matchesFirst = true;
+				int i = 0;
+				for (; i < paramTypes.length - 1; i++) {
+					if (!isArgumentApplicable(paramTypes[i], params[i])) {
+						matchesFirst = false;
+						break;
+					}
+				}
+				if (paramTypes.length == 0 || isArgumentApplicable(paramTypes[i], params[i])) return exe;
+			} else {
+				matchesFirst = false;
+			}
+			if (exe.isVarArgs()) {
+				if (!matchesFirst) {
+					for (int i = 0; i < paramTypes.length - 1; i++) {
+						if (!isArgumentApplicable(paramTypes[i], params[i])) {
+							continue oneExe;
+						}
+					}
+				}
+				Class<?> lastParamType = paramTypes[paramTypes.length-1].getComponentType();
+				for (int i = paramTypes.length-1; i < params.length - 1; i++) {
+					if (!isArgumentApplicable(lastParamType, params[i])) {
+						continue oneExe;
+					}
+				}
+				return exe;
+			}
+			
+		}
+		return null;
+	}
+	
+	public static Constructor findBestMatchingExecutableC(Object[] params, Constructor[] executables) {
+		oneExe:
+		for (Constructor exe : executables) {
+			Class<?>[] paramTypes = exe.getParameterTypes();
+			
+			boolean matchesFirst;
+			if (paramTypes.length == params.length) {
+				
+				matchesFirst = true;
+				int i = 0;
+				for (; i < paramTypes.length - 1; i++) {
+					if (!isArgumentApplicable(paramTypes[i], params[i])) {
+						matchesFirst = false;
+						break;
+					}
+				}
+				if (paramTypes.length == 0 || isArgumentApplicable(paramTypes[i], params[i])) return exe;
+			} else {
+				matchesFirst = false;
+			}
+			if (exe.isVarArgs()) {
+				if (!matchesFirst) {
+					for (int i = 0; i < paramTypes.length - 1; i++) {
+						if (!isArgumentApplicable(paramTypes[i], params[i])) {
+							continue oneExe;
+						}
+					}
+				}
+				Class<?> lastParamType = paramTypes[paramTypes.length-1].getComponentType();
+				for (int i = paramTypes.length-1; i < params.length - 1; i++) {
+					if (!isArgumentApplicable(lastParamType, params[i])) {
+						continue oneExe;
+					}
+				}
+				return exe;
+			}
+			
+		}
+		return null;
+	}
+	
+	public static Object[] makeParamsFitVarArgsMethods(Object[] params, Class<?>[] paramTypes, boolean isVarArgs) {
+		Object[] result = new Object[paramTypes.length];
+		int i = 0;
+		for (; i < result.length-1; i++) {
+			result[i] = castArgumentAccordingly(params[i], paramTypes[i]);
+		}
+		if (!isVarArgs) {
+			if (i < result.length) result[i] = castArgumentAccordingly(params[i], paramTypes[i]);
+			return result;
+		}
+		int numVarArgs = params.length - result.length;
+		Class<?> componentType = paramTypes[i].getComponentType();
+		result[i] = Array.newInstance(componentType, numVarArgs);
+		for (int j = 0; j < numVarArgs; j++) {
+			Array.set(result[i], j, params[i + j]);
+		}
+		return result;
+	}
+	
+	private static boolean isArgumentApplicable(Class<?> methodParam, Object argumentClass) {
+		if (argumentClass == null || isArgumentApplicable(methodParam, argumentClass.getClass())) return true;
+		if (methodParam.isArray() && argumentClass.getClass().isArray()) {
+			if (Array.getLength(argumentClass) == 0) return true;
+		}
+		return false;
+	}
+	
+	private static boolean isArgumentApplicable(Class<?> methodParam, Class<?> argumentClass) {
+		if (methodParam.isAssignableFrom(argumentClass)) {
+			return true;
+		}
+		if (methodParam.isPrimitive() || Number.class.isAssignableFrom(methodParam)) {
+			switch (methodParam.getSimpleName().toLowerCase(Locale.ENGLISH)) {
+				case "float":
+				case "double":
+					if (argumentClass == Float.class || argumentClass == float.class  ||  argumentClass == Double.class || argumentClass == double.class)
+						return true;
+				
+				case "byte":
+				case "short":
+				case "long":
+				case "integer":
+				case "int": return argumentClass == Integer.class || argumentClass == int.class
+						|| argumentClass == Long.class || argumentClass == long.class
+						|| argumentClass == Short.class || argumentClass == short.class
+						|| argumentClass == Byte.class || argumentClass == byte.class
+						
+						|| argumentClass == Float.class || argumentClass == float.class  ||  argumentClass == Double.class || argumentClass == double.class;
+				
+				
+				case "boolean": return argumentClass == Boolean.class || argumentClass == boolean.class;
+				
+				case "char": return argumentClass == Character.class || argumentClass == char.class;
+				
+			}
+		}
+		if (argumentClass.isPrimitive() || Number.class.isAssignableFrom(argumentClass)) {
+			switch (argumentClass.getSimpleName().toLowerCase(Locale.ENGLISH)) {
+				case "byte":
+				case "short":
+				case "long":
+				case "integer":
+				case "int":
+					if (methodParam == Integer.class || methodParam == int.class
+							|| methodParam == Long.class || methodParam == long.class
+							|| methodParam == Short.class || methodParam == short.class
+							|| methodParam == Byte.class || methodParam == byte.class
+							
+							|| methodParam == Float.class || methodParam == float.class  ||  methodParam == Double.class || methodParam == double.class)
+						return true;
+				
+				case "float":
+				case "double":
+					return methodParam == Float.class || methodParam == float.class  ||  methodParam == Double.class || methodParam == double.class;
+				
+				case "boolean": return methodParam == Boolean.class || methodParam == boolean.class;
+				
+				case "char": return methodParam == Character.class || methodParam == char.class;
+			}
+		}
+		
+		return false;
+	}
+	
+	private static Object castArgumentAccordingly(Object param, Class<?> paramType) {
+		if (param instanceof Number) {
+			switch (paramType.getSimpleName().toLowerCase(Locale.ENGLISH)) {
+				case "byte": 	return ((Number) param).byteValue();
+				case "short": 	return ((Number) param).shortValue();
+				case "long": 	return ((Number) param).longValue();
+				case "int":
+				case "integer": return ((Number) param).intValue();
+				case "float": 	return ((Number) param).floatValue();
+				case "double": 	return ((Number) param).doubleValue();
+				default: 		return param;
+			}
+		}
+		return param;
 	}
 	
 }

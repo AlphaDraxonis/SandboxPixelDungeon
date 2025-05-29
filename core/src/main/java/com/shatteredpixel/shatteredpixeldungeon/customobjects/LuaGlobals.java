@@ -66,6 +66,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
@@ -193,7 +194,6 @@ import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
@@ -210,7 +210,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -271,12 +270,12 @@ public class LuaGlobals extends Globals {
 						
 						Object[] params = LuaRestrictionProxy.unwrapRestrictionProxiesAsJavaArray(varargs.subargs(2));
 						
-						Constructor constructor = findBestMatchingExecutableC(params, c.getConstructors());
+						Constructor constructor = Reflection.findBestMatchingExecutableC(params, c.getConstructors());
 						if (constructor == null) {
 							throw new LuaError("No matching constructor found: " + arg.checkstring());
 						} else {
 							try {
-								javaResult = constructor.newInstance(makeParamsFitVarArgsMethods(params, constructor.getParameterTypes(), constructor.isVarArgs()));
+								javaResult = constructor.newInstance(Reflection.makeParamsFitVarArgsMethods(params, constructor.getParameterTypes(), constructor.isVarArgs()));
 							} catch (Exception e) {
 								throwError(e);
 								return null;
@@ -307,22 +306,40 @@ public class LuaGlobals extends Globals {
 			@Override
 			public Varargs invoke(Varargs varargs) {
 				LuaValue arg = varargs.arg1();
+				Object[] params = LuaRestrictionProxy.unwrapRestrictionProxiesAsJavaArray(varargs.subargs(2));
+				Object javaResult = null;
 				if (arg.isstring()) {
 					String s = arg.tojstring();
 					for (CustomObject obj : CustomObjectManager.allUserContents.values()) {
-						if (obj.getName().equals(s) && obj instanceof LuaCustomObject)
-							return CoerceJavaToLua.coerce(((LuaCustomObject) obj).newInstance());
+						if (obj.getName().equals(s) && obj instanceof LuaCustomObject) {
+							javaResult = ((LuaCustomObject) obj).newInstance(params);
+							break;
+						}
 					}
-					throw new LuaError("No custom object with name \"" + s + "\" was found!");
+					if (javaResult == null) throw new LuaError("No custom object with name \"" + s + "\" was found!");
 				}
 				else if (arg.isint()) {
 					CustomObject original = CustomObjectManager.allUserContents.get(arg.checkint());
-					if (original instanceof LuaCustomObject)
-						return CoerceJavaToLua.coerce(((LuaCustomObject) original).newInstance());
-					throw new LuaError("No custom object with id \"" + arg.checkint() + "\" was found!");
+					if (original instanceof LuaCustomObject) {
+						javaResult = ((LuaCustomObject) original).newInstance(params);
+					}
+					if (javaResult == null) throw new LuaError("No custom object with id \"" + arg.checkint() + "\" was found!");
 
 				}
-				throw new LuaError("Illegal arguments: use newCus(String name) or newCus(int id)");
+				
+				if (javaResult != null) {
+					
+					if (!LuaRestrictionProxy.isRestricted(javaResult)) {
+						return LuaRestrictionProxy.wrapObject(javaResult);
+					}
+					else {
+						if (javaResult instanceof Gizmo) ((Gizmo) javaResult).destroy();
+						throw new IllegalArgumentException(
+								"Instancing class " + arg.checkjstring() + " is not permitted for security reasons!");
+					}
+				}
+				
+				throw new LuaError("Illegal arguments: use newCus(String name, Object... params) or newCus(int id, Object... params)");
 			}
 		});
 
@@ -916,6 +933,12 @@ public class LuaGlobals extends Globals {
 				return LuaValue.NIL;
 			}
 		});
+		set("scene", new ZeroArgFunction() {
+			@Override
+			public LuaValue call() {
+				return LuaRestrictionProxy.wrapObject( Game.scene() );
+			}
+		});
 
 		set("updateCell", new OneArgFunction() {
 			@Override
@@ -1027,7 +1050,22 @@ public class LuaGlobals extends Globals {
 				return LuaValue.valueOf(CustomDungeon.isEditing());
 			}
 		});
-
+		
+		
+		LuaTable tiles = new LuaTable();
+		tiles.set("getCustomTile", new OneArgFunction() {
+			@Override
+			public LuaValue call(LuaValue identifier) {
+				if (identifier.isstring()) {
+					return LuaRestrictionProxy.wrapObject(Tiles.getCustomTile(identifier.tojstring()));
+				}
+				if (identifier.isint()) {
+					return LuaRestrictionProxy.wrapObject(Tiles.getCustomTile(identifier.toint()));
+				}
+				throw new LuaError("Illegal arguments: use getCustomTile(fileName) or getCustomTile(identifier)");
+			}
+		});
+		set("Tiles", tiles);
 		
 
 
@@ -1607,179 +1645,7 @@ public class LuaGlobals extends Globals {
 		return result;
 	}
 	
-	public static Method findBestMatchingExecutableM(Object[] params, Iterable<? extends Method> executables) {
-		oneExe:
-		for (Method exe : executables) {
-			Class<?>[] paramTypes = exe.getParameterTypes();
-			
-			boolean matchesFirst;
-			if (paramTypes.length == params.length) {
-				
-				matchesFirst = true;
-				int i = 0;
-				for (; i < paramTypes.length - 1; i++) {
-					if (!isArgumentApplicable(paramTypes[i], params[i])) {
-						matchesFirst = false;
-						break;
-					}
-				}
-				if (paramTypes.length == 0 || isArgumentApplicable(paramTypes[i], params[i])) return exe;
-			} else {
-				matchesFirst = false;
-			}
-			if (exe.isVarArgs()) {
-				if (!matchesFirst) {
-					for (int i = 0; i < paramTypes.length - 1; i++) {
-						if (!isArgumentApplicable(paramTypes[i], params[i])) {
-							continue oneExe;
-						}
-					}
-				}
-				Class<?> lastParamType = paramTypes[paramTypes.length-1].getComponentType();
-				for (int i = paramTypes.length-1; i < params.length - 1; i++) {
-					if (!isArgumentApplicable(lastParamType, params[i])) {
-						continue oneExe;
-					}
-				}
-				return exe;
-			}
-			
-		}
-		return null;
-	}
 	
-	public static Constructor findBestMatchingExecutableC(Object[] params, Constructor[] executables) {
-		oneExe:
-		for (Constructor exe : executables) {
-			Class<?>[] paramTypes = exe.getParameterTypes();
-			
-			boolean matchesFirst;
-			if (paramTypes.length == params.length) {
-				
-				matchesFirst = true;
-				int i = 0;
-				for (; i < paramTypes.length - 1; i++) {
-					if (!isArgumentApplicable(paramTypes[i], params[i])) {
-						matchesFirst = false;
-						break;
-					}
-				}
-				if (paramTypes.length == 0 || isArgumentApplicable(paramTypes[i], params[i])) return exe;
-			} else {
-				matchesFirst = false;
-			}
-			if (exe.isVarArgs()) {
-				if (!matchesFirst) {
-					for (int i = 0; i < paramTypes.length - 1; i++) {
-						if (!isArgumentApplicable(paramTypes[i], params[i])) {
-							continue oneExe;
-						}
-					}
-				}
-				Class<?> lastParamType = paramTypes[paramTypes.length-1].getComponentType();
-				for (int i = paramTypes.length-1; i < params.length - 1; i++) {
-					if (!isArgumentApplicable(lastParamType, params[i])) {
-						continue oneExe;
-					}
-				}
-				return exe;
-			}
-			
-		}
-		return null;
-	}
-	
-	public static Object[] makeParamsFitVarArgsMethods(Object[] params, Class<?>[] paramTypes, boolean isVarArgs) {
-		Object[] result = new Object[paramTypes.length];
-		int i = 0;
-		for (; i < result.length-1; i++) {
-			result[i] = castArgumentAccordingly(params[i], paramTypes[i]);
-		}
-		if (!isVarArgs) {
-			if (i < result.length) result[i] = castArgumentAccordingly(params[i], paramTypes[i]);
-			return result;
-		}
-		int numVarArgs = params.length - result.length;
-		Class<?> componentType = paramTypes[i].getComponentType();
-		result[i] = Array.newInstance(componentType, numVarArgs);
-		for (int j = 0; j < numVarArgs; j++) {
-			Array.set(result[i], j, params[i + j]);
-		}
-		return result;
-	}
-	
-	private static boolean isArgumentApplicable(Class<?> methodParam, Object argumentClass) {
-		return argumentClass == null || isArgumentApplicable(methodParam, argumentClass.getClass());
-	}
-	
-	private static boolean isArgumentApplicable(Class<?> methodParam, Class<?> argumentClass) {
-		if (methodParam.isAssignableFrom(argumentClass)) {
-			return true;
-		}
-		if (methodParam.isPrimitive() || Number.class.isAssignableFrom(methodParam)) {
-			switch (methodParam.getSimpleName().toLowerCase(Locale.ENGLISH)) {
-				case "float":
-				case "double":
-					if (argumentClass == Float.class || argumentClass == float.class  ||  argumentClass == Double.class || argumentClass == double.class)
-						return true;
-				
-				case "byte":
-				case "short":
-				case "long":
-				case "integer":
-				case "int": return argumentClass == Integer.class || argumentClass == int.class
-						|| argumentClass == Long.class || argumentClass == long.class
-						|| argumentClass == Short.class || argumentClass == short.class
-						|| argumentClass == Byte.class || argumentClass == byte.class;
-				
-				
-				case "boolean": return argumentClass == Boolean.class || argumentClass == boolean.class;
-				
-				case "char": return argumentClass == Character.class || argumentClass == char.class;
-				
-			}
-		}
-		if (argumentClass.isPrimitive() || Number.class.isAssignableFrom(argumentClass)) {
-			switch (argumentClass.getSimpleName().toLowerCase(Locale.ENGLISH)) {
-				case "byte":
-				case "short":
-				case "long":
-				case "integer":
-				case "int":
-					if (methodParam == Integer.class || methodParam == int.class
-							|| methodParam == Long.class || methodParam == long.class
-							|| methodParam == Short.class || methodParam == short.class
-							|| methodParam == Byte.class || methodParam == byte.class)
-						return true;
-					
-				case "float":
-				case "double":
-					return methodParam == Float.class || methodParam == float.class  ||  methodParam == Double.class || methodParam == double.class;
-				
-				case "boolean": return methodParam == Boolean.class || methodParam == boolean.class;
-				
-				case "char": return methodParam == Character.class || methodParam == char.class;
-			}
-		}
-		
-		return false;
-	}
-	
-	private static Object castArgumentAccordingly(Object param, Class<?> paramType) {
-		if (param instanceof Number) {
-			switch (paramType.getSimpleName().toLowerCase(Locale.ENGLISH)) {
-				case "byte": 	return ((Number) param).byteValue();
-				case "short": 	return ((Number) param).shortValue();
-				case "long": 	return ((Number) param).longValue();
-				case "int":
-				case "integer": return ((Number) param).intValue();
-				case "float": 	return ((Number) param).floatValue();
-				case "double": 	return ((Number) param).doubleValue();
-				default: 		return param;
-			}
-		}
-		return param;
-	}
 	
 //	private static LuaTable arrayToTable(Object array) {
 //		LuaTable result = new LuaTable();

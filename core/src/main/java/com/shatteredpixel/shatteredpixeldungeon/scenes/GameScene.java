@@ -131,7 +131,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
-import com.watabou.NotAllowedInLua;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.PointerEvent;
@@ -159,7 +158,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-@NotAllowedInLua
 public class GameScene extends DungeonScene {
 
 	static GameScene scene;

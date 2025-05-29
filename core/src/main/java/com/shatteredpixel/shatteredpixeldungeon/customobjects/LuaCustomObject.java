@@ -64,7 +64,7 @@ public abstract class LuaCustomObject extends CustomObject {
 		}
 	}
 
-	public abstract LuaCustomObjectClass newInstance();
+	public abstract LuaCustomObjectClass newInstance(Object[] params);
 
 	public abstract boolean isSuperclassValid(Class<?> superClass);
 	public abstract void setTargetClass(String superClass);
