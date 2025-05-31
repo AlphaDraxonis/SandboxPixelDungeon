@@ -880,6 +880,7 @@ public class AlchemyScene extends PixelScene {
 		if (saveNeeded) {
 			saveNeeded = false;
 			clearSlots();
+			updateState();
 			try {
 				Dungeon.saveAll();
 				Badges.saveGlobal();
