@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.utils.BArray;
@@ -318,10 +319,14 @@ public class ScrollOfTeleportation extends Scroll {
 				ch.sprite.parent.add(new AlphaTweener(ch.sprite, 1, 0.4f));
 			}
 
-			if (Dungeon.level.heroFOV[pos] || ch == Dungeon.hero) {
+			if (Dungeon.level.heroFOV[pos] || ch == Dungeon.hero ) {
 				ch.sprite.emitter().start(Speck.factory(Speck.LIGHT), 0.2f, 3);
+			} else {
+				if (Camera.main.followTarget() == ch.sprite){
+					//clear the follow in this case as the teleport target is going out of vision
+					Camera.main.panFollow(null, 5f);
+				}
 			}
-		}
 	}
 
 	//just plays the VFX for teleporting, without any position changes, does re-press cells though
