@@ -35,9 +35,11 @@ import com.watabou.input.ControllerHandler;
 import com.watabou.noosa.Game;
 import com.watabou.utils.PlatformSupport;
 import org.robovm.apple.audiotoolbox.AudioServices;
+import org.robovm.apple.foundation.NSURL;
 import org.robovm.apple.systemconfiguration.SCNetworkReachability;
 import org.robovm.apple.systemconfiguration.SCNetworkReachabilityFlags;
 import org.robovm.apple.uikit.UIApplication;
+import org.robovm.apple.uikit.UIApplicationOpenURLOptions;
 
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -45,6 +47,19 @@ import java.util.regex.Pattern;
 
 @NotAllowedInLua
 public class IOSPlatformSupport extends PlatformSupport {
+
+	@Override
+	public boolean openURI( String uri ){
+		//backported from libGDX 1.13.1, required for opening URLs on modern iOS
+		UIApplication uiApp = UIApplication.getSharedApplication();
+		NSURL url = new NSURL(uri);
+		if (uiApp.canOpenURL(url)) {
+			uiApp.openURL(url, new UIApplicationOpenURLOptions(), null);
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public void updateDisplaySize() {
 		//non-zero safe insets on left/top/right means device has a notch, show status bar
