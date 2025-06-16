@@ -686,7 +686,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String ROOMS_TO_SPAWN = "rooms_to_spawn";
     private static final String ITEMS_TO_SPAWN = "items_to_spawn";
     private static final String PRIZE_ITEMS_TO_SPAWN = "prize_items_to_spawn";
-    private static final String SPAWN_STANDART_ROOMS = "spawn_standart_rooms";
+    private static final String SPAWN_STANDARD_ROOMS = "spawn_standart_rooms";
     private static final String SPAWN_SECRET_ROOMS = "spawn_secret_rooms";
     private static final String SPAWN_SPECIAL_ROOMS = "spawn_special_rooms";
     private static final String SPAWN_MOBS = "spawn_mobs";
@@ -755,7 +755,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(ITEMS_TO_SPAWN, itemsToSpawn);
         bundle.put(PRIZE_ITEMS_TO_SPAWN, prizeItemsToSpawn);
         bundle.put(ROOMS_TO_SPAWN, roomsToSpawn);
-        bundle.put(SPAWN_STANDART_ROOMS, spawnStandardRooms);
+        bundle.put(SPAWN_STANDARD_ROOMS, spawnStandardRooms);
         bundle.put(SPAWN_SPECIAL_ROOMS, spawnSpecialRooms);
         bundle.put(SPAWN_SECRET_ROOMS, spawnSecretRooms);
         bundle.put(SPAWN_MOBS, spawnMobs);
@@ -862,7 +862,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (bundle.contains(ROOMS_TO_SPAWN))
             for (Bundlable l : bundle.getCollection(ROOMS_TO_SPAWN)) roomsToSpawn.add((Room) l);
 
-        spawnStandardRooms = bundle.getBoolean(SPAWN_STANDART_ROOMS);
+        spawnStandardRooms = bundle.getBoolean(SPAWN_STANDARD_ROOMS);
         spawnSecretRooms = bundle.getBoolean(SPAWN_SECRET_ROOMS);
         spawnSpecialRooms = bundle.getBoolean(SPAWN_SPECIAL_ROOMS);
         spawnMobs = bundle.getBoolean(SPAWN_MOBS);
