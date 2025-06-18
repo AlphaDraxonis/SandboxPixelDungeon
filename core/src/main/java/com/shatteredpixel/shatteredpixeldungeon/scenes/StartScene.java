@@ -177,7 +177,7 @@ public class StartScene extends PixelScene {
 		};
 		add(dungeonSelection);
 		
-		dungeonSelection.setRect(10, 0, w - 20, h - 20);
+		dungeonSelection.setRect(10, 0, Math.max(SLOT_WIDTH, w - 20), h - 20);
 		
 		GamesInProgress.curSlot = GamesInProgress.NO_SLOT;
 		

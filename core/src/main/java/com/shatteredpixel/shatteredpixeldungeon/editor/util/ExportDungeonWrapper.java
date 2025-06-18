@@ -17,6 +17,7 @@ import com.watabou.utils.FileUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -221,6 +222,11 @@ public class ExportDungeonWrapper implements Bundlable {
                 subFilesList.add((AdditionalFileInfo) bundle.get(SUB_FILE + "_" + i));
                 i++;
             }
+            if (bundle.contains(SUB_FILE)) {
+                for (Bundlable b : bundle.getCollection(SUB_FILE)) {
+                    subFilesList.add((AdditionalFileInfo) b);
+                }
+            }
             subFiles = subFilesList.toArray(new AdditionalFileInfo[0]);
         }
 
@@ -233,10 +239,9 @@ public class ExportDungeonWrapper implements Bundlable {
             if (content != null) bundle.put(CONTENT, content);
 
             if (isDirectory) {
-                int i = 0;
-                for (AdditionalFileInfo afi : subFiles) {
-                    bundle.put(SUB_FILE + "_" + i++, afi);
-                }
+                List<AdditionalFileInfo> subFilesList = new ArrayList<>();
+				Collections.addAll(subFilesList, subFiles);
+                bundle.put(SUB_FILE, subFilesList );
             }
         }
 

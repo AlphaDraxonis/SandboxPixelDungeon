@@ -258,7 +258,8 @@ public abstract class ItemsWithChanceDistrComp extends Component {
                 items = new ItemContainer<Item>(item.items, null, false, minSlots, maxSlots) {
                     @Override
                     protected void onSlotNumChange() {
-                        ItemsWithChanceDistrComp.Slot.this.layout();
+                        if (items != null) updateList(true);
+                        else ItemsWithChanceDistrComp.Slot.this.layout();
                     }
 
                     @Override
@@ -292,7 +293,7 @@ public abstract class ItemsWithChanceDistrComp extends Component {
             countSpinner.addChangeListener(() -> updateSpinners(item));
             add(countSpinner);
 
-            removeBtn = new IconButton(Icons.get(Icons.CLOSE)) {
+            removeBtn = new IconButton(Icons.TRASH.get()) {
                 @Override
                 protected void onClick() {
                     removeItem();

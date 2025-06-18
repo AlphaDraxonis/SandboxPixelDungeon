@@ -31,8 +31,6 @@ import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
@@ -154,7 +152,7 @@ public class LoadCustomObjects {
 			}
 			b.deleteCharAt(b.length()-1);
 			
-			DungeonScene.show(new WndError(b.toString()){{setHighlightingEnabled(false);}});
+//			DungeonScene.show(new WndError(b.toString()){{setHighlightingEnabled(false);}});//tzz
 		}
 		
 		for (CustomObject obj : new HashSet<>(CustomObjectManager.allUserContents.values())) {

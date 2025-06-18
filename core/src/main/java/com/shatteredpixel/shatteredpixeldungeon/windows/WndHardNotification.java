@@ -28,7 +28,7 @@ import com.watabou.noosa.ui.Component;
 
 //a notification window that the player can't get rid of quickly, good for forcibly telling a message
 //USE THIS SPARINGLY
-public class WndHardNotification extends WndTitledMessage{
+public class WndHardNotification extends OriginalWndTitledMessage{
 
 	RedButton btnOkay;
 
