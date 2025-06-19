@@ -8,7 +8,7 @@ You can place every single tile wherever you want. You can change the properties
 Download Sandbox Pixel Dungeon now to design the perfect unique challenge for every adventurer and share your dungeons with the world.
 
 
-Sandbox Pixel Dungeon is based on the open-source traditional roguelike dungeon crawler [Shattered Pixel Dungeon](https://shatteredpixel.com/shatteredpd/) which is based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://www.watabou.ru).
+Sandbox Pixel Dungeon is based on the open-source traditional roguelike dungeon crawler [Shattered Pixel Dungeon](https://shatteredpixel.com/shatteredpd/) which is based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://watabou.itch.io/).
 
 Please look at the [help document](https://docs.google.com/document/d/1LEx8uZYdv04ndrITJeUttdphXp_hkJ5WDdysWNQTXyY) for help or for screenshots.
 
