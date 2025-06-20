@@ -547,14 +547,14 @@ public class EditorScene extends DungeonScene {
 //            bitmapText.y += 5.5f;
 //        } else {
             RenderedTextBlock textBlock = (RenderedTextBlock) text;
+            textBlock.setScale(TRANSITION_INDICATOR_SCALE);
             textBlock.text(Messages.get(LevelTransition.class, "to") + ": "
                     + (transition.destLevel == null && transition.destBranch == 0 ? "" : EditorUtilities.getDispayName(transition)));
             textBlock.hardlight(Window.TITLE_COLOR);
-            textBlock.setScale(TRANSITION_INDICATOR_SCALE);
             
             PointF pos = new PointF(
-                    PixelScene.align(Camera.main, ((transition.cell() % Dungeon.level.width()) + 0.5f) * DungeonTilemap.SIZE - textBlock.width()*TRANSITION_INDICATOR_SCALE * 0.5f),
-                    PixelScene.align(Camera.main, ((transition.cell() / Dungeon.level.width()) + 1.0f) * DungeonTilemap.SIZE - textBlock.height()*TRANSITION_INDICATOR_SCALE - DungeonTilemap.SIZE * 5 / 16f));
+                    PixelScene.align(Camera.main, ((transition.cell() % Dungeon.level.width()) + 0.5f) * DungeonTilemap.SIZE - textBlock.width() * 0.5f),
+                    PixelScene.align(Camera.main, ((transition.cell() / Dungeon.level.width()) + 1.0f) * DungeonTilemap.SIZE - textBlock.height() - DungeonTilemap.SIZE * 5 / 16f));
             textBlock.setPos(pos.x, pos.y + 5.5f);
 //        }
         
