@@ -36,7 +36,6 @@ import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PointF;
 import com.watabou.utils.RectF;
-import com.watabou.utils.Reflection;
 
 import java.util.LinkedHashMap;
 
@@ -87,34 +86,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	
 	public void updateArmor(Hero hero, HeroClass cls) {
 
-		if (hero.internalSpriteClass != null) {
-
-			CharSprite anims = Reflection.newInstance(hero.internalSpriteClass);
-
-			if (anims instanceof StatueSprite) StatueSprite.setArmor(anims, hero.tier());
-
-			texture(anims.texture);
-
-			idle = anims.idle.clone();
-			run = anims.run.clone();
-			die = anims.die.clone();
-			attack = anims.attack.clone();
-
-			if (anims.zap != null) zap = anims.zap.clone();
-			else {
-				zap = attack.clone();
-			}
-			if (anims.operate != null) operate = anims.operate.clone();
-			else {
-				operate = idle.clone();
-				operate.frames(idle.frames[0]);
-			}
-
-			fly = read = null;
-
-			anims.destroy();
-
-		} else {
+		if (!cloneAnimations(this, hero, hero.internalSpriteClass)) {
 
 			texture( cls.spritesheet() );
 
@@ -151,6 +123,45 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 			idle();
 		else
 			die();
+	}
+	
+	static boolean cloneAnimations(CharSprite dest, Hero hero, HeroSpriteClassWrapper src) {
+		if (!src.definesSprite()) {
+			return false;
+		}
+		
+		CharSprite anims = src.instantiateCharSprite();
+		
+		if (anims == null) {
+			return false;
+		}
+		
+		if (anims instanceof StatueSprite) StatueSprite.setArmor(anims, hero.tier());
+		
+		dest.texture(anims.texture);
+		
+		dest.idle = anims.idle.clone();
+		dest.run = anims.run.clone();
+		dest.die = anims.die.clone();
+		dest.attack = anims.attack.clone();
+		
+		if (anims.zap != null) dest.zap = anims.zap.clone();
+		else {
+			dest.zap = dest.attack.clone();
+		}
+		if (anims.operate != null) dest.operate = anims.operate.clone();
+		else {
+			dest.operate = dest.idle.clone();
+			dest.operate.frames(dest.idle.frames[0]);
+		}
+		
+		if (dest instanceof HeroSprite) {
+			((HeroSprite) dest).fly = ((HeroSprite) dest).read = null;
+		}
+		
+		anims.destroy();
+		
+		return true;
 	}
 	
 	@Override

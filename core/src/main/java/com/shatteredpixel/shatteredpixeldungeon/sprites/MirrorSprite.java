@@ -28,7 +28,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.PointF;
-import com.watabou.utils.Reflection;
 
 public class MirrorSprite extends MobSprite {
 	
@@ -61,25 +60,7 @@ public class MirrorSprite extends MobSprite {
 	
 	public void updateArmor( Hero hero ) {
 
-		if (hero != null && hero.internalSpriteClass != null) {
-
-			CharSprite anims = Reflection.newInstance(hero.internalSpriteClass);
-
-			if (anims instanceof StatueSprite) StatueSprite.setArmor(anims, hero.tier());
-
-			texture(anims.texture);
-
-			idle = anims.idle.clone();
-			run = anims.run.clone();
-			die = anims.die.clone();
-			attack = anims.attack.clone();
-
-			if (anims.zap != null) zap = anims.zap.clone();
-			else zap = attack.clone();
-
-			anims.destroy();
-
-		} else {
+		if (hero == null || !HeroSprite.cloneAnimations(this, hero, hero.internalSpriteClass)) {
 
 			texture( hero != null ? hero.heroClass.spritesheet() : HeroClass.WARRIOR.spritesheet());
 

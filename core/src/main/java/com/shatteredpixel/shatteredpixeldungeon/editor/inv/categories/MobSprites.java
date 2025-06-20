@@ -1,8 +1,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomCharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.WndNewCustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
@@ -49,9 +52,15 @@ public final class MobSprites extends GameObjectCategory<MobSprite> {
     public static EditorItemBag bag() {
         return instance().getBag();
     }
-
+    
     @Override
     public void updateCustomObjects() {
+        customObjectBag.clear();
+        for (CustomObject customObject : CustomObjectManager.allUserContents.values()) {
+            if (customObject instanceof CustomCharSprite) {
+                customObjectBag.items.add(EditorItem.wrapObject(customObject));
+            }
+        }
     }
 
     @Override

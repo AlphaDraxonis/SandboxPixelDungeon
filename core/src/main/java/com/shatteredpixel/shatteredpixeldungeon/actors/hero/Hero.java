@@ -138,6 +138,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSpriteClassWrapper;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSpriteLike;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.AttackIndicator;
@@ -190,7 +191,7 @@ public class Hero extends Char {
 	public ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
 	public LinkedHashMap<Talent, Talent> metamorphedTalents = new LinkedHashMap<>();
 
-	public Class<? extends CharSprite> internalSpriteClass;//used to skin hero sprite (null to use default)
+	public HeroSpriteClassWrapper internalSpriteClass = new HeroSpriteClassWrapper();//used to skin hero sprite
 
 	int attackSkill = STARTING_ATK_SKILL;
 	int defenseSkill = STARTING_DEF_SKILL;
@@ -269,7 +270,7 @@ public class Hero extends Char {
 	private static final String CLASS       = "class";
 	private static final String SUBCLASS    = "subClass";
 	private static final String ABILITY     = "armorAbility";
-	private static final String SPRITE_CLASS= "sprite_class";
+	private static final String SPRITE_WRAPPER= "sprite_wrapper";
 
 	private static final String ATTACK		= "attackSkill";
 	private static final String DEFENSE		= "defenseSkill";
@@ -283,7 +284,7 @@ public class Hero extends Char {
 
 		super.storeInBundle( bundle );
 
-		bundle.put(SPRITE_CLASS, internalSpriteClass);
+		bundle.put(SPRITE_WRAPPER, internalSpriteClass);
 
 		bundle.put( CLASS, heroClass );
 		bundle.put( SUBCLASS, subClass );
@@ -313,7 +314,11 @@ public class Hero extends Char {
 
 		super.restoreFromBundle( bundle );
 
-		internalSpriteClass = bundle.getClass(SPRITE_CLASS);
+		if (bundle.contains("sprite_class")) {
+			internalSpriteClass.setSpriteClass(bundle.getClass("sprite_class"));
+		} else {
+			internalSpriteClass = (HeroSpriteClassWrapper) bundle.get(SPRITE_WRAPPER);
+		}
 
 		heroClass = bundle.getEnum( CLASS, HeroClass.class );
 		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );

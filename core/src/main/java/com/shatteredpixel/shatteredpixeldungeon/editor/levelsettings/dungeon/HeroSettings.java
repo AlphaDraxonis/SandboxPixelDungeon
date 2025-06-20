@@ -8,8 +8,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.PropertyListContainer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomCharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomObjectItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
@@ -33,7 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSpriteClassWrapper;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
@@ -295,13 +297,13 @@ public class HeroSettings extends Component {
             startMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
             add(startMisc);
 
-            final MobSpriteItem curentSprite = data.spriteClass == null ? null : new MobSpriteItem(data.spriteClass);
+            final EditorItem<?> curentSprite = data.spriteWrapper.asEditorItem();
             sprite = new StyledItemSelector(Messages.get(HeroSettings.class, "sprite"),
-                    MobSpriteItem.class, curentSprite == null ? EditorItem.NULL_ITEM : curentSprite, ItemSelector.NullTypeSelector.NOTHING) {
-                MobSpriteItem currentSprite = curentSprite;
+                    EditorItem.class, curentSprite == null ? EditorItem.NULL_ITEM : curentSprite, ItemSelector.NullTypeSelector.NOTHING) {
+                Item currentSprite = curentSprite;
                 {
                     selector.preferredBag = MobSprites.bag().getClass();
-                    setShowWhenNull(511);
+                    setShowWhenNull(ItemSpriteSheet.NO_IMAGE);
                     setSelectedItem(currentSprite);
                 }
                 @Override
@@ -315,11 +317,14 @@ public class HeroSettings extends Component {
                     if (selectedItem == currentSprite) return;
 
                     if (selectedItem instanceof MobSpriteItem) {
-                        currentSprite = (MobSpriteItem) selectedItem;
-                        data.spriteClass = currentSprite.getObject();
+                        currentSprite = selectedItem;
+                        data.spriteWrapper.setSpriteClass(((MobSpriteItem) selectedItem).getObject());
+                    } else if (selectedItem instanceof CustomObjectItem) {
+                        currentSprite = selectedItem;
+                        data.spriteWrapper.setCustomSprite((CustomCharSprite) ((CustomObjectItem) selectedItem).getObject());
                     } else {
                         currentSprite = null;
-                        data.spriteClass = null;
+                        data.spriteWrapper.clearData();
                     }
 
                 }
@@ -434,7 +439,7 @@ public class HeroSettings extends Component {
 
         public Set<Char.Property> properties = new HashSet<>();
 
-        public Class<? extends CharSprite> spriteClass;
+        public HeroSpriteClassWrapper spriteWrapper = new HeroSpriteClassWrapper();
 
         private boolean needToAddDefaultConfiguration = false;
 
@@ -447,7 +452,7 @@ public class HeroSettings extends Component {
         private static final String STR = "str";
         private static final String ITEMS = "items";
         private static final String PROPERTIES = "properties";
-        private static final String SPRITE_CLASS = "sprite_class";
+        private static final String SPRITE_WRAPPER = "sprite_wrapper";
 
         @Override
         public void storeInBundle(Bundle bundle) {
@@ -458,7 +463,7 @@ public class HeroSettings extends Component {
             bundle.put(MISC, misc);
             bundle.put(LVL, plusLvl);
             bundle.put(STR, plusStr);
-            bundle.put(SPRITE_CLASS, spriteClass);
+            bundle.put(SPRITE_WRAPPER, spriteWrapper);
 
             int[] enumOrdinals = new int[properties.size()];
             int index = 0;
@@ -510,7 +515,12 @@ public class HeroSettings extends Component {
                 }
             }
 
-            spriteClass = bundle.getClass(SPRITE_CLASS);
+            if (bundle.contains("sprite_class")) {
+                spriteWrapper.setSpriteClass(bundle.getClass("sprite_class"));
+            } else {
+                spriteWrapper = (HeroSpriteClassWrapper) bundle.get(SPRITE_WRAPPER);
+                if (spriteWrapper == null) spriteWrapper = new HeroSpriteClassWrapper();
+            }
         }
 
         @Override

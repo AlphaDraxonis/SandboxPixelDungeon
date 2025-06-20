@@ -148,7 +148,7 @@ public enum HeroClass {
         HeroSettings.HeroStartItemsData generalItems = Dungeon.customDungeon.startItems[0].getCopy();
         HeroSettings.HeroStartItemsData classItems = Dungeon.customDungeon.startItems[getIndex() + 1].getCopy();
 
-        hero.internalSpriteClass = classItems.spriteClass == null ? generalItems.spriteClass : classItems.spriteClass;
+        hero.internalSpriteClass = classItems.spriteWrapper.definesSprite() ? classItems.spriteWrapper : generalItems.spriteWrapper;
 
         addProperties(hero, generalItems.properties);
         addProperties(hero, classItems.properties);
