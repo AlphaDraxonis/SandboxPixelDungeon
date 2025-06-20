@@ -79,7 +79,7 @@ public class CellBlockRoom extends StandardRoom {
 				int top = internal.top + 1 + (y * (h + Hspacing));
 
 				if (Random.Int(w*h) == 0 && (!guaranteeOpenRoom || openRooms > 1)){
-					Painter.fill(level, left, top, w, h, Terrain.REGION_DECO);
+					Painter.fill(level, left, top, w, h, Terrain.CAGE);
 					openRooms--;
 				} else {
 					Painter.fill(level, left, top, w, h, Terrain.EMPTY_SP);

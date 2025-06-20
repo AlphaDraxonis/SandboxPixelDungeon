@@ -23,11 +23,10 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StatueLineRoom;
 
-public class StatueLineEntranceRoom extends StatueLineRoom {
+public class StatueLineEntranceRoom extends StatueLineRoom implements EntranceRoomInterface {
 
 	@Override
 	public int minWidth() {
@@ -54,7 +53,7 @@ public class StatueLineEntranceRoom extends StatueLineRoom {
 		} while (level.findMob(entrance) != null);
 
 		Painter.set( level, entrance, Terrain.ENTRANCE );
-		level.transitions.add(new LevelTransition(level, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+		level.addRegularEntrance(entrance);
 	}
 
 }

@@ -31,6 +31,8 @@ public class TextureFilm {
 	
 	private static final RectF FULL = new RectF( 0, 0, 1, 1 );
 	
+	public int frameIdIfNull = -1;
+	
 	private int texWidth;
 	private int texHeight;
 	
@@ -105,7 +107,8 @@ public class TextureFilm {
 	}
 	
 	public RectF get( Object id ) {
-		return frames.get( id );
+		RectF frame = frames.get( id );
+		return frame == null && frameIdIfNull != -1 ? frames.get(frameIdIfNull) : frame;
 	}
 
 	public float width( Object id ){

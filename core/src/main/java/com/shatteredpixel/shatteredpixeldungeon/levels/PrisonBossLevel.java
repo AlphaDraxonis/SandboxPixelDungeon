@@ -389,7 +389,7 @@ public class PrisonBossLevel extends Level {
 
 	//randomly places up to 5 cages on tiles that are aside walls (but not torches or doors!)
 	public void addCagesToCells(){
-		Random.pushGenerator(Dungeon.seedCurDepth());
+		Random.pushGenerator(Dungeon.seedCurLevel());
 			for (int i = 0; i < 5; i++){
 				int cell = randomPrisonCellPos();
 				boolean valid = false;
@@ -399,7 +399,7 @@ public class PrisonBossLevel extends Level {
 					}
 				}
 				if (valid){
-					Painter.set(this, cell, Terrain.REGION_DECO);
+					Painter.set(this, cell, Terrain.CAGE);
 				}
 			}
 
@@ -753,9 +753,6 @@ public class PrisonBossLevel extends Level {
 		switch (tile) {
 			case Terrain.WATER:
 				return Messages.get(PrisonLevel.class, "water_name");
-			case Terrain.REGION_DECO:
-			case Terrain.REGION_DECO_ALT:
-				return Messages.get(PrisonLevel.class, "region_deco_name");
 			default:
 				return super.tileName( tile );
 		}
@@ -768,9 +765,6 @@ public class PrisonBossLevel extends Level {
 				return Messages.get(PrisonLevel.class, "empty_deco_desc");
 			case Terrain.BOOKSHELF:
 				return Messages.get(PrisonLevel.class, "bookshelf_desc");
-			case Terrain.REGION_DECO:
-			case Terrain.REGION_DECO_ALT:
-				return Messages.get(PrisonLevel.class, "region_deco_desc");
 			default:
 				return super.tileDesc( tile, cell );
 		}

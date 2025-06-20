@@ -23,14 +23,13 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.CircleWallRoom;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
-public class CircleWallEntranceRoom extends CircleWallRoom {
+public class CircleWallEntranceRoom extends CircleWallRoom implements ExitRoomInterface {
 
 	@Override
 	public int minWidth() {
@@ -65,7 +64,7 @@ public class CircleWallEntranceRoom extends CircleWallRoom {
 			}
 		}
 		Painter.set(level, p, Terrain.ENTRANCE);
-		level.transitions.add(new LevelTransition(level, level.pointToCell(p), LevelTransition.Type.REGULAR_ENTRANCE));
+		level.addRegularEntrance(level.pointToCell(p));
 
 		int xDir = 0, yDir = 0;
 		if (Random.Int(2) == 0) {

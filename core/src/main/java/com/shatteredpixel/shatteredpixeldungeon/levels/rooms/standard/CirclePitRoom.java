@@ -93,7 +93,7 @@ public class CirclePitRoom extends StandardRoom {
 				}
 
 				if (valid) {
-					Painter.drawLine(level, edge, center, Terrain.REGION_DECO_ALT);
+					Painter.drawLine(level, edge, center, Terrain.METAL_STRUCTURE_ALT);
 					Painter.drawInside(level, this, edge, 1, Terrain.EMPTY_SP);
 					Painter.set(level, edge, Terrain.WALL);
 

@@ -27,7 +27,7 @@ public class RegionDecoLineRoom extends StatueLineRoom {
 
 	@Override
 	protected int decoTerrain() {
-		return Terrain.REGION_DECO;
+		return Terrain.CAGE;
 	}
 
 }

@@ -23,12 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.LibraryHallRoom;
 import com.watabou.utils.Point;
 
-public class LibraryHallExitRoom extends LibraryHallRoom {
+public class LibraryHallExitRoom extends LibraryHallRoom implements ExitRoomInterface {
 
 	@Override
 	public boolean isExit() {
@@ -42,11 +41,11 @@ public class LibraryHallExitRoom extends LibraryHallRoom {
 		while (true){
 			Point p = random(2);
 
-			if (level.map[level.pointToCell(p)] == Terrain.REGION_DECO){
+			if (level.map[level.pointToCell(p)] == Terrain.FLAMING_PEDESTAL){
 				int exit = level.pointToCell(p);
 				Painter.set( level, exit, Terrain.EXIT );
-
-				level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
+				
+				level.addRegularExit(exit);
 				return;
 			}
 		}

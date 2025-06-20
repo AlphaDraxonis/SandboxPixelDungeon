@@ -5,6 +5,9 @@
  * Shattered Pixel Dungeon
  * Copyright (C) 2014-2025 Evan Debenham
  *
+ * Sandbox Pixel Dungeon
+ * Copyright (C) 2023-2025 AlphaDraxonis
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,33 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance;
+package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
 
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RingRoom;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.watabou.utils.Bundle;
 
-public class RingEntranceRoom extends RingRoom implements EntranceRoomInterface {
+public abstract class SingleRewardPatchRoom extends PatchRoom {
 
-	@Override
-	public float[] sizeCatProbs() {
-		return new float[]{0, 1, 0};
-	}
+	public Item prize;
+
+	private static final String PRIZE = "prize";
 
 	@Override
-	public boolean isEntrance() {
-		return true;
-	}
-
-	protected int centerDecoTiles(){
-		return Terrain.EMPTY_SP;
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put(PRIZE, prize);
 	}
 
 	@Override
-	protected void placeCenterDetail(Level level, int pos) {
-		Painter.set(level, pos, Terrain.ENTRANCE_SP);
-		level.addRegularEntrance(pos);
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		prize = (Item) bundle.get(PRIZE);
 	}
-
 }

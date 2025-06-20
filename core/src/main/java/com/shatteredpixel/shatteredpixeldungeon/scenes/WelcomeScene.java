@@ -218,6 +218,9 @@ public class WelcomeScene extends PixelScene {
 				message += "\n" + Messages.get(this, "patch_translations");
 
 			}
+			message = message.replace("Shattered Pixel Dungeon", "Sandbox Pixel Dungeon");
+			message = message.replace("Shattered PD", "Sandbox PD");
+			message = message.replace("ShatteredPD", "SandboxPD");
 
 		} else {
 			message = Messages.get(this, "what_msg");

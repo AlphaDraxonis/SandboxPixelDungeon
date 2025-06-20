@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -50,25 +51,28 @@ public class GnollExile extends Gnoll {
 		state = PASSIVE;
 
 		defenseSkill = 6;
+		attackSkill = 15;
+		damageRollMin = 1;
+		damageRollMax = 10;
+		damageReductionMax = 1;
 		HP = HT = 24;
 
-		lootChance = 0f; //see rollToDropLoot
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 1, 10 );
-	}
-
-	@Override
-	public int attackSkill( Char target ) {
-		return 15;
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 1);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 1, 10 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 15;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 1);
+//	}
 
 	@Override
 	protected boolean canAttack( Char enemy ) {
@@ -96,25 +100,48 @@ public class GnollExile extends Gnoll {
 
 	@Override
 	public void rollToDropLoot() {
+		
 		super.rollToDropLoot();
-
-		if (Dungeon.hero.lvl > maxLvl + 2) return;
-
-		//drops 2 or 3 random items
-		ArrayList<Item> items = new ArrayList<>();
-		items.add(Generator.randomUsingDefaults());
-		items.add(Generator.randomUsingDefaults());
-		if (Random.Int(2) == 0) items.add(Generator.randomUsingDefaults());
-
-		for (Item item : items){
-			int ofs;
-			do {
-				ofs = PathFinder.NEIGHBOURS9[Random.Int(9)];
-			} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
-			Dungeon.level.drop( item, pos + ofs ).sprite.drop( pos );
+		
+		if (Dungeon.hero.lvl > maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL) return;
+		
+		if (!(loot instanceof ItemsWithChanceDistrComp.RandomItemData)) {
+			
+			//drops 2 or 3 random items
+			ArrayList<Item> items = new ArrayList<>();
+			items.add(Generator.randomUsingDefaults());
+			items.add(Generator.randomUsingDefaults());
+			if (Random.Int(2) == 0) items.add(Generator.randomUsingDefaults());
+			
+			for (Item item : items) {
+				int ofs;
+				int tries = 100;
+				do {
+					ofs = PathFinder.NEIGHBOURS9[Random.Int(9)];
+				} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.isPassableHero(pos + ofs) && tries-- > 0);
+				Dungeon.level.drop(item, pos + ofs).sprite.drop(pos);
+			}
 		}
 
 	}
+	
+	@Override
+	public float lootChance() {
+		if (this.lootChance == 1f) return 1f;
+		return super.lootChance();
+	}
+	
+//	@Override
+//	public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+//		ItemsWithChanceDistrComp.RandomItemData customLootInfo = super.convertLootToRandomItemData();
+//		for (ItemsWithChanceDistrComp.ItemWithCount item : customLootInfo.distrSlots) {
+////			item.items.add(new MetalShard());
+//		}
+//		int noLootChance = (int) ((1f - customLootInfo.lootChance()) * customLootInfo.calculateSum());
+////		customLootInfo.addItem(new MetalShard(), noLootChance);
+//		customLootInfo.setLootChance(0);
+//		return customLootInfo;
+//	}
 
 	@Override
 	public void beckon(int cell) {
@@ -127,8 +154,8 @@ public class GnollExile extends Gnoll {
 	}
 
 	@Override
-	public String description() {
-		String desc = super.description();
+	public String desc() {
+		String desc = super.desc();
 		if (state == PASSIVE){
 			desc += "\n\n" + Messages.get(this, "desc_passive");
 		} else {

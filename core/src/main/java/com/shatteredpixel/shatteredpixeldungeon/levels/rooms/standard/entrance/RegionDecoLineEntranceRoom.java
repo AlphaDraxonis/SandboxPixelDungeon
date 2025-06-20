@@ -23,11 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 
-public class RegionDecoLineEntranceRoom extends StatueLineEntranceRoom {
+public class RegionDecoLineEntranceRoom extends StatueLineEntranceRoom implements EntranceRoomInterface {
 
 	@Override
 	protected int decoTerrain() {
-		return Terrain.REGION_DECO;
+		return Terrain.CAGE;
 	}
 
 }

@@ -287,7 +287,8 @@ public class MagesStaff extends MeleeWeapon {
 
 		if (wand.cursed && (!this.cursed || !this.hasCurseEnchant())){
 			equipCursed(Dungeon.hero);
-			this.cursed = this.cursedKnown = true;
+			setCursedKnown(true);
+			this.cursed = true;
 			enchant(Enchantment.randomCurse());
 		}
 
@@ -475,7 +476,7 @@ public class MagesStaff extends MeleeWeapon {
 						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_unknown", trueLevel());
 					}
 
-					if (!item.cursedKnown || item.cursed){
+					if (!item.cursedKnown() || item.cursed){
 						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_cursed");
 					}
 

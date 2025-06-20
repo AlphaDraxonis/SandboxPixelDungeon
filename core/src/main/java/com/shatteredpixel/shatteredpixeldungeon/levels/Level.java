@@ -88,6 +88,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
@@ -1427,6 +1428,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 			wallVisuals.clear();
 			wallVisuals.camera = null;
 		}
+		CityLevel   .addCityWallVisuals(  this, wallVisuals);
 		return wallVisuals;
 	}
 
@@ -1954,6 +1956,16 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 			removeSimpleCustomTile(pos);
 			set(pos, Terrain.EMBERS);
 		}
+		
+		//if we're burning sewers barrels
+		if (terr == Terrain.BARREL){
+			set(pos, Terrain.WATER);
+			Splash.at(pos, 0xFF507B5D, 10);
+		} else if (terr == Terrain.BARREL_ALT){
+			set(pos, Terrain.EMPTY_SP);
+			Splash.at(pos, 0xFF507B5D, 10);
+		}
+		
 		blobs.doOnEach(Web.class, b -> b.clear(pos));
 	}
 
@@ -2030,12 +2042,6 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		level.avoid[cell]			= (flags & Terrain.AVOID) != 0;
 		level.pit[cell]			    = (flags & Terrain.PIT) != 0;
 		level.water[cell]			= terrain == Terrain.WATER;
-		
-		if (level instanceof SewerLevel){
-			if (level.map[cell] == Terrain.REGION_DECO || level.map[cell] == Terrain.REGION_DECO_ALT){
-				level.flamable[cell] = true;
-			}
-		}
 		
 		if (!level.insideMap(cell)) {
 			level.passable[cell] = level.passableHero[cell] = level.passableMob[cell] = level.passableAlly[cell] = level.avoid[cell] = false;
@@ -2791,6 +2797,24 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 				return Messages.get(MiningLevel.class, "crystal_name");
 			case Terrain.MINE_BOULDER:
 				return Messages.get(MiningLevel.class, "boulder_name");
+			
+			case Terrain.BARREL:
+			case Terrain.BARREL_ALT:
+				return Messages.get(SewerLevel.class, "region_deco_name");
+			case Terrain.CAGE:
+				return Messages.get(PrisonLevel.class, "region_deco_name");
+			case Terrain.CAGE_ALT:
+				return Messages.get(PrisonLevel.class, "region_deco_alt_name");
+			case Terrain.METAL_STRUCTURE:
+			case Terrain.METAL_STRUCTURE_ALT:
+				return Messages.get(CavesLevel.class, "region_deco_name");
+			case Terrain.FLAMING_PEDESTAL:
+			case Terrain.FLAMING_PEDESTAL_ALT:
+				return Messages.get(CityLevel.class, "region_deco_name");
+			case Terrain.RUBBLE:
+			case Terrain.RUBBLE_ALT:
+				return Messages.get(HallsLevel.class, "region_deco_name");
+				
 			default:
 				return Messages.get(Level.class, "default_name");
 		}
@@ -2843,6 +2867,24 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 				return Messages.get(MiningLevel.class, "crystal_desc");
 			case Terrain.MINE_BOULDER:
 				return Messages.get(MiningLevel.class, "boulder_desc");
+			
+			case Terrain.BARREL:
+			case Terrain.BARREL_ALT:
+				return Messages.get(SewerLevel.class, "region_deco_desc");
+			case Terrain.CAGE:
+				return Messages.get(PrisonLevel.class, "region_deco_desc");
+			case Terrain.CAGE_ALT:
+				return Messages.get(PrisonLevel.class, "region_deco_alt_desc");
+			case Terrain.METAL_STRUCTURE:
+			case Terrain.METAL_STRUCTURE_ALT:
+				return Messages.get(CavesLevel.class, "region_deco_desc");
+			case Terrain.FLAMING_PEDESTAL:
+			case Terrain.FLAMING_PEDESTAL_ALT:
+				return Messages.get(CityLevel.class, "region_deco_desc");
+			case Terrain.RUBBLE:
+			case Terrain.RUBBLE_ALT:
+				return Messages.get(HallsLevel.class, "region_deco_desc");
+				
 			default:
 				return "";
 		}

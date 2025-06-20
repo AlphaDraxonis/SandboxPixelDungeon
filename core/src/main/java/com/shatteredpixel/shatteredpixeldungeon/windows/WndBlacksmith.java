@@ -80,7 +80,7 @@ public class WndBlacksmith extends Window {
 
 		ArrayList<RedButton> buttons = new ArrayList<>();
 
-		int pickaxeCost = Blacksmith.Quest.freePickaxe ? 0 : 250;
+		int pickaxeCost = troll.quest.freePickaxe ? 0 : 250;
 		RedButton pickaxe = new RedButton(Messages.get(this, "pickaxe", pickaxeCost), 6){
 			@Override
 			protected void onClick() {

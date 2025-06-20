@@ -49,7 +49,7 @@ public class VialOfBlood extends Trinket {
 			return Messages.get(this,
 					"typical_stats_desc",
 					Messages.decimalFormat("#.##", 100*(totalHealMultiplier(0)-1f)),
-					Integer.toString(maxHealPerTurn(0)));
+					Integer.toString(maxHealPerTurn(0, null)));
 		}
 	}
 

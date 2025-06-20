@@ -2,14 +2,10 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobSpawner;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -17,7 +13,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ChangeMa
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
 import com.shatteredpixel.shatteredpixeldungeon.levels.DeadEndLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
@@ -28,7 +23,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BlazingTrap;
@@ -40,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FrostTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.noosa.TextureFilm;
@@ -403,9 +398,9 @@ public class CustomLevel extends Level {
                     && !TileItem.isExitTerrainCell(level.map[pos])
                     && Zone.canSpawnItems(level, pos)
                     && (tries <= lengthHalf || (level.heaps.get(pos) == null && level.findMob(pos) == null))) {
-
+                
                 Trap t = level.traps.get(pos);
-
+                
                 //items cannot spawn on traps which destroy items
                 if (!(t instanceof BurningTrap || t instanceof BlazingTrap
                         || t instanceof ChillingTrap || t instanceof FrostTrap
@@ -417,46 +412,10 @@ public class CustomLevel extends Level {
         }
         return lengthHalf;//-1 would throw IndexOutOfBoundsException without any check!
     }
-
+    
     @Override
-    public boolean isLevelExplored(String levelName) {
-        //From RegularLevel
-
-        //A level is considered fully explored if:
-
-        //There are no levelgen heaps which are undiscovered, in an openable container, or which contain keys
-        for (Heap h : heaps.valueList()) {
-            if (h.autoExplored) continue;
-            if (!h.seen || (h.type != Heap.Type.HEAP && h.type != Heap.Type.FOR_SALE && h.type != Heap.Type.CRYSTAL_CHEST)) {
-                return false;
-            }
-            for (Item i : h.items) {
-                if (i instanceof Key) return false;
-            }
-        }
-        //There is no magical fire or sacrificial fire
-        for (Blob b : blobs.values()) {
-            if (b.volume > 0 && (b instanceof MagicalFireRoom.EternalFire || b instanceof SacrificialFire))
-                return false;
-        }
-        //There are no statues or mimics (unless they were made allies)
-        for (Mob m : mobs.toArray(new Mob[0])) {
-            if (m.alignment != Char.Alignment.ALLY) {
-                if (m instanceof Statue && ((Statue) m).levelGenStatue) return false;
-                if (m instanceof Mimic) return false;
-            }
-        }
-        if (!ignoreTerrainForExploringScore) {
-            //There are no barricades, locked doors, or hidden doors
-            for (int i = 0; i < length; i++) {
-                if (map[i] == Terrain.BARRICADE || map[i] == Terrain.LOCKED_DOOR || map[i] == Terrain.COIN_DOOR || TileItem.isSecretDoor(map[i])) {
-                    return false;
-                }
-            }
-        }
-        //Removed journal keys here...
-
-        return true;
+    public float levelExplorePercent(String levelName) {
+        return 1f;//always explored (we can’t really make any claims as how much is theoretically possible to explore)
     }
 
 
@@ -545,6 +504,7 @@ public class CustomLevel extends Level {
         TextureFilm tf = textureFilms.get(theme);
         if (tf == null) {
             tf = new TextureFilm(theme, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
+            tf.frameIdIfNull = DungeonTileSheet.INVISIBLE_TILE;
             textureFilms.put(theme, tf);
         }
         return tf;

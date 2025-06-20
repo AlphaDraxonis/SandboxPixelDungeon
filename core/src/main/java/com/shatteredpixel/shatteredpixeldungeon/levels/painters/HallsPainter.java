@@ -59,15 +59,15 @@ public class HallsPainter extends RegularPainter {
 				
 				map[i] = Terrain.WALL_DECO;
 				
-			} else if (map[i] == Terrain.REGION_DECO && Random.Int(2) == 0){
-				map[i] = Terrain.REGION_DECO_ALT;
+			} else if (map[i] == Terrain.RUBBLE && Random.Int(2) == 0){
+				map[i] = Terrain.RUBBLE_ALT;
 			}
 		}
 
 		for (Room r : rooms) {
 			for (Room n : r.neigbours) {
 				if (!r.connected.containsKey( n )) {
-					mergeRooms(level, r, n, null, Random.Int(3) == 0 ? Terrain.REGION_DECO : Terrain.CHASM);
+					mergeRooms(level, r, n, null, Random.Int(3) == 0 ? Terrain.RUBBLE : Terrain.CHASM);
 				}
 			}
 		}

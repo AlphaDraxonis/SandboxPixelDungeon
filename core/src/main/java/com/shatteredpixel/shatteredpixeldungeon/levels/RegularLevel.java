@@ -305,7 +305,7 @@ public abstract class RegularLevel extends Level {
 			//enemies cannot be within a 8-tile FOV or 8-tile open space walk from the entrance
 		boolean[] entranceFOV = new boolean[length()];
 		Point c = cellToPoint(entrance());
-		ShadowCaster.castShadow(c.x, c.y, width(), entranceFOV, losBlocking, 8);
+		ShadowCaster.castShadow(c.x, c.y, width(), entranceFOV, losBlocking, 8, false);
 
 		boolean[] entranceWalkable = BArray.not(solid, null);
 
@@ -926,7 +926,7 @@ public abstract class RegularLevel extends Level {
 		//There are unused crystal keys for this room (only one crystal key room can be on each floor)
 		// we ignore regular and golden keys as earlier checks would have already caught them
 		for (Notes.KeyRecord rec : Notes.getRecords(Notes.KeyRecord.class)){
-			if (rec.levelName().equals(levelName) && rec.type() == CrystalKey.class){
+			if (rec.levelName().equals(levelName) && rec.type().asKeyClass() == CrystalKey.class){
 				for (Room r : rooms()){
 					if (SpecialRoom.CRYSTAL_KEY_SPECIALS.contains(r.getClass())){
 						missedRooms.add(r);

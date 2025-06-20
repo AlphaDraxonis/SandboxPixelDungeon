@@ -32,23 +32,25 @@ public class HermitCrab extends Crab {
 
 		HP = HT = 25; //+67% HP
 		baseSpeed = 1f; //-50% speed
+		damageRollMin = 2;
+		damageRollMax = 6;
 
 		//3x more likely to drop meat, and drops a guaranteed armor
 		lootChance = 0.5f;
 	}
-
+	
 	@Override
 	public void rollToDropLoot() {
 		super.rollToDropLoot();
-
-		if (Dungeon.hero.lvl <= maxLvl + 2){
+		
+		if (Dungeon.hero.lvl <= maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL){
 			Dungeon.level.drop(Generator.randomArmor(), pos).sprite.drop();
 		}
 	}
 
-	@Override
-	public int drRoll() {
-		return super.drRoll() + 2; //2-6 DR total, up from 0-4
-	}
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + 2; //2-6 DR total, up from 0-4
+//	}
 
 }

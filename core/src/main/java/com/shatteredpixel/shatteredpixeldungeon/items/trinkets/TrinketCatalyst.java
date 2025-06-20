@@ -190,7 +190,7 @@ public class TrinketCatalyst extends Item {
 			super();
 
 			initComponents(
-					new IconTitle(new ItemSprite(cata), Messages.titleCase(Messages.get(TrinketCatalyst.class, "window_title")))),
+					new IconTitle(new ItemSprite(cata), Messages.titleCase(Messages.get(TrinketCatalyst.class, "window_title"))),
 					new SingleItemRewardsBody(Messages.get(TrinketCatalyst.class, "window_text"), null, cata, cata.rolledTrinkets.toArray(EditorUtilities.EMPTY_ITEM_ARRAY)) {
 						@Override
 						protected void onSelectReward(Item reward) {

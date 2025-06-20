@@ -115,10 +115,6 @@ public class PrisonLevel extends RegularLevel {
 		switch (tile) {
 			case Terrain.WATER:
 				return Messages.get(PrisonLevel.class, "water_name");
-			case Terrain.REGION_DECO:
-				return Messages.get(PrisonLevel.class, "region_deco_name");
-			case Terrain.REGION_DECO_ALT:
-				return Messages.get(PrisonLevel.class, "region_deco_alt_name");
 			default:
 				return super.tileName( tile );
 		}
@@ -131,10 +127,6 @@ public class PrisonLevel extends RegularLevel {
 				return Messages.get(PrisonLevel.class, "empty_deco_desc");
 			case Terrain.BOOKSHELF:
 				return Messages.get(PrisonLevel.class, "bookshelf_desc");
-			case Terrain.REGION_DECO:
-				return Messages.get(PrisonLevel.class, "region_deco_desc");
-			case Terrain.REGION_DECO_ALT:
-				return Messages.get(PrisonLevel.class, "region_deco_alt_desc");
 			default:
 				return super.tileDesc( tile, cell );
 		}
@@ -147,7 +139,7 @@ public class PrisonLevel extends RegularLevel {
 				group.add( new Torch( i ) );
 			}
 			//alt deco is a chasm visual in the prison
-			if (level.map[i] == Terrain.REGION_DECO_ALT) {
+			if (level.map[i] == Terrain.CAGE_ALT) {
 				group.add( new WindParticle.Wind( i ) );
 			}
 		}

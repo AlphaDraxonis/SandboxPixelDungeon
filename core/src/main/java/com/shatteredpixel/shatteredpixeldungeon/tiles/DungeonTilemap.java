@@ -29,6 +29,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.tweeners.AlphaTweener;
+import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.PointF;
 
@@ -92,54 +93,33 @@ public abstract class DungeonTilemap extends Tilemap {
 	public int screenToTile(int x, int y ){
 		return screenToTile(x, y, false);
 	}
-
+	
 	public int screenToTile(int x, int y, boolean wallAssist ) {
 		PointF p = camera().screenToCamera( x, y ).
-			offset( this.point().negate() ).
-			invScale( SIZE );
-
+				offset( this.point().negate() ).
+				invScale( SIZE );
+		
 		//snap to the edges of the tilemap
-//		p.x = GameMath.gate(0, p.x, Dungeon.level.width()-0.001f);
-//		p.y = GameMath.gate(0, p.y, Dungeon.level.height()-0.001f);
-		if (p.x < 0) {
-			if (p.x >= -BORDER_SNAPPING) p.x = 0;
-			else return -1;
-		} else {
-			float maxW = Dungeon.level.width() - 0.001f;
-			if (p.x > maxW) {
-				if (p.x < maxW + BORDER_SNAPPING) p.x = maxW;
-				else return -1;
-			}
-		}
-		if (p.y < 0) {
-			if (p.y >= -BORDER_SNAPPING) p.y = 0;
-			else return -1;
-		} else {
-			float maxH = Dungeon.level.height() - 0.001f;
-			if (p.y > maxH) {
-				if (p.y < maxH + BORDER_SNAPPING) p.y = maxH;
-				else return -1;
-			}
-		}
-
+		p.x = GameMath.gate(0, p.x, Dungeon.level.width()-0.001f);
+		p.y = GameMath.gate(0, p.y, Dungeon.level.height()-0.001f);
+		
 		int cell = (int)p.x + (int)p.y * Dungeon.level.width();
-		if (cell >= Dungeon.level.length() || cell < 0) return -1;
-
+		
 		//wall assist is used to make raised perspective tapping a bit easier.
 		// If the pressed tile is a wall tile, the tap can be 'bumped' down into a none-wall tile.
 		// currently this happens if the bottom 1/4 of the wall tile is pressed.
 		if (wallAssist
 				&& map != null
 				&& isWallAssistable(cell)){
-
+			
 			if (cell + mapWidth < size
 					&& p.y % 1 >= 0.75f
 					&& !isWallAssistable(cell + mapWidth)){
 				cell += mapWidth;
 			}
-
+			
 		}
-
+		
 		return cell;
 	}
 
@@ -153,8 +133,7 @@ public abstract class DungeonTilemap extends Tilemap {
 		}
 
 		//caves region deco is very wall-like, so it counts
-		if (Dungeon.depth >= 10 && Dungeon.depth <= 15
-				&& (map[cell] == Terrain.REGION_DECO || map[cell] == Terrain.REGION_DECO_ALT)) {
+		if (map[cell] == Terrain.METAL_STRUCTURE || map[cell] == Terrain.METAL_STRUCTURE_ALT) {
 			return true;
 		}
 

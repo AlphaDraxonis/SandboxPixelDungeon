@@ -115,7 +115,7 @@ public class LibraryHallRoom extends StandardRoom {
 		}
 
 		if (minorDim % 2 == 1 && minorDim < 9){
-			Painter.set(level, center, Terrain.REGION_DECO);
+			Painter.set(level, center, Terrain.FLAMING_PEDESTAL);
 		} else {
 			int pedestalInset = 2;
 			if (minorDim >= 10){
@@ -125,11 +125,11 @@ public class LibraryHallRoom extends StandardRoom {
 				}
 			}
 			if (layingOutLeftToRight) {
-				Painter.set(level, left+pedestalInset, center.y, Terrain.REGION_DECO);
-				Painter.set(level, right-pedestalInset, center.y, Terrain.REGION_DECO);
+				Painter.set(level, left+pedestalInset, center.y, Terrain.FLAMING_PEDESTAL);
+				Painter.set(level, right-pedestalInset, center.y, Terrain.FLAMING_PEDESTAL);
 			} else {
-				Painter.set(level, center.x, top+pedestalInset, Terrain.REGION_DECO);
-				Painter.set(level, center.x, bottom-pedestalInset, Terrain.REGION_DECO);
+				Painter.set(level, center.x, top+pedestalInset, Terrain.FLAMING_PEDESTAL);
+				Painter.set(level, center.x, bottom-pedestalInset, Terrain.FLAMING_PEDESTAL);
 			}
 		}
 

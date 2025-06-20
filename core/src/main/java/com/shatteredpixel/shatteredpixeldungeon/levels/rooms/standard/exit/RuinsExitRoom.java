@@ -23,13 +23,12 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RuinsRoom;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 
-public class RuinsExitRoom extends RuinsRoom {
+public class RuinsExitRoom extends RuinsRoom implements ExitRoomInterface {
 
 	@Override
 	public int minWidth() {
@@ -67,7 +66,7 @@ public class RuinsExitRoom extends RuinsRoom {
 			} else {
 				valid = false;
 				for (int i : PathFinder.NEIGHBOURS4){
-					if (level.map[exit+i] != Terrain.WALL && level.map[exit+i] != Terrain.REGION_DECO){
+					if (level.map[exit+i] != Terrain.WALL && level.map[exit+i] != Terrain.RUBBLE){
 						valid = true;
 					}
 				}
@@ -79,8 +78,8 @@ public class RuinsExitRoom extends RuinsRoom {
 		for (int i : PathFinder.NEIGHBOURS8){
 			Painter.set( level, exit+i, Terrain.EMPTY );
 		}
-
-		level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
+		
+		level.addRegularExit(exit);
 	}
 
 	@Override

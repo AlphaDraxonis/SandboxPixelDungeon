@@ -80,7 +80,7 @@ public class PrisonPainter extends RegularPainter {
 				for (int x = r.left+1; x < r.right; x++){
 					if (level.map[cell] == Terrain.CHASM && level.map[cell-level.width()] == Terrain.CHASM){
 						if (Random.Int(chance) == 0){
-							level.map[cell] = Terrain.REGION_DECO_ALT;
+							level.map[cell] = Terrain.CAGE_ALT;
 						}
 					}
 					cell++;

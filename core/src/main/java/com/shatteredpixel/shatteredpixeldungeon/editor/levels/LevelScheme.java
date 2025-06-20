@@ -986,6 +986,21 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         this.region = region;
         if (level != null) level.initRegionColors();
     }
+    
+    public int getRegionDecoTerrain() {
+        return getRegionDecoTerrain(getRegion());
+    }
+    
+    public static int getRegionDecoTerrain(int region) {
+        switch (region) {
+            case REGION_SEWERS: return Terrain.BARREL;
+            case REGION_PRISON: return Terrain.CAGE;
+            case REGION_CAVES: return Terrain.METAL_STRUCTURE;
+            case REGION_CITY: return Terrain.FLAMING_PEDESTAL;
+            case REGION_HALLS: return Terrain.RUBBLE;
+        }
+        return Terrain.STATUE;
+    }
 
     public final int getBoss() {
         return getBoss(level == null ? type : level.getClass());

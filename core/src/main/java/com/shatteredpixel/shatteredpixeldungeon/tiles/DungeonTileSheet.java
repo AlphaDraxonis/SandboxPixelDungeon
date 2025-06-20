@@ -45,6 +45,8 @@ public class DungeonTileSheet {
 
 	//used in cases like map-edge decision making.
 	public static final int NULL_TILE       = -1;
+	
+	public static final int INVISIBLE_TILE  = xy(1, 14);
 
 
 
@@ -99,7 +101,6 @@ public class DungeonTileSheet {
 		chasmStitcheable.put( Terrain.EMPTY_WELL,   CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.WELL,         CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.STATUE,       CHASM_FLOOR );
-		chasmStitcheable.put( Terrain.REGION_DECO,  CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.SECRET_TRAP,  CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.INACTIVE_TRAP,CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.TRAP,         CHASM_FLOOR );
@@ -113,6 +114,19 @@ public class DungeonTileSheet {
 		//special floor
 		chasmStitcheable.put( Terrain.EMPTY_SP,     CHASM_FLOOR_SP );
 		chasmStitcheable.put( Terrain.STATUE_SP,    CHASM_FLOOR_SP );
+		
+		//region deco
+		//alt region deco has different visuals per region, but most commonly FLOOR_SP
+		chasmStitcheable.put( Terrain.BARREL,       CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.BARREL_ALT,   CHASM_FLOOR_SP );
+		chasmStitcheable.put( Terrain.CAGE,         CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.CAGE_ALT,     CHASM );
+		chasmStitcheable.put( Terrain.METAL_STRUCTURE, CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.METAL_STRUCTURE_ALT, CHASM_FLOOR_SP );
+		chasmStitcheable.put( Terrain.FLAMING_PEDESTAL,  CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.FLAMING_PEDESTAL_ALT, CHASM_FLOOR_SP );
+		chasmStitcheable.put( Terrain.RUBBLE,       CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.RUBBLE_ALT,   CHASM_FLOOR );
 
 		//wall
 		chasmStitcheable.put( Terrain.WALL,         CHASM_WALL );
@@ -131,13 +145,6 @@ public class DungeonTileSheet {
 	}
 
 	public static int stitchChasmTile(int above){
-		//alt region deco has different visuals per region, but most commonly FLOOR_SP
-		if (above == Terrain.REGION_DECO_ALT){
-			if (Dungeon.depth <= 5)     return CHASM_FLOOR_SP;
-			if (Dungeon.depth <= 10)    return CHASM;
-			if (Dungeon.depth <= 20)    return CHASM_FLOOR_SP;
-			else                        return CHASM_FLOOR;
-		}
 		return chasmStitcheable.get(above, CHASM);
 	}
 
@@ -156,7 +163,8 @@ public class DungeonTileSheet {
 			Terrain.BARRICADE, Terrain.HIGH_GRASS, Terrain.FURROWED_GRASS, Terrain.SECRET_TRAP,
 			Terrain.TRAP, Terrain.INACTIVE_TRAP, Terrain.EMPTY_DECO,
 			Terrain.SIGN, Terrain.SIGN_SP, Terrain.CUSTOM_DECO, Terrain.WELL, Terrain.STATUE,
-			Terrain.REGION_DECO,Terrain.ALCHEMY, Terrain.CUSTOM_DECO_EMPTY, Terrain.MINE_CRYSTAL, Terrain.MINE_BOULDER,
+			Terrain.ALCHEMY, Terrain.CUSTOM_DECO_EMPTY, Terrain.MINE_CRYSTAL, Terrain.MINE_BOULDER,
+			Terrain.BARREL, Terrain.CAGE, Terrain.METAL_STRUCTURE, Terrain.FLAMING_PEDESTAL, Terrain.RUBBLE,
 			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.MIMIC_DOOR, Terrain.COIN_DOOR, Terrain.LOCKED_DOOR, Terrain.CRYSTAL_DOOR
 	));
 	public static HashSet<Integer> waterStitcheableWithSecretDoor = new HashSet<>(Arrays.asList(
@@ -164,18 +172,14 @@ public class DungeonTileSheet {
 			Terrain.ENTRANCE, Terrain.EXIT, Terrain.EMBERS,
 			Terrain.BARRICADE, Terrain.HIGH_GRASS, Terrain.FURROWED_GRASS, Terrain.SECRET_TRAP,
 			Terrain.TRAP, Terrain.INACTIVE_TRAP, Terrain.EMPTY_DECO,
-			Terrain.SIGN, Terrain.SIGN_SP, Terrain.CUSTOM_DECO, Terrain.WELL, Terrain.STATUE, Terrain.REGION_DECO,
+			Terrain.SIGN, Terrain.SIGN_SP, Terrain.CUSTOM_DECO, Terrain.WELL, Terrain.STATUE,
 			Terrain.ALCHEMY, Terrain.CUSTOM_DECO_EMPTY, Terrain.MINE_CRYSTAL, Terrain.MINE_BOULDER,
+			Terrain.BARREL, Terrain.CAGE, Terrain.METAL_STRUCTURE, Terrain.FLAMING_PEDESTAL, Terrain.RUBBLE, Terrain.RUBBLE_ALT, //alt region deco has different visuals per region, is stitcheable in demon halls
 			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.MIMIC_DOOR, Terrain.COIN_DOOR, Terrain.LOCKED_DOOR, Terrain.CRYSTAL_DOOR,
 			Terrain.SECRET_DOOR, Terrain.SECRET_LOCKED_DOOR, Terrain.SECRET_CRYSTAL_DOOR
 	));
 
 	public static boolean waterStitcheable(int tile){
-		//alt region deco has different visuals per region, is stitcheable in demon halls
-		if (tile == Terrain.REGION_DECO_ALT){
-			if (Dungeon.depth <= 20)    return false;
-			else                        return true;
-		}
 		return waterStitcheable.contains(tile);
 	}
 
@@ -238,8 +242,6 @@ public class DungeonTileSheet {
 	public static final int FLAT_STATUE_SP      = FLAT_OTHER+7;
 	public static final int FLAT_SIGN           = FLAT_OTHER+8;
 	public static final int FLAT_SIGN_SP        = FLAT_OTHER+9;
-	public static final int FLAT_REGION_DECO    = FLAT_OTHER+10;
-	public static final int FLAT_REGION_DECO_ALT= FLAT_OTHER+11;
 
 	public static final int FLAT_MINE_CRYSTAL         = FLAT_OTHER+10;
 	public static final int FLAT_MINE_CRYSTAL_ALT     = FLAT_OTHER+11;
@@ -247,6 +249,18 @@ public class DungeonTileSheet {
 	public static final int FLAT_MINE_BOULDER         = FLAT_OTHER+13;
 	public static final int FLAT_MINE_BOULDER_ALT     = FLAT_OTHER+14;
 	public static final int FLAT_MINE_BOULDER_ALT_2   = FLAT_OTHER+15;
+	
+	private static final int FLAT_REGION_DECO    = xy(1, 17);
+	public static final int FLAT_BARREL     = FLAT_REGION_DECO+0;
+	public static final int FLAT_BARREL_ALT = FLAT_REGION_DECO+1;
+	public static final int FLAT_CAGE       = FLAT_REGION_DECO+2;
+	public static final int FLAT_CAGE_ALT   = FLAT_REGION_DECO+3;
+	public static final int FLAT_METAL_STRUCTURE      = FLAT_REGION_DECO+4;
+	public static final int FLAT_METAL_STRUCTURE_ALT  = FLAT_REGION_DECO+5;
+	public static final int FLAT_FLAMING_PEDESTAL     = FLAT_REGION_DECO+6;
+	public static final int FLAT_FLAMING_PEDESTAL_ALT = FLAT_REGION_DECO+7;
+	public static final int FLAT_RUBBLE     = FLAT_REGION_DECO+8;
+	public static final int FLAT_RUBBLE_ALT = FLAT_REGION_DECO+9;
 
 	/**********************************************************************
 	 * Raised Tiles, Lower Layer
@@ -348,8 +362,6 @@ public class DungeonTileSheet {
 	public static final int RAISED_STATUE_SP        = RAISED_OTHER+7;
 	public static final int RAISED_SIGN             = RAISED_OTHER+8;
 	public static final int RAISED_SIGN_SP          = RAISED_OTHER+9;
-	public static final int RAISED_REGION_DECO      = RAISED_OTHER+10;
-	public static final int RAISED_REGION_DECO_ALT  = RAISED_OTHER+11;
 
 	public static final int RAISED_MINE_CRYSTAL     = RAISED_OTHER+10;
 	public static final int RAISED_MINE_CRYSTAL_ALT = RAISED_OTHER+11;
@@ -357,6 +369,18 @@ public class DungeonTileSheet {
 	public static final int RAISED_MINE_BOULDER     = RAISED_OTHER+13;
 	public static final int RAISED_MINE_BOULDER_ALT = RAISED_OTHER+14;
 	public static final int RAISED_MINE_BOULDER_ALT_2=RAISED_OTHER+15;
+	
+	private static final int RAISED_REGION_DECO           =                       xy(1, 19);  //16 slots
+	public static final int RAISED_BARREL     			  = RAISED_REGION_DECO+0;
+	public static final int RAISED_BARREL_ALT			  = RAISED_REGION_DECO+1;
+	public static final int RAISED_CAGE     			  = RAISED_REGION_DECO+2;
+	public static final int RAISED_CAGE_ALT			  	  = RAISED_REGION_DECO+3;
+	public static final int RAISED_METAL_STRUCTURE     	  = RAISED_REGION_DECO+4;
+	public static final int RAISED_METAL_STRUCTURE_ALT	  = RAISED_REGION_DECO+5;
+	public static final int RAISED_FLAMING_PEDESTAL       = RAISED_REGION_DECO+6;
+	public static final int RAISED_FLAMING_PEDESTAL_ALT	  = RAISED_REGION_DECO+7;
+	public static final int RAISED_RUBBLE     			  = RAISED_REGION_DECO+8;
+	public static final int RAISED_RUBBLE_ALT			  = RAISED_REGION_DECO+9;
 
 
 	/**********************************************************************
@@ -447,8 +471,6 @@ public class DungeonTileSheet {
 
 	public static final int STATUE_OVERHANG             = OTHER_OVERHANG+6;
 	public static final int STATUE_SP_OVERHANG          = OTHER_OVERHANG+7;
-	public static final int REGION_DECO_OVERHANG        = OTHER_OVERHANG+10;
-	public static final int REGION_DECO_ALT_OVERHANG    = OTHER_OVERHANG+11;
 
 	public static final int MINE_CRYSTAL_OVERHANG       = OTHER_OVERHANG+10;
 	public static final int MINE_CRYSTAL_OVERHANG_ALT   = OTHER_OVERHANG+11;
@@ -456,6 +478,18 @@ public class DungeonTileSheet {
 	public static final int MINE_BOULDER_OVERHANG       = OTHER_OVERHANG+13;
 	public static final int MINE_BOULDER_OVERHANG_ALT   = OTHER_OVERHANG+14;
 	public static final int MINE_BOULDER_OVERHANG_ALT_2 = OTHER_OVERHANG+15;
+	
+	private static final int REGION_DECO_OVERHANG        = xy(1, 18);
+	public static final int BARREL_OVERHANG        = REGION_DECO_OVERHANG+0;
+	public static final int BARREL_ALT_OVERHANG    = REGION_DECO_OVERHANG+1;
+	public static final int CAGE_OVERHANG          = REGION_DECO_OVERHANG+2;
+	public static final int CAGE_ALT_OVERHANG      = REGION_DECO_OVERHANG+3;
+	public static final int METAL_STRUCTURE_OVERHANG         = REGION_DECO_OVERHANG+4;
+	public static final int METAL_STRUCTURE_ALT_OVERHANG     = REGION_DECO_OVERHANG+5;
+	public static final int FLAMING_PEDESTAL_OVERHANG        = REGION_DECO_OVERHANG+6;
+	public static final int FLAMING_PEDESTAL_ALT_OVERHANG    = REGION_DECO_OVERHANG+7;
+	public static final int RUBBLE_OVERHANG        = REGION_DECO_OVERHANG+8;
+	public static final int RUBBLE_ALT_OVERHANG    = REGION_DECO_OVERHANG+9;
 
 	public static final int HIGH_GRASS_UNDERHANG        = 30;
 	public static final int FURROWED_UNDERHANG          = 31;
@@ -516,8 +550,17 @@ public class DungeonTileSheet {
 		directFlatVisuals.put(Terrain.STATUE_SP,        FLAT_STATUE_SP);
 		directFlatVisuals.put(Terrain.SIGN,             FLAT_SIGN);
 		directFlatVisuals.put(Terrain.SIGN_SP,          FLAT_SIGN_SP);
-		directFlatVisuals.put(Terrain.REGION_DECO,      FLAT_REGION_DECO);
-		directFlatVisuals.put(Terrain.REGION_DECO_ALT,  FLAT_REGION_DECO_ALT);
+		
+		directFlatVisuals.put(Terrain.BARREL,      FLAT_BARREL);
+		directFlatVisuals.put(Terrain.BARREL_ALT,  FLAT_BARREL_ALT);
+		directFlatVisuals.put(Terrain.CAGE,        FLAT_CAGE);
+		directFlatVisuals.put(Terrain.CAGE_ALT,    FLAT_CAGE_ALT);
+		directFlatVisuals.put(Terrain.METAL_STRUCTURE,       FLAT_METAL_STRUCTURE);
+		directFlatVisuals.put(Terrain.METAL_STRUCTURE_ALT,   FLAT_METAL_STRUCTURE_ALT);
+		directFlatVisuals.put(Terrain.FLAMING_PEDESTAL,      FLAT_FLAMING_PEDESTAL);
+		directFlatVisuals.put(Terrain.FLAMING_PEDESTAL_ALT,  FLAT_FLAMING_PEDESTAL_ALT);
+		directFlatVisuals.put(Terrain.RUBBLE,      FLAT_RUBBLE);
+		directFlatVisuals.put(Terrain.RUBBLE_ALT,  FLAT_RUBBLE_ALT);
 
 		directFlatVisuals.put(Terrain.MINE_CRYSTAL,     FLAT_MINE_CRYSTAL);
 		directFlatVisuals.put(Terrain.MINE_BOULDER,     FLAT_MINE_BOULDER);

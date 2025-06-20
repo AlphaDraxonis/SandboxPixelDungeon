@@ -128,7 +128,7 @@ public class HallsBossLevel extends Level {
 		boolean[] patch = Patch.generate(width, height, 0.20f, 0, true);
 		for (int i = 0; i < length(); i++) {
 			if (map[i] == Terrain.EMPTY && patch[i]) {
-				map[i] = distance(i, bossPos)+Random.Int(5) >= 10 ? Terrain.REGION_DECO : Terrain.STATUE;
+				map[i] = distance(i, bossPos)+Random.Int(5) >= 10 ? Terrain.RUBBLE : Terrain.STATUE;
 			}
 		}
 
@@ -138,7 +138,7 @@ public class HallsBossLevel extends Level {
 
 		patch = Patch.generate(width, height, 0.30f, 3, true);
 		for (int i = 0; i < length(); i++) {
-			if ((map[i] == Terrain.EMPTY || map[i] == Terrain.STATUE || map[i] == Terrain.REGION_DECO) && patch[i]) {
+			if ((map[i] == Terrain.EMPTY || map[i] == Terrain.STATUE || map[i] == Terrain.RUBBLE) && patch[i]) {
 				map[i] = Terrain.WATER;
 			}
 		}
@@ -182,8 +182,8 @@ public class HallsBossLevel extends Level {
 		customWalls.add(vis);
 
 		for (int i = 0; i < length(); i++) {
-			if (map[i] == Terrain.REGION_DECO && Random.Int(2) == 0) {
-				map[i] = Terrain.REGION_DECO_ALT;
+			if (map[i] == Terrain.RUBBLE && Random.Int(2) == 0) {
+				map[i] = Terrain.RUBBLE_ALT;
 			}
 		}
 
@@ -371,9 +371,6 @@ public class HallsBossLevel extends Level {
 			case Terrain.STATUE:
 			case Terrain.STATUE_SP:
 				return Messages.get(HallsLevel.class, "statue_name");
-			case Terrain.REGION_DECO:
-			case Terrain.REGION_DECO_ALT:
-				return Messages.get(HallsLevel.class, "region_deco_name");
 			default:
 				return super.tileName( tile );
 		}
@@ -389,9 +386,6 @@ public class HallsBossLevel extends Level {
 				return Messages.get(HallsLevel.class, "statue_desc");
 			case Terrain.BOOKSHELF:
 				return Messages.get(HallsLevel.class, "bookshelf_desc");
-			case Terrain.REGION_DECO:
-			case Terrain.REGION_DECO_ALT:
-				return Messages.get(HallsLevel.class, "region_deco_desc");
 			default:
 				return super.tileDesc( tile, cell );
 		}

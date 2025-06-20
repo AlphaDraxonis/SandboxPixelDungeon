@@ -175,7 +175,8 @@ public class ChangeRegion extends Component {
                     @Override
                     protected boolean acceptFile(FileHandle file, String path) {
                         SmartTexture tx = TextureCache.get(TextureCache.EXTERNAL_ASSET_PREFIX + CustomDungeonSaves.getExternalFilePath(path));
-                        if (tx != null && tx.width == 256 && tx.height == 256) {
+                        //height 256 is only backwards compatibility without the new region decorations (Shattered v3.1)
+                        if (tx != null && tx.width == 256 && (tx.height == 512 || tx.height == 256)) {
                             return true;
                         }
                         return false;

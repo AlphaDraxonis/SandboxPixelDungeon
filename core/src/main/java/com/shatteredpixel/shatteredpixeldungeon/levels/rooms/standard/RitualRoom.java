@@ -80,7 +80,7 @@ public class RitualRoom extends SingleRewardPatchRoom {
 		Point c = center();
 
 		setupPatch(level);
-		fillPatch(level, Terrain.REGION_DECO);
+		fillPatch(level, Terrain.RUBBLE);
 
 		Painter.fill(level, c.x - 3, c.y - 3, 7, 7, Terrain.EMPTY);
 

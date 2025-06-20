@@ -23,12 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RuinsRoom;
 import com.watabou.utils.PathFinder;
 
-public class RuinsEntranceRoom extends RuinsRoom {
+public class RuinsEntranceRoom extends RuinsRoom implements EntranceRoomInterface {
 
 	@Override
 	public int minWidth() {
@@ -66,7 +65,7 @@ public class RuinsEntranceRoom extends RuinsRoom {
 			} else {
 				valid = false;
 				for (int i : PathFinder.NEIGHBOURS4){
-					if (level.map[entrance+i] != Terrain.WALL && level.map[entrance+i] != Terrain.REGION_DECO){
+					if (level.map[entrance+i] != Terrain.WALL && level.map[entrance+i] != Terrain.RUBBLE){
 						valid = true;
 					}
 				}
@@ -79,6 +78,6 @@ public class RuinsEntranceRoom extends RuinsRoom {
 			Painter.set( level, entrance+i, Terrain.EMPTY );
 		}
 
-		level.transitions.add(new LevelTransition(level, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+		level.addRegularEntrance(entrance);
 	}
 }

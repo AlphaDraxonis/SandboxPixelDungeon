@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.LibraryRingRoom;
 import com.watabou.utils.Point;
@@ -59,7 +58,7 @@ public class LibraryRingEntranceRoom extends LibraryRingRoom {
 
 		Point p = center();
 		Painter.set(level, p, Terrain.ENTRANCE_SP);
-		level.transitions.add(new LevelTransition(level, level.pointToCell(p), LevelTransition.Type.REGULAR_ENTRANCE));
+		level.addRegularEntrance(level.pointToCell(p));
 
 		int dirX = 0, dirY = 0;
 		if (Random.Int(2) == 0){

@@ -1020,8 +1020,8 @@ public class WndJournal extends WndTabbed {
 							doc.readPage();
 							hardLightBG(1, 1, 1);
 						} else {
-							DungeonScene.show(new WndJournalItem(sprite, "???",
-									Messages.get(CatalogTab.class, "not_seen_lore") + "\n\n" + doc.discoverHint()));
+//							DungeonScene.show(new WndJournalItem(sprite, "???",
+//									Messages.get(CatalogTab.class, "not_seen_lore") + "\n\n" + doc.discoverHint()));
 
 						}
 						return true;

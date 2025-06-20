@@ -136,6 +136,7 @@ public final class Rooms extends GameObjectCategory<Room> {
                     RingRoom.class,
                     CircleBasinRoom.class,
                     WaterBridgeRoom.class,
+                    RegionDecoPatchRoom.class,
 
                     DiamondGooRoom.class,
                     WalledGooRoom.class,
@@ -158,6 +159,8 @@ public final class Rooms extends GameObjectCategory<Room> {
                     PillarsRoom.class,
                     CellBlockRoom.class,
                     ChasmBridgeRoom.class,
+                    RegionDecoLineRoom.class,
+                    
                     RotGardenRoom.class,
                     RitualSiteRoom.class,
                     MassGraveRoom.class
@@ -178,6 +181,8 @@ public final class Rooms extends GameObjectCategory<Room> {
                     CavesFissureRoom.class,
                     CirclePitRoom.class,
                     CircleWallRoom.class,
+                    RegionDecoBridgeRoom.class,
+                    
                     BlacksmithRoom.class
             });
         }
@@ -195,7 +200,8 @@ public final class Rooms extends GameObjectCategory<Room> {
                     HallwayRoom.class,
                     StatuesRoom.class,
                     SegmentedLibraryRoom.class,
-                    LibraryRingRoom.class
+                    LibraryRingRoom.class,
+                    LibraryHallRoom.class
             });
         }
 
@@ -213,6 +219,8 @@ public final class Rooms extends GameObjectCategory<Room> {
                     ChasmRoom.class,
                     SkullsRoom.class,
                     RitualRoom.class,
+                    RegionDecoPatchRoom.class,
+                    
                     DemonSpawnerRoom.class
             });
         }

@@ -23,13 +23,12 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RegionDecoBridgeRoom;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 
-public class RegionDecoBridgeExitRoom extends RegionDecoBridgeRoom {
+public class RegionDecoBridgeExitRoom extends RegionDecoBridgeRoom implements ExitRoomInterface {
 
 	@Override
 	public int minWidth() {
@@ -60,7 +59,7 @@ public class RegionDecoBridgeExitRoom extends RegionDecoBridgeRoom {
 				valid = false;
 			} else {
 				for (int i : PathFinder.NEIGHBOURS8){
-					if (level.map[exit+i] == Terrain.REGION_DECO_ALT){
+					if (level.map[exit+i] == Terrain.METAL_STRUCTURE_ALT){
 						valid = false;
 					}
 				}
@@ -69,7 +68,7 @@ public class RegionDecoBridgeExitRoom extends RegionDecoBridgeRoom {
 		} while (!valid);
 
 		Painter.set( level, exit, Terrain.EXIT );
-		level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
+		level.addRegularExit(exit);
 	}
 
 	@Override

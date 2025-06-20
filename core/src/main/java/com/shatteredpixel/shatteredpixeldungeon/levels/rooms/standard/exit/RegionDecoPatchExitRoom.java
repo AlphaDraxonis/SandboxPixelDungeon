@@ -23,13 +23,12 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RegionDecoPatchRoom;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 
-public class RegionDecoPatchExitRoom extends RegionDecoPatchRoom {
+public class RegionDecoPatchExitRoom extends RegionDecoPatchRoom implements ExitRoomInterface {
 
 	@Override
 	public int minHeight() {
@@ -58,11 +57,11 @@ public class RegionDecoPatchExitRoom extends RegionDecoPatchRoom {
 
 			//need extra logic here as these rooms can spawn small and cramped in very rare cases
 			if (tries-- > 0){
-				valid = level.map[exit] != Terrain.REGION_DECO && level.findMob(exit) == null;
+				valid = level.map[exit] != level.levelScheme.getRegionDecoTerrain() && level.findMob(exit) == null;
 			} else {
 				valid = false;
 				for (int i : PathFinder.NEIGHBOURS4){
-					if (level.map[exit+i] != Terrain.REGION_DECO){
+					if (level.map[exit+i] != level.levelScheme.getRegionDecoTerrain()){
 						valid = true;
 					}
 				}
@@ -74,8 +73,8 @@ public class RegionDecoPatchExitRoom extends RegionDecoPatchRoom {
 		for (int i : PathFinder.NEIGHBOURS8){
 			Painter.set( level, exit+i, Terrain.EMPTY );
 		}
-
-		level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
+		
+		level.addRegularExit(exit);
 	}
 
 	@Override

@@ -41,7 +41,7 @@ public class Sheep extends NPC {
 		spriteClass = SheepSprite.class;
 	}
 
-	private float lifespan;
+	public float lifespan;
 
 	@Override
 	protected boolean act() {

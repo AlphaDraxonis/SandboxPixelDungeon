@@ -69,7 +69,7 @@ public class RegionDecoPatchRoom extends PatchRoom {
 		}
 
 		setupPatch(level);
-		fillPatch(level, Terrain.REGION_DECO);
+		fillPatch(level, level.levelScheme.getRegionDecoTerrain());
 	}
 
 }

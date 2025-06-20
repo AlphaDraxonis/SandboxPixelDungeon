@@ -95,11 +95,6 @@ public class Berserk extends ShieldBuff implements ActionIndicator.Action {
 	}
 
 	@Override
-	protected boolean actionAvailable() {
-		return power >= 1f && state == State.NORMAL;
-	}
-
-	@Override
 	public boolean act() {
 		if (state == State.BERSERK){
 			if (target.shielding() > 0) {
@@ -161,7 +156,7 @@ public class Berserk extends ShieldBuff implements ActionIndicator.Action {
 	}
 
 	public float enchantFactor(float chance){
-		return chance + ((Math.min(1f, power) * 0.15f) * targetHero().pointsInTalent(Talent.ENRAGED_CATALYST));
+		return chance + ((Math.min(1f, power) * 0.15f) * targetHero(target).pointsInTalent(Talent.ENRAGED_CATALYST));
 	}
 
 	public float damageFactor(float dmg){
@@ -192,7 +187,7 @@ public class Berserk extends ShieldBuff implements ActionIndicator.Action {
 			turnRecovery = TURN_RECOVERY_START;
 			levelRecovery = 0;
 		} else {
-			levelRecovery = LEVEL_RECOVER_START - targetHero().pointsInTalent(Talent.DEATHLESS_FURY);
+			levelRecovery = LEVEL_RECOVER_START - targetHero(target).pointsInTalent(Talent.DEATHLESS_FURY);
 			turnRecovery = 0;
 		}
 
@@ -314,13 +309,13 @@ public class Berserk extends ShieldBuff implements ActionIndicator.Action {
 	public float iconFadePercent() {
 		switch (state){
 			case NORMAL: default:
-				float maxPower = 1f + 0.1667f*targetHero().pointsInTalent(Talent.ENDLESS_RAGE);
+				float maxPower = 1f + 0.1667f*targetHero(target).pointsInTalent(Talent.ENDLESS_RAGE);
 				return (maxPower - power)/maxPower;
 			case BERSERK:
 				return 1f - shielding() / (float)maxShieldBoost();
 			case RECOVERING:
 				if (levelRecovery > 0) {
-					return levelRecovery/(LEVEL_RECOVER_START-targetHero().pointsInTalent(Talent.DEATHLESS_FURY));
+					return levelRecovery/(LEVEL_RECOVER_START-targetHero(target).pointsInTalent(Talent.DEATHLESS_FURY));
 				} else {
 					return turnRecovery/(float)TURN_RECOVERY_START;
 				}

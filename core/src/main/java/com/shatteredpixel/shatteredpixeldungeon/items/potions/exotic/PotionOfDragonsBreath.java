@@ -228,6 +228,4 @@ public class PotionOfDragonsBreath extends ExoticPotion {
 					}
 				});
 			}
-		}
-	};
 }

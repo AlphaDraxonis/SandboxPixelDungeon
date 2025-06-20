@@ -151,8 +151,8 @@ public class CityBossLevel extends Level {
 		Painter.fill(this, entry.left+3, entry.top+3, 1, 5, Terrain.BOOKSHELF);
 		Painter.fill(this, entry.right-4, entry.top+3, 1, 5, Terrain.BOOKSHELF);
 
-		Painter.set(this, entry.left+5, entry.top+1, Terrain.REGION_DECO);
-		Painter.set(this, entry.left+7, entry.top+1, Terrain.REGION_DECO);
+		Painter.set(this, entry.left+5, entry.top+1, Terrain.FLAMING_PEDESTAL);
+		Painter.set(this, entry.left+7, entry.top+1, Terrain.FLAMING_PEDESTAL);
 
 		Point c = entry.center();
 
@@ -404,9 +404,6 @@ public class CityBossLevel extends Level {
 				return Messages.get(CityLevel.class, "water_name");
 			case Terrain.HIGH_GRASS:
 				return Messages.get(CityLevel.class, "high_grass_name");
-			case Terrain.REGION_DECO:
-			case Terrain.REGION_DECO_ALT:
-				return Messages.get(CityLevel.class, "region_deco_name");
 			default:
 				return super.tileName( tile );
 		}
@@ -430,9 +427,6 @@ public class CityBossLevel extends Level {
 				return Messages.get(CityLevel.class, "statue_desc");
 			case Terrain.BOOKSHELF:
 				return Messages.get(CityLevel.class, "bookshelf_desc");
-			case Terrain.REGION_DECO:
-			case Terrain.REGION_DECO_ALT:
-				return Messages.get(CityLevel.class, "region_deco_desc");
 			default:
 				return super.tileDesc( tile, cell );
 		}

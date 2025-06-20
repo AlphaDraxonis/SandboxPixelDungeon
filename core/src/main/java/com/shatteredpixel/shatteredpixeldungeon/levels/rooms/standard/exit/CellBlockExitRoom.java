@@ -23,13 +23,12 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.CellBlockRoom;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 
-public class CellBlockExitRoom extends CellBlockRoom {
+public class CellBlockExitRoom extends CellBlockRoom implements ExitRoomInterface {
 
 	@Override
 	public float[] sizeCatProbs() {
@@ -59,8 +58,8 @@ public class CellBlockExitRoom extends CellBlockRoom {
 				if (valid){
 					int entrance = level.pointToCell(p);
 					Painter.set( level, entrance, Terrain.EXIT );
-
-					level.transitions.add(new LevelTransition(level, entrance, LevelTransition.Type.REGULAR_EXIT));
+					
+					level.addRegularExit(entrance);
 					return;
 				}
 			}

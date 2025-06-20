@@ -182,7 +182,7 @@ public class BeaconOfReturning extends Spell {
 			Game.switchScene( InterlevelScene.class );
 		}
 		if (quantity == 1){
-			Notes.remove(Notes.Landmark.BEACON_LOCATION, returnDepth);
+			Notes.remove(Notes.Landmark.BEACON_LOCATION, returnLevel);
 		}
 		detach(hero.belongings.backpack);
 		Catalog.countUse(getClass());

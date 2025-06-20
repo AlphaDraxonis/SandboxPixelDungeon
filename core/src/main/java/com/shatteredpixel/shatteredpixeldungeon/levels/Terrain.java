@@ -62,11 +62,23 @@ public class Terrain {
 	public static final int CUSTOM_DECO_EMPTY= 34; //regular empty tile that can't be overridden, used for custom visuals mainly
 	public static final int STATUE			= 25;
 	public static final int STATUE_SP		= 26;
+	
 	//These decorations are environment-specific
-	public static final int REGION_DECO		= 33;
-	public static final int REGION_DECO_ALT = 34; //alt visual for region deco, sometimes SP, sometimes other
 	public static final int MINE_CRYSTAL    = 35;
 	public static final int MINE_BOULDER    = 36;
+	
+	
+	public static final int BARREL = 40;
+	public static final int BARREL_ALT = 41;
+	public static final int CAGE = 42;
+	public static final int CAGE_ALT = 43;
+	public static final int METAL_STRUCTURE = 44;
+	public static final int METAL_STRUCTURE_ALT = 45;
+	public static final int FLAMING_PEDESTAL = 46;
+	public static final int FLAMING_PEDESTAL_ALT = 47;
+	public static final int RUBBLE = 48;
+	public static final int RUBBLE_ALT = 49;
+	
 
 	public static final int WATER		    = 29;
 
@@ -129,11 +141,14 @@ public class Terrain {
 		flags[STATUE_SP] = flags[STATUE];
 		flags[SIGN]			= SOLID;
 		flags[SIGN_SP]		= flags[SIGN];
-
-		flags[REGION_DECO] = flags[STATUE];
-		flags[REGION_DECO_ALT] = flags[STATUE_SP];
+		
 		flags[MINE_CRYSTAL] = SOLID;
 		flags[MINE_BOULDER] = SOLID;
+		
+		flags[BARREL] = flags[CAGE] = flags[METAL_STRUCTURE] = flags[FLAMING_PEDESTAL] = flags[RUBBLE] = flags[STATUE];
+		flags[BARREL_ALT] = flags[CAGE_ALT] = flags[METAL_STRUCTURE_ALT] = flags[FLAMING_PEDESTAL_ALT] = flags[RUBBLE_ALT] = flags[STATUE_SP];
+		flags[BARREL] |= FLAMABLE;
+		flags[BARREL_ALT] |= FLAMABLE;
 
 	}
 

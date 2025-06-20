@@ -144,8 +144,8 @@ public class CavesBossLevel extends Level {
 		//setup exit area above main boss arena
 		Painter.fill(this, 0, 3, width(), 4, Terrain.CHASM);
 		Painter.fill(this, 6, 7, 21, 1, Terrain.CHASM);
-		Painter.fill(this, 9, 3, 1, 6, Terrain.REGION_DECO_ALT);
-		Painter.fill(this, 23, 3, 1, 6, Terrain.REGION_DECO_ALT);
+		Painter.fill(this, 9, 3, 1, 6, Terrain.METAL_STRUCTURE);
+		Painter.fill(this, 23, 3, 1, 6, Terrain.METAL_STRUCTURE_ALT);
 		Painter.fill(this, 10, 8, 13, 1, Terrain.CHASM);
 		Painter.fill(this, 12, 9, 9, 1, Terrain.CHASM);
 		Painter.fill(this, 13, 10, 7, 1, Terrain.CHASM);
@@ -472,9 +472,6 @@ public class CavesBossLevel extends Level {
 			case Terrain.STATUE:
 				//city statues are used
 				return Messages.get(CityLevel.class, "statue_name");
-			case Terrain.REGION_DECO:
-			case Terrain.REGION_DECO_ALT:
-				return Messages.get(CavesLevel.class, "region_deco_name");
 			default:
 				return super.tileName( tile );
 		}
@@ -500,9 +497,6 @@ public class CavesBossLevel extends Level {
 			//city statues are used
 			case Terrain.STATUE:
 				return Messages.get(CityLevel.class, "statue_desc");
-			case Terrain.REGION_DECO:
-			case Terrain.REGION_DECO_ALT:
-				return Messages.get(CavesLevel.class, "region_deco_desc");
 			default:
 				return super.tileDesc( tile, cell );
 		}

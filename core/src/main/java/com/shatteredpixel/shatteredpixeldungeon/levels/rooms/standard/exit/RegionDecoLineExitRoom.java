@@ -23,11 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 
-public class RegionDecoLineExitRoom extends StatueLineExitRoom {
+public class RegionDecoLineExitRoom extends StatueLineExitRoom implements ExitRoomInterface {
 
 	@Override
 	protected int decoTerrain() {
-		return Terrain.REGION_DECO;
+		return Terrain.CAGE;
 	}
 
 }

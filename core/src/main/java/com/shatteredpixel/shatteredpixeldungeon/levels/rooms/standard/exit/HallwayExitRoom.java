@@ -41,7 +41,7 @@ public class HallwayExitRoom extends HallwayRoom implements ExitRoomInterface {
 		int exit = -1;
 		for ( Point p : getPoints()){
 			if (level.map[level.pointToCell(p)] == Terrain.STATUE_SP
-					|| level.map[level.pointToCell(p)] == Terrain.REGION_DECO_ALT){
+					|| level.map[level.pointToCell(p)] == Terrain.FLAMING_PEDESTAL_ALT){
 				exit = level.pointToCell(p);
 				break;
 			}

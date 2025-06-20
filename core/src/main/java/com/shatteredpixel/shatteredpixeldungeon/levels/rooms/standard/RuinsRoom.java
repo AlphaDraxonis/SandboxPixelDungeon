@@ -92,7 +92,7 @@ public class RuinsRoom extends PatchRoom {
 					}
 
 					int cell = i * level.width() + j;
-					level.map[cell] = wall ? Terrain.WALL : Terrain.REGION_DECO;
+					level.map[cell] = wall ? Terrain.WALL : Terrain.RUBBLE;
 				}
 			}
 		}

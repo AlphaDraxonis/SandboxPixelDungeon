@@ -49,7 +49,7 @@ public class WaterBridgeEntranceRoom extends WaterBridgeRoom implements Entrance
 
 	@Override
 	public boolean canMerge(Level l, Room other, Point p, int mergeTerrain) {
-		if (Dungeon.depth <= 2) {
+		if (Dungeon.getSimulatedDepth() <= 2) {
 			return false;
 		} else {
 			return super.canMerge(l, other, p, mergeTerrain);
@@ -58,7 +58,7 @@ public class WaterBridgeEntranceRoom extends WaterBridgeRoom implements Entrance
 
 	@Override
 	public boolean canPlaceTrap(Point p) {
-		if (Dungeon.depth == 1) {
+		if (Dungeon.getSimulatedDepth() == 1) {
 			return false;
 		} else {
 			return super.canPlaceTrap(p);

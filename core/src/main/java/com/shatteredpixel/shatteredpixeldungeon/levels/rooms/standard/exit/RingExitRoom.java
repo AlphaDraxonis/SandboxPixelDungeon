@@ -23,12 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RingRoom;
 import com.watabou.utils.Point;
 
-public class RingExitRoom extends RingRoom {
+public class RingExitRoom extends RingRoom implements ExitRoomInterface {
 
 	@Override
 	public float[] sizeCatProbs() {
@@ -47,7 +46,7 @@ public class RingExitRoom extends RingRoom {
 	@Override
 	protected void placeCenterDetail(Level level, int pos) {
 		Painter.set(level, pos, Terrain.EXIT);
-		level.transitions.add(new LevelTransition(level, pos, LevelTransition.Type.REGULAR_EXIT));
+		level.addRegularExit(pos);
 	}
 
 	@Override

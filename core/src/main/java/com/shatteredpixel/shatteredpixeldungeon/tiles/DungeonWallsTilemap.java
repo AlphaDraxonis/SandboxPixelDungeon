@@ -37,6 +37,7 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 
 	public DungeonWallsTilemap(int region){
 		super(region == LevelScheme.REGION_NONE ? Dungeon.level.tilesTex() : CustomLevel.tilesTex(region, false));
+		tileset.frameIdIfNull = DungeonTileSheet.INVISIBLE_TILE;
 
 		this.region = region;
 
@@ -118,10 +119,26 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 			return DungeonTileSheet.STATUE_OVERHANG;
 		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.STATUE_SP){
 			return DungeonTileSheet.STATUE_SP_OVERHANG;
-		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.REGION_DECO){
-			return DungeonTileSheet.REGION_DECO_OVERHANG;
-		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.REGION_DECO_ALT){
-			return DungeonTileSheet.REGION_DECO_ALT_OVERHANG;
+		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.BARREL){
+			return DungeonTileSheet.BARREL_OVERHANG;
+		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.BARREL_ALT){
+			return DungeonTileSheet.BARREL_ALT_OVERHANG;
+		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.CAGE){
+			return DungeonTileSheet.CAGE_OVERHANG;
+		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.CAGE_ALT){
+			return DungeonTileSheet.CAGE_ALT_OVERHANG;
+		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.METAL_STRUCTURE){
+			return DungeonTileSheet.METAL_STRUCTURE_OVERHANG;
+		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.METAL_STRUCTURE_ALT){
+			return DungeonTileSheet.METAL_STRUCTURE_ALT_OVERHANG;
+		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.FLAMING_PEDESTAL){
+			return DungeonTileSheet.FLAMING_PEDESTAL_OVERHANG;
+		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.FLAMING_PEDESTAL_ALT){
+			return DungeonTileSheet.FLAMING_PEDESTAL_ALT_OVERHANG;
+		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.RUBBLE){
+			return DungeonTileSheet.RUBBLE_OVERHANG;
+		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.RUBBLE_ALT){
+			return DungeonTileSheet.RUBBLE_ALT_OVERHANG;
 		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.MINE_CRYSTAL){
 			return DungeonTileSheet.getVisualWithAlts(DungeonTileSheet.MINE_CRYSTAL_OVERHANG, pos + mapWidth);
 		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.MINE_BOULDER){

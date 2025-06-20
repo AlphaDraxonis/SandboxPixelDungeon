@@ -949,7 +949,7 @@ public class DriedRose extends Artifact {
 								} else if (item.unique) {
 									GLog.w( Messages.get(WndGhostHero.class, "cant_unique"));
 									hide();
-								} else if (item.cursed || !item.cursedKnown) {
+								} else if (item.cursed || !item.cursedKnown()) {
 									GLog.w(Messages.get(WndGhostHero.class, "cant_cursed"));
 									hide();
 								}  else if (!item.levelKnown && ((MeleeWeapon)item).STRReq(0) > rose.ghostStrength()){
@@ -1024,7 +1024,7 @@ public class DriedRose extends Artifact {
 								} else if (item.unique || ((Armor) item).checkSeal() != null) {
 									GLog.w( Messages.get(WndGhostHero.class, "cant_unique"));
 									hide();
-								} else if (item.cursed || !item.cursedKnown) {
+								} else if (item.cursed || !item.cursedKnown()) {
 									GLog.w(Messages.get(WndGhostHero.class, "cant_cursed"));
 									hide();
 								}  else if (!item.levelKnown && ((Armor)item).STRReq(0) > rose.ghostStrength()){
