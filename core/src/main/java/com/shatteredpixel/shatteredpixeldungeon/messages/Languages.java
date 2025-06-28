@@ -67,13 +67,38 @@ public enum Languages {
 	private String[] reviewers;
 	private String[] translators;
 
-	Languages(String name, String code, Status status, String[] sandbox, String[] reviewers, String[] translators){
+	Languages(String name, String code, Status status, String[] reviewers, String[] translators){
 		this.name = name;
 		this.code = code;
 		this.status = status;
-		this.sandbox = sandbox;
 		this.reviewers = reviewers;
 		this.translators = translators;
+		
+		switch (code) {
+			case "en":
+				this.sandbox = null;
+				this.status = Status.O_COMPLETE;
+				break;
+
+			case "zh":
+				this.sandbox = new String[]{"Geopelia"};
+				this.status = Status.O_COMPLETE;
+				break;
+			case "es":
+				this.sandbox = new String[]{"Zaragoza"};
+				this.status = Status.O_COMPLETE;
+				break;
+			case "de":
+				this.sandbox = new String[]{"AlphaDraxonis"};
+				this.status = Status.O_COMPLETE;
+				break;
+				
+			default:
+				this.sandbox = new String[]{};
+				this.status = Status.X_UNFINISH;
+				break;
+		}
+		
 	}
 
 	public String nativeName(){

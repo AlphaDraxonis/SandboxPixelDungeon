@@ -854,7 +854,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
     private void updateStats() {
         updateStats(internalHero, this);
-        enemy = internalHero.enemy();
+        enemy = internalHero.attackTarget();
         if (internalHero.resting) state = SLEEPING;
     }
 
@@ -1037,7 +1037,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         }
 
         protected void setEnemy(Char enemy) {
-            this.enemy = enemy;
+            this.attackTarget = enemy;
         }
 
         @Override
