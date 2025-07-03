@@ -116,7 +116,7 @@ public class DistortionTrap extends Trap{
 					mob = MobSpawner.getMobRotation(floor).get(0);
 					break;
 				case 2:
-					switch (2){
+					switch (Random.Int(4)){
 						case 0: default:
 							Wraith.spawnAt(point);
 							continue; //wraiths spawn themselves, no need to do more
