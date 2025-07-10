@@ -277,10 +277,10 @@ public abstract class Recipe {
 	public static boolean usableInRecipe(Item item){
 		//only upgradeable thrown weapons and wands allowed among equipment items
 		if (item instanceof EquipableItem){
-			return item.isIdentified() && !item.cursed
+			return item.cursedKnown() && !item.cursed
 					&& (item instanceof MissileWeapon && item.isUpgradable() || !item.isEquipped(Dungeon.hero) && !Dungeon.customDungeon.recipes.isEmpty());
 		} else if (item instanceof Wand) {
-			return item.isIdentified() && !item.cursed;
+			return item.cursedKnown() && !item.cursed;
 		} else {
 			//other items can be unidentified, but not cursed
 			return !item.cursed;
