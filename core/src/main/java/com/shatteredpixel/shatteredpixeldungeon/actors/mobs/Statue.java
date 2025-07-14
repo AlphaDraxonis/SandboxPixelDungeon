@@ -50,10 +50,10 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 
 		EXP = 0;
 		state = PASSIVE;
-
+		
 		properties.add(Property.INORGANIC);
 	}
-
+	
 	protected Weapon weapon;
 
 	public boolean levelGenStatue = true;
@@ -129,7 +129,7 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 			weapon.enchant(Enchantment.random());
 		}
 	}
-
+	
 	private static final String WEAPON	= "weapon";
 	
 	@Override
@@ -143,6 +143,7 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 		super.restoreFromBundle( bundle );
 		weapon = (Weapon)bundle.get( WEAPON );
 	}
+	
 	@Override
 	public int damageRoll() {
 		return (int) (weapon.damageRoll(this) * statsScale);
@@ -167,7 +168,7 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 	public int drRoll() {
 		return super.drRoll() + Random.NormalIntRange(0, Dungeon.depth + weapon.defenseFactor(this));
 	}
-
+	
 	@Override
 	public boolean add(Buff buff) {
 		if (super.add(buff)) {
@@ -185,10 +186,10 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 		if (state == PASSIVE) {
 			state = HUNTING;
 		}
-
+		
 		super.damage( dmg, src );
 	}
-
+	
 	@Override
 	public int attackProc( Char enemy, int damage ) {
 		damage = super.attackProc( enemy, damage );
@@ -199,14 +200,14 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 		}
 		return damage;
 	}
-
+	
 	@Override
 	public void beckon( int cell ) {
 		if (state != PASSIVE){
 			super.beckon(cell);
 		}
 	}
-
+	
 	@Override
 	public void die( Object cause ) {
 		weapon.identify(false);
@@ -246,7 +247,7 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 		}
 		return desc;
 	}
-
+	
 	{
 		resistances.add(Grim.class);
 	}
@@ -267,5 +268,5 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 		statue.createItems(useDecks);
 		return statue;
 	}
-
+	
 }
