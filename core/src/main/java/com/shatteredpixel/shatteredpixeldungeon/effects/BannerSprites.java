@@ -41,10 +41,12 @@ public class BannerSprites {
 				icon.frame( icon.texture.uvRect( 0, 0, 106, 90 ) );
 				break;
 			case BOSS_SLAIN:
-				icon.frame( icon.texture.uvRect( 0, 90, 128, 125 ) );
+//				icon.frame( icon.texture.uvRect( 0, 90, 128, 125 ) ); //old image
+				icon.frame( icon.texture.uvRect( 128, 90, 255, 158 ) );
 				break;
 			case GAME_OVER:
-				icon.frame( icon.texture.uvRect( 0, 125, 128, 160 ) );
+//				icon.frame( icon.texture.uvRect( 0, 125, 128, 160 ) ); //old image
+				icon.frame( icon.texture.uvRect( 128, 159, 255, 194 ) );
 				break;
 			case SELECT_YOUR_HERO:
 				icon.frame( icon.texture.uvRect( 0, 160, 128, 181 ) );
