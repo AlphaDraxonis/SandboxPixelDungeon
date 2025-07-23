@@ -94,7 +94,7 @@ public class Combo extends HeroSubclassAbilityBuff {
 		comboTime = 5f;
 
 		if (!enemy.isAlive() || (enemy.buff(Corruption.class) != null && enemy.HP == enemy.HT)){
-			comboTime = Math.max(comboTime, 15*targetHero().pointsInTalent(Talent.CLEAVE));
+			comboTime = 15f + 15f*targetHero().pointsInTalent(Talent.CLEAVE);
 		}
 
 		initialComboTime = comboTime;
