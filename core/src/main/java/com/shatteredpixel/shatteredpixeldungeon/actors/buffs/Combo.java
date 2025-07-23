@@ -124,7 +124,7 @@ public class Combo extends HeroSubclassAbilityBuff {
 
 	@Override
 	public boolean act() {
-		comboTime-=TICK;
+		comboTime -= TICK * HoldFast.buffDecayFactor(target);
 		spend(TICK);
 		if (comboTime <= 0) {
 			detach();
