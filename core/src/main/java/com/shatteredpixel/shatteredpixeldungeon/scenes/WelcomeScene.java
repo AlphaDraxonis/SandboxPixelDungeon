@@ -222,9 +222,11 @@ public class WelcomeScene extends PixelScene {
 			message = message.replace("Shattered PD", "Sandbox PD");
 			message = message.replace("ShatteredPD", "SandboxPD");
 
-			message = "Hey Alpha testers, with this patch the alpha for v3.2 is wrapping up! I expect to release BETA-1 tomorrow.\n" +
+			message = "Hey Beta testers, thanks for testing v3.2.0!\n" +
 					"\n" +
-					"v3.2 is smaller than most updates, but does come with a major overhaul to thrown weapons and some QoL changes. Check out the changes screen for full details.";
+					"v3.2.0 comes with a major overhaul to thrown weapons, balance changes to some subclasses, and a major QoL change to accuracy/evasion effects.\n" +
+					"\n" +
+					"Check out the changes screen for full details.";
 
 		} else {
 			message = Messages.get(this, "what_msg");
