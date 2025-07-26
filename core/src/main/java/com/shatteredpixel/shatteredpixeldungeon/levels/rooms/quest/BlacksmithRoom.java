@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BurningTrap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -115,6 +116,15 @@ public class BlacksmithRoom extends StandardRoom {
 				|| blacksmith.pos == entrancePos);
 		level.mobs.add(blacksmith);
 		return hasBlacksmith = true;
+	}
+
+	@Override
+	public boolean canConnect(Room r) {
+		if (r.isExit()){
+			//prevents confusion where smith exit and floor exit are very close to each other.
+			return false;
+		}
+		return super.canConnect(r);
 	}
 
 	@Override
