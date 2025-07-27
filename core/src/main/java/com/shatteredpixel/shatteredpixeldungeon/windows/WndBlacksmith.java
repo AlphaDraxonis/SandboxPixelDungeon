@@ -459,9 +459,9 @@ public class WndBlacksmith extends Window {
 
 	public static class WndSmith extends Window {
 
-		private static final int WIDTH      = 120;
-		private static final int BTN_SIZE	= 32;
-		private static final int BTN_GAP	= 5;
+		private static final int WIDTH      = 128;
+		private static final int BTN_SIZE	= 28;
+		private static final int BTN_GAP	= 4;
 		private static final int GAP		= 2;
 
 		public WndSmith( Blacksmith troll, Hero hero ){
@@ -516,7 +516,9 @@ public class WndBlacksmith extends Window {
 					}
 				};
 				btnReward.item( i );
-				btnReward.setRect( count*(WIDTH - BTN_GAP) / 3 - BTN_SIZE, message.top() + message.height() + BTN_GAP, BTN_SIZE, BTN_SIZE );
+				btnReward.setRect( count*(WIDTH - BTN_GAP) / Blacksmith.Quest.smithRewards.size() - BTN_SIZE,
+						message.top() + message.height() + BTN_GAP,
+						BTN_SIZE, BTN_SIZE );
 				add( btnReward );
 
 			}
