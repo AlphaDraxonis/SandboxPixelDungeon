@@ -89,10 +89,11 @@ public class Regeneration extends Buff {
 				partialRegen += 1f / delay;
 
 				if (partialRegen >= 1) {
-					target.HP += 1;
-					partialRegen--;
-					if (target.HP == regencap() && hero == Dungeon.hero) {
-						hero.resting = false;
+					target.HP += (int)partialRegen;
+					partialRegen -= (int)partialRegen;
+					if (target.HP >= regencap()) {
+						target.HP = regencap();
+						if (hero == Dungeon.hero) hero.resting = false;
 					}
 				}
 
