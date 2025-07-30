@@ -274,7 +274,7 @@ public class SpiritBow extends Weapon {
 				case DAMAGE:
 					return 2f;
 			}
-		} else {
+		} else{
 			return super.baseDelay(owner);
 		}
 	}
@@ -409,7 +409,7 @@ public class SpiritBow extends Weapon {
 						user.buff(Talent.LethalMomentumTracker.class).detach();
 						user.next();
 					} else {
-						user.spendAndNext(castDelay(user, dst));
+						user.spendAndNext(castDelay(user, cell));
 					}
 					sniperSpecial = false;
 					flurryCount = -1;
@@ -459,7 +459,7 @@ public class SpiritBow extends Weapon {
 								user.buff(Talent.LethalMomentumTracker.class).detach();
 								user.next();
 							} else {
-								user.spendAndNext(castDelay(user, dst));
+								user.spendAndNext(castDelay(user, cell));
 							}
 							sniperSpecial = false;
 							flurryCount = -1;

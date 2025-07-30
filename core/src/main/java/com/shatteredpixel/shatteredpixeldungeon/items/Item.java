@@ -844,7 +844,7 @@ public class Item extends GameObject implements Customizable {
 		
 		if (user == Dungeon.hero) QuickSlotButton.target(enemy);
 		
-		final float delay = castDelay(user, dst);
+		final float delay = castDelay(user, cell);
 		
 		Callback callback;
 		if (enemy != null) {
@@ -881,7 +881,7 @@ public class Item extends GameObject implements Customizable {
 		MissileSprite.missileFromChar(this, user.sprite, cell, callback);
 	}
 	
-	public float castDelay( Char user, int dst ){
+	public float castDelay( Char user, int cell ){
 		return TIME_TO_THROW;
 	}
 	
