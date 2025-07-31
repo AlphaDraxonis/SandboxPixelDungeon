@@ -154,7 +154,7 @@ public class GamesInProgress {
 				
 				Bundle bundle = FileUtils.bundleFromFile(gameFile(gameFolder));
 
-				if (bundle.getInt( "version" ) < SandboxPixelDungeon.v2_3_2) {
+				if (bundle.getInt( "version" ) < SandboxPixelDungeon.v2_4_2) {
 					info = null;
 				} else {
 

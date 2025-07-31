@@ -43,8 +43,7 @@ public class SandboxPixelDungeon extends Game {
 	//rankings from v1.2.3 and older use a different score formula, so this reference is kept
 	public static final int v1_2_3 = 628;
 
-	//savegames from versions older than v2.3.2 are no longer supported, and data from them is ignored
-	public static final int v2_3_2 = 768;
+	//savegames from versions older than v2.4.2 are no longer supported, and data from them is ignored
 	public static final int v2_4_0 = 780;
 	public static final int v2_5_4 = 802;
 
