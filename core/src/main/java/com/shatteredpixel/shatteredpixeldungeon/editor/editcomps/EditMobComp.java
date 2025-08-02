@@ -99,7 +99,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Random;
@@ -153,7 +152,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (mob instanceof Mimic) {
             if (((Mimic) mob).items == null) ((Mimic) mob).items = new ArrayList<>();
             ArrayList<Item> mimicItemList = ((Mimic) mob).items;
-            mimicItems = new ItemContainerWithLabel<Item>(mimicItemList, this, true, Messages.get(WndJournal.class, "items") + ":") {
+            mimicItems = new ItemContainerWithLabel<Item>(mimicItemList, this, true, label("items") + ":") {
                 @Override
                 protected void doAddItem(Item item) {
                     //From Heap#drop()
