@@ -33,14 +33,27 @@ public class WndImageViewer extends SimpleWindow {
 
 	public WndImageViewer(Image image) {
 		float scaleX = 1f, scaleY = 1f;
+		
 		float prefWidth = image.texture.width / PixelScene.defaultZoom + 1;
-		if (PixelScene.uiCamera.width * 0.9f < prefWidth) {
-			scaleX = (PixelScene.uiCamera.width * 0.9f - 1) * PixelScene.defaultZoom / image.texture.width;
-		}
 		float prefHeight = image.texture.height / PixelScene.defaultZoom + 5;
-		if (PixelScene.uiCamera.height * 0.9f < prefHeight) {
-			scaleY = (PixelScene.uiCamera.height * 0.9f - 5) * PixelScene.defaultZoom / image.texture.height;
+		
+		float minWidth = PixelScene.uiCamera.width * 0.5f;
+		float minHeight = PixelScene.uiCamera.height * 0.5f;
+		
+		float maxWidth = PixelScene.uiCamera.width * 0.9f;
+		float maxHeight = PixelScene.uiCamera.height * 0.9f;
+		
+		if (maxWidth < prefWidth) {
+			scaleX = (maxWidth - 1) * PixelScene.defaultZoom / image.texture.width;
+		} else if (minWidth > prefWidth) {
+			scaleX = minWidth / prefWidth;
 		}
+		if (maxHeight < prefHeight) {
+			scaleY = (maxWidth - 5) * PixelScene.defaultZoom / image.texture.height;
+		} else if (minHeight > prefHeight) {
+			scaleY = minHeight / prefHeight;
+		}
+		
 		float neededScale = Math.min(scaleX, scaleY);
 		if (neededScale == 1f) {
 			image.scale.set(1f / PixelScene.defaultZoom);
