@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -92,16 +93,20 @@ public class Scorpio extends Mob {
 
 	@Override
 	protected boolean doAttack(Char enemy) {
-		if (sprite instanceof ScorpioSprite || sprite == null || !sprite.visible && !enemy.sprite.visible)
-			return super.doAttack(enemy);
-
-		ScorpioSprite.doRealAttack(sprite, enemy.pos);
-		return false;
+		return doRangedAttack(enemy.pos);
 	}
 
 	@Override
 	public void onZapComplete() {
-		onAttackComplete();//Basically the same for scorpions
+		if (!sprite.instantZapDamage()) zap();
+		Invisibility.dispel(this);
+		spend( attackDelay() );
+		next();
+	}
+	
+	@Override
+	public void zap() {
+		attack(enemy); //moved from onAttackComplete() to here
 	}
 
 	@Override

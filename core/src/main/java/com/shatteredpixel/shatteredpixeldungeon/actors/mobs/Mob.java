@@ -999,10 +999,11 @@ public abstract class Mob extends Char implements Customizable {
 
 	@Override
 	public void onAttackComplete() {
-		attack( enemy );
-		Invisibility.dispel(this);
-		spend( attackDelay() );
-		super.onAttackComplete();
+		//apply changes here to Scorpio#onZapComplete!
+		attack( enemy );//
+		Invisibility.dispel(this);//
+		spend( attackDelay() );//
+		super.onAttackComplete();//
 	}
 	
 	@Override

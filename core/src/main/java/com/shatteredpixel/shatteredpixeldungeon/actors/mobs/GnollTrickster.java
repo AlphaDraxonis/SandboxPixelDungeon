@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
@@ -86,11 +87,6 @@ public class GnollTrickster extends Gnoll {
 	}
 
 	@Override
-	public void playZapAnim(int target) {
-		GnollTricksterSprite.playZap(sprite.parent, sprite, target, this);
-	}
-
-	@Override
 	public int attackProc( Char enemy, int damage ) {
 		damage = super.attackProc( enemy, damage );
 		//The gnoll's attacks get more severe the more the player lets it hit them
@@ -114,11 +110,25 @@ public class GnollTrickster extends Gnoll {
 
 	@Override
 	protected boolean doAttack(Char enemy) {
-		if (sprite instanceof GnollTricksterSprite || sprite == null || !sprite.visible && !enemy.sprite.visible)
-			return super.doAttack(enemy);
-
-		GnollTricksterSprite.doRealAttack(sprite, enemy.pos);
-		return false;
+		return doRangedAttack(enemy.pos);
+	}
+	
+	@Override
+	public void onZapComplete() {
+		if (!sprite.instantZapDamage()) zap();
+		Invisibility.dispel(this);
+		spend( attackDelay() );
+		next();
+	}
+	
+	@Override
+	public void zap() {
+		attack(enemy); //moved from onAttackComplete() to here
+	}
+	
+	@Override
+	public void playZapAnim(int target) {
+		GnollTricksterSprite.playZap(sprite.parent, sprite, target, this);
 	}
 
 	@Override

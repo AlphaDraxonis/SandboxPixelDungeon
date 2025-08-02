@@ -1386,7 +1386,8 @@ public abstract class Char extends Actor {
 	}
 	
 	public void onAttackComplete() {
-		next();
+		//apply changes here to Scorpio#onZapComplete!
+		next();//
 	}
 	
 	public void onOperateComplete() {
