@@ -353,11 +353,11 @@ public abstract class Char extends Actor {
 
 		Char defaultChar = DefaultStatsCache.getDefaultObject(getClass());
 		if (defaultChar != null) {
-			if (defaultChar.damageReductionMax != damageReductionMax) bundle.put(DAMAGE_REDUCTION_MAX, damageReductionMax);
-			if (defaultChar.attackSpeed != attackSpeed) bundle.put(ATTACK_SPEED, attackSpeed);
-			if (defaultChar.baseSpeed != baseSpeed) bundle.put(SPEED, baseSpeed);
-			if (defaultChar.viewDistance != viewDistance) bundle.put(VIEW_DISTANCE, viewDistance);
-			if (!defaultChar.properties.equals(properties)) {
+			if (defaultChar.damageReductionMax != damageReductionMax || storeEverythingInBundle) bundle.put(DAMAGE_REDUCTION_MAX, damageReductionMax);
+			if (defaultChar.attackSpeed != attackSpeed || storeEverythingInBundle) bundle.put(ATTACK_SPEED, attackSpeed);
+			if (defaultChar.baseSpeed != baseSpeed || storeEverythingInBundle) bundle.put(SPEED, baseSpeed);
+			if (defaultChar.viewDistance != viewDistance || storeEverythingInBundle) bundle.put(VIEW_DISTANCE, viewDistance);
+			if (!defaultChar.properties.equals(properties) || storeEverythingInBundle) {
 				int[] enumOrdinals = new int[properties.size()];
 				int index = 0;
 				for (Property p : properties) {

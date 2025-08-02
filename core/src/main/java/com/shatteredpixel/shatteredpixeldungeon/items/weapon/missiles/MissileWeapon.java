@@ -528,7 +528,7 @@ abstract public class MissileWeapon extends Weapon {
 
 		MissileWeapon def = DefaultStatsCache.getDefaultObject(getClass());
 		if (def != null) {
-			if (baseUses != def.baseUses) bundle.put(BASE_USES, baseUses);
+			if (baseUses != def.baseUses || storeEverythingInBundle) bundle.put(BASE_USES, baseUses);
 		}
 	}
 	

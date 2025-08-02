@@ -178,14 +178,12 @@ public abstract class Trap extends GameObject {
 		bundle.put( VISIBLE, visible );
 		bundle.put( ACTIVE, active );
 		Trap defaultObj = DefaultStatsCache.getDefaultObject(getClass());
-		if (disarmedByActivation != defaultObj.disarmedByActivation)
-			bundle.put(DISARMED_BY_ACTIVATION, disarmedByActivation);
-		if (canBeSearched != defaultObj.canBeSearched)
-			bundle.put(CAN_BE_SEARCHED, canBeSearched);
-		if (canBeSearchedByMagic != defaultObj.canBeSearchedByMagic)
-			bundle.put(CAN_BE_SEARCHED_BY_MAGIC, canBeSearchedByMagic);
-		if (revealedWhenTriggered != defaultObj.revealedWhenTriggered)
-			bundle.put(REVEALED_WHEN_TRIGGERED, revealedWhenTriggered);
+		if (defaultObj != null) {
+			if (disarmedByActivation != defaultObj.disarmedByActivation || storeEverythingInBundle) bundle.put(DISARMED_BY_ACTIVATION, disarmedByActivation);
+			if (canBeSearched != defaultObj.canBeSearched || storeEverythingInBundle) bundle.put(CAN_BE_SEARCHED, canBeSearched);
+			if (canBeSearchedByMagic != defaultObj.canBeSearchedByMagic || storeEverythingInBundle) bundle.put(CAN_BE_SEARCHED_BY_MAGIC, canBeSearchedByMagic);
+			if (revealedWhenTriggered != defaultObj.revealedWhenTriggered || storeEverythingInBundle) bundle.put(REVEALED_WHEN_TRIGGERED, revealedWhenTriggered);
+		}
 	}
 
 	@Override
@@ -200,7 +198,9 @@ public abstract class Trap extends GameObject {
 		if (template == null) return;
 		if (getClass() != template.getClass()) return;
 		Bundle bundle = new Bundle();
+		template.storeEverythingInBundle = true;
 		bundle.put("OBJ", template);
+		template.storeEverythingInBundle = false;
 		bundle.getBundle("OBJ").put(CustomGameObjectClass.INHERIT_STATS, true);
 
 		int pos = this.pos;

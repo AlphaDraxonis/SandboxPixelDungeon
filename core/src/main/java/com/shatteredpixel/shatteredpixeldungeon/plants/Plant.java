@@ -168,7 +168,9 @@ public abstract class Plant extends GameObject implements Customizable {
         if (template == null) return;
         if (getClass() != template.getClass()) return;
         Bundle bundle = new Bundle();
+		template.storeEverythingInBundle = true;
         bundle.put("OBJ", template);
+		template.storeEverythingInBundle = false;
         bundle.getBundle("OBJ").put(CustomGameObjectClass.INHERIT_STATS, true);
 
         int pos = this.pos;

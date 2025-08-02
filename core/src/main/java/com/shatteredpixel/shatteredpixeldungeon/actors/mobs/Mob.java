@@ -286,17 +286,17 @@ public abstract class Mob extends Char implements Customizable {
 
         Mob defaultMob = DefaultStatsCache.getDefaultObject(getClass());
         if (defaultMob != null) {
-            if (defaultMob.defenseSkill != defenseSkill) bundle.put(DEFENSE_SKILL, defenseSkill);
-            if (defaultMob.attackSkill != attackSkill) bundle.put(ATTACK_SKILL, attackSkill);
-            if (defaultMob.damageRollMin != damageRollMin) bundle.put(DAMAGE_ROLL_MIN, damageRollMin);
-            if (defaultMob.damageRollMax != damageRollMax) bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
-            if (defaultMob.specialDamageRollMin != specialDamageRollMin) bundle.put(SPECIAL_DAMAGE_ROLL_MIN, specialDamageRollMin);
-            if (defaultMob.specialDamageRollMax != specialDamageRollMax) bundle.put(SPECIAL_DAMAGE_ROLL_MAX, specialDamageRollMax);
+            if (defaultMob.defenseSkill != defenseSkill || storeEverythingInBundle) bundle.put(DEFENSE_SKILL, defenseSkill);
+            if (defaultMob.attackSkill != attackSkill || storeEverythingInBundle) bundle.put(ATTACK_SKILL, attackSkill);
+            if (defaultMob.damageRollMin != damageRollMin || storeEverythingInBundle) bundle.put(DAMAGE_ROLL_MIN, damageRollMin);
+            if (defaultMob.damageRollMax != damageRollMax || storeEverythingInBundle) bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
+            if (defaultMob.specialDamageRollMin != specialDamageRollMin || storeEverythingInBundle) bundle.put(SPECIAL_DAMAGE_ROLL_MIN, specialDamageRollMin);
+            if (defaultMob.specialDamageRollMax != specialDamageRollMax || storeEverythingInBundle) bundle.put(SPECIAL_DAMAGE_ROLL_MAX, specialDamageRollMax);
             if (defaultMob.tilesBeforeWakingUp != tilesBeforeWakingUp) bundle.put(TILES_BEFORE_WAKING_UP, tilesBeforeWakingUp);
-            if (defaultMob.EXP != EXP) bundle.put(XP, EXP);
-            if (defaultMob.statsScale != statsScale) bundle.put(STATS_SCALE, statsScale);
+            if (defaultMob.EXP != EXP || storeEverythingInBundle) bundle.put(XP, EXP);
+            if (defaultMob.statsScale != statsScale || storeEverythingInBundle) bundle.put(STATS_SCALE, statsScale);
 
-            if (defaultMob.spriteClass != spriteClass) bundle.put(SPRITE, spriteClass);
+            if (defaultMob.spriteClass != spriteClass || storeEverythingInBundle) bundle.put(SPRITE, spriteClass);
         } else if (MobSpriteItem.canChangeSprite(this)) {
 			if (Reflection.newInstance(getClass()).spriteClass != spriteClass) bundle.put(SPRITE, spriteClass);
 		}
@@ -419,7 +419,9 @@ public abstract class Mob extends Char implements Customizable {
 		if (template == null) return;
 		if (getClass() != template.getClass()) return;
 		Bundle bundle = new Bundle();
+		template.storeEverythingInBundle = true;
 		bundle.put("OBJ", template);
+		template.storeEverythingInBundle = false;
 		bundle.getBundle("OBJ").put(CustomGameObjectClass.INHERIT_STATS, true);
 
 		int pos = this.pos;
