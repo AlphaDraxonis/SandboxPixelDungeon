@@ -135,6 +135,10 @@ public class WndOptionsCondensed extends WndOptions {
 			
 		}
 		
+		if (widthLeftThisRow == width) {
+			pos -= MARGIN;
+		}
+		
 		return pos;
 	}
 	

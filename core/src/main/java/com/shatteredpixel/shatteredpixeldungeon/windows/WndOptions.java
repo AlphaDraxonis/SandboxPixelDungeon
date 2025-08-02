@@ -39,8 +39,8 @@ public class WndOptions extends Window {
 	protected static final int MARGIN 		= 2;
 	protected static final int BUTTON_HEIGHT	= 18;
 	
-	private ScrollPane sp, spForButtons;
-	private Component content;
+	private ScrollPane spForText, spForButtons;
+	private Component messageComp, buttonsComp;
 	
 	protected RenderedTextBlock tfMessage;
 	protected Component tfTitle;
@@ -56,7 +56,6 @@ public class WndOptions extends Window {
 		}
 		
 		tfMessage = PixelScene.renderTextBlock( message, 6 );
-		add(tfMessage);
 		
 		initBody(options);
 	}
@@ -81,7 +80,7 @@ public class WndOptions extends Window {
 	
 	protected void initBody(String... options){
 		
-		content = new Component();
+		buttonsComp = new Component();
 		
 		buttons = new RedButton[options.length];
 		infos = new IconButton[options.length];
@@ -101,7 +100,7 @@ public class WndOptions extends Window {
 			Image icon = getIcon(i);
 			if (icon != null) buttons[i].icon(icon);
 			buttons[i].enable(enabled(i));
-			content.add( buttons[i] );
+			buttonsComp.add( buttons[i] );
 			
 			if (hasInfo(i)) {
 				infos[i] = new IconButton(Icons.get(Icons.INFO)){
@@ -110,15 +109,26 @@ public class WndOptions extends Window {
 						onInfo( index );
 					}
 				};
-				content.add(infos[i]);
+				buttonsComp.add(infos[i]);
 			}
 		}
 		
-		spForButtons = new ScrollPane(content);
+		spForButtons = new ScrollPane(buttonsComp);
 		add(spForButtons);
 		
-		sp = new ScrollPane(tfMessage);
-		add(sp);
+		messageComp = new Component() {
+			{
+				add(tfMessage);
+			}
+			@Override
+			protected void layout() {
+				tfMessage.setPos(x, y);
+				width = tfMessage.width();
+				height = tfMessage.height() + MARGIN;
+			}
+		};
+		spForText = new ScrollPane(messageComp);
+		add(spForText);
 		
 		layout(PixelScene.landscape() ? WIDTH_L : WIDTH_P);
 	}
@@ -140,14 +150,26 @@ public class WndOptions extends Window {
 		
 		
 		float spaceForButtons = layoutButtons(width);
-		content.setSize(width, spaceForButtons + MARGIN);
+		buttonsComp.setSize(width, spaceForButtons);
 		
-		float spHeight = Math.min(tfMessage.height(), PixelScene.uiCamera.height * 0.88f - pos - spaceForButtons) + MARGIN;
+		float textSpHeight = Math.min(
+				tfMessage.height(),
+				Math.max(PixelScene.uiCamera.height * 0.2f, PixelScene.uiCamera.height * 0.88f - pos - MARGIN - spaceForButtons - MARGIN)
+		);
+		boolean needsTextSp = tfMessage.height() > textSpHeight;
 		
-		resize(width, (int)(pos + spHeight + spaceForButtons - MARGIN));
+		float buttonsSpHeight = Math.min(
+				spaceForButtons,
+				PixelScene.uiCamera.height * 0.88f - pos - MARGIN - textSpHeight - MARGIN
+		);
 		
-		sp.setRect(0, tfTitle.bottom() + MARGIN, width, spHeight);
-		spForButtons.setRect(0, sp.bottom() + MARGIN, width, content.height());
+		textSpHeight += MARGIN;
+		
+		float totalMargins = buttonsSpHeight == 0f ? 0 : MARGIN;
+		resize(width, (int)(pos + textSpHeight + /*MARGIN*/ + buttonsSpHeight + /*MARGIN*/ + totalMargins));
+		
+		spForText.setRect(0, pos, width, textSpHeight);
+		spForButtons.setRect(0, spForText.bottom() + MARGIN, width, buttonsSpHeight);
 		
 	}
 	
@@ -163,7 +185,7 @@ public class WndOptions extends Window {
 			
 			pos += BUTTON_HEIGHT + MARGIN;
 		}
-		return pos;
+		return pos - MARGIN;
 	}
 	
 	@Override
