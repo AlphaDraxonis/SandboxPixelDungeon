@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 /**
  * Opt-Out of Lua class instantiation
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NotAllowedInLua {
 }

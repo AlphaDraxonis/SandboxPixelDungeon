@@ -289,6 +289,9 @@ public class LuaRestrictionProxy extends LuaValue {
 	public static boolean isFieldRestricted(Field field) {
 //		Class<?> fieldType = field.getType();
 //		return isRestricted(fieldType);
+		if (field != null && field.isAnnotationPresent(NotAllowedInLua.class)) {
+			return true;
+		}
 		return false;
 	}
 
