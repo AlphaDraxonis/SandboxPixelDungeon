@@ -156,6 +156,11 @@ public abstract class OptionSlider extends Component {
     @Override
     protected void layout() {
         
+        if (width < 0) {
+            //cannot properly do the layout, so just skip
+            return;
+        }
+        
         if (title.width() > 0.7f*width){
             String titleText = title.text;
             remove(title);
