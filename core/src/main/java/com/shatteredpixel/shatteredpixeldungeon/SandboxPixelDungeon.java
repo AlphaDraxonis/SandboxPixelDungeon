@@ -49,6 +49,7 @@ public class SandboxPixelDungeon extends Game {
 
 	public static final int v3_0_2 = 833;
 	public static final int v3_1_1 = 850;
+	public static final int v3_2_0 = 859;
 	
 	static {
 		Music.getExternalAudioFile = CustomDungeonSaves::getExternalFile;
