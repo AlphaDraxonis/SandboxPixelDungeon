@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.LevelColoring;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseIntOnScala;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndColorPicker;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -96,15 +97,15 @@ public class ChangeLevelColoring extends Component {
         return title;
     }
 
-    //for each of three: text mit hotarea, white colorblock as bg, colored colorblock shows color, click opens color picker
+    //for each of three: text mit hotArea, white colorBlock as bg; colored colorBlock shows color, click opens color picker
 
-    private static class Part extends Button {
+    protected static class Part extends Button {
 
         protected RenderedTextBlock label;
         protected ColorBlock bg;
         protected ColorBlock showColor;
 
-        protected OptionSlider transparency;
+        protected OptionSlider transparencySlider;
 
         private int currentColor;
 
@@ -115,7 +116,7 @@ public class ChangeLevelColoring extends Component {
             label = PixelScene.renderTextBlock(text, 10);
             add(label);
 
-            transparency = new OptionSlider(Messages.get(ChangeLevelColoring.class, "transparency"),
+            transparencySlider = new OptionSlider(Messages.get(ChangeLevelColoring.class, "transparency"),
                     Messages.get(ChangeLevelColoring.class, "invisible"), Messages.get(ChangeLevelColoring.class, "visible"),
                     0, 100, 11) {
                 @Override
@@ -127,8 +128,8 @@ public class ChangeLevelColoring extends Component {
                 protected void onChange() {
                 }
             };
-            transparency.setSelectedValue((int) (alpha * 100));
-            add(transparency);
+            transparencySlider.setSelectedValue((int) (alpha * 100));
+            add(transparencySlider);
 
             currentColor = color;
             showColor.hardlight(color);
@@ -153,7 +154,7 @@ public class ChangeLevelColoring extends Component {
             label.maxWidth((int) (width * 2) / 5);
             label.setPos(x + 2, y + (height - label.height()) * 0.5f);
 
-            transparency.setRect(label.right() + 5, y + 1, width - label.width() - 9, height - 2);
+            transparencySlider.setRect(label.right() + 5, y + 1, width - label.width() - 9, height - 2);
 
             hotArea.width = label.width() + 6;
 
@@ -177,6 +178,16 @@ public class ChangeLevelColoring extends Component {
             });
         }
 
+        @Override
+        protected boolean onLongClick() {
+            EditorScene.show(new WndChooseIntOnScala(Messages.get(ChangeLevelColoring.class, "transparency"), "Alpha",
+                    0, 100, (int) (showColor.alpha() * 100), newVal -> {
+                setAlpha(newVal / 100f);
+                transparencySlider.setSelectedValue(newVal);
+            }));
+            return true;
+        }
+        
         protected void setColor(int rgbColor) {
             showColor.hardlight(rgbColor);
             currentColor = rgbColor;
