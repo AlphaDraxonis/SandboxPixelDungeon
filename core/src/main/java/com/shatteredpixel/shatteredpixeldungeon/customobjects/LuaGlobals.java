@@ -85,6 +85,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.KingsCrown;
+import com.shatteredpixel.shatteredpixeldungeon.items.RechargeRule;
 import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
 import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
@@ -1144,7 +1145,7 @@ public class LuaGlobals extends Globals {
 		addEnum(Heap.Type.class);
 		addEnum(Armor.Augment.class);
 		addEnum(Weapon.Augment.class);
-		addEnum(Wand.RechargeRule.class);
+		addEnum(RechargeRule.class);
 		addEnum(LevelTransition.Type.class);
 		addEnum(StandardRoom.SizeCategory.class);
 		addEnum(CharSprite.State.class);

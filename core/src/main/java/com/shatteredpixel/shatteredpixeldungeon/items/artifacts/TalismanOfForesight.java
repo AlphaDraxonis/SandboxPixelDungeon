@@ -283,7 +283,8 @@ public class TalismanOfForesight extends Artifact {
 			if (charge < chargeCap
 					&& !cursed
 					&& target.buff(MagicImmune.class) == null
-					&& Regeneration.regenOn()) {
+					&& Regeneration.regenOn()
+					&& rechargeRule.normalRechargeable()) {
 				//fully charges in 2000 turns at +0, scaling to 1000 turns at +10.
 				float chargeGain = (0.05f+(level()*0.005f));
 				chargeGain *= RingOfEnergy.artifactChargeMultiplier(target);
@@ -356,7 +357,7 @@ public class TalismanOfForesight extends Artifact {
 		}
 
 		public void charge(int boost){
-			if (!cursed && target.buff(MagicImmune.class) == null) {
+			if (!cursed && target.buff(MagicImmune.class) == null && rechargeRule.normalRechargeable()) {
 				charge = Math.min((charge + boost), chargeCap);
 				updateQuickslot();
 			}

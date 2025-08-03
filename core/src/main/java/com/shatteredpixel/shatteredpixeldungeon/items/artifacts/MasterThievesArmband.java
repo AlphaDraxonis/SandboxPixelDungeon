@@ -284,7 +284,7 @@ public class MasterThievesArmband extends Artifact {
 		}
 
 		public void gainCharge(float levelPortion) {
-			if (cursed || target.buff(MagicImmune.class) != null) return;
+			if (cursed || target.buff(MagicImmune.class) != null || !rechargeRule.normalRechargeable()) return;
 
 			if (charge < chargeCap){
 				float chargeGain = 3f * levelPortion;

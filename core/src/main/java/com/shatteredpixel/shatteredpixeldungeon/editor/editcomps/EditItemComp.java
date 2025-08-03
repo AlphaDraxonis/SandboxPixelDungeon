@@ -48,10 +48,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.RechargeRule;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FakeTenguShocker;
@@ -115,7 +117,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledCheckBox permaCursed;
     protected LevelSpinner levelSpinner;
     protected ChargeSpinner chargeSpinner;
-    protected SpinnerLikeButton wandRecharging;
+    protected SpinnerLikeButton rechargingRule;
     protected DurabilitySpinner durabilitySpinner;
     protected StyledItemSelector magesStaffWand;
     protected StyledCheckBox hasSeal;
@@ -310,17 +312,26 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     }
                 };
 
-                wandRecharging = new SpinnerLikeButton(new SpinnerEnumModel<>(Wand.RechargeRule.class, w.rechargeRule, v -> w.rechargeRule = v),
+                rechargingRule = new SpinnerLikeButton(new SpinnerEnumModel<>(RechargeRule.class, w.rechargeRule, v -> w.rechargeRule = v),
                         label("charging_rule"));
-                add(wandRecharging);
+                add(rechargingRule);
 
-            } else if (item instanceof Artifact && ((Artifact) item).chargeCap() > 0) {//Check ItemItem#status() if you change sth
-                chargeSpinner = new ChargeSpinner((Artifact) item) {
-                    @Override
-                    protected void onChange() {
-                        updateObj();
-                    }
-                };
+            } else if (item instanceof Artifact) {//Check ItemItem#status() if you change sth
+                Artifact a = (Artifact) item;
+                if (a.chargeCap() > 0) {
+                    chargeSpinner = new ChargeSpinner(a) {
+                        @Override
+                        protected void onChange() {
+                            updateObj();
+                        }
+                    };
+                }
+                
+                if (!(a instanceof ChaliceOfBlood)) {
+                    rechargingRule = new SpinnerLikeButton(new SpinnerEnumModel<>(RechargeRule.class, a.rechargeRule, v -> a.rechargeRule = v),
+                            label("charging_rule"));
+                    add(rechargingRule);
+                }
             }
             if (chargeSpinner != null) add(chargeSpinner);
 
@@ -745,7 +756,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(randomItem);
         }
 
-        rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, potionsKnown, reclaimTrap, volume, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
+        rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, potionsKnown, reclaimTrap, volume, chargeSpinner, rechargingRule, levelSpinner, durabilitySpinner,
                 augmentationSpinner, curseBtn, permaCursed, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, classArmorTier, blessed, igniteBombOnDrop, docPageType, spreadIfLoot, exactItemInRecipe};
         linearComps = new Component[]{rollTrinkets, potionCocktailPotions, summonMobs, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
 
@@ -876,7 +887,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (curseBtn != null)               curseBtn.checked(obj.cursed);
         if (levelSpinner != null)           levelSpinner.setValue(obj.level());
         if (chargeSpinner != null)          chargeSpinner.updateValue(obj);
-        if (wandRecharging != null)         wandRecharging.setValue(((Wand) obj).rechargeRule);
+        if (rechargingRule != null)         rechargingRule.setValue( obj instanceof Wand ? ((Wand) obj).rechargeRule : ((Artifact) obj).rechargeRule );
         if (durabilitySpinner != null)      durabilitySpinner.updateValue(obj);
         if (augmentationSpinner != null)    augmentationSpinner.updateValue(obj);
         if (classArmorTier != null)         classArmorTier.setValue(((ClassArmor) obj).tier);
@@ -1005,6 +1016,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
         if (a instanceof WandOfSummoning) {
             if (!EditMobComp.isMobListEqual(((WandOfSummoning) a).summonTemplate, ((WandOfSummoning) b).summonTemplate)) return false;
+        }
+        if (a instanceof Artifact) {
+            if (((Artifact) a).rechargeRule != ((Artifact) b).rechargeRule) return false;
         }
         if (a instanceof Key) {
             if (!((Key) a).levelName.equals(((Key) b).levelName)) return false;

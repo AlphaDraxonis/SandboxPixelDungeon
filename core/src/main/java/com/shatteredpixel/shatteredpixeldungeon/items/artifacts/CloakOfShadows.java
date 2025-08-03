@@ -194,8 +194,10 @@ public class CloakOfShadows extends Artifact {
 	}
 
 	public void directCharge(int amount){
-		charge = Math.min(charge+amount, chargeCap);
-		updateQuickslot();
+		if (rechargeRule.rechargeableByBuff()) {
+			charge = Math.min(charge + amount, chargeCap);
+			updateQuickslot();
+		}
 	}
 	
 	@Override
@@ -236,7 +238,7 @@ public class CloakOfShadows extends Artifact {
 	public class cloakRecharge extends ArtifactBuff{
 		@Override
 		public boolean act() {
-			if (charge < chargeCap && !cursed && target.buff(MagicImmune.class) == null) {
+			if (charge < chargeCap && !cursed && target.buff(MagicImmune.class) == null && rechargeRule.normalRechargeable()) {
 				if (activeBuff == null && Regeneration.regenOn()) {
 					float missing = (chargeCap - charge);
 					if (level() > 7) missing += 5*(level() - 7)/3f;
@@ -326,7 +328,7 @@ public class CloakOfShadows extends Artifact {
 		public boolean act(){
 			turnsToCost--;
 			
-			if (turnsToCost <= 0){
+			if (turnsToCost <= 0 && rechargeRule.normalRechargeable()){
 				charge--;
 				if (charge < 0) {
 					charge = 0;

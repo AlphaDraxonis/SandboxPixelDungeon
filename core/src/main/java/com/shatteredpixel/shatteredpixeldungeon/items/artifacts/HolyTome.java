@@ -182,7 +182,7 @@ public class HolyTome extends Artifact {
 	}
 
 	public void directCharge(float amount){
-		if (charge < chargeCap) {
+		if (charge < chargeCap && rechargeRule.rechargeableByBuff()) {
 			partialCharge += amount;
 			while (partialCharge >= 1f) {
 				charge++;
@@ -288,7 +288,7 @@ public class HolyTome extends Artifact {
 		public boolean act() {
 			Hero hero = targetHero(target);
 			
-			if (charge < chargeCap && !cursed && target.buff(MagicImmune.class) == null) {
+			if (charge < chargeCap && !cursed && target.buff(MagicImmune.class) == null && rechargeRule.normalRechargeable()) {
 				if (Regeneration.regenOn()) {
 					float missing = (chargeCap - charge);
 					if (level() > 7) missing += 5*(level() - 7)/3f;

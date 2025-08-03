@@ -91,7 +91,7 @@ public class CapeOfThorns extends Artifact {
 		}
 
 		public int proc(int damage, Char attacker, Char defender){
-			if (cooldown == 0){
+			if (cooldown == 0 && rechargeRule.normalRechargeable()){
 				charge += damage*(0.5+level()*0.05);
 				if (charge >= chargeCap){
 					charge = 0;

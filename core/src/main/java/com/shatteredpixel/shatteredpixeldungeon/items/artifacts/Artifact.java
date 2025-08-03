@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.GuidingLight;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
+import com.shatteredpixel.shatteredpixeldungeon.items.RechargeRule;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
@@ -50,6 +51,9 @@ public class Artifact extends KindofMisc {
 	//levelCap is the artifact's maximum level
 	protected int levelCap = 0;
 
+	//when or if it can rechange
+	public RechargeRule rechargeRule = RechargeRule.ALWAYS;
+	
 	//the current artifact charge
 	protected int charge = 0;
 	//the build towards next charge, usually rolls over at 1.
@@ -276,7 +280,9 @@ public class Artifact extends KindofMisc {
 		}
 
 		public void charge(Hero target, float amount){
-			Artifact.this.charge(target, amount);
+			if (rechargeRule.rechargeableByBuff()) {
+				Artifact.this.charge(target, amount);
+			}
 		}
 
 	}
@@ -284,6 +290,7 @@ public class Artifact extends KindofMisc {
 	private static final String EXP = "exp";
 	private static final String CHARGE = "charge";
 	private static final String PARTIALCHARGE = "partialcharge";
+	private static final String RECHARGE_RULE = "recharge_rule";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -291,6 +298,7 @@ public class Artifact extends KindofMisc {
 		bundle.put( EXP , exp );
 		bundle.put( CHARGE , charge );
 		bundle.put( PARTIALCHARGE , partialCharge );
+		bundle.put( RECHARGE_RULE, rechargeRule );
 	}
 
 	@Override
@@ -300,6 +308,7 @@ public class Artifact extends KindofMisc {
 		if (chargeCap > 0)  charge = Math.min( chargeCap, bundle.getInt( CHARGE ));
 		else                charge = bundle.getInt( CHARGE );
 		partialCharge = bundle.getFloat( PARTIALCHARGE );
+		rechargeRule = bundle.getEnum(RECHARGE_RULE, RechargeRule.class);
 	}
 
 	public final int levelCap() {

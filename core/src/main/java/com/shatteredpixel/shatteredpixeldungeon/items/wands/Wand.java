@@ -49,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.RechargeRule;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
@@ -811,17 +812,6 @@ public abstract class Wand extends Item {
 		}
 	};
 
-	public enum RechargeRule {
-		ALWAYS, ONLY_WITH_BUFF, NEVER;
-
-		public boolean normal() {
-			return this == ALWAYS;
-		}
-
-		public boolean rechargeBuff() {
-			return this == ALWAYS || this == ONLY_WITH_BUFF;
-		}
-	}
 
 	public class Charger extends Buff {
 		
@@ -867,7 +857,7 @@ public abstract class Wand extends Item {
 
 		private void recharge(){
 
-			if (rechargeRule.normal()) {
+			if (rechargeRule.normalRechargeable()) {
 				if (Regeneration.regenOn()) {
 
 					int missingCharges = maxCharges - curCharges;
@@ -881,7 +871,7 @@ public abstract class Wand extends Item {
 				}
 			}
 
-			if (rechargeRule.rechargeBuff()) {
+			if (rechargeRule.rechargeableByBuff()) {
 				for (Recharging bonus : target.buffs(Recharging.class)) {
 					if (bonus != null && bonus.remainder() > 0f) {
 						partialCharge += CHARGE_BUFF_BONUS * bonus.remainder();
