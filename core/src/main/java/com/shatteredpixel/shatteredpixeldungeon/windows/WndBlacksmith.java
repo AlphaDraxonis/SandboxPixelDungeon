@@ -209,7 +209,7 @@ public class WndBlacksmith extends Window {
 
 	}
 
-	protected static class WndReforge extends Window {
+	public static class WndReforge extends Window {
 
 		private static final int WIDTH		= 120;
 
@@ -515,7 +515,7 @@ public class WndBlacksmith extends Window {
 					}
 				};
 				btnReward.item( i );
-				btnReward.setRect( count*(WIDTH - BTN_GAP) / Blacksmith.Quest.smithRewards.size() - BTN_SIZE,
+				btnReward.setRect( count*(WIDTH - BTN_GAP) / troll.quest.smithRewards.size() - BTN_SIZE,
 						message.top() + message.height() + BTN_GAP,
 						BTN_SIZE, BTN_SIZE );
 				add( btnReward );

@@ -180,7 +180,7 @@ public class WandOfFireblast extends DamageWand {
 
 			float powerMulti = Math.max(1f, procChance);
 
-			Blob fire = Dungeon.level.blobs.get(Fire.class);
+			Blob fire = Dungeon.level.blobs.getOnly(Fire.class);
 
 			//explode, dealing damage to enemies in 3x3, and clearing all fire
 			CellEmitter.center(defender.pos).burst(BlastParticle.FACTORY, 30);

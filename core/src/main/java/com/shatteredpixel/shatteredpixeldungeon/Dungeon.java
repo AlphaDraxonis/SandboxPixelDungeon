@@ -236,6 +236,21 @@ public class Dungeon {
 	public static String levelName;
 
 	public static DungeonScript dungeonScript = Reflection.newInstance(LuaClassGenerator.luaUserContentClass(DungeonScript.class));
+	
+	static {
+		if (dungeonScript == null) {
+			new Thread(() -> {
+				while (dungeonScript == null) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					dungeonScript = Reflection.newInstance(LuaClassGenerator.luaUserContentClass(DungeonScript.class));
+				}
+			}).start();
+		}
+	}
 
 	//we initialize the seed separately so that things like interlevelscene can access it early
 	public static void initSeed(){

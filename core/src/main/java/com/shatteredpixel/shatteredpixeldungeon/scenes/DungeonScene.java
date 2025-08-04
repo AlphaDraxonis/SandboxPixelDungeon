@@ -436,14 +436,15 @@ public abstract class DungeonScene extends PixelScene {
 			if (cp.sprite != null) cp.sprite.updateSprite(cp);
 		}
 	}
-
+	
+	
 	protected void showBanner( Banner banner ) {
 		banner.camera = uiCamera;
-
+		
 		float offset = Camera.main.centerOffset.y;
 		banner.x = align( uiCamera, (uiCamera.width - banner.width) / 2 );
-		banner.y = align( uiCamera, (uiCamera.height - banner.height) / 2 - banner.height/2 - 16 - offset );
-
+		banner.y = align( uiCamera, (uiCamera.height - banner.height) / 2 - 32 - offset );
+		
 		addToFront( banner );
 	}
 

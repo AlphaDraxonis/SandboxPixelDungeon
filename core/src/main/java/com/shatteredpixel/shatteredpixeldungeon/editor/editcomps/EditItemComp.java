@@ -228,9 +228,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
         showOnlyCheckType = false;
 
         if (!(item instanceof RandomItem)) {
-            if (!(item instanceof MissileWeapon) && (item instanceof Weapon || item instanceof Armor || item instanceof Ring || item instanceof Artifact || item instanceof Wand)) {
-
-
+            if (item instanceof Weapon || item instanceof Armor || item instanceof Ring || item instanceof Artifact || item instanceof Wand) {
+                
                 permaCursed = new StyledCheckBox(label("perma_curse"));
                 permaCursed.checked(item.permaCurse);
                 permaCursed.addChangeListener(v -> item.permaCurse = v);
@@ -357,7 +356,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             hideLevelSpinner = false;
 
             if (item instanceof Potion || item instanceof Scroll || item instanceof Ring || item instanceof Wand || item instanceof Artifact
-                    || (item instanceof Weapon && !(item instanceof MissileWeapon))
+                    || (item instanceof Weapon)
                     || (item instanceof Armor && !(item instanceof ClassArmor))) {
 //      if (!DefaultStatsCache.getDefaultObject(item.getClass()).isIdentified()) { // always returns true while editing
                 autoIdentify = new StyledCheckBox(label("auto_identify"));

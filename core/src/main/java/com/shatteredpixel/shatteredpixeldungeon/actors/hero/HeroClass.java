@@ -282,7 +282,7 @@ public enum HeroClass {
 		}
 		
 		ThrowingStone stones = new ThrowingStone();
-		stones.quantity(3);
+		stones.identify();
 		stones.reservedQuickslot = 1;
 		data.items.add(stones);
 		
@@ -314,7 +314,7 @@ public enum HeroClass {
 		}
 		
 		ThrowingKnife knives = new ThrowingKnife();
-		knives.quantity(3);
+		knives.identify();
 		knives.reservedQuickslot = nextQuickslot;
 	}
 	
@@ -340,7 +340,7 @@ public enum HeroClass {
 		}
 		
 		ThrowingSpike spikes = new ThrowingSpike();
-		spikes.quantity(2);
+		spikes.identify().quantity(2);//set quantity is 3, but Duelist starts with 2
 		spikes.reservedQuickslot = nextQuickslot++;
 		data.items.add(spikes);
 	}

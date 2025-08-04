@@ -312,11 +312,11 @@ abstract public class MissileWeapon extends Weapon {
 			}
 		}
 
-		if ((cursed || hasCurseEnchant()) && !cursedKnown){
+		if ((cursed || hasCurseEnchant()) && !cursedKnown()){
 			GLog.n(Messages.get(this, "curse_discover"));
 		}
-		cursedKnown = true;
-		if (parent != null) parent.cursedKnown = true;
+		setCursedKnown(true);
+		if (parent != null) parent.setCursedKnown(true);
 
 		//instant ID with the right talent
 		if (attacker == Dungeon.hero && Dungeon.hero.pointsInTalent(Talent.SURVIVALISTS_INTUITION) == 2){
@@ -556,7 +556,7 @@ abstract public class MissileWeapon extends Weapon {
 
 			masteryPotionBonus = masteryPotionBonus || ((MissileWeapon) other).masteryPotionBonus;
 			levelKnown = levelKnown || other.levelKnown;
-			cursedKnown = cursedKnown || other.cursedKnown;
+			setCursedKnown(cursedKnown() || other.cursedKnown());
 			enchantHardened = enchantHardened || ((MissileWeapon) other).enchantHardened;
 
 			//if other has a curse/enchant status that's a higher priority, copy it. in the following order:
@@ -620,7 +620,7 @@ abstract public class MissileWeapon extends Weapon {
 	
 	@Override
 	public boolean isIdentified() {
-		return levelKnown && cursedKnown;
+		return levelKnown && cursedKnown();
 	}
 	
 	@Override
@@ -698,7 +698,7 @@ abstract public class MissileWeapon extends Weapon {
 		if (hasGoodEnchant()) {
 			price *= 1.5;
 		}
-		if (cursedKnown && (cursed || hasCurseEnchant())) {
+		if (cursedKnown() && (cursed || hasCurseEnchant())) {
 			price /= 2;
 		}
 		if (levelKnown && level() > 0) {
@@ -751,7 +751,7 @@ abstract public class MissileWeapon extends Weapon {
 			//otherwise treat all currently spawned thrown weapons of the same class as if they are part of the same set
 			//darts already do this though and need no conversion
 			} else if (!(this instanceof Dart)){
-				levelKnown = cursedKnown = true;
+				setCursedKnown(levelKnown = true);
 				setID = getClass().getSimpleName().hashCode();
 			}
 		}
@@ -763,6 +763,15 @@ abstract public class MissileWeapon extends Weapon {
 		if (bundle.contains(BASE_USES)) baseUses = bundle.getFloat(BASE_USES);
 
 		setCursedKnown(true);
+	}
+	
+	@Override
+	public MissileWeapon getCopy(){
+		Bundle bundle = new Bundle();
+		bundle.put("MISSILE_WEAPON",this);
+		MissileWeapon w = (MissileWeapon) bundle.get("MISSILE_WEAPON");
+		w.setID = new SecureRandom().nextLong();
+		return  w;
 	}
 
 	public static class PlaceHolder extends MissileWeapon {

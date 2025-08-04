@@ -44,12 +44,12 @@ public class SandboxPixelDungeon extends Game {
 	public static final int v1_2_3 = 628;
 
 	//savegames from versions older than v2.4.2 are no longer supported, and data from them is ignored
-	public static final int v2_4_0 = 780;
+	public static final int v2_4_2 = 780;
 	public static final int v2_5_4 = 802;
 
 	public static final int v3_0_2 = 833;
 	public static final int v3_1_1 = 850;
-	public static final int v3_2_0 = 859;
+	public static final int v3_2_0 = 851;
 	
 	static {
 		Music.getExternalAudioFile = CustomDungeonSaves::getExternalFile;

@@ -194,7 +194,7 @@ public class LiquidMetal extends Item {
 		public boolean testIngredients(ArrayList<Item> ingredients) {
 			return ingredients.size() == 1
 					&& ingredients.get(0) instanceof MissileWeapon
-					&& ingredients.get(0).cursedKnown
+					&& ingredients.get(0).cursedKnown()
 					&& !ingredients.get(0).cursed;
 		}
 

@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.DarkGold;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BatSprite;
@@ -82,9 +83,10 @@ public class BlacksmithQuest extends Quest {
             else if (itemLevelRoll < 0.95f) rewardLevel = 2;
             else rewardLevel = 3;
 
-            int weapons = 0, armors = 0;
+            int weapons = 0, armors = 0, missileWeapons = 0;
             for (Item i : smithRewards) {
-                if (i instanceof Weapon) weapons++;
+                if (i instanceof MissileWeapon) missileWeapons++;
+                else if (i instanceof Weapon) weapons++;
                 else if (i instanceof Armor) armors++;
             }
             if (weapons == 0) {
@@ -94,6 +96,14 @@ public class BlacksmithQuest extends Quest {
                 w.enchant(null);
                 w.cursed = false;
                 weapons++;
+            }
+            if (missileWeapons == 0) {
+                MissileWeapon w;
+                smithRewards.add(w = Generator.randomMissile(3, useDecks));
+                w.level(rewardLevel);
+                w.enchant(null);
+                w.cursed = false;
+                missileWeapons++;
             }
             if (weapons + armors < 3 && weapons == 1) {
                 Class<? extends Weapon> cl = null;
