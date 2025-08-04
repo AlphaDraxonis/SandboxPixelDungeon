@@ -125,12 +125,9 @@ public class Ghoul extends Mob {
 			
 			if (!candidates.isEmpty()){
 				Ghoul child = new Ghoul();
-				child.spriteClass = spriteClass;
-				child.customDesc = customDesc;
-				child.customName = customName;
+				child.copyStats(this);
 				child.partnerID = this.id();
 				this.partnerID = child.id();
-				child.setPlayerAlignment(playerAlignment);
 				if (state != SLEEPING) {
 					child.state = child.WANDERING;
 				}
