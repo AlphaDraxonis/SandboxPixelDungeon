@@ -366,11 +366,22 @@ public class TitleScene extends PixelScene {
 		protected void onClick() {
 			if (Updates.updateAvailable()){
 				AvailableUpdateData update = Updates.updateData();
+				
+				String desc;
+				if (update.desc == null) {
+					desc = Messages.get(this,"desc");
+					desc = desc.replace("Shattered Pixel Dungeon", "Sandbox Pixel Dungeon");
+					desc = desc.replace("Shattered PD", "Sandbox PD");
+					desc = desc.replace("ShatteredPD", "SandboxPD");
+				} else {
+					desc = update.desc;
+				}
+				
 
 				SandboxPixelDungeon.scene().addToFront( new WndOptions(
 						Icons.get(Icons.CHANGES),
 						update.versionName == null ? Messages.get(this,"title") : Messages.get(this,"versioned_title", update.versionName),
-						update.desc == null ? Messages.get(this,"desc") : update.desc,
+						desc,
 						Messages.get(this,"update"),
 						Messages.get(this,"changes")
 				) {

@@ -53,6 +53,10 @@ public class WndSupportPrompt extends Window {
 			message += "\n" + Messages.get(SupporterScene.class, "patreon_english");
 		}
 		message += "\n- Evan";
+		
+		message = message.replace("Shattered Pixel Dungeon", "Sandbox Pixel Dungeon");
+		message = message.replace("Shattered PD", "Sandbox PD");
+		message = message.replace("ShatteredPD", "SandboxPD");
 
 		RenderedTextBlock text = PixelScene.renderTextBlock( 6 );
 		text.text( message, width );

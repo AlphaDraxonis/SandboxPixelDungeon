@@ -74,9 +74,13 @@ public class WelcomeScene extends PixelScene {
 		final int previousVersion = v == 0 ? 1 : v;
 
 		if (!triedCleaningTemp && FileUtils.cleanTempFiles()){
+			String message = Messages.get(this, "save_warning");
+			message = message.replace("Shattered Pixel Dungeon", "Sandbox Pixel Dungeon");
+			message = message.replace("Shattered PD", "Sandbox PD");
+			message = message.replace("ShatteredPD", "SandboxPD");
 			add(new WndHardNotification(Icons.get(Icons.WARNING),
 					Messages.get(WndError.class, "title"),
-					Messages.get(this, "save_warning"),
+					message,
 					Messages.get(this, "continue"),
 					5){
 				@Override

@@ -25,9 +25,14 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
-import com.watabou.NotAllowedInLua;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
@@ -123,6 +128,10 @@ public class SupporterScene extends PixelScene {
 				message += "\n" + Messages.get(SupporterScene.class, "patreon_english");
 			}
 			message += "\n\n- Evan";
+			
+			message = message.replace("Shattered Pixel Dungeon", "Sandbox Pixel Dungeon");
+			message = message.replace("Shattered PD", "Sandbox PD");
+			message = message.replace("ShatteredPD", "SandboxPD");
 
 			text = PixelScene.renderTextBlock(message, 6);
 			add(text);

@@ -275,9 +275,13 @@ public class WndRanking extends WndTabbed {
 					@Override
 					protected void onClick() {
 						super.onClick();
+						String message = Messages.get(WndRanking.StatsTab.this, "copy_seed_desc");
+						message = message.replace("Shattered Pixel Dungeon", "Sandbox Pixel Dungeon");
+						message = message.replace("Shattered PD", "Sandbox PD");
+						message = message.replace("ShatteredPD", "SandboxPD");
 						SandboxPixelDungeon.scene().addToFront(new WndOptions(new Image(icon),
 								Messages.get(WndRanking.StatsTab.this, "copy_seed"),
-								Messages.get(WndRanking.StatsTab.this, "copy_seed_desc"),
+								message,
 								Messages.get(WndRanking.StatsTab.this, "copy_seed_copy"),
 								Messages.get(WndRanking.StatsTab.this, "copy_seed_cancel")){
 							@Override
