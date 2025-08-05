@@ -517,8 +517,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             } else {
                 if (mob instanceof Blacksmith) {
                     BlacksmithQuest quest = ((Blacksmith) mob).quest;
-                    if (quest.smithRewards == null) quest.smithRewards = new ArrayList<>(3);
-                    while (quest.smithRewards.size() < 3) quest.smithRewards.add(ItemSelectorList.NULL_ITEM);
+                    if (quest.smithRewards == null) quest.smithRewards = new ArrayList<>(4);
+                    while (quest.smithRewards.size() < 4) quest.smithRewards.add(ItemSelectorList.NULL_ITEM);
                     blacksmithQuestRewards = new ItemSelectorList<Item>(quest.smithRewards, label("blacksmith_items")) {
                         @Override
                         public void change(int index) {
@@ -531,7 +531,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                                 @Override
                                 public boolean itemSelectable(Item item) {
                                     Item i = item instanceof ItemItem ? ((ItemItem) item).getObject() : item;
-                                    return i instanceof Weapon && !(i instanceof MissileWeapon || i instanceof SpiritBow)
+                                    return i instanceof Weapon && !(i instanceof SpiritBow)
                                             || i instanceof Armor;
                                 }
 

@@ -97,14 +97,6 @@ public class BlacksmithQuest extends Quest {
                 w.cursed = false;
                 weapons++;
             }
-            if (missileWeapons == 0) {
-                MissileWeapon w;
-                smithRewards.add(w = Generator.randomMissile(3, useDecks));
-                w.level(rewardLevel);
-                w.enchant(null);
-                w.cursed = false;
-                missileWeapons++;
-            }
             if (weapons + armors < 3 && weapons == 1) {
                 Class<? extends Weapon> cl = null;
                 for (Item i : smithRewards) {
@@ -134,6 +126,14 @@ public class BlacksmithQuest extends Quest {
                 a.level(rewardLevel);
                 a.inscribe(null);
                 a.cursed = false;
+            }
+            if (missileWeapons == 0) {
+                MissileWeapon w;
+                smithRewards.add(w = Generator.randomMissile(3, useDecks));
+                w.level(rewardLevel);
+                w.enchant(null);
+                w.cursed = false;
+                missileWeapons++;
             }
         }
 
