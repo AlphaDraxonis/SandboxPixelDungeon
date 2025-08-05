@@ -46,7 +46,8 @@ public class WndWandmaker extends WndReward {
 					@Override
 					protected void onSelectReward(Item reward) {
 						reward.identify(false);
-						wandmaker.quest.complete();
+						if (wandmaker.autoCompletedQuest) wandmaker.quest.autoComplete();
+						else wandmaker.quest.complete();
 					}
 				}, null);
 	}

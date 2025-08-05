@@ -130,6 +130,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private StyledItemSelector questItem1, questItem2;
     private StyledCheckBox spawnQuestRoom;
     private ItemSelectorList<Item> blacksmithQuestRewards;
+    private StyledCheckBox autoCompleteQuest;
 
     private StyledCheckBox mimicSuperHidden;
     private StyledSpinner sentryRange, sentryDelay;
@@ -436,6 +437,17 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (mob instanceof QuestNPC<?>) {
             questSpinner = new QuestSpinner(((QuestNPC<?>) mob).quest, h -> mobStateSpinner.getCurrentInputFieldWith());
             add(questSpinner);
+            
+            autoCompleteQuest = new StyledCheckBox(label("quest_completed")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    ((QuestNPC<?>) mob).autoCompletedQuest = value;
+                }
+            };
+            autoCompleteQuest.checked(((QuestNPC<?>) mob).autoCompletedQuest);
+            add(autoCompleteQuest);
+            
             if (mob instanceof Wandmaker) {
                 if (mob.pos < 0) {
                     spawnQuestRoom = new StyledCheckBox(label("spawn_quest_room")) {
@@ -875,7 +887,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 heroClassSpinner, heroSubclassSpinner,
                 heroMobLvl, heroMobStr, heroBindEquipment,
 
-                mob instanceof Ghost ? null : questSpinner, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE, questItem1, questItem2, spawnQuestRoom,
+                mob instanceof Ghost ? null : questSpinner, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE, questItem1, questItem2, spawnQuestRoom, autoCompleteQuest,
 
         };
         linearComps = new Component[]{
@@ -934,6 +946,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
          if (lotusLevelSpinner != null) lotusLevelSpinner.setValue(((WandOfRegrowth.Lotus) obj).getLvl());
          if (sheepLifespan != null) sheepLifespan.setValue(((Sheep) obj).lifespan);
          if (questSpinner != null) questSpinner.setValue(((QuestNPC<?>) obj).quest.type() + 3);
+         if (autoCompleteQuest != null) autoCompleteQuest.checked(((QuestNPC<?>) obj).autoCompletedQuest);
          if (spawnQuestRoom != null) spawnQuestRoom.checked(((Wandmaker) obj).quest.spawnQuestRoom);
          if (mimicSuperHidden != null) mimicSuperHidden.checked(((Mimic) obj).superHidden);
          if (sentryRange != null) sentryRange.setValue(((SentryRoom.Sentry) obj).range);
@@ -1176,6 +1189,24 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
         if (a instanceof SpawnerMob) {
             if (!EditMobComp.isMobListEqual(((SpawnerMob) a).summonTemplate, ((SpawnerMob) b).summonTemplate)) return false;
+        }
+        if (a instanceof QuestNPC) {
+            if (((QuestNPC<?>) a).autoCompletedQuest != ((QuestNPC<?>) b).autoCompletedQuest) return false;
+            
+            if (((QuestNPC<?>) a).quest.type() != ((QuestNPC<?>) b).quest.type()) return false;
+            
+            if (a instanceof Ghost) {
+                if (!EditItemComp.areEqual(((Ghost) a).quest.weapon, ((Ghost) b).quest.weapon)) return false;
+                if (!EditItemComp.areEqual(((Ghost) a).quest.armor, ((Ghost) b).quest.armor)) return false;
+            } else if (a instanceof Wandmaker) {
+                if (!EditItemComp.areEqual(((Wandmaker) a).quest.wand1, ((Wandmaker) b).quest.wand1)) return false;
+                if (!EditItemComp.areEqual(((Wandmaker) a).quest.wand2, ((Wandmaker) b).quest.wand2)) return false;
+                if (((Wandmaker) a).quest.spawnQuestRoom != ((Wandmaker) b).quest.spawnQuestRoom) return false;
+            } else if (a instanceof Blacksmith) {
+                if (!EditItemComp.isItemListEqual(((Blacksmith) a).quest.smithRewards, ((Blacksmith) b).quest.smithRewards)) return false;
+            } else if (a instanceof Imp) {
+                if (!EditItemComp.areEqual(((Imp) a).quest.reward, ((Imp) b).quest.reward)) return false;
+            }
         }
         if (a instanceof Tengu) {
             if (((Tengu) a).arenaRadius != ((Tengu) b).arenaRadius) return false;

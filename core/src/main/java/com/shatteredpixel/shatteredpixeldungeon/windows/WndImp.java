@@ -44,7 +44,8 @@ public class WndImp extends WndReward {
 					@Override
 					protected void makeQuestInitiatorDisappear() {
 						imp.flee();
-						imp.quest.complete();
+						if (imp.autoCompletedQuest) imp.quest.autoComplete();
+						else imp.quest.complete();
 					}
 				}, null);
 	}

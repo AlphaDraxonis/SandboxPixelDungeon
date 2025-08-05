@@ -63,6 +63,13 @@ public class ImpQuest extends Quest {
 
         Notes.remove(Notes.Landmark.IMP);
     }
+    
+    public void autoComplete() {
+        super.start();
+        super.complete();
+        reward = null;
+        numComleted++;
+    }
 
     public void start() {
         super.start();

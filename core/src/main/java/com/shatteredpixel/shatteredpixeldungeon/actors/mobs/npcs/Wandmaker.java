@@ -27,14 +27,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Rotberry;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.WandmakerSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuest;
@@ -43,6 +40,7 @@ import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.List;
 import java.util.Locale;
@@ -86,21 +84,10 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 
 		if(quest == null || quest.type() < 0) return true;
 
-		if (quest.given()) {
+		if (quest.given() || autoCompletedQuest) {
 			
-			Item item;
-			switch (quest.type()) {
-				case WandmakerQuest.DUST:
-				default:
-					item = Dungeon.hero.belongings.getItem(CorpseDust.class);
-					break;
-				case WandmakerQuest.CANDLE:
-					item = Dungeon.hero.belongings.getItem(Embers.class);
-					break;
-				case WandmakerQuest.SEED:
-					item = Dungeon.hero.belongings.getItem(Rotberry.Seed.class);
-					break;
-			}
+			Class<? extends Item> questItemClass = quest.getQuestItemType();
+			Item item = autoCompletedQuest ? Reflection.newInstance(questItemClass) : Dungeon.hero.belongings.getItem(questItemClass);;
 
 			if (item != null) {
 				Game.runOnRenderThread(new Callback() {

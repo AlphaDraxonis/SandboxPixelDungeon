@@ -77,6 +77,9 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 		if (Dungeon.hero != null) {
 			registerQuest();
 		}
+		if (autoCompletedQuest) {
+			quest.autoComplete();
+		}
 	}
 
 	@Override

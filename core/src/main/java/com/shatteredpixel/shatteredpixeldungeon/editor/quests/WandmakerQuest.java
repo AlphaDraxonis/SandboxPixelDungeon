@@ -14,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
@@ -21,6 +22,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RotGardenRoom;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Rotberry;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -93,6 +95,7 @@ public class WandmakerQuest extends Quest {
 
     @Override
     public void complete() {
+        super.complete();
         wand1 = null;
         wand2 = null;
 
@@ -101,6 +104,13 @@ public class WandmakerQuest extends Quest {
         if (type() != CANDLE) questsActive[type()]--;
     }
 
+    public void autoComplete() {
+        super.start();
+        super.complete();
+        wand1 = null;
+        wand2 = null;
+    }
+    
     @Override
     public void start() {
         super.start();
@@ -317,6 +327,18 @@ public class WandmakerQuest extends Quest {
         }
 
         return false;
+    }
+    
+    public Class<? extends Item> getQuestItemType() {
+        switch (type) {
+            case DUST:
+                return CorpseDust.class;
+            case SEED:
+                return Rotberry.Seed.class;
+            case CANDLE:
+                return Embers.class;
+        }
+        return null;
     }
 
     @Override

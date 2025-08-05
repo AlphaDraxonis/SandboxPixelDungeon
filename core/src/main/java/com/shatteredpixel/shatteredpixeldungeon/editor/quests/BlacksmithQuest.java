@@ -192,6 +192,17 @@ public class BlacksmithQuest extends Quest {
         }
     }
 
+    public void autoComplete() {
+        super.complete();
+        super.start();
+        questScore = 0;
+        favor = 2500;
+        freePickaxe = false;
+        if (pickaxe == null) {
+            pickaxe = new Pickaxe().identify(false);
+        }
+    }
+    
     @Override
     public void start() {
         super.start();
@@ -242,6 +253,7 @@ public class BlacksmithQuest extends Quest {
         super.storeInBundle(bundle);
 
         bundle.put(ID, id);
+        bundle.put(PICKAXE, pickaxe);
 
         bundle.put(STARTED, started);
         bundle.put(BOSS_BEATEN, bossBeaten);

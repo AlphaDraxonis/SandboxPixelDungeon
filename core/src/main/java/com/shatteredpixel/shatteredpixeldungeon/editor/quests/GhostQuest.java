@@ -8,7 +8,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.LeatherArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.MailArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ScaleArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -121,12 +125,22 @@ public class GhostQuest extends Quest {
 
     }
 
+    @Override
     public void complete() {
+        super.complete();
         weapon = null;
         armor = null;
         completedOnce = true;
 
         Notes.remove(Notes.Landmark.GHOST);
+    }
+    
+    public void autoComplete() {
+        super.start();
+        super.complete();
+        weapon = null;
+        armor = null;
+        completedOnce = true;
     }
 
     public static boolean completedOnce() {

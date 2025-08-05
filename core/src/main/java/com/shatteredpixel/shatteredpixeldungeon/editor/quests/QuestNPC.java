@@ -15,6 +15,7 @@ import java.util.List;
 public abstract class QuestNPC<T extends Quest> extends NPC {
 
     public T quest;
+    public boolean autoCompletedQuest;
 
     public QuestNPC() {
         createNewQuest();
@@ -69,17 +70,20 @@ public abstract class QuestNPC<T extends Quest> extends NPC {
 
 
     private static final String QUEST = "quest";
+    private static final String AUTO_COMPLETED_QUEST = "auto_completed_quest";
 
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         if (quest != null) bundle.put(QUEST, quest);
+        bundle.put(AUTO_COMPLETED_QUEST, autoCompletedQuest);
     }
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         if (bundle.contains(QUEST)) quest = (T) bundle.get(QUEST);
+        autoCompletedQuest = bundle.getBoolean(AUTO_COMPLETED_QUEST);
     }
 
 }

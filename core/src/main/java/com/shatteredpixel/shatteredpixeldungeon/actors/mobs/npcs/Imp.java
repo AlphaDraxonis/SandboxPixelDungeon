@@ -92,11 +92,17 @@ public class Imp extends QuestNPC<ImpQuest> {
 			return true;
 		}
 
-		if (quest.given()) {
+		if (quest.given() || autoCompletedQuest) {
 			
 			DwarfToken payItems = Dungeon.hero.belongings.getItem( DwarfToken.class );
-			if (payItems != null && payItems.quantity() >= quest.getRequiredQuantity()) {
-				DwarfToken tokens = payItems.quantity() == quest.getRequiredQuantity() ? payItems : (DwarfToken) payItems.split(quest.getRequiredQuantity());
+			if (payItems != null && payItems.quantity() >= quest.getRequiredQuantity() || autoCompletedQuest) {
+				DwarfToken tokens;
+				if (autoCompletedQuest) {
+					tokens = (DwarfToken) new DwarfToken().quantity(0);
+				} else {
+					if (payItems.quantity() == quest.getRequiredQuantity()) tokens = payItems;
+					else tokens = (DwarfToken) payItems.split(quest.getRequiredQuantity());
+				}
 				Game.runOnRenderThread(new Callback() {
 					@Override
 					public void call() {

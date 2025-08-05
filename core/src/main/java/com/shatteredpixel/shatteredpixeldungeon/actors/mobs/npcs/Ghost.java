@@ -148,8 +148,8 @@ public class Ghost extends QuestNPC<GhostQuest> {
 
 		if (quest == null || quest.type() < 0) return true;
 
-		if (quest.given()) {
-			if (quest.weapon != null && quest.completed()) {
+		if (quest.given() || autoCompletedQuest) {
+			if (quest.weapon != null && (quest.completed() || autoCompletedQuest)) {
 				Game.runOnRenderThread(new Callback() {
 					@Override
 					public void call() {
