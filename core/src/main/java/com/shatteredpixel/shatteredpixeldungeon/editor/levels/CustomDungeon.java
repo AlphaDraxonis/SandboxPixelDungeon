@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
@@ -75,6 +76,7 @@ import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -95,6 +97,7 @@ public class CustomDungeon implements Bundlable {
     public static boolean knowsEverything;
 
     private String name;
+    private String coreID = "";//not necessarily unique! just a way to distinguish very different dungeons.
     private String lastEditedFloor;
 
     private String startFloor;
@@ -134,6 +137,7 @@ public class CustomDungeon implements Bundlable {
     public CustomDungeon(String name) {
 
         this.name = name;
+        this.coreID = generateCoreID( System.currentTimeMillis() );
         ratKingLevels = new HashSet<>();
         itemDistributions = new ArrayList<>(5);
         customTiles = new HashSet<>(5);
@@ -155,6 +159,17 @@ public class CustomDungeon implements Bundlable {
     }
 
     public CustomDungeon() {
+    }
+    
+    private String generateCoreID(long timeStamp) {
+        return Long.toHexString(timeStamp) + Long.toHexString(new SecureRandom().nextLong());
+    }
+	
+    @NotAllowedInLua
+	public void maybeAssingCoreIdIfMissing(FileHandle dataDotDatFile) {
+        if (coreID.isEmpty()) {
+            coreID = generateCoreID(dataDotDatFile.lastModified());
+        }
     }
 
 
@@ -564,6 +579,7 @@ public class CustomDungeon implements Bundlable {
 
 
     private static final String NAME = "name";
+	private static final String CORE_ID = "core_id";
     private static final String LAST_EDITED_FLOOR = "last_edited_floor";
     private static final String START_FLOOR = "start_floor";
     private static final String RAT_KING_LEVELS = "rat_king_levels";
@@ -604,6 +620,7 @@ public class CustomDungeon implements Bundlable {
     @Override
     public void storeInBundle(Bundle bundle) {
         bundle.put(NAME, name);
+        bundle.put(CORE_ID, coreID);
         bundle.put(LAST_EDITED_FLOOR, lastEditedFloor);
         if (startFloor != null) bundle.put(START_FLOOR, startFloor);
         bundle.put(RAT_KING_LEVELS, ratKingLevels.toArray(EMPTY_STRING_ARRAY));
@@ -717,6 +734,7 @@ public class CustomDungeon implements Bundlable {
     @Override
     public void restoreFromBundle(Bundle bundle) {
         name = bundle.getString(NAME);
+        coreID = bundle.getString(CORE_ID);
         lastEditedFloor = bundle.getString(LAST_EDITED_FLOOR);
         if (bundle.contains(START_FLOOR)) startFloor = bundle.getString(START_FLOOR);
         ratKingLevels = new HashSet<>(Arrays.asList(bundle.getStringArray(RAT_KING_LEVELS)));
@@ -892,7 +910,7 @@ public class CustomDungeon implements Bundlable {
     }
 
     public CustomDungeonSaves.Info createInfo() {
-        return new CustomDungeonSaves.Info(getName(), Game.versionCode, getNumFloors(), 0/*hashCode()*/, downloaded);
+        return new CustomDungeonSaves.Info(getName(), coreID, Game.versionCode, getNumFloors(), 0/*hashCode()*/, downloaded);
     }
 
     void addRatKingLevel(String name) {

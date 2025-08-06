@@ -192,7 +192,9 @@ public class CustomDungeonSaves {
         if (!file.exists()) {
             throw new RenameRequiredException(FileUtils.getFileHandle(DUNGEON_FOLDER + findActualDungeonFolderName(name)), name, null);
         }
-        return (CustomDungeon) FileUtils.bundleFromStream(file.read()).get(DUNGEON);
+        CustomDungeon dungeon = (CustomDungeon) FileUtils.bundleFromStream(file.read()).get(DUNGEON);
+        dungeon.maybeAssingCoreIdIfMissing(file);
+        return dungeon;
     }
 
     public static CustomLevel loadLevel(String name) throws IOException, RenameRequiredException {
@@ -656,6 +658,7 @@ public class CustomDungeonSaves {
     public static class Info implements Comparable<Info>, Bundlable {
 
         public String name;
+		public String dungeonId;
         public int version;
         public long lastModified;
 
@@ -667,8 +670,9 @@ public class CustomDungeonSaves {
         public Info() {
         }
 
-        public Info(String name, int version, int numLevels, int hashcode, boolean downloaded) {
+        public Info(String name, String dungeonId, int version, int numLevels, int hashcode, boolean downloaded) {
             this.name = name;
+			this.dungeonId = dungeonId;
             this.version = version;
             this.numLevels = numLevels;
             this.hashcode = hashcode;
@@ -683,6 +687,7 @@ public class CustomDungeonSaves {
         }
 
         private static final String NAME = "name";
+		private static final String DUNGEON_ID = "dungeon_id";
         private static final String VERSION = "version";
         private static final String NUM_LEVLES = "num_levels";
         private static final String HASHCODE = "hashcode";
@@ -691,6 +696,7 @@ public class CustomDungeonSaves {
         @Override
         public void restoreFromBundle(Bundle bundle) {
             name = bundle.getString(NAME);
+			dungeonId = bundle.getString(DUNGEON_ID);
             version = bundle.getInt(VERSION);
             numLevels = bundle.getInt(NUM_LEVLES);
             hashcode = bundle.getInt(HASHCODE);
@@ -700,6 +706,7 @@ public class CustomDungeonSaves {
         @Override
         public void storeInBundle(Bundle bundle) {
             bundle.put(NAME, name);
+			bundle.put(DUNGEON_ID, dungeonId);
             bundle.put(VERSION, version);
             bundle.put(NUM_LEVLES, numLevels);
             bundle.put(HASHCODE, hashcode);
