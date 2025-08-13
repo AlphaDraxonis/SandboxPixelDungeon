@@ -33,7 +33,7 @@ public class ScrollEmpower extends BuffWithDuration {
 	}
 
 	public void reset(int left){
-		this.left = left;
+		this.left = Math.max(this.left, left);
 		Item.updateQuickslot();
 	}
 
