@@ -32,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocking;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -138,13 +137,6 @@ public class WandOfLightning extends DamageWand {
 		@Override
 		public void tintIcon(Image icon) {
 			icon.hardlight(1, 1, 0);
-		}
-	}
-
-	public static class LightningOnHit extends Shocking {
-		@Override
-		protected float procChanceMultiplier(Char attacker) {
-			return Wand.procChanceMultiplier(attacker);
 		}
 	}
 
