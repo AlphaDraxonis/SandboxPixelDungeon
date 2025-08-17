@@ -196,12 +196,6 @@ public class AndroidLauncher extends AndroidApplication {
 		
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		config.depth = 0;
-		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-			//use rgb565 on ICS devices for better performance
-			config.r = 5;
-			config.g = 6;
-			config.b = 5;
-		}
 
 		//we manage this ourselves
 		config.useImmersiveMode = false;
@@ -248,11 +242,7 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onResume() {
 		//prevents weird rare cases where the app is running twice
 		if (instance != this){
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				finishAndRemoveTask();
-			} else {
-				finish();
-			}
+			finishAndRemoveTask();
 		} else {
 			if (batteryStatusReceiver != null) {
 				registerReceiver(batteryStatusReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
