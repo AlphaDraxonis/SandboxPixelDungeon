@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.android;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Environment;
@@ -53,11 +52,7 @@ import java.util.regex.Pattern;
 public class AndroidPlatformSupport extends PlatformSupport {
 	
 	public void updateDisplaySize(){
-		if (SPDSettings.landscape() != null) {
-			AndroidLauncher.instance.setRequestedOrientation( SPDSettings.landscape() ?
-					ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE :
-					ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT );
-		}
+
 		//TODO seem to be existing bugs with handling split screen here, should look into that
 	}
 	
