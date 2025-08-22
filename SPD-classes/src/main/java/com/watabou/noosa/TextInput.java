@@ -105,7 +105,7 @@ public class TextInput extends Component {
 			@Override
 			protected void onClick(PointerEvent event) {
 				super.onClick(event);
-				Gdx.app.postRunnable(() -> Game.platform.setOnscreenKeyboardVisible(true));
+				Gdx.app.postRunnable(() -> Game.platform.setOnscreenKeyboardVisible(true, multiline));
 			}
 			
 			@Override
@@ -254,7 +254,7 @@ public class TextInput extends Component {
 		
 		textField.setTextFieldListener((textField, c) -> onKeyTyped(c));
 		
-		textField.setOnscreenKeyboard(visible -> Game.platform.setOnscreenKeyboardVisible(visible));
+		textField.setOnscreenKeyboard(visible -> Game.platform.setOnscreenKeyboardVisible(visible, multiline));
 		
 		container.setActor(textField);
 		stage.setKeyboardFocus(textField);
@@ -326,19 +326,19 @@ public class TextInput extends Component {
 			}
 		}
 	}
-	
+
 	public void enterPressed(){
 		//fires any time enter is pressed, do nothing by default
 	};
-	
+
 	public void onChanged(){
 		//fires any time the text box is changed, do nothing by default
 	}
-	
+
 	public void onClipBoardUpdate(){
 		//fires any time the clipboard is updated via cut or copy, do nothing by default
 	}
-	
+
 	public void setText(String text){
 		if (convertStringToValidString != null) {
 			text = convertStringToValidString.apply(text);
@@ -349,27 +349,27 @@ public class TextInput extends Component {
 			textField.setCursorPosition(textField.getText().length());
 		}
 	}
-	
+
 	public void setMaxLength(int maxLength){
 		textField.setMaxLength(maxLength);
 	}
-	
+
 	public String getText(){
 		return textField.getText();
 	}
-	
+
 	public void copyToClipboard(){
 		if (textField.getSelection().isEmpty()) {
 			textField.selectAll();
 		}
-		
+
 		textField.copy();
 	}
-	
+
 	public void pasteFromClipboard(){
 		String contents = Gdx.app.getClipboard().getContents();
 		if (contents == null) return;
-		
+
 		if (!textField.getSelection().isEmpty()){
 			//just use cut, but override clipboard
 			textField.cut();
@@ -390,7 +390,7 @@ public class TextInput extends Component {
 		textField.setText(existing.substring(0, cursorIdx) + s + existing.substring(cursorIdx));
 		textField.setCursorPosition(cursorIdx + s.length());
 	}
-	
+
 	@Override
 	protected void layout() {
 		super.layout();
@@ -425,14 +425,14 @@ public class TextInput extends Component {
 		float contY = y;
 		float contW = width;
 		float contH = height;
-		
+
 		if (bg != null){
 			contX += bg.marginLeft();
 			contY += bg.marginTop();
 			contW -= bg.marginHor();
 			contH -= bg.marginVer();
 		}
-		
+
 		float zoom = Camera.main.zoom;
 		if (c != null){
 			
@@ -454,7 +454,7 @@ public class TextInput extends Component {
 		} else {
 			lastScrollX = lastScrollY = SCROLL_NOT_SET;
 		}
-		
+
 		container.align(Align.topLeft);
 		container.setPosition(contX*zoom, (Game.height-(contY*zoom)));
 		container.size(contW*zoom, contH*zoom);
@@ -476,7 +476,7 @@ public class TextInput extends Component {
 		stage.act(Game.elapsed);
 		layoutContainer(false);
 	}
-	
+
 	@Override
 	public void draw() {
 		super.draw();
@@ -487,7 +487,7 @@ public class TextInput extends Component {
 		Quad.bindIndices();
 		Blending.useDefault();
 	}
-	
+
 	@Override
 	public synchronized void destroy() {
 		super.destroy();
@@ -495,7 +495,7 @@ public class TextInput extends Component {
 			stage.dispose();
 			skin.dispose();
 			Game.inputHandler.removeInputProcessor(stage);
-			Game.platform.setOnscreenKeyboardVisible(false);
+			Game.platform.setOnscreenKeyboardVisible(false, false);
 			if (!DeviceCompat.isDesktop()) Game.platform.updateSystemUI();
 		}
 		activeTextInputs.remove(this);

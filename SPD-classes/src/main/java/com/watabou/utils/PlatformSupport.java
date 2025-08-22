@@ -22,6 +22,7 @@
 package com.watabou.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -112,8 +113,9 @@ public abstract class PlatformSupport {
 		return ClassLoadingStrategy.Default.WRAPPER;
 	}
 
-	public void setOnscreenKeyboardVisible(boolean value){
-		Gdx.input.setOnscreenKeyboardVisible(value);
+	public void setOnscreenKeyboardVisible(boolean value, boolean multiline){
+		//by default ignore multiline
+		Gdx.input.setOnscreenKeyboardVisible(value, Input.OnscreenKeyboardType.Default);
 	}
 
 	//TODO should consider spinning this into its own class, rather than platform support getting ever bigger
