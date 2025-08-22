@@ -245,7 +245,7 @@ public class WndSettings extends WndTabbed {
 					SPDSettings.fullscreen(checked());
 				}
 			};
-			if (DeviceCompat.supportsFullScreen()){
+			if (Game.platform.supportsFullScreen()){
 				chkFullscreen.checked(SPDSettings.fullscreen());
 			} else {
 				chkFullscreen.checked(true);

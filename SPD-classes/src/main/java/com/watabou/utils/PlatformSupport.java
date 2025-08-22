@@ -38,6 +38,10 @@ import java.util.HashMap;
 public abstract class PlatformSupport {
 	
 	public abstract void updateDisplaySize();
+
+	public boolean supportsFullScreen(){
+		return true; //default
+	}
 	
 	public abstract void updateSystemUI();
 
