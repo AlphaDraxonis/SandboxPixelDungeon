@@ -57,6 +57,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.RectF;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -79,13 +80,17 @@ public class StartScene extends PixelScene {
 		Journal.loadGlobal();
 		
 		uiCamera.visible = false;
-		
+
 		int w = Camera.main.width;
 		int h = Camera.main.height;
+		RectF insets = getCommonInsets();
 		
 		Archs archs = new Archs();
 		archs.setSize( w, h );
 		add( archs );
+
+		w -= insets.left + insets.right;
+		h -= insets.top + insets.bottom;
 		
 		ExitButton btnExit = new ExitButton() {
 			@Override
@@ -94,7 +99,7 @@ public class StartScene extends PixelScene {
 				skipDungeonSelection = false;
 			}
 		};
-		btnExit.setPos( w - btnExit.width(), 0 );
+		btnExit.setPos( insets.left + w - btnExit.width(), insets.top );
 		add( btnExit );
 		
 		

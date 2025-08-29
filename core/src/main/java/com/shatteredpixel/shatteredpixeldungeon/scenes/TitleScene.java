@@ -64,6 +64,7 @@ import com.watabou.utils.ColorMath;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.PointF;
+import com.watabou.utils.RectF;
 
 import java.util.HashSet;
 import java.util.List;
@@ -89,17 +90,22 @@ public class TitleScene extends PixelScene {
 		int w = Camera.main.width;
 		int h = Camera.main.height;
 
+		RectF insets = getCommonInsets();
+
 		Archs archs = new Archs();
 		archs.setSize(w, h);
 		add(archs);
+
+		w -= insets.left + insets.right;
+		h -= insets.top + insets.bottom;
 
 		Image title = BannerSprites.get(BannerSprites.Type.PIXEL_DUNGEON);
 		add(title);
 
 		float topRegion = Math.max(title.height - 6, h * 0.45f);
 
-		title.x = (w - title.width()) / 2f;
-		title.y = 2 + (topRegion - title.height()) / 2f;
+		title.x = insets.left + (w - title.width()) / 2f;
+		title.y = insets.top + 2 + (topRegion - title.height()) / 2f;
 
 		align(title);
 
@@ -127,13 +133,14 @@ public class TitleScene extends PixelScene {
 		signs.y = title.y;
 		signs.color(Window.SILVER);
 		add(signs);
-
-		BitmapText version = new BitmapText("v" + Game.version, pixelFont);
+		
+		BitmapText version = new BitmapText( "v" + Game.version, pixelFont);
 		version.measure();
-		version.hardlight(0x888888);
-		version.x = w - version.width() - 4;
-		version.y = h - version.height() - 2;
-		add(version);
+		version.hardlight( 0x888888 );
+		//TODO perhaps extra check for Android top-right / top-left notches?
+		version.x = insets.left + w - version.width() - 4;
+		version.y = insets.top + h - version.height() - 2;
+		add( version );
 
 		final Chrome.Type GREY_TR = Chrome.Type.GREY_BUTTON_TR;
 
@@ -252,9 +259,9 @@ public class TitleScene extends PixelScene {
 		GAP = Math.max(GAP, 2);
 
 		float buttonAreaWidth = landscape() ? PixelScene.MIN_WIDTH_L-6 : PixelScene.MIN_WIDTH_P-2;
-		float btnAreaLeft = (Camera.main.width - buttonAreaWidth) / 2f;
+		float btnAreaLeft = insets.left + (w - buttonAreaWidth) / 2f;
 		if (landscape()) {
-			btnPlay.setRect(btnAreaLeft, topRegion+GAP, (buttonAreaWidth/2)-1, BTN_HEIGHT);
+			btnPlay.setRect(btnAreaLeft, insets.top + topRegion+GAP, (buttonAreaWidth/2)-1, BTN_HEIGHT);
 			align(btnPlay);
 			btnSupport.setRect(btnPlay.right() + 2, btnPlay.top(), btnPlay.width(), BTN_HEIGHT);
 			btnDiscover.setRect(btnPlay.left(), btnPlay.bottom() + GAP, (float) (Math.floor(buttonAreaWidth/3f) - 1), BTN_HEIGHT);
@@ -264,7 +271,7 @@ public class TitleScene extends PixelScene {
 			btnSettings.setRect(btnNews.right() + 2, btnNews.top(), btnDiscover.width(), BTN_HEIGHT);
 			btnAbout.setRect(btnSettings.left(), btnSettings.bottom() + GAP, btnDiscover.width(), BTN_HEIGHT);
 		} else {
-			btnPlay.setRect(btnAreaLeft, topRegion+GAP, buttonAreaWidth, BTN_HEIGHT);
+			btnPlay.setRect(btnAreaLeft, insets.top + topRegion+GAP, buttonAreaWidth, BTN_HEIGHT);
 			align(btnPlay);
 			btnSupport.setRect(btnPlay.left(), btnPlay.bottom() + GAP, btnPlay.width(), BTN_HEIGHT);
 			btnDiscover.setRect(btnPlay.left(), btnSupport.bottom() + GAP, (btnPlay.width() / 2) - 1, BTN_HEIGHT);

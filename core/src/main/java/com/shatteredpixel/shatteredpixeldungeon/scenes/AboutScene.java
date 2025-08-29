@@ -37,6 +37,7 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.RectF;
 
 @NotAllowedInLua
 public class AboutScene extends PixelScene {
@@ -50,6 +51,8 @@ public class AboutScene extends PixelScene {
 
 		int w = Camera.main.width;
 		int h = Camera.main.height;
+
+		RectF insets = getCommonInsets();
 
 		Archs archs = new Archs();
 		archs.setSize( w, h );
@@ -290,7 +293,7 @@ public class AboutScene extends PixelScene {
 		freesound.setRect(transifex.left()-10, transifex.bottom() + 8, colWidth+20, -1);
 		content.add(freesound);
 
-		content.setSize( fullWidth, freesound.bottom()+10 );
+		content.setSize( fullWidth, freesound.bottom()+10 + insets.bottom );
 
 		list.setRect( 0, 0, w, h );
 		list.scrollTo(0, 0);

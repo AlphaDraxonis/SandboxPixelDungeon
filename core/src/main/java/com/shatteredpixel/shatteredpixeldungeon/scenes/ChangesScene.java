@@ -56,6 +56,7 @@ import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.Scene;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.RectF;
 
 import java.util.ArrayList;
 
@@ -86,17 +87,26 @@ public class ChangesScene extends PixelScene {
 		int w = Camera.main.width;
 		int h = Camera.main.height;
 
+		RectF insets = getCommonInsets();
+
+		Archs archs = new Archs();
+		archs.setSize(w, h);
+		//archs added later
+
+		w -= insets.left + insets.right;
+		h -= insets.top + insets.bottom;
+
 		IconTitle title = new IconTitle(Icons.CHANGES.get(), Messages.get(this, "title"));
 		title.setSize(200, 0);
 		title.setPos(
-				(w - title.reqWidth()) / 2f,
-				(20 - title.height()) / 2f
+				insets.left + (w - title.reqWidth()) / 2f,
+				insets.top + (20 - title.height()) / 2f
 		);
 		align(title);
 		add(title);
 
 		ExitButton btnExit = new ExitButton();
-		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
+		btnExit.setPos( insets.left + w - btnExit.width(), insets.top );
 		add( btnExit );
 
 //		StyledButton switcher = new RedButton("Switch tzz") {
@@ -120,8 +130,8 @@ public class ChangesScene extends PixelScene {
 
 		if (h >= PixelScene.MIN_HEIGHT_FULL && w >= 300) {
 			panel.size( pw, ph );
-			panel.x = (w - pw) / 2f - pw/2 - 1;
-			panel.y = 20;
+			panel.x = insets.left + (w - pw) / 2f - pw/2 - 1;
+			panel.y = insets.top + 20;
 
 			rightPanel = Chrome.get(Chrome.Type.TOAST);
 			rightPanel.size( pw, ph );
@@ -152,8 +162,8 @@ public class ChangesScene extends PixelScene {
 
 		} else {
 			panel.size( pw, ph );
-			panel.x = (w - pw) / 2f;
-			panel.y = 20;
+			panel.x = insets.left + (w - pw) / 2f;
+			panel.y = insets.top + 20;
 		}
 		align( panel );
 		add( panel );

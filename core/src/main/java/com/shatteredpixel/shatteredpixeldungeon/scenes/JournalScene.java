@@ -41,6 +41,7 @@ import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.audio.Music;
+import com.watabou.utils.RectF;
 
 @NotAllowedInLua
 public class JournalScene extends PixelScene {
@@ -69,14 +70,23 @@ public class JournalScene extends PixelScene {
 		int w = Camera.main.width;
 		int h = Camera.main.height;
 
+		RectF insets = getCommonInsets();
+
+		Archs archs = new Archs();
+		archs.setSize( w, h );
+		//archs added later
+
+		w -= insets.left + insets.right;
+		h -= insets.top + insets.bottom;
+
 		float top = 20;
 
 		//TODO icon title?
 		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 9 );
 		title.hardlight(Window.TITLE_COLOR);
 		title.setPos(
-				(w - title.width()) / 2f,
-				(top - title.height()) / 2f
+				insets.left + (w - title.width()) / 2f,
+				insets.top + (top - title.height()) / 2f
 		);
 		align(title);
 		add(title);
@@ -87,8 +97,8 @@ public class JournalScene extends PixelScene {
 		int ph = h - 50 + panel.marginVer();
 
 		panel.size(pw, ph);
-		panel.x = (w - pw) / 2f;
-		panel.y = title.bottom() + 5;
+		panel.x = insets.left + (w - pw) / 2f;
+		panel.y = insets.top + top;
 		add(panel);
 
 		switch (lastIDX){
@@ -209,12 +219,10 @@ public class JournalScene extends PixelScene {
 		if (lastIDX != 3) btnAlchemy.icon().brightness(0.6f);
 		addToBack(btnAlchemy);
 
-		Archs archs = new Archs();
-		archs.setSize( w, h );
-		addToBack( archs );
+		addToBack(archs);
 
 		ExitButton btnExit = new ExitButton();
-		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
+		btnExit.setPos( insets.left + w - btnExit.width(), insets.top );
 		add( btnExit );
 
 		fadeIn();
