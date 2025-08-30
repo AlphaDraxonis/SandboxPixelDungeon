@@ -137,9 +137,8 @@ public class TitleScene extends PixelScene {
 		BitmapText version = new BitmapText( "v" + Game.version, pixelFont);
 		version.measure();
 		version.hardlight( 0x888888 );
-		//TODO perhaps extra check for Android top-right / top-left notches?
-		version.x = insets.left + w - version.width() - 4;
-		version.y = insets.top + h - version.height() - 2;
+		version.x = insets.left + w - version.width() - 8;
+		version.y = insets.top + h - version.height() - 4;
 		add( version );
 
 		final Chrome.Type GREY_TR = Chrome.Type.GREY_BUTTON_TR;
