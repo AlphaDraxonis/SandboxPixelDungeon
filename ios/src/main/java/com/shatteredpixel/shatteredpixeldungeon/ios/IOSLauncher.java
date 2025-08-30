@@ -45,6 +45,7 @@ import org.robovm.apple.foundation.NSMutableDictionary;
 import org.robovm.apple.foundation.NSObject;
 import org.robovm.apple.foundation.NSString;
 import org.robovm.apple.uikit.UIApplication;
+import org.robovm.apple.uikit.UIInterfaceOrientation;
 
 import java.io.File;
 
@@ -107,9 +108,9 @@ public class IOSLauncher extends IOSApplication.Delegate {
 
 		//if the application has a short status bar (no notch), then hide it
 		//TODO we do this check elsewhere now, can this be removed?
-		if (statusBarHeight <= 24) {
+		//if (statusBarHeight <= 24) {
 			UIApplication.getSharedApplication().setStatusBarHidden(true);
-		}
+		//}
 
 		config.useHaptics = true;
 		config.useAccelerometer = false;
@@ -166,6 +167,12 @@ public class IOSLauncher extends IOSApplication.Delegate {
 		config.addIosDevice("IPAD_PRO_12.9_6G",             "iPad14,6", 264);
 
 		return new IOSApplication(new SandboxPixelDungeon(new IOSPlatformSupport()), config);
+	}
+
+	@Override
+	public void didChangStatusBarOrientation(UIApplication application, UIInterfaceOrientation oldStatusBarOrientation) {
+		super.didChangStatusBarOrientation(application, oldStatusBarOrientation);
+		ShatteredPixelDungeon.seamlessResetScene();
 	}
 
 	public static void main(String[] argv) {

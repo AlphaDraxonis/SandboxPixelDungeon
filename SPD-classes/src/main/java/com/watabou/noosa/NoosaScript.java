@@ -174,7 +174,7 @@ public class NoosaScript extends Script {
 
 				Gdx.gl20.glScissor(
 						Math.round(camera.x * xScale),
-						Math.round((Game.height - camera.screenHeight - camera.y) * yScale) + Game.bottomInset,
+						Math.round((Game.height - camera.screenHeight - camera.y) * yScale),
 						Math.round(camera.screenWidth * xScale),
 						Math.round(camera.screenHeight * yScale));
 			} else {

@@ -408,7 +408,15 @@ public class GameScene extends DungeonScene {
 			toolbar.setRect( insets.left, uiCamera.height - toolbar.height() - insets.bottom, uiCamera.width - insets.right, toolbar.height() );
 		}
 
-        layoutTags();
+        //TODO this is pretty barebones, could be minimized or avoided perhaps?
+		if (insets.bottom > 0){
+			SkinnedBlock blackBar = new SkinnedBlock(uiCamera.width, insets.bottom, TextureCache.createSolid(0xFF000000));
+			blackBar.camera = uiCamera;
+			blackBar.y = uiCamera.height - insets.bottom;
+			add(blackBar);
+		}
+		
+		layoutTags();
 
         switch (InterlevelScene.mode) {
             case RESURRECT:
