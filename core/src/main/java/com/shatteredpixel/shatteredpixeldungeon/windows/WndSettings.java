@@ -222,6 +222,7 @@ public class WndSettings extends WndTabbed {
 		RenderedTextBlock title;
 		ColorBlock sep1;
 		CheckBox chkFullscreen;
+		CheckBox chkLandscape;
 		ColorBlock sep2;
 		OptionSlider optBrightness;
 		OptionSlider optVisGrid;
@@ -252,6 +253,18 @@ public class WndSettings extends WndTabbed {
 				chkFullscreen.enable(false);
 			}
 			add(chkFullscreen);
+
+			if (DeviceCompat.isAndroid()) {
+				chkLandscape = new CheckBox(Messages.get(this, "landscape")) {
+					@Override
+					protected void onClick() {
+						super.onClick();
+						SPDSettings.landscape(checked());
+					}
+				};
+				chkLandscape.checked(SPDSettings.landscape());
+				add(chkLandscape);
+			}
 
 			sep2 = new ColorBlock(1, 1, 0xFF000000);
 			add(sep2);
@@ -321,6 +334,11 @@ public class WndSettings extends WndTabbed {
 
 			chkFullscreen.setRect(0, bottom + GAP, width, BTN_HEIGHT);
 			bottom = chkFullscreen.bottom();
+
+			if (chkLandscape != null) {
+				chkLandscape.setRect(0, bottom + GAP, width, BTN_HEIGHT);
+				bottom = chkLandscape.bottom();
+			}
 
 			sep2.size(width, 1);
 			sep2.y = bottom + GAP;
