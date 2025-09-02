@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.watabou.NotAllowedInLua;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.Game;
+import com.watabou.utils.DeviceCompat;
 
 @NotAllowedInLua
 public class ExitButton extends IconButton {
@@ -36,7 +37,7 @@ public class ExitButton extends IconButton {
 	public ExitButton() {
 		super(Icons.EXIT.get());
 
-		width = PixelScene.landscape() ? 40 : 20;
+		width = (PixelScene.landscape() && !DeviceCompat.isDesktop()) ? 40 : 20;
 		height = 20;
 	}
 
