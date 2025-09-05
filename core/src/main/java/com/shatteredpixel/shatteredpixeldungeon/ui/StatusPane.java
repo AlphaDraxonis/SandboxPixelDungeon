@@ -35,11 +35,12 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.watabou.input.GameAction;
-import com.watabou.noosa.*;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.ColorMath;
 import com.watabou.utils.GameMath;
+
+import java.awt.*;
 
 public class StatusPane extends Component {
 
@@ -73,6 +74,9 @@ public class StatusPane extends Component {
 	private CircleArc counter;
 
 	private boolean large;
+
+	//lower the buff indicator to avoid larger cutouts (e.g. iPhone dynamic island)
+	public static float cutoutOffset;
 
 	public StatusPane( boolean large ){
 		super();
@@ -225,7 +229,7 @@ public class StatusPane extends Component {
 
 			heroInfoOnBar.setRect(heroInfo.right(), y, 50, 9);
 
-			buffs.setRect( x + 31, y + 7, 50, 8 );
+			buffs.setRect( x + 31, y + 7 + cutoutOffset, 50, 8 );
 
 			busy.x = x + 1;
 			busy.y = y + 37;
