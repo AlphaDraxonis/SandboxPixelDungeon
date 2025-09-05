@@ -140,6 +140,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
@@ -365,6 +366,10 @@ public class GameScene extends DungeonScene {
 			SkinnedBlock bar = new SkinnedBlock(uiCamera.width, insets.top, TextureCache.createSolid(0xFF1C1E18));
 			bar.camera = uiCamera;
 			add(bar);
+
+			PointerArea blocker = new PointerArea(0, 0, uiCamera.width, insets.top);
+			blocker.camera = uiCamera;
+			add(blocker);
 		}
 
 		boss = new BossHealthBar();
@@ -417,6 +422,10 @@ public class GameScene extends DungeonScene {
 			bar.camera = uiCamera;
 			bar.y = uiCamera.height - insets.bottom;
 			add(bar);
+
+			PointerArea blocker = new PointerArea(0, uiCamera.height - insets.bottom, uiCamera.width, insets.bottom);
+			blocker.camera = uiCamera;
+			add(blocker);
 		}
 		
 		layoutTags();
