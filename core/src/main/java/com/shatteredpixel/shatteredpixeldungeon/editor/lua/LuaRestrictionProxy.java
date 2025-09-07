@@ -65,6 +65,9 @@ public class LuaRestrictionProxy extends LuaValue {
 					if (m.isAnnotationPresent(NotAllowedInLua.class)) {
 						continue;
 					}
+					if (m.getName().equals("restoreFromBundle")) {
+						continue;
+					}
 					int mods = m.getModifiers();
 					
 					Set<Method> methodsWithSameName = methods.get(m.getName());

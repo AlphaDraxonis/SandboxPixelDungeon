@@ -193,7 +193,7 @@ public class CustomDungeonSaves {
             throw new RenameRequiredException(FileUtils.getFileHandle(DUNGEON_FOLDER + findActualDungeonFolderName(name)), name, null);
         }
         CustomDungeon dungeon = (CustomDungeon) FileUtils.bundleFromStream(file.read()).get(DUNGEON);
-        dungeon.maybeAssingCoreIdIfMissing(file);
+        if (dungeon != null) dungeon.maybeAssingCoreIdIfMissing(file);
         return dungeon;
     }
 

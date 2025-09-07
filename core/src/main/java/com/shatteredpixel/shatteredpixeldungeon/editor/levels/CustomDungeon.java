@@ -302,7 +302,7 @@ public class CustomDungeon implements Bundlable {
     }
 
     public static String maybeFixIncorrectNameEnding(String s) {
-        if (s.endsWith(".")) {
+        if (s != null && s.endsWith(".")) {
             s += " ";
         }
         return s;
@@ -1029,8 +1029,9 @@ public class CustomDungeon implements Bundlable {
         }
 
     }
-
-
+    
+    
+    @NotAllowedInLua
     public void delete(LevelScheme levelScheme) throws IOException {
 
         if (!LuaManager.checkAccess("customDungeon.delete")) return;
@@ -1137,7 +1138,8 @@ public class CustomDungeon implements Bundlable {
         CustomDungeonSaves.deleteLevelFile(n);
         CustomDungeonSaves.saveDungeon(this);
     }
-
+    
+    @NotAllowedInLua
     public void renameZone(Zone zone, String newName) {
 
         if (!LuaManager.checkAccess("renameZone")) return;
@@ -1190,7 +1192,8 @@ public class CustomDungeon implements Bundlable {
             SandboxPixelDungeon.reportException(e);
         }
     }
-
+    
+    @NotAllowedInLua
     public void deleteZone(Zone zone) throws IOException {
 
         if (!LuaManager.checkAccess("deleteZone")) return;
@@ -1272,6 +1275,7 @@ public class CustomDungeon implements Bundlable {
         }
     }
 
+    @NotAllowedInLua
     public LevelScheme copyLevel(LevelScheme levelScheme, String newName) {
 
         if (!LuaManager.checkAccess("copyLevel")) return null;

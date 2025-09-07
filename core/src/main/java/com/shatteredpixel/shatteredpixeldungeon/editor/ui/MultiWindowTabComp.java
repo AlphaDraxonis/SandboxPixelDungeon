@@ -135,8 +135,10 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
     }
 
     protected void destroyCurrentSubMenu() {
-        subMenuComp.remove();
-        subMenuComp.destroy();
+        if (subMenuComp != null) {
+            subMenuComp.remove();
+            subMenuComp.destroy();
+        }
         subMenuComp = null;
     }
 
