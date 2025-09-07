@@ -92,8 +92,8 @@ public class CustomCharSpriteEditor extends CustomObjectEditor<CustomCharSprite>
 					}
 
 					@Override
-					protected void onSelect(Map.Entry<String, FileHandle> path) {
-						spritePath.setValue(path.getKey());
+					protected void onSelect(String path, FileHandle file) {
+						spritePath.setValue(path);
 					}
 				});
 			}

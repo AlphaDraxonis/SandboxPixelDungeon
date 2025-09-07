@@ -12,8 +12,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 
-import java.util.Map;
-
 public class ChangeItemCustomizable extends ChangeCustomizable<Item> {
 
     private ItemSelector customSprite;
@@ -33,12 +31,8 @@ public class ChangeItemCustomizable extends ChangeCustomizable<Item> {
                     }
                     
                     @Override
-                    protected void onSelect(Map.Entry<String, FileHandle> path) {
-                        if (path == null) {
-                            obj.customImage = null;
-                        } else {
-                            obj.customImage = path.getKey();
-                        }
+                    protected void onSelect(String path, FileHandle file) {
+						obj.customImage = path;
                         itemSlot.item(obj);
                         editItemComp.updateObj();
                     }

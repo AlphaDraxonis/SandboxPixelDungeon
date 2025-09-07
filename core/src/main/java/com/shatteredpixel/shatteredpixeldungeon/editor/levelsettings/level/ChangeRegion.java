@@ -30,8 +30,6 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
-import java.util.Map;
-
 @NotAllowedInLua
 public class ChangeRegion extends Component {
 
@@ -183,12 +181,8 @@ public class ChangeRegion extends Component {
                     }
                     
                     @Override
-                    protected void onSelect(Map.Entry<String, FileHandle> path) {
-                        if (path == null) {
-                            newValues[4] = null;
-                        } else {
-                            newValues[4] = path.getKey();
-                        }
+                    protected void onSelect(String path, FileHandle file) {
+						newValues[4] = path;
                         customRegion.text(customRegionLabel + "\n" + (newValues[4] == null ? Messages.get(ChangeRegion.class, "no_custom_spritesheet") : newValues[4]));
                     }
                 });
@@ -221,12 +215,8 @@ public class ChangeRegion extends Component {
                     }
                     
                     @Override
-                    protected void onSelect(Map.Entry<String, FileHandle> path) {
-                        if (path == null) {
-                            newValues[4] = null;
-                        } else {
-                            newValues[5] = path.getKey();
-                        }
+                    protected void onSelect(String path, FileHandle file) {
+						newValues[5] = path;
                         customRegion.text(customWaterLabel + "\n" + (newValues[5] == null ? Messages.get(ChangeRegion.class, "no_custom_spritesheet") : newValues[5]));
                     }
                 });

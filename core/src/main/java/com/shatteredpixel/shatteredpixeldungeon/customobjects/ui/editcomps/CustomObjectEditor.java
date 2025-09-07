@@ -42,7 +42,6 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
 import java.io.IOException;
-import java.util.Map;
 
 public class CustomObjectEditor<T extends CustomObject> extends Component {
 
@@ -96,8 +95,8 @@ public class CustomObjectEditor<T extends CustomObject> extends Component {
 						}
 
 						@Override
-						protected void onSelect(Map.Entry<String, FileHandle> path) {
-							luaScriptPath.setValue(path.getKey());
+						protected void onSelect(String path, FileHandle file) {
+							luaScriptPath.setValue(path);
 						}
 					});
 				}

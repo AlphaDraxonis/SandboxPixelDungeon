@@ -41,8 +41,6 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.RectF;
 
-import java.util.Map;
-
 @NotAllowedInLua
 public class LevelTab extends MultiWindowTabComp {
 
@@ -274,8 +272,8 @@ public class LevelTab extends MultiWindowTabComp {
                     }
 
                     @Override
-                    protected void onSelect(Map.Entry<String, FileHandle> path) {
-                        luaScriptPath.setValue(path.getKey());
+                    protected void onSelect(String path, FileHandle file) {
+                        luaScriptPath.setValue(path);
                     }
                 });
             }

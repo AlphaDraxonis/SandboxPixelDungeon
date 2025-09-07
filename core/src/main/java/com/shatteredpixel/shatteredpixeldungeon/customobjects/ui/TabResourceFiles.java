@@ -133,19 +133,21 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 						return new ScrollingListPane.ListItem(new ItemSprite(ItemSpriteSheet.NO_ITEM), createNullOptionLabel()) {
 							@Override
 							protected void onClick() {
-								TabResourceFiles.this.onClick(null);
+								TabResourceFiles.this.onClick(null, null);
 							}
 						};
 					}
-					return new FilePathListItem(((Map.Entry<String, FileHandle>) object)) {
+					
+					Map.Entry<String, FileHandle> mapEntry = (Map.Entry<String, FileHandle>) object;
+					return new FilePathListItem(mapEntry.getKey(), mapEntry.getValue()) {
 						@Override
 						protected void onClick() {
-							TabResourceFiles.this.onClick(data);
+							TabResourceFiles.this.onClick(path, file);
 						}
 
 						@Override
 						protected boolean onLongClick() {
-							return TabResourceFiles.this.onLongClick(data);
+							return TabResourceFiles.this.onLongClick(path, file);
 						}
 					};
 				}
@@ -189,13 +191,13 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 		return Messages.NO_TEXT_FOUND;
 	}
 
-	protected void onClick(Map.Entry<String, FileHandle> path) {
+	protected void onClick(String path, FileHandle file) {
 		if (path != null) {
-			viewResource(path);
+			viewResource(path, file);
 		}
 	}
 
-	protected boolean onLongClick(Map.Entry<String, FileHandle> path) {
+	protected boolean onLongClick(String path, FileHandle file) {
 		return false;
 	}
 
@@ -282,31 +284,19 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 		protected RenderedTextBlock text;
 		protected ColorBlock line;
 
-		protected final Map.Entry<String, FileHandle> data;
+		protected String path;
+		protected FileHandle file;
 
-		public FilePathListItem(Map.Entry<String, FileHandle> data) {
+		public FilePathListItem(String path, FileHandle file) {
 
-			this.data = data;
-
-			if (ResourcePath.isImage(data.getValue().extension())) {
-				icon = new Image(data.getValue());
-				if (icon.texture.width > ICON_SIZE) {
-					icon.scale.set(ICON_SIZE / (float) (Math.max(icon.texture.width, icon.texture.height)));
-				} else if (icon.texture.height > ICON_SIZE * 2) {
-					icon.scale.set(ICON_SIZE*2 / (float) icon.texture.height);
-				}
-				add(icon);
-			} else {
-				icon = getSpriteForPath(data.getKey(), data.getValue());
-				add(icon);
-			}
-
-			text = PixelScene.renderTextBlock(data.getKey(), 9);
+			text = PixelScene.renderTextBlock(9);
 			text.setHighlighting(false);
 			add(text);
 
 			line = new ColorBlock(1, 1, ColorBlock.SEPARATOR_COLOR);
 			add(line);
+			
+			set(path, file);
 		}
 
 		@Override
@@ -334,5 +324,30 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 			super.layout();
 		}
 
+		public void set(String path, FileHandle file) {
+			this.path = path;
+			this.file = file;
+			
+			if (icon != null) {
+				icon.remove();
+			}
+			
+			if (file != null && ResourcePath.isImage(file.extension())) {
+				icon = new Image(file);
+				if (icon.texture.width > ICON_SIZE) {
+					icon.scale.set(ICON_SIZE / (float) (Math.max(icon.texture.width, icon.texture.height)));
+				} else if (icon.texture.height > ICON_SIZE * 2) {
+					icon.scale.set(ICON_SIZE*2 / (float) icon.texture.height);
+				}
+				add(icon);
+			} else {
+				icon = getSpriteForPath(path, file);
+				add(icon);
+			}
+			
+			text.text(path);
+			
+			layout();
+		}
 	}
 }

@@ -15,8 +15,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 
-import java.util.Map;
-
 @NotAllowedInLua
 public class WndSelectMusic extends WndChooseOneInCategories {
 
@@ -213,8 +211,8 @@ public class WndSelectMusic extends WndChooseOneInCategories {
             }
             
             @Override
-            protected void onSelect(Map.Entry<String, FileHandle> path) {
-                WndSelectMusic.this.onSelect(path.getKey());
+            protected void onSelect(String path, FileHandle file) {
+                WndSelectMusic.this.onSelect(path);
                 finish();
             }
         });

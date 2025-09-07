@@ -30,8 +30,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.NotAllowedInLua;
 
-import java.util.Map;
-
 @NotAllowedInLua
 public class WndSelectResourceFile extends Window {
 
@@ -65,14 +63,14 @@ public class WndSelectResourceFile extends Window {
 			}
 			
 			@Override
-			protected void onClick(Map.Entry<String, FileHandle> path) {
-				onSelect(path);
+			protected void onClick(String path, FileHandle file) {
+				onSelect(path, file);
 				hide();
 			}
 
 			@Override
-			protected boolean onLongClick(Map.Entry<String, FileHandle> path) {
-				super.onClick(path);
+			protected boolean onLongClick(String path, FileHandle file) {
+				super.onClick(path, file);
 				return true;
 			}
 		};
@@ -95,7 +93,7 @@ public class WndSelectResourceFile extends Window {
 		return true;
 	}
 
-	protected void onSelect(Map.Entry<String, FileHandle> path) {
+	protected void onSelect(String path, FileHandle file) {
 	}
 
 }

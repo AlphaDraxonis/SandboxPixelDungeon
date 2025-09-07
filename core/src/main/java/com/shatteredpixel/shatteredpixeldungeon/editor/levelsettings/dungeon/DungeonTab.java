@@ -35,8 +35,6 @@ import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
-import java.util.Map;
-
 @NotAllowedInLua
 public class DungeonTab extends MultiWindowTabComp {
     
@@ -191,8 +189,8 @@ public class DungeonTab extends MultiWindowTabComp {
                     }
                     
                     @Override
-                    protected void onSelect(Map.Entry<String, FileHandle> path) {
-                        dungeonScript.setValue(path.getKey());
+                    protected void onSelect(String path, FileHandle file) {
+                        dungeonScript.setValue(path);
                     }
                 });
             }
