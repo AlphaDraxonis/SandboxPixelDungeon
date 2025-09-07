@@ -49,7 +49,7 @@ public class WndImageViewer extends SimpleWindow {
 			scaleX = minWidth / prefWidth;
 		}
 		if (maxHeight < prefHeight) {
-			scaleY = (maxWidth - 5) * PixelScene.defaultZoom / image.texture.height;
+			scaleY = (maxHeight - 5) * PixelScene.defaultZoom / image.texture.height;
 		} else if (minHeight > prefHeight) {
 			scaleY = minHeight / prefHeight;
 		}
