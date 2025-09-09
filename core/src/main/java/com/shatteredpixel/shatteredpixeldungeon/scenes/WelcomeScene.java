@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.server.TempFilesHandler;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Fireball;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
@@ -98,6 +99,8 @@ public class WelcomeScene extends PixelScene {
 		}
 		
 		loadGamesInProgress();
+		
+		TempFilesHandler.clearTempFiles();
 		
 		if (SandboxPixelDungeon.versionCode == previousVersion && !SPDSettings.intro() || true) {
 			SandboxPixelDungeon.switchNoFade(TitleScene.class);

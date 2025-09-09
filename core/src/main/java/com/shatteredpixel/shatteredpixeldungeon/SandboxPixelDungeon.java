@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaClassGenerator;
+import com.shatteredpixel.shatteredpixeldungeon.editor.server.TempFilesHandler;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -132,6 +133,7 @@ public class SandboxPixelDungeon extends Game {
 	@Override
 	public void finish() {
 		if (!DeviceCompat.isiOS()) {
+			TempFilesHandler.clearTempFiles();
 			super.finish();
 		} else {
 			//can't exit on iOS (Apple guidelines), so just go to title screen
