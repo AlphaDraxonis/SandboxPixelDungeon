@@ -616,9 +616,7 @@ public class IDEWindow extends Component {
 				protected void onClick() {
 					DungeonScene.show(new OutsideSpMenuPopup(
 							(int) ((x + btnOpenMenu.width() + 2 - camera().width / 2f)),
-					(int) (y - camera().height / 2f) - 3) {
-
-					});
+					(int) (y - camera().height / 2f) - 3));
 				}
 
 				@Override
