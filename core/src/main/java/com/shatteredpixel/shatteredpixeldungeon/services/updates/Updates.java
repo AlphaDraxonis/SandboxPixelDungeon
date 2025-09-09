@@ -23,8 +23,10 @@ package com.shatteredpixel.shatteredpixeldungeon.services.updates;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
+import com.badlogic.gdx.net.HttpStatus;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
+import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerConstants;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
@@ -145,14 +147,14 @@ public class Updates {
 		}
 
 		Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
-		httpRequest.setUrl(ServerCommunication.getURL() + "?action=getLatestUploadTime");
+		httpRequest.setUrl(ServerCommunication.getURL() + "?action=" + ServerConstants.ACTION_GET_LATEST_UPLOAD_TIME);
 
 		Gdx.net.sendHttpRequest(httpRequest, new com.badlogic.gdx.Net.HttpResponseListener() {
 			@Override
 			public void handleHttpResponse(com.badlogic.gdx.Net.HttpResponse httpResponse) {
 
 				int statusCode = httpResponse.getStatus().getStatusCode();
-				if (statusCode == 200) {
+				if (statusCode == HttpStatus.SC_OK) {
 					lastCheck = new Date();
 					String result = httpResponse.getResultAsString();
 					try {

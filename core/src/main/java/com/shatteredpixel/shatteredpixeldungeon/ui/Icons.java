@@ -64,6 +64,7 @@ public enum Icons {
 	BOOKMARK(true),
 	MORE(true),
 	SORT(true),
+	BTN_DOWNLOAD(true),
 
 	BACK(true),
 	SWAP(true),
@@ -278,6 +279,9 @@ public enum Icons {
 				break;
 			case SORT:
 				icon.frame(icon.texture.uvRectBySize(88, 32, 11, 11));
+				break;
+			case BTN_DOWNLOAD:
+				icon.frame(icon.texture.uvRectBySize(99, 32, 11, 11));
 				break;
 
 			case BACK:

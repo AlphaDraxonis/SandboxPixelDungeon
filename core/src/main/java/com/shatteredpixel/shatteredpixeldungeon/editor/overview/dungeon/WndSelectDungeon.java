@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.OpenDungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadedDungeonRegistry;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.DungeonToJsonConverter;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
@@ -77,16 +78,18 @@ public class WndSelectDungeon extends Window {
     private List<CustomDungeonSaves.Info> allInfos;
     private CustomDungeonSaves.Info featuredInfo;
     private final String featuredLabel;
+    private final boolean contextWindowAvailable;
     private Set<String> dungeonNames;
 
-    public WndSelectDungeon(List<CustomDungeonSaves.Info> allInfos, boolean showAddButton) {
-        this(allInfos, showAddButton, null, null);
+    public WndSelectDungeon(List<CustomDungeonSaves.Info> allInfos, boolean showAddButton, boolean contextWindowAvailable) {
+        this(allInfos, showAddButton, null, null, contextWindowAvailable);
     }
 
-    public WndSelectDungeon(List<CustomDungeonSaves.Info> allInfos, boolean showAddButton, CustomDungeonSaves.Info featuredInfo, String featuredLabel) {
+    public WndSelectDungeon(List<CustomDungeonSaves.Info> allInfos, boolean showAddButton, CustomDungeonSaves.Info featuredInfo, String featuredLabel, boolean contextWindowAvailable) {
         this.allInfos = allInfos;
         this.featuredInfo = featuredInfo;
         this.featuredLabel = featuredLabel;
+        this.contextWindowAvailable = contextWindowAvailable;
 
         resize(WindowSize.WIDTH_LARGE.get(), WindowSize.HEIGHT_SMALL.get());
 
@@ -211,9 +214,9 @@ public class WndSelectDungeon extends Window {
         if (sort != null) sort.givePointerPriority();
     }
 
-    protected void select(String customDungeonName) {
+    protected void select(CustomDungeonSaves.Info dungeonInfo) {
         EditorScene.openDifferentLevel = true;
-        OpenDungeonScene.openDungeon(customDungeonName, OpenDungeonScene.Mode.EDITOR_LOAD);
+        OpenDungeonScene.openDungeon(dungeonInfo.name, OpenDungeonScene.Mode.EDITOR_LOAD);
     }
 
 
@@ -331,13 +334,21 @@ public class WndSelectDungeon extends Window {
 
         @Override
         protected boolean onLongClick() {
-            EditorScene.show(new WndInfoDungeon(info));
-            return true;
+            if (contextWindowAvailable) {
+                EditorScene.show(new WndInfoDungeon(info));
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        protected void onRightClick() {
+            onLongClick();
         }
 
         @Override
         protected void onClick() {
-            select(info.name);
+            select(info);
         }
 
         @NotAllowedInLua
@@ -357,7 +368,7 @@ public class WndSelectDungeon extends Window {
                     @Override
                     protected void onClick() {
                         hide();
-                        select(info.name);
+                        select(info);
                     }
                 };
                 add(cont);
@@ -437,7 +448,9 @@ public class WndSelectDungeon extends Window {
                 RedButton upload = new RedButton(Messages.get(WndSelectDungeon.class, "upload_label")) {
                     @Override
                     protected void onClick() {
-                        UploadDungeon.showUploadWindow(ServerCommunication.UploadType.UPLOAD, info.name);
+                        UploadDungeon.showUploadWindow(
+                                UploadedDungeonRegistry.hasDungeonBeenUploaded(info.coreID) ? ServerCommunication.UploadType.CHANGE : ServerCommunication.UploadType.UPLOAD,
+                                info.name, info.coreID);
                     }
                 };
                 upload.enable(!info.downloaded && info.numLevels > 0);

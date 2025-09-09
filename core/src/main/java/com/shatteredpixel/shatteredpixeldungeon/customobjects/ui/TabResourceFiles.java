@@ -276,7 +276,7 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 		return new ItemSprite(ItemSpriteSheet.SOMETHING);
 	}
 
-	private static class FilePathListItem extends Button {
+	public static class FilePathListItem extends Button {
 
 		protected static final int ICON_SIZE = 16;
 

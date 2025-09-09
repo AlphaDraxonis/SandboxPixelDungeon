@@ -35,6 +35,7 @@ import com.watabou.utils.Function;
 import com.watabou.utils.Reflection;
 
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -108,12 +109,14 @@ public class CustomDungeonSaves {
         return export;
     }
 
-    public static FileHandle[] uploadDungeon(String dungeonName) {
+    public static FileHandle[] getFilesToUploadDungeon(String dungeonName) throws FileNotFoundException {
         FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
         setCurDirectory(DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/");
         FileHandle dir = FileUtils.getFileHandle(curDirectory);
 
-        if (!dir.exists() || !dir.isDirectory()) return null;
+        if (!dir.exists() || !dir.isDirectory()) {
+            throw new FileNotFoundException(dir.path());
+        }
 
         return dir.list();
     }
@@ -349,10 +352,8 @@ public class CustomDungeonSaves {
                     }
                 }
                 try {
-                    FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
-                    if (file.exists()) {
-                        Info info = (Info) FileUtils.bundleFromStream(file.read()).get(INFO);
-                        info.lastModified = file.lastModified();
+                    Info info = getDungeonInfo(path);
+                    if (info != null) {
                         result.add(info);
                     }
                 } catch (IOException e) {
@@ -363,6 +364,16 @@ public class CustomDungeonSaves {
             }
             Collections.sort(result);
             return result;
+    }
+    
+    public static Info getDungeonInfo(String dungeonName) throws IOException {
+        FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + DUNGEON_INFO);
+        if (file.exists()) {
+            Info info = (Info) FileUtils.bundleFromStream(file.read()).get(INFO);
+            info.lastModified = file.lastModified();
+            return info;
+        }
+        return null;
     }
 
     public static FileHandle getAdditionalFilesDir() {
@@ -658,7 +669,7 @@ public class CustomDungeonSaves {
     public static class Info implements Comparable<Info>, Bundlable {
 
         public String name;
-		public String dungeonId;
+		public String coreID;
         public int version;
         public long lastModified;
 
@@ -670,9 +681,9 @@ public class CustomDungeonSaves {
         public Info() {
         }
 
-        public Info(String name, String dungeonId, int version, int numLevels, int hashcode, boolean downloaded) {
+        public Info(String name, String coreID, int version, int numLevels, int hashcode, boolean downloaded) {
             this.name = name;
-			this.dungeonId = dungeonId;
+			this.coreID = coreID;
             this.version = version;
             this.numLevels = numLevels;
             this.hashcode = hashcode;
@@ -687,18 +698,18 @@ public class CustomDungeonSaves {
         }
 
         private static final String NAME = "name";
-		private static final String DUNGEON_ID = "dungeon_id";
+		private static final String CORE_ID = "core_id";
         private static final String VERSION = "version";
-        private static final String NUM_LEVLES = "num_levels";
+        private static final String NUM_LEVELS = "num_levels";
         private static final String HASHCODE = "hashcode";
         private static final String DOWNLOADED = "downloaded";
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             name = bundle.getString(NAME);
-			dungeonId = bundle.getString(DUNGEON_ID);
+			coreID = bundle.getString(CORE_ID);
             version = bundle.getInt(VERSION);
-            numLevels = bundle.getInt(NUM_LEVLES);
+            numLevels = bundle.getInt(NUM_LEVELS);
             hashcode = bundle.getInt(HASHCODE);
             downloaded = bundle.getBoolean(DOWNLOADED);
         }
@@ -706,9 +717,9 @@ public class CustomDungeonSaves {
         @Override
         public void storeInBundle(Bundle bundle) {
             bundle.put(NAME, name);
-			bundle.put(DUNGEON_ID, dungeonId);
+			bundle.put(CORE_ID, coreID);
             bundle.put(VERSION, version);
-            bundle.put(NUM_LEVLES, numLevels);
+            bundle.put(NUM_LEVELS, numLevels);
             bundle.put(HASHCODE, hashcode);
             bundle.put(DOWNLOADED, downloaded);
         }

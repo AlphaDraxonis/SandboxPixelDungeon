@@ -1357,7 +1357,14 @@ public class CustomDungeon implements Bundlable {
             throw new RuntimeException(e);
         }
     }
-
+    
+    @NotAllowedInLua
+    public void doQuickNameChangeAfterDownload(String newName) {
+        if (!LuaManager.checkAccess("quickNameChangeAfterDownload")) return;
+        this.name = newName;
+    }
+    
+    @NotAllowedInLua
     public void renameLevel(LevelScheme levelScheme, String newName) {
 
         if (!LuaManager.checkAccess("renameLevel")) return;

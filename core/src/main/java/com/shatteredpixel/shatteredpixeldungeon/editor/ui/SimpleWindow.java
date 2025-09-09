@@ -97,11 +97,11 @@ public class SimpleWindow extends Window {
         if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth(width);
         else title.setSize(width, title.height());
 
-        body.setSize(width, -1);
+        body.setSize(width, 0);
         result = GAP * 5 + title.height() + body.height() + 1;
 
         if (outsideSp != null) {
-            outsideSp.setSize(width, -1);
+            outsideSp.setSize(width, 0);
             float outsideSpH = outsideSp.height();
             if (outsideSpH != 0) {
                 result += outsideSpH + GAP - 1;
@@ -118,4 +118,10 @@ public class SimpleWindow extends Window {
 
     protected void onScroll(ScrollPane sp) {
     }
+    
+    
+    public Component getTitleComp() {
+        return title;
+    }
+    
 }

@@ -48,6 +48,10 @@ public class FileUtils {
 	public static void resetDefaultFileType() {
 		setDefaultFileType(originalFileType);
 	}
+	
+	public static Files.FileType getOriginalFileType() {
+		return originalFileType;
+	}
 
 	public static Files.FileType getFileTypeForCustomDungeons(){
 		if (DeviceCompat.isDesktop()) return originalFileType;

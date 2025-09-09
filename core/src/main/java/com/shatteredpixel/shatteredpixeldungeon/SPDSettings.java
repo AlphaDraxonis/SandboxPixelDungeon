@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
@@ -76,16 +77,16 @@ public class SPDSettings extends GameSettings {
 		return getLong( KEY_LAST_UPLOADED_TO_SERVER_TIMER, 0 ) < System.currentTimeMillis();
 	}
 
-	public static void increaseUploadTimer() {
-		put( KEY_LAST_UPLOADED_TO_SERVER_TIMER, Math.max(getLong( KEY_LAST_UPLOADED_TO_SERVER_TIMER, 0 ), System.currentTimeMillis()) + 2*1000*3600 );//2h
+	public static void increaseUploadTimer(ServerCommunication.UploadType uploadType) {
+		if (uploadType == ServerCommunication.UploadType.CHANGE) {
+			put( KEY_LAST_UPLOADED_TO_SERVER_TIMER, Math.max(getLong( KEY_LAST_UPDATED_TO_SERVER_TIMER, 0 ), System.currentTimeMillis()) + 600*1000 );//10 min
+		} else {
+			put( KEY_LAST_UPLOADED_TO_SERVER_TIMER, Math.max(getLong( KEY_LAST_UPLOADED_TO_SERVER_TIMER, 0 ), System.currentTimeMillis()) + 2*1000*3600 );//2h
+		}
 	}
 
 	public static boolean canUpdateToServer() {
-		return getLong( KEY_LAST_UPDATED_TO_SERVER_TIMER, 0 ) < System.currentTimeMillis();
-	}
-
-	public static void increaseUpdateTimer() {
-		put( KEY_LAST_UPLOADED_TO_SERVER_TIMER, Math.max(getLong( KEY_LAST_UPDATED_TO_SERVER_TIMER, 0 ), System.currentTimeMillis()) + 600*1000 );//10 min
+		return getLong(KEY_LAST_UPDATED_TO_SERVER_TIMER, 0) < System.currentTimeMillis();
 	}
 
 	public static String uuid() {

@@ -582,13 +582,13 @@ public class StartScene extends PixelScene {
 				}
 			}
 			if (featuredInfo != null) allInfos.remove(featuredInfo);
-			DungeonScene.show(new WndSelectDungeon(allInfos,false, featuredInfo, featuredLabel) {
+			DungeonScene.show(new WndSelectDungeon(allInfos,false, featuredInfo, featuredLabel, false) {
 				@Override
-				protected void select(String customDungeonName) {
+				protected void select(CustomDungeonSaves.Info dungeonInfo) {
 					GamesInProgress.selectedClass = selectClass;
 					GamesInProgress.curSlot = slot;
 					
-					OpenDungeonScene.openDungeon(customDungeonName, OpenDungeonScene.Mode.GAME_LOAD);
+					OpenDungeonScene.openDungeon(dungeonInfo.name, OpenDungeonScene.Mode.GAME_LOAD);
 				}
 			});
 		}

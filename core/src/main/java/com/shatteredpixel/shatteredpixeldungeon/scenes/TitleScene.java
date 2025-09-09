@@ -31,8 +31,8 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.server.BugReportUploadDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.server.ServerDungeonList;
-import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Fireball;
@@ -452,7 +452,9 @@ public class TitleScene extends PixelScene {
 			if (allInfos != null) {
 				if (allInfos.isEmpty()) {
 					Game.scene().addToFront(new WndNewDungeon(EMPTY_HASHSET));
-				} else Game.scene().addToFront(new WndSelectDungeon(allInfos, true));
+				} else {
+					Game.scene().addToFront(new WndSelectDungeon(allInfos, true, true));
+				}
 			}
         }
     }
@@ -500,7 +502,7 @@ public class TitleScene extends PixelScene {
 
 		@Override
 		protected void onClick() {
-			UploadDungeon.showUploadWindow(ServerCommunication.UploadType.REPORT_BUG, null);
+			BugReportUploadDungeon.showUploadWindow();
 		}
 	}
 

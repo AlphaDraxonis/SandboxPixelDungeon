@@ -50,11 +50,14 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		instance = this;
 
 		mainWindowComps = new Component[PREVIEWS_PER_PAGE];
+		for (int i = 0; i < mainWindowComps.length; i++) {
+			mainWindowComps[i] = new DungeonPreviewItem();
+		}
 
 		upload = new RedButton("") {
 			@Override
 			protected void onClick() {
-				UploadDungeon.showUploadWindow(ServerCommunication.UploadType.UPLOAD, null);
+				UploadDungeon.showUploadWindow(ServerCommunication.UploadType.UPLOAD, null, "");
 			}
 
 			@Override
@@ -68,12 +71,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		refresh = new RedButton("") {
 			@Override
 			protected void onClick() {
-				dungeons = null;
-				hidePage(page);
-				requestPage(lastPage, true);
-				for (int i = Math.max(0, lastPage-1); i < 3; i++) {
-					loadPageFromServer(i, false);
-				}
+				forceRefresh();
 			}
 
 			@Override
@@ -155,18 +153,9 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		}
 	}
 
-	private void killMainWindowComp(int i) {
-		if (mainWindowComps[i] != null) {
-			mainWindowComps[i].remove();
-			mainWindowComps[i].killAndErase();
-			mainWindowComps[i].destroy();
-			mainWindowComps[i] = null;
-		}
-	}
-
 	private void hidePage(int page) {
 		for (int i = 0; i < mainWindowComps.length; i++) {
-			killMainWindowComp(i);
+			((DungeonPreviewItem) mainWindowComps[i]).clearData();
 		}
 	}
 
@@ -174,9 +163,30 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		msgWaitingForData.setVisible(false);
 		this.page = page;
 		for (int i = 0; i < dungeons[page].length; i++) {
-			killMainWindowComp(i);
-			mainWindowComps[i] = createListItem(dungeons[page][i]);
+			DungeonPreview preview = dungeons[page][i];
+			if (preview.dungeonID.startsWith("ERROR")) {
+				((DungeonPreviewItem) mainWindowComps[i]).setData(preview.dungeonID);
+			} else {
+				((DungeonPreviewItem) mainWindowComps[i]).setData(preview);
+			}
 			content.addToBack(mainWindowComps[i]);
+		}
+	}
+	
+	private void forceRefresh() {
+		dungeons = null;
+		closeCurrentSubMenu();
+		hidePage(page);
+		TempFilesHandler.clearTempFiles();
+		requestPage(lastPage, true);
+		for (int i = Math.max(0, lastPage-1); i < 3; i++) {
+			loadPageFromServer(i, false);
+		}
+	}
+	
+	public static void forceRefreshStatic() {
+		if (instance != null) {
+			instance.forceRefresh();
 		}
 	}
 
@@ -244,7 +254,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		if (mainWindowComps[0] == null) {
 			msgWaitingForData.maxWidth((int) width);
 			msgWaitingForData.setPos((width - msgWaitingForData.width()) * 0.5f, 0);
-			content.setSize(msgWaitingForData.width(), msgWaitingForData.height());
+			content.setSize(width, msgWaitingForData.height());
 		}
 		else {
 			content.setSize(width, 0);
@@ -304,43 +314,17 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		if (instance == this) instance = null;
 	}
 
-	private DungeonPreviewItem createListItem(DungeonPreview preview) {
-		return preview.dungeonFileID.startsWith("ERROR")
-				? new DungeonPreviewItem(preview.dungeonFileID)
-				: new DungeonPreviewItem(preview);
-	}
 
-	private class DungeonPreviewItem extends Button {
+	protected final class DungeonPreviewItem extends Button {
 
-		private final DungeonPreview preview;
+		private DungeonPreview preview;
 
 		protected RenderedTextBlock title, by, creator, desc;
 
 		protected ColorBlock line;
 
-		private DungeonPreviewItem(String error) {
-			super();
-			preview = null;
-
-			title.text( Messages.get(ServerCommunication.class, "error") + ": " + error );
-			desc = by = creator = null;
-		}
-
-		private DungeonPreviewItem(DungeonPreview preview) {
-			super();
-			this.preview = preview;
-
-			title.text( preview.title );
-			by.text(Messages.get(ServerDungeonList.class, "title_entry") + "  ");
-			creator.text(preview.uploader);
-			creator.setHighlighting(false);
-			creator.hardlight(Window.TITLE_COLOR);
-
-			desc.text(preview.description);
-
-			if (preview.uploadTime > SPDSettings.lastCheckedServer()) {
-				//TODO tzz show that its new
-			}
+		private DungeonPreviewItem() {
+			clearData();
 		}
 
 		@Override
@@ -357,6 +341,8 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			add(by);
 
 			creator = PixelScene.renderTextBlock(7);
+			creator.setHighlighting(false);
+			creator.hardlight(Window.TITLE_COLOR);
 			add(creator);
 
 			desc = PixelScene.renderTextBlock(6);
@@ -384,7 +370,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			line.x = x;
 			line.y = y;
 
-			if (desc != null) {
+			if (desc.visible) {
 				by.setPos(title.right(), title.top());
 				creator.setPos(by.right(), by.top());
 
@@ -407,12 +393,52 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
 			super.layout();
 		}
-
+		
+		protected void clearData() {
+			preview = null;
+			title.text("");
+			desc.text("");
+			by.text("");
+			creator.text("");
+			setVisible(false);
+		}
+		
+		protected void setData(String error) {
+			clearData();
+			title.text( Messages.get(ServerCommunication.class, "error") + ": " + error );
+			desc.setVisible(false);
+			by.setVisible(false);
+			creator.setVisible(false);
+			
+			setVisible(true);
+		}
+		
+		protected void setData(DungeonPreview preview) {
+			this.preview = preview;
+			
+			title.text( preview.title );
+			by.text(Messages.get(ServerDungeonList.class, "title_entry") + "  ");
+			creator.text(preview.uploader);
+			
+			desc.text(preview.description);
+			
+			if (preview.uploadTime > SPDSettings.lastCheckedServer()) {
+				//TODO tzz show that its new
+			}
+			
+			desc.setVisible(true);
+			by.setVisible(true);
+			creator.setVisible(true);
+			
+			setVisible(true);
+		}
+		
 		@Override
 		protected void onClick() {
 			if (preview != null) {
+				preview.requestAdditionalFiles();
 				WndPreview prev = new WndPreview(preview, ServerDungeonList.this);
-				changeContent(prev.createTitle(), prev, prev.getOutsideSp());
+				changeContent(prev.createTitle(), prev, prev.getOutsideSp(), 0f, 0.5f);
 
 				if (preview.intVersion > Game.versionCode) {
 					Game.scene().addToFront(new WndOptions(
