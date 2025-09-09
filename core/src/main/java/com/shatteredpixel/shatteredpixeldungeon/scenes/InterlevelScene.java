@@ -46,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.GameLog;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.TitleBackground;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
 import com.watabou.gltextures.TextureCache;
@@ -166,7 +167,7 @@ public class InterlevelScene extends PixelScene {
             int region = Dungeon.customDungeon.getFloor(curTransition.destLevel).getVisualRegion();
             if (region != lastRegion) {
                 TextureCache.clear();
-                lastRegion = region;
+                TitleBackground.reset();lastRegion = region;
             }
         }
 

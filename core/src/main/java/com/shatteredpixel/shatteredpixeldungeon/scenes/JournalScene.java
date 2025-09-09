@@ -30,11 +30,11 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.TitleBackground;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.watabou.NotAllowedInLua;
@@ -72,9 +72,8 @@ public class JournalScene extends PixelScene {
 
 		RectF insets = getCommonInsets();
 
-		Archs archs = new Archs();
-		archs.setSize( w, h );
-		//archs added later
+		TitleBackground BG = new TitleBackground(w, h);
+		//BG added later
 
 		w -= insets.left + insets.right;
 		h -= insets.top + insets.bottom;
@@ -219,7 +218,7 @@ public class JournalScene extends PixelScene {
 		if (lastIDX != 3) btnAlchemy.icon().brightness(0.6f);
 		addToBack(btnAlchemy);
 
-		addToBack(archs);
+		addToBack(BG);
 
 		ExitButton btnExit = new ExitButton();
 		btnExit.setPos( insets.left + w - btnExit.width(), insets.top );

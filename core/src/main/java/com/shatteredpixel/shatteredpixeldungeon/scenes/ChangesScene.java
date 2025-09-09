@@ -27,12 +27,12 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.TitleBackground;
 import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.ChangeInfo;
 import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.WndChanges;
 import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.WndChangesTabbed;
@@ -89,9 +89,8 @@ public class ChangesScene extends PixelScene {
 
 		RectF insets = getCommonInsets();
 
-		Archs archs = new Archs();
-		archs.setSize(w, h);
-		//archs added later
+		TitleBackground BG = new TitleBackground(w, h);
+		//background added later
 
 		w -= insets.left + insets.right;
 		h -= insets.top + insets.bottom;
@@ -510,7 +509,7 @@ public class ChangesScene extends PixelScene {
 
 		updateButtons();
 
-		addToBack( archs );
+		addToBack( BG );
 
 		fadeIn();
 	}

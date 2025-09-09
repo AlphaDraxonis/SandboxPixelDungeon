@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.TitleBackground;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Tooltip;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.Holiday;
@@ -99,10 +100,11 @@ public class PixelScene extends Scene {
 
 		GameScene.scene = null;
 
-        //flush the texture cache whenever moving from ingame to menu, helps reduce memory load
-        if (!inGameScene && InterlevelScene.lastRegion != -1) {
-            InterlevelScene.lastRegion = -1;
-            TextureCache.clear();
+		//flush the texture cache whenever moving from ingame to menu, helps reduce memory load
+		if (!inGameScene && InterlevelScene.lastRegion != -1){
+			InterlevelScene.lastRegion = -1;
+			TextureCache.clear();
+			TitleBackground.reset();
 			//good time to clear holiday cache as well
 			Holiday.clearCachedHoliday();
         }
