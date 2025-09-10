@@ -11,7 +11,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.impls.DepthSpi
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 import com.watabou.input.PointerEvent;
@@ -53,7 +57,7 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
         textBox.setTextFieldFilter(TextInput.FILE_NAME_INPUT);
         textBox.setMaxLength(50);
         add(textBox);
-        Game.platform.setOnscreenKeyboardVisible(false);
+        Game.platform.setOnscreenKeyboardVisible(false, false);
 
         create = new RedButton(Messages.get(WndNewFloor.class, "create_label")) {
             @Override

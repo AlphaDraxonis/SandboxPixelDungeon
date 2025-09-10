@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.11.1'
+        classpath 'com.android.tools.build:gradle:8.10.0'
     }
 }
 
@@ -15,7 +15,7 @@ allprojects {
         appPackageName = 'com.alphadraxonis.sandboxpd'
 
         appVersionCode = 868
-        appVersionName = '1.4'
+        appVersionName = '1.4.0'
 
         appJavaCompatibility = JavaVersion.VERSION_11
 

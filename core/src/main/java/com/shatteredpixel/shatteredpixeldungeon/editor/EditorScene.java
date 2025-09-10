@@ -60,15 +60,18 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
+import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
+import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.PointF;
+import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
 
 import java.io.IOException;
@@ -212,6 +215,8 @@ public class EditorScene extends DungeonScene {
         scene = this;
 
         customBossTilemap = customBossWallsTilemap = null;
+        
+        RectF insets = getCommonInsets();
 
         initBasics();
 
@@ -289,25 +294,37 @@ public class EditorScene extends DungeonScene {
 
         menu = new MenuPane();
         menu.camera = uiCamera;
-        menu.setPos(uiCamera.width - MenuPane.WIDTH, uiSize > 0 ? 0 : 0);
+        menu.setPos( uiCamera.width-MenuPane.WIDTH-insets.right, insets.top + (uiSize > 0 ? 0 : 0));
         add(menu);
+        
+        if (uiSize < 2 && insets.top > 0) {
+            SkinnedBlock bar = new SkinnedBlock(uiCamera.width, insets.top, TextureCache.createSolid(0xFF1C1E18));
+            bar.camera = uiCamera;
+            add(bar);
+        }
 
         undo = new UndoPane();
         undo.camera = uiCamera;
-        undo.setPos(0, 0);
+        undo.setPos(insets.left, insets.top);
         add(undo);
 
         sideControlPane = new SideControlPane(true);
         sideControlPane.camera = uiCamera;
-        sideControlPane.setPos(0, undo.bottom() + (PixelScene.landscape() ? 5 : 10));
+        sideControlPane.setPos(insets.left, undo.bottom() + (PixelScene.landscape() ? 5 : 10));
         add(sideControlPane);
 
         toolbar = new EToolbar();
         toolbar.camera = uiCamera;
         add(toolbar);
-
-        toolbar.setRect(0, uiCamera.height - toolbar.height(), uiCamera.width, toolbar.height());
-
+        
+        toolbar.setRect( insets.left, uiCamera.height - toolbar.height() - insets.bottom, uiCamera.width - insets.right, toolbar.height() );
+        
+        if (insets.bottom > 0){
+            SkinnedBlock bar = new SkinnedBlock(uiCamera.width, insets.bottom, TextureCache.createSolid(0xFF000000));
+            bar.camera = uiCamera;
+            bar.y = uiCamera.height - insets.bottom;
+            add(bar);
+        }
 
         fadeIn();
 

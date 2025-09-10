@@ -510,8 +510,6 @@ public class ChangesScene extends PixelScene {
 
 		updateButtons();
 
-		Archs archs = new Archs();
-		archs.setSize( Camera.main.width, Camera.main.height );
 		addToBack( archs );
 
 		fadeIn();

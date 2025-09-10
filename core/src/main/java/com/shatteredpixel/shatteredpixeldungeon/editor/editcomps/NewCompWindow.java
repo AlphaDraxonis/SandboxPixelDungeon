@@ -53,7 +53,7 @@ public abstract class NewCompWindow<T> extends Window {
         };
         textBox.setMaxLength(50);
         add(textBox);
-        Game.platform.setOnscreenKeyboardVisible(false);
+        Game.platform.setOnscreenKeyboardVisible(false, false);
 
         create = new RedButton(Messages.get(WndNewDungeon.class, "yes")) {
             @Override

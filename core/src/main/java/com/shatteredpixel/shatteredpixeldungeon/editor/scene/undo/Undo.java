@@ -69,7 +69,6 @@ public final class Undo {
             try {
                 EditorScene.getCustomLevel().levelScheme.saveLevel();
                 autoSaveCounter = SPDSettings.autoSave() * 5;
-                if (SPDSettings.powerSaver()) autoSaveCounter /= 2;
             } catch (IOException e) {
                 autoSaveCounter = SPDSettings.autoSave();
             }
@@ -113,7 +112,6 @@ public final class Undo {
         redoStack.clear();
         EditorScene.updateUndoButtons();
         autoSaveCounter = SPDSettings.autoSave() * 5;
-        if (SPDSettings.powerSaver()) autoSaveCounter /= 2;
     }
 
 }

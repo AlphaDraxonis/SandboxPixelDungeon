@@ -129,7 +129,7 @@ public class SPDSettings extends GameSettings {
 
 	public static void landscape( boolean value ){
 		put( KEY_LANDSCAPE, value );
-		((ShatteredPixelDungeon)ShatteredPixelDungeon.instance).updateDisplaySize();
+		((SandboxPixelDungeon)SandboxPixelDungeon.instance).updateDisplaySize();
 	}
 
 	public static boolean landscape(){

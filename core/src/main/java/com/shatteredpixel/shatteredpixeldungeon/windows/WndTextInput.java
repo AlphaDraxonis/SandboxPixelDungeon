@@ -221,7 +221,7 @@ public class WndTextInput extends Window {
 
 		PointerEvent.clearKeyboardThisPress = false;
 
-		Game.platform.setOnscreenKeyboardVisible(true);
+		Game.platform.setOnscreenKeyboardVisible(true, multiLine);
 	}
 
 	@Override
