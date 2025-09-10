@@ -317,8 +317,10 @@ public class Hero extends Char {
 
 		if (bundle.contains("sprite_class")) {
 			internalSpriteClass.setSpriteClass(bundle.getClass("sprite_class"));
-		} else {
+		} else if (bundle.contains(SPRITE_WRAPPER)) {
 			internalSpriteClass = (HeroSpriteClassWrapper) bundle.get(SPRITE_WRAPPER);
+		} else {
+			internalSpriteClass.setSpriteClass(null);
 		}
 
 		heroClass = bundle.getEnum( CLASS, HeroClass.class );

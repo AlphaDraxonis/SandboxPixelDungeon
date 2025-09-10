@@ -37,12 +37,17 @@ public class WndMessage extends Window {
 	}
 
 	public WndMessage( String text, Chrome.Type type ) {
+		this(text, type, true);
+	}
+	
+	public WndMessage( String text, Chrome.Type type, boolean highlightEnabled ) {
 
 		super( 0, 0, Chrome.get(type) );
 
 		int width = WIDTH_MIN;
 		
 		RenderedTextBlock info = PixelScene.renderTextBlock( text, 6 );
+		info.setHighlighting(highlightEnabled);
 		info.maxWidth(width - MARGIN * 2);
 		info.setPos(MARGIN, MARGIN);
 		add( info );

@@ -61,6 +61,10 @@ public class WndOptions extends Window {
 	}
 	
 	public WndOptions( String title, String message, String... options ) {
+		this(title, message, true, options);
+	}
+	
+	public WndOptions( String title, String message, boolean highlightEnabled, String... options ) {
 		super();
 		
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
@@ -74,6 +78,7 @@ public class WndOptions extends Window {
 		}
 		
 		tfMessage = PixelScene.renderTextBlock( message, 6 );
+		tfMessage.setHighlighting(highlightEnabled);
 		
 		initBody(options);
 	}

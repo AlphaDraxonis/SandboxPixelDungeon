@@ -236,7 +236,7 @@ public class WndPreview extends Component {
             protected void onSuccessful(CustomDungeonSaves.Info info) {
                 Game.scene().addToFront(new WndOptions(
                         Messages.get(WndPreview.class, "successful_title"),
-                        Messages.get(WndPreview.class, "successful_body", info.name),
+                        Messages.get(WndPreview.class, "successful_body", info.name), false,
                         Messages.get(WndPreview.class, "successful_play"),
                         Messages.get(WndSupportPrompt.class, "close")
                 ) {
