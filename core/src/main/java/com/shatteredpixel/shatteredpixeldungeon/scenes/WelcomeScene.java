@@ -103,10 +103,10 @@ public class WelcomeScene extends PixelScene {
 		
 		TempFilesHandler.clearTempFiles();
 		
-		/*if (SandboxPixelDungeon.versionCode == previousVersion && !SPDSettings.intro() || true) {
+		if (SandboxPixelDungeon.versionCode == previousVersion && !SPDSettings.intro() || true) {
 			SandboxPixelDungeon.switchNoFade(TitleScene.class);
 			return;
-		}*/
+		}
 
 		Music.INSTANCE.playTracks(
 				new String[]{Assets.Music.THEME_1, Assets.Music.THEME_2},
