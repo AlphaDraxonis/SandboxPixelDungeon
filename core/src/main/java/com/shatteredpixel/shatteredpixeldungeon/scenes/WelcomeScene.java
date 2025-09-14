@@ -103,10 +103,10 @@ public class WelcomeScene extends PixelScene {
 		
 		TempFilesHandler.clearTempFiles();
 		
-		if (SandboxPixelDungeon.versionCode == previousVersion && !SPDSettings.intro() || true) {
+		/*if (SandboxPixelDungeon.versionCode == previousVersion && !SPDSettings.intro() || true) {
 			SandboxPixelDungeon.switchNoFade(TitleScene.class);
 			return;
-		}
+		}*/
 
 		Music.INSTANCE.playTracks(
 				new String[]{Assets.Music.THEME_1, Assets.Music.THEME_2},
@@ -123,7 +123,7 @@ public class WelcomeScene extends PixelScene {
 		add( BG );
 
 		//darkens the arches
-		add(new ColorBlock(w, h, 0x88000000));
+		add(new ColorBlock(w, h, 0x44000000));
 
 		w -= insets.left + insets.right;
 		h -= insets.top + insets.bottom;
