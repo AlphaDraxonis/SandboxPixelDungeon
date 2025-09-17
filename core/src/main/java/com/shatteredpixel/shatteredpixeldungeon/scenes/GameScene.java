@@ -340,6 +340,7 @@ public class GameScene extends DungeonScene {
 
 		status = new StatusPane( SPDSettings.interfaceSize() > 0 );
 		status.camera = uiCamera;
+//		moved to DungeonScene#initBasics(): StatusPane.heroPaneExtraWidth = heroPaneExtraWidth;
 //		moved to DungeonScene#initBasics(): StatusPane.hpBarMaxWidth = hpBarMaxWidth;
 //		moved to DungeonScene#initBasics(): StatusPane.buffBarTopRowMaxWidth = buffBarTopRowMaxWidth;
 		status.setRect(insets.left, uiSize > 0 ? uiCamera.height-39-insets.bottom : screentop, uiCamera.width - insets.left - insets.right, 0 );
