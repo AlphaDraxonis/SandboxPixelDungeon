@@ -58,7 +58,7 @@ public class EnergyCrystal extends Item {
 	public boolean doPickUp(Hero hero, int pos) {
 
 		instantPickupEnergy(hero, pos);
-		hero.spendAndNext( TIME_TO_PICK_UP );
+		hero.spendAndNext( pickupDelay() );
 
 		Sample.INSTANCE.play( Assets.Sounds.ITEM );
 

@@ -152,7 +152,7 @@ public class Item extends GameObject implements Customizable {
 			if (hero.sprite != null) {
 				GameScene.pickUp(this, pos);
 				Sample.INSTANCE.play(Assets.Sounds.ITEM);
-				hero.spendAndNext(TIME_TO_PICK_UP);
+				hero.spendAndNext(pickupDelay());
 			}
 			return true;
 			
@@ -883,6 +883,10 @@ public class Item extends GameObject implements Customizable {
 	
 	public float castDelay( Char user, int cell ){
 		return TIME_TO_THROW;
+	}
+
+	public float pickupDelay(){
+		return TIME_TO_PICK_UP;
 	}
 	
 	protected static Hero curUser = null;

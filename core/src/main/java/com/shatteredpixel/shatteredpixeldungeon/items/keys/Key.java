@@ -92,7 +92,7 @@ public abstract class Key extends Item {
 	@Override
 	public boolean doPickUp(Hero hero, int pos) {
 		instantPickupKey(pos);
-		hero.spendAndNext( TIME_TO_PICK_UP );
+		hero.spendAndNext( pickupDelay() );
 		Sample.INSTANCE.play( Assets.Sounds.ITEM );
 		return true;
 	}

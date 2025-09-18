@@ -169,7 +169,7 @@ public class MasterThievesArmband extends Artifact {
 									stoleSth = true;
 									if (l.doPickUp(curUser)) {
 										//item collection happens instantly
-										curUser.spend(-TIME_TO_PICK_UP);
+										curUser.spend(-loot.pickupDelay());
 									} else {
 										Dungeon.level.drop(l, curUser.pos).sprite.drop();
 									}
