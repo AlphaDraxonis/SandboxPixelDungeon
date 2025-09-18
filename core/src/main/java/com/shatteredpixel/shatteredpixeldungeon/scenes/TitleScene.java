@@ -136,8 +136,8 @@ public class TitleScene extends PixelScene {
 		BitmapText version = new BitmapText( "v" + Game.version, pixelFont);
 		version.measure();
 		version.hardlight( 0x888888 );
-		version.x = insets.left + w - version.width() - 8;
-		version.y = insets.top + h - version.height() - 4;
+		version.x = insets.left + w - version.width() - (DeviceCompat.isDesktop() ? 4 : 8);
+		version.y = insets.top + h - version.height() - (DeviceCompat.isDesktop() ? 2 : 4);
 		add( version );
 
 		final Chrome.Type GREY_TR = Chrome.Type.GREY_BUTTON_TR;
@@ -282,8 +282,8 @@ public class TitleScene extends PixelScene {
 
 		if (DeviceCompat.isDesktop()) {
 			ExitButton btnExit = new ExitButton();
-			btnExit.setPos(w - btnExit.width(), 0);
-			add(btnExit);
+			btnExit.setPos( w - btnExit.width(), 0 );
+			add( btnExit );
 		}
 
 		Badges.loadGlobal();
