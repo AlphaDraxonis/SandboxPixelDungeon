@@ -42,7 +42,9 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.GameMath;
+import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.Random;
+import com.watabou.utils.RectF;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -135,6 +137,8 @@ public class OpenDungeonScene extends PixelScene {
 	private static Exception error = null;
 	private float waitingTime;
 	
+	private RectF insets;
+	
 	@Override
 	public void create() {
 		super.create();
@@ -183,6 +187,11 @@ public class OpenDungeonScene extends PixelScene {
 				}
 				break;
 		}
+		
+		insets = Game.platform.getSafeInsets(PlatformSupport.INSET_BLK).scale(1f/defaultZoom);
+		
+		int w = (int)(Camera.main.width - insets.left - insets.right);
+		int h = (int)(Camera.main.height - insets.top - insets.bottom);
 
 		background = new Image(loadingAsset);
 		background.scale.set(Camera.main.height/background.height);
@@ -221,17 +230,17 @@ public class OpenDungeonScene extends PixelScene {
 			}
 		};
 		im.angle = 90;
-		im.x = Camera.main.width;
-		im.scale.x = Camera.main.height/5f;
-		im.scale.y = Camera.main.width;
+		im.x = insets.left + w;
+		im.scale.x = h/5f;
+		im.scale.y = w;
 		add(im);
 
 		String text = Messages.get(this, "loading");
 		
 		loadingText = PixelScene.renderTextBlock( text, 9 );
 		loadingText.setPos(
-				(Camera.main.width - loadingText.width() - 8),
-				(Camera.main.height - loadingText.height() - 6)
+				insets.left + w - loadingText.width() - 12,
+				insets.top + h - loadingText.height() - 6
 		);
 		align(loadingText);
 		add(loadingText);
@@ -289,6 +298,9 @@ public class OpenDungeonScene extends PixelScene {
 					break;
 			}
 		}
+		
+		int w = (int)(Camera.main.width - insets.left - insets.right);
+		int h = (int)(Camera.main.height - insets.top - insets.bottom);
 		
 		switch (phase) {
 		

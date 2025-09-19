@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 
 public class Challenges {
@@ -55,6 +56,9 @@ public class Challenges {
 	};
 
 	public static int activeChallenges(){
+		if (CustomDungeon.isEditing()) {
+			return 0;
+		}
 		int chCount = 0;
 		for (int ch : Challenges.MASKS){
 			if ((Dungeon.challenges & ch) != 0) chCount++;

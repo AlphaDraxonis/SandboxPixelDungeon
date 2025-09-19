@@ -88,7 +88,7 @@ public class DangerIndicator extends Tag {
 	@Override
 	public void update() {
 		
-		if (Dungeon.hero.isAlive()) {
+		if (Dungeon.hero != null && Dungeon.hero.isAlive()) {
 			int v =  Dungeon.hero.visibleEnemies();
 			if (v != lastNumber) {
 				lastNumber = v;

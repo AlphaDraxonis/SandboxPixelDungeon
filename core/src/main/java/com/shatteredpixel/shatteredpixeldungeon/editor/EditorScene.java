@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomLayoutLevel;
@@ -56,22 +57,20 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StatusPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.NotAllowedInLua;
-import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
-import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.PointF;
-import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
 
 import java.io.IOException;
@@ -98,7 +97,6 @@ public class EditorScene extends DungeonScene {
     private static CustomLevel customLevel;
 
 
-    protected MenuPane menu;
     private UndoPane undo;
     private EToolbar toolbar;
 
@@ -119,6 +117,7 @@ public class EditorScene extends DungeonScene {
         QuickSlotButton.reset();
         BlacksmithQuest.reset();
         Statistics.reset();
+        Notes.reset();
         Dungeon.hero = null;
         Dungeon.branch = 0;
         Dungeon.reachedCheckpoint = null;
@@ -215,8 +214,6 @@ public class EditorScene extends DungeonScene {
         scene = this;
 
         customBossTilemap = customBossWallsTilemap = null;
-        
-        RectF insets = getCommonInsets();
 
         initBasics();
 
@@ -292,20 +289,14 @@ public class EditorScene extends DungeonScene {
 
         int uiSize = SPDSettings.interfaceSize();
 
-        menu = new MenuPane();
+        menu = new EditorMenuPane();
         menu.camera = uiCamera;
-        menu.setPos( uiCamera.width-MenuPane.WIDTH-insets.right, insets.top + (uiSize > 0 ? 0 : 0));
+        menu.setPos( menuBarMaxLeft, screentop);
         add(menu);
-        
-        if (uiSize < 2 && insets.top > 0) {
-            SkinnedBlock bar = new SkinnedBlock(uiCamera.width, insets.top, TextureCache.createSolid(0xFF1C1E18));
-            bar.camera = uiCamera;
-            add(bar);
-        }
 
         undo = new UndoPane();
         undo.camera = uiCamera;
-        undo.setPos(insets.left, insets.top);
+        undo.setPos(insets.left, uiSize > 0 && StatusPane.hpBarMaxWidth >= UndoPane.WIDTH ? uiCamera.height-20-insets.bottom : screentop + 1);
         add(undo);
 
         sideControlPane = new SideControlPane(true);
@@ -319,12 +310,6 @@ public class EditorScene extends DungeonScene {
         
         toolbar.setRect( insets.left, uiCamera.height - toolbar.height() - insets.bottom, uiCamera.width - insets.right, toolbar.height() );
         
-        if (insets.bottom > 0){
-            SkinnedBlock bar = new SkinnedBlock(uiCamera.width, insets.bottom, TextureCache.createSolid(0xFF000000));
-            bar.camera = uiCamera;
-            bar.y = uiCamera.height - insets.bottom;
-            add(bar);
-        }
 
         fadeIn();
 
@@ -490,7 +475,7 @@ public class EditorScene extends DungeonScene {
             customBossWallsTilemap = (CustomTilemap.BossLevelVisuals) visual;
     }
 
-    private static CustomTilemap.BossLevelVisuals customBossTilemap, customBossWallsTilemap;
+    private static CustomTilemap.BossLevelVisuals customBossTilemap = null, customBossWallsTilemap = null;
     public static void revalidateBossCustomTiles() {
         if (scene == null || Dungeon.level == null) return;
 

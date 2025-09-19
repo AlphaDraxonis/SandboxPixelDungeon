@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndStory;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.NotAllowedInLua;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Game;
@@ -47,12 +48,13 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 
+@NotAllowedInLua
 public class MenuPane extends Component {
 
 	private Image bg;
 
-	private Image depthIcon;
-	private BitmapText depthText;
+	protected Image depthIcon;
+	protected BitmapText depthText;
 	private Button depthButton;
 
 	private Image challengeIcon;
@@ -85,10 +87,12 @@ public class MenuPane extends Component {
 		version.alpha( 0.5f );
 		add(version);
 
-		depthIcon = Icons.get(Dungeon.level.feeling);
-		add(depthIcon);
+		if (Dungeon.level.feeling != null) {
+			depthIcon =  Icons.get(Dungeon.level.levelScheme.getFeeling());
+			add(depthIcon);
+		}
 
-		depthText = new BitmapText(Dungeon.levelName, PixelScene.pixelFont);
+		depthText = new BitmapText(Dungeon.level.name, PixelScene.pixelFont);
 		depthText.hardlight( 0xCACFC2 );
 		depthText.measure();
 		add( depthText );
@@ -107,13 +111,7 @@ public class MenuPane extends Component {
 			protected void onClick() {
 				super.onClick();
 
-				if (Dungeon.level.feeling == Level.Feeling.NONE){
-					GameScene.show(new WndJournal());
-				} else {
-					GameScene.show(new WndTitledMessage(Icons.getLarge(Dungeon.level.feeling),
-							Messages.titleCase(Dungeon.level.feeling.title()),
-							Dungeon.level.feeling.desc()));
-				}
+				onDepthButtonClicked();
 			}
 		};
 		add(depthButton);
@@ -236,7 +234,35 @@ public class MenuPane extends Component {
 		btnJournal.updateKeyDisplay();
 	}
 
-	private static class JournalButton extends Button {
+	public void updateDepthIcon(){
+		remove(depthIcon);
+		depthIcon.destroy();
+		depthIcon =  Icons.get(Dungeon.level.levelScheme.getFeeling());
+		add(depthIcon);
+		depthText.text(Dungeon.level.name);
+		depthText.measure();
+		layout();
+	}
+	
+	protected void onDepthButtonClicked() {
+		if (Dungeon.level.feeling == Level.Feeling.NONE){
+			GameScene.show(new WndJournal());
+		} else {
+			GameScene.show(new WndTitledMessage(Icons.getLarge(Dungeon.level.feeling),
+					Messages.titleCase(Dungeon.level.feeling.title()),
+					Dungeon.level.feeling.desc()));
+		}
+	}
+	
+	protected void onJournalButtonClicked() {
+		GameScene.show( new WndJournal() );
+	}
+	
+	protected void onMenuButtonClicked() {
+		GameScene.show( new WndGame() );
+	}
+
+	private class JournalButton extends Button {
 
 		private Image bg;
 		private Image journalIcon;
@@ -331,7 +357,7 @@ public class MenuPane extends Component {
 				bg.resetColor();
 			}
 		}
-
+		
 		@Override
 		protected void onClick() {
 			time = 0;
@@ -360,21 +386,21 @@ public class MenuPane extends Component {
 					});
 					flashingDoc.readPage(flashingPage);
 				} else {
-					GameScene.show( new WndJournal() );
+					onJournalButtonClicked();
 				}
 				flashingPage = null;
 			} else {
-				GameScene.show( new WndJournal() );
+				onJournalButtonClicked();
 			}
 		}
-
+		
 		@Override
 		protected String hoverText() {
 			return Messages.titleCase(Messages.get(WndKeyBindings.class, "journal"));
 		}
 	}
 
-	private static class MenuButton extends Button {
+	private class MenuButton extends Button {
 
 		private Image image;
 
@@ -414,7 +440,7 @@ public class MenuPane extends Component {
 
 		@Override
 		protected void onClick() {
-			GameScene.show( new WndGame() );
+			onMenuButtonClicked();
 		}
 
 		@Override

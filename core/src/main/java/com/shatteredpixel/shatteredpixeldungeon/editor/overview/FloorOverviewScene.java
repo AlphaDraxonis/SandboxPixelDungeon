@@ -19,6 +19,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.NinePatch;
+import com.watabou.utils.RectF;
 
 import java.io.IOException;
 
@@ -41,12 +42,23 @@ public class FloorOverviewScene extends PixelScene {
         super.create();
 
         instance = this;
+        
+        int w = Camera.main.width;
+        int h = Camera.main.height;
+        RectF insets = getCommonInsets();
 
         bg = Chrome.get(Chrome.Type.WINDOW);
-        bg.size(camera().width + 10, camera().height + 10);
+        bg.size(w + 10, h + 10);
         bg.x = bg.y = -5;
-
         add(bg);
+        
+        insets.top += MARGIN;
+        insets.left += MARGIN;
+        insets.bottom += MARGIN;
+        insets.right += MARGIN;
+        
+        w -= insets.left + insets.right;
+        h -= insets.top + insets.bottom;
 
         listPane = new LevelListPane(new LevelListPane.Selector() {
             @Override
@@ -79,16 +91,13 @@ public class FloorOverviewScene extends PixelScene {
         add(openItemDistribution);
 
 
-        createFloor.setRect(MARGIN, camera().height - MARGIN - 18, camera().width - MARGIN * 3 - 18, 18);
+        createFloor.setRect(insets.left, insets.top + h - 18, w - MARGIN - 18, 18);
         PixelScene.align(createFloor);
 
-        openItemDistribution.setRect(camera().width -18-MARGIN, camera().height - MARGIN - 18, 18, 18);
+        openItemDistribution.setRect(insets.left + w - 18, insets.top + h - 18, 18, 18);
         PixelScene.align(openItemDistribution);
 
-//        createFloor.setRect(MARGIN, (camera().height - MARGIN * 2 - 18), camera().width - MARGIN * 2, 18);
-//        PixelScene.align(createFloor);
-
-        listPane.setRect(MARGIN, MARGIN, camera().width - MARGIN * 2, createFloor.top() - MARGIN);
+        listPane.setRect(insets.left, insets.top, w, h - 18 - MARGIN);
         PixelScene.align(listPane);
 
         btnExit = new ExitButton() {
@@ -102,7 +111,7 @@ public class FloorOverviewScene extends PixelScene {
                 super.onClick();
             }
         };
-        btnExit.setPos(Camera.main.width - btnExit.width(), 0);
+        btnExit.setPos( insets.left + w + MARGIN - btnExit.width(), insets.top - MARGIN);
         add(btnExit);
 
         updateList();

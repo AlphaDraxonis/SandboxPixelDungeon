@@ -25,6 +25,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -60,9 +61,12 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.GridTileMap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Banner;
 import com.shatteredpixel.shatteredpixeldungeon.ui.InventoryPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.MenuPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StatusPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
+import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
@@ -76,8 +80,11 @@ import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.Point;
+import com.watabou.utils.RectF;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -95,6 +102,8 @@ public abstract class DungeonScene extends PixelScene {
 	protected BarrierTilemap barriers;
 	protected ArrowCellTilemap arrowCells;
 	protected Group checkpoints;
+	
+	protected MenuPane menu;
 
 	protected Group terrain;
 	protected Group customTiles;
@@ -122,8 +131,11 @@ public abstract class DungeonScene extends PixelScene {
 	protected Component prompt;
 
 	protected InventoryPane inventory;
-
-
+	
+	protected RectF insets;
+	protected float largeInsetTop, screentop, menuBarMaxLeft;
+	
+	
 	//sometimes UI changes can be prompted by the actor thread.
 	// We queue any removed element destruction, rather than destroying them in the actor thread.
 	protected ArrayList<Gizmo> toDestroy = new ArrayList<>();
@@ -135,6 +147,10 @@ public abstract class DungeonScene extends PixelScene {
 	}
 
 	protected void initBasics() {
+		
+		insets = getCommonInsets();
+		//we want to check if large is the same as blocking here
+		largeInsetTop = Game.platform.getSafeInsets(PlatformSupport.INSET_LRG).scale(1f/defaultZoom).top;
 
 		terrain = new Group();
 		add(terrain);
@@ -192,6 +208,91 @@ public abstract class DungeonScene extends PixelScene {
 
 		checkpoints = new Group();
 		terrain.add(checkpoints);
+		
+		
+		
+		int uiSize = SPDSettings.interfaceSize();
+		
+		//display cutouts can obstruct various UI elements, so we need to adjust for that sometimes
+		menuBarMaxLeft = uiCamera.width-insets.right- MenuPane.WIDTH;
+		int hpBarMaxWidth = 50; //default max width
+		float buffBarTopRowMaxWidth = 50; //default max width
+		if (largeInsetTop != insets.top){
+			//iOS's Dynamic island badly obstructs the first buff bar row
+			if (DeviceCompat.isiOS()){
+				//TODO bad to hardcode and approximate this atm
+				// need to change this so iOS platformsupport returns cutout dimensions
+				float cutoutLeft = (Game.width*0.3f)/defaultZoom;
+				buffBarTopRowMaxWidth = Math.min(50, cutoutLeft - 32);
+			} else if (DeviceCompat.isAndroid()) {
+				//Android hole punches are of varying size and may obstruct the menu, HP bar, or buff bar
+				RectF cutout = Game.platform.getDisplayCutout().scale(1f / defaultZoom);
+				//if the cutout is positioned to obstruct the menu bar
+				if (cutout.top < 20
+						&& cutout.left < menuBarMaxLeft + MenuPane.WIDTH
+						&& cutout.right > menuBarMaxLeft) {
+					menuBarMaxLeft = Math.min(menuBarMaxLeft, cutout.left - MenuPane.WIDTH);
+					//make sure we have space to actually move it though
+					menuBarMaxLeft = Math.max(menuBarMaxLeft, PixelScene.MIN_WIDTH_P-MenuPane.WIDTH);
+				}
+				//if the cutout is positioned to obstruct the HP bar
+				if (cutout.left < 78
+						&& cutout.top < 4
+						&& cutout.right > 32) {
+					//subtract starting position, but add a bit back due to end of bar
+					hpBarMaxWidth = Math.round(cutout.left - 32 + 4);
+					hpBarMaxWidth = Math.max(hpBarMaxWidth, 21); //cannot go below 21 (30 effective)
+				}
+				//if the cutout is positioned to obstruct the buff bar
+				if (cutout.left < 80
+						&& cutout.top < 10
+						&& cutout.right > 32
+						&& cutout.bottom > 11) {
+					buffBarTopRowMaxWidth = cutout.left - 32; //subtract starting position
+				}
+			}
+		}
+		
+		screentop = largeInsetTop;
+		if (screentop == 0 && uiSize == 0){
+			screentop--; //on mobile UI, if we render in fullscreen, clip the top 1px;
+		}
+		
+		float extraRight = uiCamera.width - (menuBarMaxLeft + MenuPane.WIDTH);
+		if (extraRight > 0){
+			SkinnedBlock bar = new SkinnedBlock(extraRight, 20, TextureCache.createSolid(0x88000000));
+			bar.x = uiCamera.width - extraRight;
+			bar.camera = uiCamera;
+			add(bar);
+			
+			PointerArea blocker = new PointerArea(uiCamera.width - extraRight, 0, extraRight, 20);
+			blocker.camera = uiCamera;
+			add(blocker);
+		}
+		
+		if (uiSize < 2 && largeInsetTop != 0) {
+			SkinnedBlock bar = new SkinnedBlock(uiCamera.width, largeInsetTop, TextureCache.createSolid(0x88000000));
+			bar.camera = uiCamera;
+			add(bar);
+			
+			PointerArea blocker = new PointerArea(0, 0, uiCamera.width, largeInsetTop);
+			blocker.camera = uiCamera;
+			add(blocker);
+		}
+		
+		if (insets.bottom > 0){
+			SkinnedBlock bar = new SkinnedBlock(uiCamera.width, insets.bottom, TextureCache.createSolid(0x88000000));
+			bar.camera = uiCamera;
+			bar.y = uiCamera.height - insets.bottom;
+			add(bar);
+			
+			PointerArea blocker = new PointerArea(0, uiCamera.height - insets.bottom, uiCamera.width, insets.bottom);
+			blocker.camera = uiCamera;
+			add(blocker);
+		}
+		
+		StatusPane.hpBarMaxWidth = hpBarMaxWidth;
+		StatusPane.buffBarTopRowMaxWidth = buffBarTopRowMaxWidth;
 	}
 
 	protected abstract void initAndAddDungeonTilemap();

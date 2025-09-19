@@ -40,7 +40,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
-import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.android.ideactivity.AndroidIDEWindow;
 import com.watabou.NotAllowedInLua;
 import com.watabou.input.ControllerHandler;
@@ -62,7 +62,7 @@ public class AndroidPlatformSupport extends PlatformSupport {
 				ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE :
 				ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED );
 
-		ShatteredPixelDungeon.seamlessResetScene();
+		SandboxPixelDungeon.seamlessResetScene();
 	}
 
 	public boolean supportsFullScreen(){

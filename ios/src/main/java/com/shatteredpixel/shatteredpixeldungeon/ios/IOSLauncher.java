@@ -192,7 +192,7 @@ public class IOSLauncher extends IOSApplication.Delegate {
 	@Override
 	public void didChangStatusBarOrientation(UIApplication application, UIInterfaceOrientation oldStatusBarOrientation) {
 		super.didChangStatusBarOrientation(application, oldStatusBarOrientation);
-		ShatteredPixelDungeon.seamlessResetScene();
+		SandboxPixelDungeon.seamlessResetScene();
 	}
 
 	public static void main(String[] argv) {

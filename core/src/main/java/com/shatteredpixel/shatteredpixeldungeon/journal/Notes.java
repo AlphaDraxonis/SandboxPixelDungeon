@@ -678,6 +678,9 @@ public final class Notes {
 
 	public static <T extends Record> ArrayList<T> getRecords( Class<T> recordType ){
 		ArrayList<T> filtered = new ArrayList<>();
+		if (records == null) {
+			return filtered;
+		}
 		for (Record rec : records){
 			if (recordType.isInstance(rec)){
 				filtered.add((T)rec);
@@ -688,6 +691,9 @@ public final class Notes {
 
 	public static ArrayList<Record> getRecords(String level){
 		ArrayList<Record> filtered = new ArrayList<>();
+		if (records == null) {
+			return filtered;
+		}
 		for (Record rec : records){
 			if (level.equals(rec.levelName()) && !(rec instanceof CustomRecord)){
 				filtered.add(rec);
@@ -711,13 +717,14 @@ public final class Notes {
 	}
 
 	public static CustomRecord findCustomRecord( Class itemClass ){
-		if (records != null) {
-			for (Record rec : records) {
-				if (rec instanceof CustomRecord
-					&& ((CustomRecord) rec).type == CustomType.ITEM_TYPE
-					&& ((CustomRecord) rec).itemClass == itemClass) {
-					return (CustomRecord) rec;
-				}
+		if (records == null) {
+			return null;
+		}
+		for (Record rec : records) {
+			if (rec instanceof CustomRecord
+				&& ((CustomRecord) rec).type == CustomType.ITEM_TYPE
+				&& ((CustomRecord) rec).itemClass == itemClass) {
+				return (CustomRecord) rec;
 			}
 		}
 		return null;

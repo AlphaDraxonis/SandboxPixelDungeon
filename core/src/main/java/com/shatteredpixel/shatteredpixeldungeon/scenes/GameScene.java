@@ -131,7 +131,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
-import com.watabou.gltextures.TextureCache;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.PointerEvent;
@@ -140,15 +139,12 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.PointerArea;
-import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.tweeners.Tweener;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Callback;
-import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.Point;
@@ -173,7 +169,6 @@ public class GameScene extends DungeonScene {
 	private FogOfWar fog;
 	private HeroSprite hero;
 
-	protected MenuPane menu;
 	private StatusPane status;
 
 	private BossHealthBar boss;
@@ -222,10 +217,6 @@ public class GameScene extends DungeonScene {
 			case 2:             Camera.main.setFollowDeadzone(0.5f);   break;
 			case 1:             Camera.main.setFollowDeadzone(0.9f);   break;
 		}
-
-		RectF insets = getCommonInsets();
-		//we want to check if large is the same as blocking here
-		float largeInsetTop = Game.platform.getSafeInsets(PlatformSupport.INSET_LRG).scale(1f/defaultZoom).top;
 
 		scene = this;
 
@@ -341,91 +332,24 @@ public class GameScene extends DungeonScene {
 		add( cellSelector = new CellSelector( tiles[0] ) );
 
 		int uiSize = SPDSettings.interfaceSize();
-
-		//display cutouts can obstruct various UI elements, so we need to adjust for that sometimes
-		float menuBarMaxLeft = uiCamera.width-insets.right-MenuPane.WIDTH;
-		int hpBarMaxWidth = 50; //default max width
-		float buffBarTopRowMaxWidth = 50; //default max width
-		if (largeInsetTop != insets.top){
-			//iOS's Dynamic island badly obstructs the first buff bar row
-			if (DeviceCompat.isiOS()){
-				//TODO bad to hardcode and approximate this atm
-				// need to change this so iOS platformsupport returns cutout dimensions
-				float cutoutLeft = (Game.width*0.3f)/defaultZoom;
-				buffBarTopRowMaxWidth = Math.min(50, cutoutLeft - 32);
-			} else if (DeviceCompat.isAndroid()) {
-				//Android hole punches are of varying size and may obstruct the menu, HP bar, or buff bar
-				RectF cutout = Game.platform.getDisplayCutout().scale(1f / defaultZoom);
-				//if the cutout is positioned to obstruct the menu bar
-				if (cutout.top < 20
-						&& cutout.left < menuBarMaxLeft + MenuPane.WIDTH
-						&& cutout.right > menuBarMaxLeft) {
-					menuBarMaxLeft = Math.min(menuBarMaxLeft, cutout.left - MenuPane.WIDTH);
-					//make sure we have space to actually move it though
-					menuBarMaxLeft = Math.max(menuBarMaxLeft, PixelScene.MIN_WIDTH_P-MenuPane.WIDTH);
-				}
-				//if the cutout is positioned to obstruct the HP bar
-				if (cutout.left < 78
-						&& cutout.top < 4
-						&& cutout.right > 32) {
-					//subtract starting position, but add a bit back due to end of bar
-					hpBarMaxWidth = Math.round(cutout.left - 32 + 4);
-					hpBarMaxWidth = Math.max(hpBarMaxWidth, 21); //cannot go below 21 (30 effective)
-				}
-				//if the cutout is positioned to obstruct the buff bar
-				if (cutout.left < 80
-						&& cutout.top < 10
-						&& cutout.right > 32
-						&& cutout.bottom > 11) {
-					buffBarTopRowMaxWidth = cutout.left - 32; //subtract starting position
-				}
-			}
-		}
-
-		float screentop = largeInsetTop;
-		if (screentop == 0 && uiSize == 0){
-			screentop--; //on mobile UI, if we render in fullscreen, clip the top 1px;
-		}
-
+		
 		menu = new MenuPane();
 		menu.camera = uiCamera;
-		menu.setPos( menuBarMaxLeft, screentop);
+		menu.setPos(menuBarMaxLeft, screentop);//changes in this line must be made in EditorScene as well…
 		add(menu);
-
-		float extraRight = uiCamera.width - (menuBarMaxLeft + MenuPane.WIDTH);
-		if (extraRight > 0){
-			SkinnedBlock bar = new SkinnedBlock(extraRight, 20, TextureCache.createSolid(0x88000000));
-			bar.x = uiCamera.width - extraRight;
-			bar.camera = uiCamera;
-			add(bar);
-
-			PointerArea blocker = new PointerArea(uiCamera.width - extraRight, 0, extraRight, 20);
-			blocker.camera = uiCamera;
-			add(blocker);
-		}
 
 		status = new StatusPane( SPDSettings.interfaceSize() > 0 );
 		status.camera = uiCamera;
-		StatusPane.hpBarMaxWidth = hpBarMaxWidth;
-		StatusPane.buffBarTopRowMaxWidth = buffBarTopRowMaxWidth;
+//		moved to DungeonScene#initBasics(): StatusPane.hpBarMaxWidth = hpBarMaxWidth;
+//		moved to DungeonScene#initBasics(): StatusPane.buffBarTopRowMaxWidth = buffBarTopRowMaxWidth;
 		status.setRect(insets.left, uiSize > 0 ? uiCamera.height-39-insets.bottom : screentop, uiCamera.width - insets.left - insets.right, 0 );
 		add(status);
 
 		if (Dungeon.isLevelTesting()) {
 			sideControlPane = new SideControlPane(false);
 			sideControlPane.camera = uiCamera;
-			sideControlPane.setPos(0, status.isLarge() ? (PixelScene.landscape() ? 5 : 10) : status.bottom() + (PixelScene.landscape() ? 5 : 10));
+			sideControlPane.setPos(insets.left, status.isLarge() ? (PixelScene.landscape() ? 5 : 10) : status.bottom() + (PixelScene.landscape() ? 5 : 10));
 			add(sideControlPane);
-		}
-
-		if (uiSize < 2 && largeInsetTop != 0) {
-			SkinnedBlock bar = new SkinnedBlock(uiCamera.width, largeInsetTop, TextureCache.createSolid(0x88000000));
-			bar.camera = uiCamera;
-			add(bar);
-
-			PointerArea blocker = new PointerArea(0, 0, uiCamera.width, largeInsetTop);
-			blocker.camera = uiCamera;
-			add(blocker);
 		}
 
 		boss = new BossHealthBar();
@@ -471,17 +395,6 @@ public class GameScene extends DungeonScene {
 			toolbar.setRect( insets.left, uiCamera.height - toolbar.height() - inventory.height() - insets.bottom, uiCamera.width - insets.right, toolbar.height() );
 		} else {
 			toolbar.setRect( insets.left, uiCamera.height - toolbar.height() - insets.bottom, uiCamera.width - insets.right, toolbar.height() );
-		}
-
-		if (insets.bottom > 0){
-			SkinnedBlock bar = new SkinnedBlock(uiCamera.width, insets.bottom, TextureCache.createSolid(0x88000000));
-			bar.camera = uiCamera;
-			bar.y = uiCamera.height - insets.bottom;
-			add(bar);
-
-			PointerArea blocker = new PointerArea(0, uiCamera.height - insets.bottom, uiCamera.width, insets.bottom);
-			blocker.camera = uiCamera;
-			add(blocker);
 		}
 		
 		layoutTags();
