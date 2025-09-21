@@ -84,7 +84,7 @@ public class MenuPane extends Component {
 		add(versionOverflowBG);
 
 		version = new BitmapText( "v" + Game.version , PixelScene.pixelFont);
-		version.alpha( 0.5f );
+		version.hardlight( 0xCACFC2 );
 		add(version);
 
 		if (Dungeon.level.feeling != null) {
