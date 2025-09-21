@@ -89,4 +89,8 @@ public class IconButton extends Button {
 	public Image icon(){
 		return icon;
 	}
+	
+	public void alpha(float alpha) {
+		icon.alpha(alpha);
+	}
 }

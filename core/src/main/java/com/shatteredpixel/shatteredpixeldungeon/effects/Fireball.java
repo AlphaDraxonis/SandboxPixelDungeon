@@ -138,6 +138,11 @@ public class Fireball extends Component {
 						(int) GameMath.gate(0, green + 30, 255) * 256 +
 						(int) GameMath.gate(0, blue + 40, 255);
 	}
+	
+	public void alpha(float alpha) {
+		bLight.am = alpha;
+		fLight.am = alpha;
+	}
 
 	public static class Flame extends Image {
 		
