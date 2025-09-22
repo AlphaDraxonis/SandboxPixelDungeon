@@ -332,7 +332,7 @@ public class GameScene extends DungeonScene {
 		add( cellSelector = new CellSelector( tiles[0] ) );
 
 		int uiSize = SPDSettings.interfaceSize();
-		
+
 		menu = new MenuPane();
 		menu.camera = uiCamera;
 		menu.setPos(menuBarMaxLeft, screentop);//changes in this line must be made in EditorScene as well…

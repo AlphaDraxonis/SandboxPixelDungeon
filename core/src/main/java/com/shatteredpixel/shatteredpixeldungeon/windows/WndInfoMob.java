@@ -35,92 +35,93 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.watabou.noosa.ui.Component;
 
 public class WndInfoMob extends WndTitledMessage {
+	
+	public WndInfoMob( Mob mob ) {
+		this(mob, Mimic.isLikeMob(mob));
+	}
+	
+	public WndInfoMob(Mob mob, boolean includeHealthBar) {
+		super(new MobTitle(mob, includeHealthBar), text(mob));
+	}
+	
+	public static String text(Mob mob) {
+		return mob.info() + (!mob.dialogs.isEmpty() ? "\n\n_" + Messages.get(ChangeMobCustomizable.class, "dialog_label") + ":_\n" + mob.dialogs.get(mob.nextDialog) : "");
+	}
+	
+	public static class MobTitle extends Component {
 
-    public WndInfoMob(Mob mob) {
-        this(mob, Mimic.isLikeMob(mob));
-    }
+		private static final int GAP	= 2;
+		
+		public CharSprite image;
+		private RenderedTextBlock name;
+		private HealthBar health;
+		private BuffIndicator buffs;
+		
+		public MobTitle( Mob mob, boolean includeHealthBar ) {
+			
+			name = PixelScene.renderTextBlock( createTitle(mob) + EditorUtilities.appendBoss(mob), 9 );
+			name.hardlight( TITLE_COLOR );
+			add( name );
+			
+			image = mob.createSprite();
+			add( image );
+			
+			if (includeHealthBar) {
+				health = new HealthBar();
+				health.level(mob);
+				add( health );
+			}
 
-    public WndInfoMob(Mob mob, boolean includeHealthBar) {
-        super(new MobTitle(mob, includeHealthBar), text(mob));
-    }
+			buffs = new BuffIndicator( mob, false );
+			buffs.visible = CustomDungeon.knowsEverything() || Mimic.isLikeMob(mob);
+			add( buffs );
+		}
+		
+		protected BuffIndicator createBuffIndicator( Mob mob, boolean large ){
+			return new BuffIndicator(mob,large);
+		}
+		
+		public String createTitle( Mob mob ){
+			return Messages.titleCase(mob.name());
+		}
+		
+		public void updateImageNoLayout( Mob mob ) {
+			if (image != null) {
+				image.remove();
+				image.destroy();
+			}
+			image = mob.createSprite();
+			add(image);
+		}
+		
+		@Override
+		protected void layout() {
+			
+			boolean hasHealth = health != null;
+			float heightHealth = hasHealth ? health.height() : 0;
+			
+			image.x = 0;
+			image.y = Math.max( 0, name.height() + heightHealth - image.height() );
 
-    public static String text(Mob mob) {
-        return mob.info() + (!mob.dialogs.isEmpty() ? "\n\n_" + Messages.get(ChangeMobCustomizable.class, "dialog_label") + ":_\n" + mob.dialogs.get(mob.nextDialog) : "");
-    }
+			float w = width - image.width() - GAP;
 
-    public static class MobTitle extends Component {
+			name.setPos(x + image.width() + GAP,
+					image.height() > name.height() ? y +(image.height() - name.height()) / 2 : y);
+			
+			if (hasHealth) {
+				health.setRect(image.width() + GAP, name.bottom() + GAP, w, health.height());
+			}
 
-        private static final int GAP = 2;
+			buffs.maxBuffs = 50; //infinite, effectively
+			buffs.setRect(name.right(), hasHealth ? name.bottom() - BuffIndicator.SIZE_SMALL - 2 : name.bottom() - BuffIndicator.SIZE_SMALL - 1, w - name.width(), 8);
 
-        public CharSprite image;
-        private RenderedTextBlock name;
-        private HealthBar health;
-        private BuffIndicator buffs;
-
-        public MobTitle(Mob mob, boolean includeHealthBar) {
-            name = PixelScene.renderTextBlock(createTitle(mob) + EditorUtilities.appendBoss(mob), 9);
-            name.hardlight(TITLE_COLOR);
-            add(name);
-
-            image = mob.createSprite();
-            add(image);
-
-            if (includeHealthBar) {
-                health = new HealthBar();
-                health.level(mob);
-                add(health);
-            }
-
-            buffs = createBuffIndicator(mob, false);
-            buffs.visible = CustomDungeon.knowsEverything() || Mimic.isLikeMob(mob);
-            add(buffs);
-        }
-
-        protected BuffIndicator createBuffIndicator(Mob mob, boolean large){
-            return new BuffIndicator(mob,large);
-        }
-
-        public String createTitle(Mob mob){
-            return Messages.titleCase(mob.name());
-        }
-        
-        public void updateImageNoLayout(Mob mob) {
-            if (image != null) {
-                image.remove();
-                image.destroy();
-            }
-            image = mob.createSprite();
-            add(image);
-        }
-
-        @Override
-        protected void layout() {
-
-            boolean hasHealth = health != null;
-            float heightHealth = hasHealth ? health.height() : 0;
-
-            float w = width - image.width() - GAP;
-            int extraBuffSpace = 0;
-
-            //Tries to make space for up to 11 visible buffs
-            do {
-                name.maxWidth((int) w - extraBuffSpace);
-                buffs.setSize(w - name.width() - 8, 8);
-                extraBuffSpace += 8;
-            } while (extraBuffSpace <= 40 && !buffs.allBuffsVisible());
-
-            name.setPos(x + image.width() + GAP,
-                    image.height() > name.height() ? y + (image.height() - name.height()) / 2 : y);
-
-            image.x = x;
-            image.y = y + Math.max(0, name.height() + heightHealth - image.height());
-
-            if (hasHealth)
-                health.setRect(image.width() + GAP, name.bottom() + GAP, w, health.height());
-
-            buffs.setPos(name.right(), hasHealth ? name.bottom() - BuffIndicator.SIZE_SMALL - 2 : name.bottom() - BuffIndicator.SIZE_SMALL - 1);
-
-			height = hasHealth ? Math.max(image.y + image.height(), health.bottom()) : name.bottom() + 2 * GAP;
+			//If buff bar doesn't have enough room, move it below
+			if (!buffs.allBuffsVisible()){
+				buffs.setRect(0, hasHealth ? health.bottom() : name.bottom(), width, 8);
+				height = Math.max(image.y + image.height(), buffs.bottom());
+			} else {
+				height = hasHealth ? Math.max(image.y + image.height(), health.bottom()) : name.bottom() + 2 * GAP;
+			}
 		}
 
         public void setText(String text) {
