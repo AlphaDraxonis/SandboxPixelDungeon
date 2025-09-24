@@ -399,27 +399,37 @@ public class GameScene extends DungeonScene {
 		}
 		
 		layoutTags();
-
-        switch (InterlevelScene.mode) {
-            case RESURRECT:
-                Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
-                ScrollOfTeleportation.appearVFX(Dungeon.hero);
-                SpellSprite.show(Dungeon.hero, SpellSprite.ANKH);
-                new Flare(5, 16).color(0xFFFF00, true).show(hero, 4f);
-                break;
-            case RETURN:
-                ScrollOfTeleportation.appearVFX(Dungeon.hero);
-                break;
-            case DESCEND:
-            case FALL:
+		
+		switch (InterlevelScene.mode) {
+			case RESURRECT:
+				Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
+				ScrollOfTeleportation.appearVFX( Dungeon.hero );
+				SpellSprite.show(Dungeon.hero, SpellSprite.ANKH);
+				new Flare( 5, 16 ).color( 0xFFFF00, true ).show( hero, 4f ) ;
+				break;
+			case RETURN:
+				if (Dungeon.level.pit[Dungeon.hero.pos] && !Dungeon.hero.flying){
+					//delay this so falling into the chasm processes properly
+					SandboxPixelDungeon.runOnRenderThread(new Callback() {
+						@Override
+						public void call() {
+							ScrollOfTeleportation.appearVFX(Dungeon.hero);
+						}
+					});
+				} else {
+					ScrollOfTeleportation.appearVFX(Dungeon.hero);
+				}
+				break;
+			case DESCEND:
+			case FALL:
 				if (Dungeon.levelName.equals(Dungeon.customDungeon.getStart())) {
 					Badges.validateHeroStart();
 				}
-                if (Dungeon.hero.isAlive()) {
-                    Badges.validateNoKilling();
-                }
-                break;
-        }
+				if (Dungeon.hero.isAlive()) {
+					Badges.validateNoKilling();
+				}
+				break;
+		}
 
 		ArrayList<Item> dropped = Dungeon.droppedItems.get( Dungeon.levelName );
 		if (dropped != null) {
