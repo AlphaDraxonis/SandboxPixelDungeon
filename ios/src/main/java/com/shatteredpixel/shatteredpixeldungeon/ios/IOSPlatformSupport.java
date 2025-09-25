@@ -36,7 +36,6 @@ import com.watabou.noosa.Game;
 import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.RectF;
 import org.robovm.apple.audiotoolbox.AudioServices;
-import org.robovm.apple.coregraphics.CGRect;
 import org.robovm.apple.systemconfiguration.SCNetworkReachability;
 import org.robovm.apple.systemconfiguration.SCNetworkReachabilityFlags;
 import org.robovm.apple.uikit.UIApplication;
@@ -58,6 +57,30 @@ public class IOSPlatformSupport extends PlatformSupport {
 	public boolean supportsFullScreen() {
 		//iOS supports drawing into the gesture safe area
 		return Gdx.graphics.getSafeInsetBottom() > 0;
+	}
+
+	@Override
+	public RectF getDisplayCutout() {
+		int topInset = Gdx.graphics.getSafeInsetTop();
+
+		//older device with no cutout, or landscape (we ignore cutouts in this case)
+		if (topInset == 0){
+			return new RectF();
+		}
+
+		//magic number BS for larger status bar caused by dynamic island
+		boolean hasDynamicIsland = topInset / Gdx.graphics.getBackBufferScale() >= 51;
+
+		if (!hasDynamicIsland){
+			//classic notch, just shrink for the oversized safe are and then return all top.
+			// this is inaccurate, as there's space left and right, but we don't care
+			return new RectF(0, 0, Game.width, topInset / 1.2f);
+		} else {
+			//we estimate dynamic island as being 130x390 px, 35px from top.
+			// this is mostly accurate, slightly oversized
+			RectF cutout = new RectF( Game.width/2 - 195, 35, Game.width/2 + 195, 165);
+			return cutout;
+		}
 	}
 
 	@Override
