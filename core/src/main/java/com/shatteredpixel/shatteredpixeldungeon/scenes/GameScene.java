@@ -342,7 +342,8 @@ public class GameScene extends DungeonScene {
 		status.camera = uiCamera;
 //		moved to DungeonScene#initBasics(): StatusPane.heroPaneExtraWidth = heroPaneExtraWidth;
 //		moved to DungeonScene#initBasics(): StatusPane.hpBarMaxWidth = hpBarMaxWidth;
-//		moved to DungeonScene#initBasics(): StatusPane.buffBarTopRowMaxWidth = buffBarTopRowMaxWidth;
+//		moved to DungeonScene#initBasics(): StatusPane.buffBarRowMaxWidths = buffBarRowLimits;
+//		moved to DungeonScene#initBasics(): StatusPane.buffBarRowAdjusts = buffBarRowAdjusts;
 		status.setRect(insets.left, uiSize > 0 ? uiCamera.height-39-insets.bottom : screentop, uiCamera.width - insets.left - insets.right, 0 );
 		add(status);
 
@@ -356,6 +357,13 @@ public class GameScene extends DungeonScene {
 		boss = new BossHealthBar();
 		boss.camera = uiCamera;
 		boss.setPos( (uiCamera.width - boss.width())/2, screentop + (landscape() ? 7 : 26));
+		if (buffBarRowLimits[2] != 0){
+			//if we potentially have a 3rd buff bar row, lower by 7px
+			boss.setPos(boss.left(), boss.top() + 7);
+		} else if (buffBarRowAdjusts[2] != 0){
+			//
+			boss.setPos(boss.left(), boss.top() + buffBarRowAdjusts[2]);
+		}
 		add(boss);
 
 		resume = new ResumeIndicator();
