@@ -1240,10 +1240,12 @@ public class GameScene extends DungeonScene {
 				@Override
 				public void call() {
 					//greater than 0 to account for negative values (which have the first bit set to 1)
-					if (color > 0 && color < 0x01000000) {
-						scene.fadeIn(0xFF000000 | color, lightmode);
-					} else {
-						scene.fadeIn(color, lightmode);
+					if (scene != null) {
+						if (color > 0 && color < 0x01000000) {
+							scene.fadeIn(0xFF000000 | color, lightmode);
+						} else {
+							scene.fadeIn(color, lightmode);
+						}
 					}
 				}
 			});
