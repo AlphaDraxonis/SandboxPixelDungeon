@@ -123,11 +123,9 @@ public class BossHealthBar extends Component {
         if (numBars > 0) {
             int numLayouted = 0;
             float posY = y;
-            if (numBars > 1) posY -= 8;
-            if (numBars > 2) posY -= 4;
             int gap = 4 / numBars;
             for (BossHealthBarComp bar : bars) {
-                if (numLayouted++ <= 4) {
+                if (numLayouted++ < 4) {
                     bar.visible = bar.active = true;
                     bar.setPos(x, posY);
                     posY += bar.height() + gap;
