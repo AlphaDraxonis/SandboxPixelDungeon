@@ -357,12 +357,11 @@ public class GameScene extends DungeonScene {
 		boss = new BossHealthBar();
 		boss.camera = uiCamera;
 		boss.setPos( (uiCamera.width - boss.width())/2, screentop + (landscape() ? 7 : 26));
-		if (buffBarRowLimits[2] != 0){
+		if (StatusPane.buffBarRowMaxWidths[2] != 0){
 			//if we potentially have a 3rd buff bar row, lower by 7px
 			boss.setPos(boss.left(), boss.top() + 7);
-		} else if (buffBarRowAdjusts[2] != 0){
-			//
-			boss.setPos(boss.left(), boss.top() + buffBarRowAdjusts[2]);
+		} else if (StatusPane.buffBarRowAdjusts[2] != 0){
+			boss.setPos(boss.left(), boss.top() + StatusPane.buffBarRowAdjusts[2]);
 		}
 		add(boss);
 
@@ -416,7 +415,7 @@ public class GameScene extends DungeonScene {
 				new Flare( 5, 16 ).color( 0xFFFF00, true ).show( hero, 4f ) ;
 				break;
 			case RETURN:
-				if (Dungeon.level.pit[Dungeon.hero.pos] && !Dungeon.hero.flying){
+				if (Dungeon.level.pit[Dungeon.hero.pos] && !Dungeon.hero.isFlying()){
 					//delay this so falling into the chasm processes properly
 					SandboxPixelDungeon.runOnRenderThread(new Callback() {
 						@Override

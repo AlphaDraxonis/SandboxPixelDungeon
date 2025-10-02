@@ -80,7 +80,6 @@ import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.Point;
@@ -213,42 +212,62 @@ public abstract class DungeonScene extends PixelScene {
 		
 		int uiSize = SPDSettings.interfaceSize();
 		
+		//WARNING: make sure menuBarMaxLeft and screentop are NO LOCAL VARIABLES!
+		
 		//display cutouts can obstruct various UI elements, so we need to adjust for that sometimes
-		menuBarMaxLeft = uiCamera.width-insets.right- MenuPane.WIDTH;
+		float heroPaneExtraWidth = insets.left;
+		menuBarMaxLeft = uiCamera.width-insets.right-MenuPane.WIDTH;
 		int hpBarMaxWidth = 50; //default max width
-		float buffBarTopRowMaxWidth = 50; //default max width
-		if (largeInsetTop != insets.top){
-			//iOS's Dynamic island badly obstructs the first buff bar row
-			if (DeviceCompat.isiOS()){
-				//TODO bad to hardcode and approximate this atm
-				// need to change this so iOS platformsupport returns cutout dimensions
-				float cutoutLeft = (Game.width*0.3f)/defaultZoom;
-				buffBarTopRowMaxWidth = Math.min(50, cutoutLeft - 32);
-			} else if (DeviceCompat.isAndroid()) {
-				//Android hole punches are of varying size and may obstruct the menu, HP bar, or buff bar
-				RectF cutout = Game.platform.getDisplayCutout().scale(1f / defaultZoom);
-				//if the cutout is positioned to obstruct the menu bar
-				if (cutout.top < 20
-						&& cutout.left < menuBarMaxLeft + MenuPane.WIDTH
-						&& cutout.right > menuBarMaxLeft) {
-					menuBarMaxLeft = Math.min(menuBarMaxLeft, cutout.left - MenuPane.WIDTH);
-					//make sure we have space to actually move it though
-					menuBarMaxLeft = Math.max(menuBarMaxLeft, PixelScene.MIN_WIDTH_P-MenuPane.WIDTH);
-				}
-				//if the cutout is positioned to obstruct the HP bar
-				if (cutout.left < 78
-						&& cutout.top < 4
-						&& cutout.right > 32) {
-					//subtract starting position, but add a bit back due to end of bar
-					hpBarMaxWidth = Math.round(cutout.left - 32 + 4);
-					hpBarMaxWidth = Math.max(hpBarMaxWidth, 21); //cannot go below 21 (30 effective)
-				}
-				//if the cutout is positioned to obstruct the buff bar
-				if (cutout.left < 80
-						&& cutout.top < 10
-						&& cutout.right > 32
-						&& cutout.bottom > 11) {
-					buffBarTopRowMaxWidth = cutout.left - 32; //subtract starting position
+		float[] buffBarRowLimits = new float[9];
+		float[] buffBarRowAdjusts = new float[9];
+		
+		if (largeInsetTop == 0 && insets.top > 0){
+			//smaller non-notch cutouts are of varying size and may obstruct various UI elements
+			// some are small hole punches, some are huge dynamic islands
+			RectF cutout = Game.platform.getDisplayCutout().scale(1f / defaultZoom);
+			//if the cutout is positioned to obstruct the hero portrait in the status pane
+			if (cutout.top < 30
+					&& cutout.left < 20
+					&& cutout.right > 12) {
+				heroPaneExtraWidth = Math.max(heroPaneExtraWidth, cutout.right-12);
+				//make sure we have space to actually move it though
+				heroPaneExtraWidth = Math.min(heroPaneExtraWidth, uiCamera.width - PixelScene.MIN_WIDTH_P);
+			}
+			//if the cutout is positioned to obstruct the menu bar
+			else if (cutout.top < 20
+					&& cutout.left < menuBarMaxLeft + MenuPane.WIDTH
+					&& cutout.right > menuBarMaxLeft) {
+				menuBarMaxLeft = Math.min(menuBarMaxLeft, cutout.left - MenuPane.WIDTH);
+				//make sure we have space to actually move it though
+				menuBarMaxLeft = Math.max(menuBarMaxLeft, PixelScene.MIN_WIDTH_P-MenuPane.WIDTH);
+			}
+			//if the cutout is positioned to obstruct the HP bar
+			else if (cutout.left < 78
+					&& cutout.top < 4
+					&& cutout.right > 32) {
+				//subtract starting position, but add a bit back due to end of bar
+				hpBarMaxWidth = Math.round(cutout.left - 32 + 4);
+				hpBarMaxWidth = Math.max(hpBarMaxWidth, 21); //cannot go below 21 (30 effective)
+			}
+			//if the cutout is positioned to obstruct the buff bar
+			if (cutout.left < 84
+					&& cutout.top < 10
+					&& cutout.right > 32
+					&& cutout.bottom > 11) {
+				int i = 1;
+				int rowTop = 11;
+				//in most cases this just obstructs one row, but dynamic island can block more =S
+				while (cutout.bottom > rowTop){
+					if (i == 1 || cutout.bottom > rowTop+2 ) { //always shorten first row
+						//subtract starting position, add a bit back to allow slight overlap
+						buffBarRowLimits[i] = cutout.left - 32 + 3;
+					} else {
+						//if row is only slightly cut off, lower it instead of limiting width
+						buffBarRowAdjusts[i] = cutout.bottom - rowTop + 1;
+						rowTop += buffBarRowAdjusts[i];
+					}
+					i++;
+					rowTop += 8;
 				}
 			}
 		}
@@ -291,8 +310,10 @@ public abstract class DungeonScene extends PixelScene {
 			add(blocker);
 		}
 		
+		StatusPane.heroPaneExtraWidth = heroPaneExtraWidth;
 		StatusPane.hpBarMaxWidth = hpBarMaxWidth;
-		StatusPane.buffBarTopRowMaxWidth = buffBarTopRowMaxWidth;
+		StatusPane.buffBarRowMaxWidths = buffBarRowLimits;
+		StatusPane.buffBarRowAdjusts = buffBarRowAdjusts;
 	}
 
 	protected abstract void initAndAddDungeonTilemap();
