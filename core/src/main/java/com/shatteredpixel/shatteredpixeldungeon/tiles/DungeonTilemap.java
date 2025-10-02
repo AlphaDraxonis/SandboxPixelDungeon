@@ -29,7 +29,6 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.tweeners.AlphaTweener;
-import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.PointF;
 
@@ -94,14 +93,37 @@ public abstract class DungeonTilemap extends Tilemap {
 		return screenToTile(x, y, false);
 	}
 	
+	private static final float BORDER_SNAPPING = 0.5f;
+	
 	public int screenToTile(int x, int y, boolean wallAssist ) {
 		PointF p = camera().screenToCamera( x, y ).
 				offset( this.point().negate() ).
 				invScale( SIZE );
 		
-		//snap to the edges of the tilemap
-		p.x = GameMath.gate(0, p.x, Dungeon.level.width()-0.001f);
-		p.y = GameMath.gate(0, p.y, Dungeon.level.height()-0.001f);
+		//snap to the edges of the tilemap:
+//		p.x = GameMath.gate(0, p.x, Dungeon.level.width()-0.001f);
+//		p.y = GameMath.gate(0, p.y, Dungeon.level.height()-0.001f);
+		//DON’T snap to the edges of the tilemap:
+		if (p.x < 0) {
+			if (p.x >= -BORDER_SNAPPING) p.x = 0;
+			else return -1;
+		} else {
+			float maxW = Dungeon.level.width() - 0.001f;
+			if (p.x > maxW) {
+				if (p.x < maxW + BORDER_SNAPPING) p.x = maxW;
+				else return -1;
+			}
+		}
+		if (p.y < 0) {
+			if (p.y >= -BORDER_SNAPPING) p.y = 0;
+			else return -1;
+		} else {
+			float maxH = Dungeon.level.height() - 0.001f;
+			if (p.y > maxH) {
+				if (p.y < maxH + BORDER_SNAPPING) p.y = maxH;
+				else return -1;
+			}
+		}
 		
 		int cell = (int)p.x + (int)p.y * Dungeon.level.width();
 		
