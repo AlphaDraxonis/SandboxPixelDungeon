@@ -160,7 +160,7 @@ public class Ring extends KindofMisc {
 	
 	public void setKnown() {
 		if (!anonymous) {
-			if (!isKnown()) {
+			if (!isKnown() && handler != null) {
 				handler.know(this);
 			}
 

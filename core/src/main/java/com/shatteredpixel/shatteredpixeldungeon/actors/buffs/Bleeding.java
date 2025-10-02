@@ -94,6 +94,7 @@ public class Bleeding extends BuffWithDuration {
 		if (target.isAlive()) {
 			
 			if (!permanent) left = Random.NormalFloat(left / 2f, left);
+			else left = Math.max(1, left);
 			int dmg = Math.round(left);
 			
 			if (dmg > 0) {

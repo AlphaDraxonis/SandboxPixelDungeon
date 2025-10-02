@@ -55,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -1252,7 +1253,8 @@ public abstract class Char extends Actor {
 		if (buff(PotionOfCleansing.Cleanse.class) != null) { //cleansing buff
 			if (buff.type == Buff.buffType.NEGATIVE
 					&& !(buff instanceof AllyBuff)
-					&& !(buff instanceof LostInventory)){
+					&& !(buff instanceof LostInventory)
+					&& !CustomDungeon.isEditing()){
 				return false;
 			}
 		}

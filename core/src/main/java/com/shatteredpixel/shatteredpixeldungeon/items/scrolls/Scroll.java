@@ -217,7 +217,7 @@ public abstract class Scroll extends Item {
 	
 	public void setKnown() {
 		if (!anonymous) {
-			if (!isKnown()) {
+			if (!isKnown() && handler != null) {
 				handler.know(this);
 				updateQuickslot();
 			}

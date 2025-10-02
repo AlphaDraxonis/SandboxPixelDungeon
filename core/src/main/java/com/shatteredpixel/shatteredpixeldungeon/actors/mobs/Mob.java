@@ -1113,6 +1113,9 @@ public abstract class Mob extends Char implements Customizable {
 
 	@Override
 	public boolean isImmune(Class effect) {
+		if (CustomDungeon.isEditing()) {
+			return false;//not immune to anything
+		}
 		if (effect == Burning.class
 				&& glyphArmor != null
 				&& glyphArmor.hasGlyph(Brimstone.class, this)){
