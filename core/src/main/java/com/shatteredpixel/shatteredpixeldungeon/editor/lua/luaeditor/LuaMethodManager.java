@@ -274,7 +274,8 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(2212, Item.class.getMethod("glowing"));
 			addMethod(2213, Item.class.getMethod("value"));
 			addMethod(2214, Item.class.getMethod("energyVal"));
-			addMethod(2215, Item.class.getMethod("status"));
+			addMethod(2215, Item.class.getMethod("pickupDelay"));
+			addMethod(2216, Item.class.getMethod("status"));
 
 			addMethod(2130, EquipableItem.class.getMethod("doEquip", Hero.class), "hero");
 			addMethod(2131, EquipableItem.class.getMethod("doUnequip", Hero.class, boolean.class), "hero", "collect");
