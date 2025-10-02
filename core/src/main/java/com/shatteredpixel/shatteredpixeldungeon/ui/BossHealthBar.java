@@ -203,7 +203,7 @@ public class BossHealthBar extends Component {
 		add(buffs);
 
 		if (boss != null && large) {
-			skull = boss.sprite();
+			skull = boss.createSprite();
 		} else {
 			skull = new Image(asset, 64, 0, 6, 6);
 		}
