@@ -55,7 +55,7 @@ public class ScrollHolder extends Bag {
 	public void onDetach( ) {
 		super.onDetach();
 		for (Item item : items) {
-			if (item instanceof BeaconOfReturning) {
+			if (item instanceof BeaconOfReturning && !((BeaconOfReturning) item).returnLevel.equals(Level.SURFACE)) {
 				Notes.remove(Notes.Landmark.BEACON_LOCATION, ((BeaconOfReturning) item).returnLevel);
 				((BeaconOfReturning) item).returnLevel = Level.SURFACE;
 			}
