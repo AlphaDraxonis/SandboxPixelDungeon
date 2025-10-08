@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LifeLink;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.ClericSpell;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
@@ -615,6 +616,9 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		//Lightning has custom logic so that chaining it doesn't DQ for the badge
 		} else if (src instanceof Wand && !(src instanceof WandOfLightning)){
 			Statistics.qualifiedForBossChallengesBadge[3] = false;
+		//Only damage-dealing spells from the Cleric
+		} else if (src instanceof ClericSpell){
+			Statistics.qualifiedForBossChallengeBadge[3] = false;
 		}
 
 		if (isInvulnerable(src.getClass())){
