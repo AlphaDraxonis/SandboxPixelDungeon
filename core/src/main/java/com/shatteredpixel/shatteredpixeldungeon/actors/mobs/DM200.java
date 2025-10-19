@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
@@ -170,6 +171,11 @@ public class DM200 extends DMMob {
 			if (!enemyInFOV || (canAttack(enemy) && enemy.invisible <= 0)) {
 				return super.act(enemyInFOV, justAlerted);
 			} else {
+
+				if (handleRecentAttackers()){
+					return act( true, justAlerted );
+				}
+
 				enemySeen = true;
 				target = enemy.pos;
 
@@ -186,6 +192,18 @@ public class DM200 extends DMMob {
 					return doRangedAttack();
 
 				} else {
+					//attempt to swap targets if the current one can't be reached or vented at
+					if (!recursing) {
+						Char oldEnemy = enemy;
+						enemy = null;
+						enemy = chooseEnemy();
+						if (enemy != null && enemy != oldEnemy) {
+							recursing = true;
+							boolean result = act(enemyInFOV, justAlerted);
+							recursing = false;
+							return result;
+						}
+					}
 					spend( TICK );
 					return true;
 				}

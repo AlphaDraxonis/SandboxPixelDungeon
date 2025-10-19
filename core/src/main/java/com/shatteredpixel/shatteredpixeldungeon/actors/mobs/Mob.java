@@ -1906,22 +1906,8 @@ public abstract class Mob extends Char implements Customizable {
 
 				//if we cannot attack our target, but were hit by something else that
 				// is visible and attackable or closer, swap targets
-				if (!recentlyAttackedBy.isEmpty()){
-					boolean swapped = false;
-					for (Char ch : recentlyAttackedBy){
-						if (ch != null && ch.isActive() && Actor.chars().contains(ch) && alignment != ch.alignment && fieldOfView[ch.pos] && ch.invisible == 0 && !isCharmedBy(ch)) {
-							if (canAttack(ch) || enemy == null || Dungeon.level.distance(pos, ch.pos) < Dungeon.level.distance(pos, enemy.pos)) {
-								enemy = ch;
-								target = ch.pos;
-								enemyInFOV = true;
-								swapped = true;
-							}
-						}
-					}
-					recentlyAttackedBy.clear();
-					if (swapped){
-						return act( enemyInFOV, justAlerted );
-					}
+				if (handleRecentAttackers()){
+					return act( true, justAlerted );
 				}
 
 				if (enemyInFOV) {
@@ -1981,6 +1967,23 @@ public abstract class Mob extends Char implements Customizable {
 			sprite.showLost();
 			state = WANDERING;
 			target = following ? Dungeon.hero.pos : ((Wandering)WANDERING).randomDestination();
+		}
+
+		protected boolean handleRecentAttackers(){
+			boolean swapped = false;
+			if (!recentlyAttackedBy.isEmpty()){
+				for (Char ch : recentlyAttackedBy){
+					if (ch != null && ch.isActive() && Actor.chars().contains(ch) && alignment != ch.alignment && fieldOfView[ch.pos] && ch.invisible == 0 && !isCharmedBy(ch)) {
+						if (canAttack(ch) || enemy == null || Dungeon.level.distance(pos, ch.pos) < Dungeon.level.distance(pos, enemy.pos)) {
+							enemy = ch;
+							target = ch.pos;
+							swapped = true;
+						}
+					}
+				}
+				recentlyAttackedBy.clear();
+			}
+			return swapped;
 		}
 	}
 
