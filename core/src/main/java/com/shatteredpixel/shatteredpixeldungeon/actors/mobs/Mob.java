@@ -1884,9 +1884,6 @@ public abstract class Mob extends Char implements Customizable {
 
 		public static final String TAG	= "HUNTING";
 
-		//prevents rare infinite loop cases
-		protected boolean recursing = false;
-
 		@Override
 		public boolean act( boolean enemyInFOV, boolean justAlerted ) {
 			enemySeen = enemyInFOV;
@@ -1926,47 +1923,9 @@ public abstract class Mob extends Char implements Customizable {
 
 				} else {
 
-					ArrowCell arrowCell = Dungeon.level.arrowCells.get(pos);
-					if (arrowCell != null && !arrowCell.allowsWaiting(Mob.this)) {
-						List<Integer> candidates = new ArrayList<>();
-						for (int i : PathFinder.NEIGHBOURS8) {
-							if (arrowCell.allowsDirectionLeaving(i, Mob.this) && cellIsPathable(pos + i)) {
-								candidates.add(pos + i);
-							}
-						}
-						if (!candidates.isEmpty() && getCloser(Random.element(candidates))) {
-							spend( 1 / speed() );
-							return moveSprite( oldPos,  pos );
-						}
-					}
-
-					//if moving towards an enemy isn't possible, try to switch targets to another enemy that is closer
-					//unless we have already done that and still can't move toward them, then move on.
-					if (!recursing) {
-						Char oldEnemy = enemy;
-						enemy = null;
-						enemy = chooseEnemy();
-						if (enemy != null && enemy != oldEnemy) {
-							recursing = true;
-							boolean result = act(enemyInFOV, justAlerted);
-							recursing = false;
-							return result;
-						}
-					}
-
-					spend( TICK );
-					if (!enemyInFOV) {
-						looseEnemy();
-					}
-					return true;
+					return handleUnreachableTarget(enemyInFOV, justAlerted);
 				}
 			}
-		}
-
-		protected void looseEnemy(){
-			sprite.showLost();
-			state = WANDERING;
-			target = following ? Dungeon.hero.pos : ((Wandering)WANDERING).randomDestination();
 		}
 
 		protected boolean handleRecentAttackers(){
@@ -1985,6 +1944,53 @@ public abstract class Mob extends Char implements Customizable {
 			}
 			return swapped;
 		}
+
+		//prevents rare infinite loop cases
+		protected boolean recursing = false;
+
+		//Try to switch targets to another enemy that is closer or reachable
+		//unless we have already done that and still can't move toward them, then move on.
+		protected boolean handleUnreachableTarget(boolean enemyInFOV, boolean justAlerted){
+			if (!recursing) {
+				Char oldEnemy = enemy;
+				enemy = null;
+				enemy = chooseEnemy();
+				if (enemy != null && enemy != oldEnemy) {
+					recursing = true;
+					boolean result = act(enemyInFOV, justAlerted);
+					recursing = false;
+					return result;
+				}
+			}
+			
+			//if we are on an ArrowCell that disallows waiting:
+			ArrowCell arrowCell = Dungeon.level.arrowCells.get(pos);
+			if (arrowCell != null && !arrowCell.allowsWaiting(Mob.this)) {
+				List<Integer> candidates = new ArrayList<>();
+				for (int i : PathFinder.NEIGHBOURS8) {
+					if (arrowCell.allowsDirectionLeaving(i, Mob.this) && cellIsPathable(pos + i)) {
+						candidates.add(pos + i);
+					}
+				}
+				int oldPos = pos;
+				if (!candidates.isEmpty() && getCloser(Random.element(candidates))) {
+					spend( 1 / speed() );
+					return moveSprite( oldPos,  pos );
+				}
+			}
+
+			spend( TICK );
+			if (!enemyInFOV) {
+				looseEnemy();
+			}
+			return true;
+		}
+	}
+	
+	protected void looseEnemy(){
+		sprite.showLost();
+		state = WANDERING;
+		target = following ? Dungeon.hero.pos : ((Wandering)WANDERING).randomDestination();
 	}
 
 	protected class Fleeing implements AiState {

@@ -215,8 +215,6 @@ public class Guard extends Mob {
 					&& !canAttack( enemy )
 					&& Dungeon.level.distance( pos, enemy.pos ) < 5
 					&& enemy.invisible <= 0
-
-					
 					&& chain(enemy.pos)){
 				return !(sprite.visible || enemy.sprite.visible);
 			} else {
