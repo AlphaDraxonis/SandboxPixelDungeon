@@ -111,7 +111,7 @@ public class CityLevel extends RegularLevel {
 				2, 2, 2, 2,
 				1, 1, 1, 1, 1, 1, 1, 1 };
 	}
-
+	
 	@Override
 	public String tileName( int tile ) {
 		switch (tile) {

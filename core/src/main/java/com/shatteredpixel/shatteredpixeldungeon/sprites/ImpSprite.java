@@ -22,8 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.watabou.noosa.TextureFilm;
 
@@ -58,15 +56,6 @@ public class ImpSprite extends MobSprite {
 		attack.frames(frames, 4, 4, 2, 1);
 	}
 
-	@Override
-	public void link( Char ch ) {
-		super.link( ch );
-		
-		if (ch instanceof Imp) {
-			alpha( 0.5f );
-		}
-	}
-	
 	@Override
 	public void onComplete( Animation anim ) {
 		if (anim == die) {

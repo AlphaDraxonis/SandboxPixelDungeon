@@ -260,10 +260,9 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 	public SparseArray<Barrier> barriers;
 	public SparseArray<ArrowCell> arrowCells;
 	public SparseArray<Checkpoint> checkpoints;
-	public HashSet<CustomTilemap> customTiles;
-	public HashSet<CustomTilemap> customWalls;
+	public ArrayList<CustomTilemap> customTiles;
+	public ArrayList<CustomTilemap> customWalls;
 	public SparseArray<CoinDoor> coinDoors;
-
 	protected ArrayList<Item> itemsToSpawn = new ArrayList<>();
 
 	protected Group visuals;
@@ -441,10 +440,9 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 			barriers = new SparseArray<>();
 			arrowCells = new SparseArray<>();
 			checkpoints = new SparseArray<>();
-			customTiles = new HashSet<>();
-			customWalls = new HashSet<>();
+			customTiles = new ArrayList<>();
+			customWalls = new ArrayList<>();
 			coinDoors = new SparseArray<>();
-
 		} while (!build());
 		
 		buildFlagMaps();
@@ -667,10 +665,9 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		barriers = new SparseArray<>();
 		arrowCells = new SparseArray<>();
 		checkpoints = new SparseArray<>();
-		customTiles = new HashSet<>();
-		customWalls = new HashSet<>();
+		customTiles = new ArrayList<>();
+		customWalls = new ArrayList<>();
 		coinDoors = new SparseArray<>();
-
 		map		= bundle.getIntArray( MAP );
 
 		if (initForPlayCalled) {
