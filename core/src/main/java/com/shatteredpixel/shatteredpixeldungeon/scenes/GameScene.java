@@ -176,7 +176,6 @@ public class GameScene extends DungeonScene {
 	private GameLog log;
 	public static List<String> errorMsg = new ArrayList<>();
 
-
 	private static boolean invVisible = true;
 
 	private Toolbar toolbar;
@@ -191,7 +190,6 @@ public class GameScene extends DungeonScene {
 	}
 
 	private static PointF mainCameraPos;
-
 	@Override
 	public void create() {
 
@@ -406,7 +404,7 @@ public class GameScene extends DungeonScene {
 		}
 		
 		layoutTags();
-		
+
 		switch (InterlevelScene.mode) {
 			case RESURRECT:
 				Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
@@ -773,7 +771,7 @@ public class GameScene extends DungeonScene {
 						Actor.process();
 					}
 				};
-				
+
 				//if cpu cores are limited, game should prefer drawing the current frame
 				if (Runtime.getRuntime().availableProcessors() == 1) {
 					actorThread.setPriority(Thread.NORM_PRIORITY - 1);
@@ -928,7 +926,13 @@ public class GameScene extends DungeonScene {
 		mob.updateSpriteVisibility();
 		sortMobSprites();
 	}
-
+	
+	//FIXME added a sync check here in v3.2.5, which caused deadlocks
+	// what I really need to do is have these queue additions that then happen on render thread
+	// this can also apply to adding mob sprites
+	//private void addHeapSprite( Heap heap ) {
+	
+	
 	@Override
 	protected synchronized void prompt(Component newPrompt) {
 
@@ -1163,7 +1167,7 @@ public class GameScene extends DungeonScene {
 			scene.terrainFeatures.growPlant( cell );
 		}
 	}
-	
+
 	public static void discoverTile( int pos, int oldValue ) {
 		if (scene != null) {
 			for (int i = 1; i < 6; i++) {
@@ -1370,7 +1374,7 @@ public class GameScene extends DungeonScene {
 				return wnd;
 			}
 		}
-		
+
 		return null;
 	}
 

@@ -477,14 +477,14 @@ public abstract class DungeonScene extends PixelScene {
 		Dungeon.level.customWalls.removeAll(toRemove);
 	}
 
-	protected synchronized void addHeapSprite(Heap heap) {
+	protected void addHeapSprite(Heap heap) {
 		heap.sprite = (ItemSprite) heaps.recycle(ItemSprite.class);
 		heap.sprite.revive();
 		heap.linkSprite(heap);
 		heap.addHeapComponents(heaps);
 	}
 
-	protected synchronized void addDiscardedSprite(Heap heap) {
+	protected void addDiscardedSprite(Heap heap) {
 		heap.sprite = (DiscardedItemSprite) heaps.recycle(DiscardedItemSprite.class);
 		heap.sprite.revive();
 		heap.linkSprite(heap);
@@ -514,13 +514,13 @@ public abstract class DungeonScene extends PixelScene {
 		heap.sprite.place(heap.pos);
 	}
 
-	protected synchronized void addBlobSprite( final Blob gas ) {
+	protected void addBlobSprite( final Blob gas ) {
 		if (gas.emitter == null) {
 			gases.add( new BlobEmitter( gas ) );
 		}
 	}
 
-	protected synchronized void addParticleSprite(final CustomParticle particle) {
+	protected void addParticleSprite(final CustomParticle particle) {
 		if (particle.emitter == null) {
 			gases.add(new CustomParticle.ParticleEmitter(particle));
 		}
