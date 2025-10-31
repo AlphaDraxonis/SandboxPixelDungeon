@@ -104,6 +104,7 @@ public class WndOptions extends Window {
 			};
 			Image icon = getIcon(i);
 			if (icon != null) buttons[i].icon(icon);
+			buttons[i].multiline = true;
 			buttons[i].enable(enabled(i));
 			buttonsComp.add( buttons[i] );
 			
