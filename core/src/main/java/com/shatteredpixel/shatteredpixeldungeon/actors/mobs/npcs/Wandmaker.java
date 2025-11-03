@@ -154,14 +154,22 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 		if (roomEntrance == null) {
 			roomEntrance = rooms.get(Random.Int(rooms.size()));
 		}
-
+		
+		
+		
 		boolean validPos;
-		int tries = level.length();
-		//Do not spawn wandmaker on the entrance, a trap, or on bad terrain.
+		//Do not spawn wandmaker on the entrance, in front of a door, or on bad terrain.
+		int tries = 0;
+		int dist = 2;
+		int maxTries = level.length() * 2;
 		do {
 			validPos = true;
-			pos = level.pointToCell(roomEntrance.random((roomEntrance.width() > 6 && roomEntrance.height() > 6) ? 2 : 1));
-			if (pos == level.entrance() || level.solid[pos]) {
+			if (tries > 30 && dist > 0){
+				tries = 0;
+				dist--;
+			}
+			pos = level.pointToCell(roomEntrance.random(dist));
+			if (pos == level.entrance() || level.solid[pos]){
 				validPos = false;
 			}
 			for (int i : PathFinder.NEIGHBOURS4){
@@ -171,12 +179,13 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 			}
 			if (level.traps.get(pos) != null
 					|| !level.isPassable(pos, this)
-					|| level.map[pos] == Terrain.EMPTY_SP) {
+					|| level.map[pos] == Terrain.EMPTY_SP){
 				validPos = false;
 			}
-			tries--;
+			tries++;
 			if (!validPos) pos = -1;
-		} while (pos == -1 && tries > 0);
+		} while (pos == -1 && tries < maxTries);
+		
 		if (pos != -1) level.mobs.add(this);
 	}
 
