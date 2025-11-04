@@ -248,7 +248,7 @@ public class CrystalPathRoom extends SpecialRoom {
 		level.drop(potions.remove(0), shuffle == 1 ? prize1 : prize2).autoExplored = true;
 		level.drop(scrolls.remove(0), shuffle == 1 ? prize2 : prize1).autoExplored = true;
 
-		entrance().set( Door.Type.UNLOCKED );
+		entrance().set( Door.Type.REGULAR );
 
 	}
 

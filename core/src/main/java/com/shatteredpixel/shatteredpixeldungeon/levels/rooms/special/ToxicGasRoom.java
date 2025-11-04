@@ -129,7 +129,7 @@ public class ToxicGasRoom extends SpecialRoom {
 		spawnItemsInRoom.addAll(spawnsInChest);
 		placeItemsAnywhere(level);
 
-		entrance().set( Door.Type.UNLOCKED );
+		entrance().set( Door.Type.REGULAR );
 
 	}
 
