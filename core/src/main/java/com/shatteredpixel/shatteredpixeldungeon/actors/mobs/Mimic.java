@@ -201,6 +201,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 		if (alignment == Alignment.NEUTRAL){
 			alignment = Alignment.ENEMY;
 			Dungeon.hero.spendAndNext(1f);
+			enemySeen = true;
 		}
 	}
 
