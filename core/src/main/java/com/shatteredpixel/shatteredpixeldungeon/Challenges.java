@@ -38,6 +38,7 @@ public class Challenges {
 	public static final int STRONGER_BOSSES 	= 256;
 
 	public static final int MAX_VALUE           = 511;
+	public static final int MAX_CHALS           = 9;
 
 	public static final String[] NAME_IDS = {
 			"champion_enemies",
@@ -56,12 +57,16 @@ public class Challenges {
 	};
 
 	public static int activeChallenges(){
+		return activeChallenges(Dungeon.challenges);
+	}
+
+	public static int activeChallenges(int mask){
 		if (CustomDungeon.isEditing()) {
 			return 0;
 		}
 		int chCount = 0;
 		for (int ch : Challenges.MASKS){
-			if ((Dungeon.challenges & ch) != 0) chCount++;
+			if ((mask & ch) != 0) chCount++;
 		}
 		return chCount;
 	}
