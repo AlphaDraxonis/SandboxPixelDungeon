@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.levels.VaultLevel;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.SparseArray;
@@ -220,7 +221,7 @@ public abstract class Actor extends GameObject {
 			a.time -= min;
 		}
 
-		if (Dungeon.hero != null && all.contains( Dungeon.hero )) {
+		if (Dungeon.hero != null && all.contains( Dungeon.hero ) && !(Dungeon.level instanceof VaultLevel)) {
 			Statistics.duration += min;
 		}
 		now -= min;
