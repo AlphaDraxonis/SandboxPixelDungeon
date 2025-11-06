@@ -70,6 +70,7 @@ public class Statistics {
 	public static boolean completedWithNoKilling = false;
 	public static String qualifiedForBossRemainsBadge = null;
 	public static boolean[] qualifiedForBossChallengesBadge = new boolean[5];
+	public static boolean qualifiedForRandomVictoryBadge = false;
 	
 	public static boolean amuletObtained = false;
 	public static boolean gameWon = false;
@@ -112,6 +113,7 @@ public class Statistics {
 		qualifiedForNoKilling = false;
 		qualifiedForBossRemainsBadge = null;
 		Arrays.fill(qualifiedForBossChallengesBadge, false);
+		qualifiedForRandomVictoryBadge = GamesInProgress.randomizedClass;
 		
 		amuletObtained = false;
 		gameWon = false;
@@ -156,6 +158,7 @@ public class Statistics {
 	private static final String NO_KILLING_QUALIFIED	= "qualifiedForNoKilling";
 	private static final String BOSS_REMAINS_QUALIFIED	= "qualifiedForBossRemainsBadge";
 	private static final String BOSS_CHALLENGES_QUALIFIED = "qualifiedForBossChallengesBadge";
+	private static final String RANDOM_VICTORY_QUALIFIED= "qualifiedForRandomVictory";
 	
 	private static final String AMULET          = "amuletObtained";
 	private static final String WON		        = "won";
@@ -201,6 +204,7 @@ public class Statistics {
 		bundle.put(NO_KILLING_QUALIFIED, qualifiedForNoKilling);
 		bundle.put(BOSS_REMAINS_QUALIFIED, qualifiedForBossRemainsBadge);
 		bundle.put(BOSS_CHALLENGES_QUALIFIED, qualifiedForBossChallengesBadge);
+		bundle.put(RANDOM_VICTORY_QUALIFIED, qualifiedForRandomVictoryBadge);
 		
 		bundle.put( AMULET,		amuletObtained );
 		bundle.put( WON,        gameWon );
@@ -263,6 +267,7 @@ public class Statistics {
 		qualifiedForBossRemainsBadge = bundle.getString( BOSS_REMAINS_QUALIFIED );
 		if (bundle.contains(BOSS_CHALLENGES_QUALIFIED)) qualifiedForBossChallengesBadge = bundle.getBooleanArray( BOSS_CHALLENGES_QUALIFIED );
 		else                                			qualifiedForBossChallengesBadge = new boolean[5];
+		qualifiedForRandomVictoryBadge = bundle.getBoolean( RANDOM_VICTORY_QUALIFIED );
 		
 		amuletObtained	= bundle.getBoolean( AMULET );
 		gameWon         = bundle.getBoolean( WON );
