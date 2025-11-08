@@ -163,7 +163,8 @@ public final class Traps extends GameObjectCategory<Trap> {
                     RageTrap.class,
                     ActionTrap.class,
                     SummoningTrap.class,
-                    DistortionTrap.class
+                    DistortionTrap.class,
+                    PressurePlateTrap.class
             });
         }
     }

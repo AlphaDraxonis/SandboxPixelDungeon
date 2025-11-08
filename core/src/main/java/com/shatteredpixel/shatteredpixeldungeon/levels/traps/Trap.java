@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -136,7 +137,18 @@ public abstract class Trap extends GameObject {
 	}
 
 	public Image getSprite() {
-		return EditorUtilities.getTerrainFeatureTexture((active ? color : Trap.BLACK) + (shape * 16) + (visible ? 0 : 128));
+		return EditorUtilities.getTerrainFeatureTexture(getImagePosOnSpriteSheet(true));
+	}
+	
+	public int getImagePosOnSpriteSheet(boolean forceShowIfHidden) {
+		//active/inactive, invisible/half-visible/visible
+		if (visible) {
+			return (active ? color : Trap.BLACK) + (shape * 16);
+		}
+		if (forceShowIfHidden || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing()) {
+			return (active ? color : Trap.BLACK) + shape * 16 + 128;
+		}
+		return -1;
 	}
 
 	@Override

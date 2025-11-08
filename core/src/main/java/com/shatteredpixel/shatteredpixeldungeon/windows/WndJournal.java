@@ -933,6 +933,7 @@ public class WndJournal extends WndTabbed {
 			} else if (Trap.class.isAssignableFrom(entityCls)){
 
 				Trap trap = (Trap) Reflection.newInstance(entityCls);
+				trap.visible = true;
 				icon = TerrainFeaturesTilemap.getTrapVisual(trap);
 
 				if (seen) {

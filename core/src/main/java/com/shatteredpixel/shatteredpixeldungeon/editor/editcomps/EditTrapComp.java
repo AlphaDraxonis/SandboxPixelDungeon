@@ -5,13 +5,18 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItemDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ContainerWithLabel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
@@ -19,9 +24,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerInteger
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ToxicGasRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GatewayTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PressurePlateTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.RageTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.SummoningTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
@@ -40,15 +48,20 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Consumer;
 
+import java.util.List;
+
 public class EditTrapComp extends DefaultEditComp<Trap> {
 
 
     protected StyledCheckBox visible, active;
     protected StyledCheckBox searchable, searchableByMagic, revealedWhenTriggered, disarmedByActivation;
     protected StyledButton gatewayTelePos;
+    protected StyledButton pressurePlateTargetCell;
+    protected StyledButton pressurePlatePlaceTerrain;
     protected Spinner radius, pitfallDelay;
     protected Spinner toxicVentStrength;
     protected ContainerWithLabel.ForMobs summonMobs;
+    protected ItemContainerWithLabel<Item> summonItems;
     protected Component randomTrap;
 
     private final TrapItem trapItem;//used for linking the item with the sprite in the toolbar
@@ -113,6 +126,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                 obj.visible = v;
                 updateObj();
             });
+            visible.enable(obj.active);
             add(visible);
 
             active = new StyledCheckBox(Messages.get(this, "active"));
@@ -228,6 +242,90 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                 summonMobs = new ContainerWithLabel.ForMobs(((SummoningTrap) obj).spawnMobs, this, Messages.get(EditTrapComp.class, "summon_mobs"));
                 add(summonMobs);
             }
+
+            if (obj instanceof PressurePlateTrap) {
+                summonMobs = new ContainerWithLabel.ForMobs(((PressurePlateTrap) obj).spawnMobs, this, Messages.get(EditTrapComp.class, "summon_mobs"));
+                add(summonMobs);
+                
+                summonItems = new ItemContainerWithLabel<Item>(((PressurePlateTrap) obj).spawnItems, this, Messages.get(EditTrapComp.class, "drop_items")) {
+                    @Override
+                    protected void onSlotNumChange() {
+                        if (summonItems != null) {
+                            updateObj();
+                        }
+                    }
+                };
+                add(summonItems);
+                
+                pressurePlatePlaceTerrain = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "pressure_plate_changes_terrain")) {
+                    {
+                        text.align(RenderedTextBlock.CENTER_ALIGN);
+                    }
+                    
+                    @Override
+                    protected void onClick() {
+                        //soll das terrain selected
+                        EditorScene.selectItem(new WndBag.ItemSelector() {
+                            @Override
+                            public String textPrompt() {
+                                return "";
+                            }
+                            
+                            @Override
+                            public Class<? extends Bag> preferredBag() {
+                                return Tiles.bag.getClass();
+                            }
+                            
+                            @Override
+                            public List<Bag> getBags() {
+                                return List.of(Tiles.bag);
+                            }
+                            
+                            @Override
+                            public boolean itemSelectable(Item item) {
+                                return item instanceof TileItem;
+                            }
+                            
+                            @Override
+                            public void onSelect(Item item) {
+                                int terrain = item == EditorItem.NULL_ITEM ? -1 : ((TileItem) item).terrainType();
+                                ((PressurePlateTrap) obj).changeTerrain = terrain;
+                                Image image = terrain == -1 ? new ItemSprite(ItemSpriteSheet.NO_ITEM) : new TileSprite(terrain);
+                                image.scale.set(12 / Math.max(image.width(), image.height()));
+                                pressurePlatePlaceTerrain.icon(image);
+                            }
+                        });
+                    }
+                };
+                Image image = ((PressurePlateTrap) obj).changeTerrain == -1 ? new ItemSprite(ItemSpriteSheet.NO_ITEM) : new TileSprite(((PressurePlateTrap) obj).changeTerrain);
+                image.scale.set(12 / Math.max(image.width(), image.height()));
+                pressurePlatePlaceTerrain.icon(image);
+                add(pressurePlatePlaceTerrain);
+                
+                if (obj.pos != -1) {
+                    int target = ((PressurePlateTrap) obj).targetCell;
+                    pressurePlateTargetCell = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, "") {
+                        {
+                            text.align(RenderedTextBlock.CENTER_ALIGN);
+                        }
+                        
+                        @Override
+                        protected void onClick() {
+                            EditorScene.hideWindowsTemporarily();
+                            EditorScene.selectCell(pressurePlateTargetPosListener);
+                        }
+                    };
+                    if (target == -1 || target == obj.pos) {
+                        pressurePlateTargetCell.text((Messages.get(this, "pressure_plate_target", Messages.get(this, "pressure_plate_target_this_tile"))));
+                    } else {
+                        pressurePlateTargetCell.text(Messages.get(this, "pressure_plate_target", EditorUtilities.cellToString(target)));
+                    }
+                    TileSprite targetTileSprite = new TileSprite(target == -1 ? Terrain.EMPTY : Dungeon.level.map[target]);
+                    targetTileSprite.scale.set(12 / Math.max(targetTileSprite.width(), targetTileSprite.height()));
+                    pressurePlateTargetCell.icon(targetTileSprite);
+                    add(pressurePlateTargetCell);
+                }
+            }
         }
 
         if (PixelScene.landscape()) {
@@ -235,6 +333,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                     visible, active, disarmedByActivation,
                     pitfallDelay, radius, revealedWhenTriggered,
                     searchable, searchableByMagic, gatewayTelePos,
+                    pressurePlateTargetCell, pressurePlatePlaceTerrain,
 					toxicVentStrength};
         } else {
             rectComps = new Component[] {
@@ -242,11 +341,12 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                     pitfallDelay, radius,
                     searchable, searchableByMagic,
                     revealedWhenTriggered, disarmedByActivation,
-                    gatewayTelePos, toxicVentStrength};
+                    gatewayTelePos, toxicVentStrength,
+                    pressurePlateTargetCell, pressurePlatePlaceTerrain};
         }
 
         linearComps = new Component[] {
-                summonMobs, randomTrap
+                summonItems, summonMobs, randomTrap
         };
 
         initializeCompsForCustomObjectClass();
@@ -275,7 +375,24 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             else gatewayTelePos.text(Messages.get(this, "gateway_trap_pos", EditorUtilities.cellToString(telePos)));
         }
 
-        if (summonMobs != null) summonMobs.updateState(((SummoningTrap) obj).spawnMobs);
+        if (summonMobs != null) {
+            if (obj instanceof SummoningTrap) summonMobs.updateState(((SummoningTrap) obj).spawnMobs);
+            else summonMobs.updateState(((PressurePlateTrap) obj).spawnMobs);
+        }
+        if (summonItems != null) {
+            summonItems.setItemList(((PressurePlateTrap) obj).spawnItems);
+        }
+        if (pressurePlateTargetCell != null) {
+            int target = ((PressurePlateTrap) obj).targetCell;
+            if (target == -1 || target == obj.pos) {
+                pressurePlateTargetCell.text((Messages.get(this, "pressure_plate_target", Messages.get(this, "pressure_plate_target_this_tile"))));
+            } else {
+                pressurePlateTargetCell.text(Messages.get(this, "pressure_plate_target", EditorUtilities.cellToString(target)));
+            }
+            TileSprite targetTileSprite = new TileSprite(target == -1 ? Terrain.EMPTY : Dungeon.level.map[target]);
+            targetTileSprite.scale.set(12 / Math.max(targetTileSprite.width(), targetTileSprite.height()));
+            pressurePlateTargetCell.icon(targetTileSprite);
+        }
     }
 
     @Override
@@ -365,6 +482,12 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         if (a instanceof SummoningTrap) {
             if (!EditMobComp.isMobListEqual(((SummoningTrap) a).spawnMobs, ((SummoningTrap) b).spawnMobs)) return false;
         }
+        if (a instanceof PressurePlateTrap) {
+            if (((PressurePlateTrap) a).targetCell != ((PressurePlateTrap) b).targetCell) return false;
+            if (((PressurePlateTrap) a).changeTerrain != ((PressurePlateTrap) b).changeTerrain) return false;
+            if (!EditItemComp.isItemListEqual(((PressurePlateTrap) a).spawnItems, ((PressurePlateTrap) b).spawnItems)) return false;
+            if (!EditMobComp.isMobListEqual(((PressurePlateTrap) a).spawnMobs, ((PressurePlateTrap) b).spawnMobs)) return false;
+        }
         if (a instanceof RandomItem) {
             if (!RandomItem.areEqual((RandomItem<?>) a, (RandomItem<?>) b)) return false;
         }
@@ -399,6 +522,36 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         @Override
         public String prompt() {
             return Messages.get(EditTrapComp.class, "gateway_trap_prompt");
+        }
+    };
+
+
+    private final CellSelector.Listener pressurePlateTargetPosListener = new CellSelector.Listener() {
+        @Override
+        public void onSelect(Integer cell) {
+            if (cell != null) {
+                boolean validDest = Dungeon.level.insideMap(cell);
+                PressurePlateTrap trap = (PressurePlateTrap) obj;
+
+                if (!validDest) {
+                    //no change
+                    return;
+                }
+                trap.targetCell = cell;
+
+                if (cell == -1 || cell == obj.pos) {
+                    pressurePlateTargetCell.text((Messages.get(EditTrapComp.class, "pressure_plate_target", Messages.get(EditTrapComp.class, "pressure_plate_target_this_tile"))));
+                } else {
+                    pressurePlateTargetCell.text(Messages.get(EditTrapComp.class, "pressure_plate_target", EditorUtilities.cellToString(cell)));
+                }
+
+                EditorScene.reshowWindows();
+            }
+        }
+
+        @Override
+        public String prompt() {
+            return Messages.get(EditTrapComp.class, "pressure_plate_target_prompt");
         }
     };
 }
