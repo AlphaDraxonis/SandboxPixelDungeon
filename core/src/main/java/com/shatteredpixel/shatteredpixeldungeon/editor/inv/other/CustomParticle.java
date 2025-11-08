@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.other;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
@@ -14,23 +15,43 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.Particle
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ChallengeParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.CorrosionParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.EnergyParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PoisonParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.RainbowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SacrificialParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SnowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WebParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.watabou.noosa.*;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.Halo;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
+import com.watabou.utils.RectF;
 
 public class CustomParticle extends Blob {
 
@@ -39,6 +60,21 @@ public class CustomParticle extends Blob {
     public static final int WATER_SPLASH_PARTICLE = 1003;
     public static final int FLAMES_PARTICLE = 1004;
     public static final int ETERNAL_FLAMES_PARTICLE = 1005;
+    
+    public static final int BLAST_PARTICLE = 1006;
+    public static final int CHALLENGE_PARTICLE = 1007;
+    public static final int CORROSION_PARTICLE = 1008;
+    public static final int ENERGY_PARTICLE = 1009;
+    public static final int FOLIAGE_PARTICLE = 1010;
+    public static final int LEAF_PARTICLE = 1011;
+    public static final int POISON_PARTICLE = 1012;
+    public static final int RAINBOW_PARTICLE = 1013;
+    public static final int SNOW_PARTICLE = 1014;
+    public static final int SACRIFICIAL_FIRE_PARTICLE = 1015;
+    public static final int SPARK_PARTICLE = 1016;
+    public static final int WEB_PARTICLE = 1017;
+    
+    
     public static final int LIGHT_HALO = 2001;//must be >2000
     public static final int FLARE = 2002;//must be >2000
 
@@ -155,11 +191,47 @@ public class CustomParticle extends Blob {
 
         public Image getSprite() {
             if (type > 1000) {
-                if (type == WATER_SPLASH_PARTICLE) return new TileSprite(Assets.Environment.WATER_SEWERS, Terrain.WATER);
-                if (type == FLAMES_PARTICLE) return BlobItem.createIcon(PermaGas.PFire.class);
-                if (type == ETERNAL_FLAMES_PARTICLE) return BlobItem.createIcon(MagicalFireRoom.EternalFire.class);
-                //TODO flare and halo
-                return new ItemSprite();
+                switch (type) {
+                    case WATER_SPLASH_PARTICLE: return new TileSprite(Assets.Environment.WATER_SEWERS, Terrain.WATER);
+                    case FLAMES_PARTICLE: return BlobItem.createIcon(PermaGas.PFire.class);
+                    case ETERNAL_FLAMES_PARTICLE: return BlobItem.createIcon(MagicalFireRoom.EternalFire.class);
+                    case SACRIFICIAL_FIRE_PARTICLE: return BlobItem.createIcon(SacrificialFire.class);
+                    
+                    case CHALLENGE_PARTICLE:
+                    case CORROSION_PARTICLE:
+                    case ENERGY_PARTICLE:
+                    case SNOW_PARTICLE:
+                    case SPARK_PARTICLE:
+                        int icon;
+                        if (type == SNOW_PARTICLE) icon = ItemSpriteSheet.Icons.POTION_FROST;
+                        else if (type == CORROSION_PARTICLE) icon = ItemSpriteSheet.Icons.POTION_CORROGAS;
+                        else if (type == SPARK_PARTICLE) icon = ItemSpriteSheet.Icons.SCROLL_RECHARGE;
+                        else if (type == ENERGY_PARTICLE) icon = ItemSpriteSheet.Icons.SCROLL_RECHARGE;
+                        else if (type == CHALLENGE_PARTICLE) icon = ItemSpriteSheet.Icons.SCROLL_CHALLENGE;
+                        else icon = -1;
+                        RectF r = ItemSpriteSheet.Icons.film.get(icon);
+                        if (r == null) return new ItemSprite();
+                        Image img = new Image(Assets.Sprites.ITEM_ICONS);
+                        img.frame(r);
+                        img.scale.set(2.28f);//16/7=2.28
+                        return img;
+                        
+                    case POISON_PARTICLE: return new BuffIcon(BuffIndicator.POISON, true);
+                    
+                    case BLAST_PARTICLE: return new ItemSprite(ItemSpriteSheet.BOMB);
+                    
+                    
+                    case FOLIAGE_PARTICLE: return new BuffIcon(BuffIndicator.LIGHT, true);
+                    case LEAF_PARTICLE: return new BuffIcon(BuffIndicator.SHADOWS, true);
+                    
+                    case RAINBOW_PARTICLE: return new ItemSprite(ItemSpriteSheet.RAINBOW_POTION);
+                    case WEB_PARTICLE: return new BuffIcon(BuffIndicator.ROOTS, true);
+                    
+                    //TODO flare and halo
+                    
+                    default:
+                        return new ItemSprite();
+                }
             }
             Speck icon = new Speck();
             icon.image(type);
@@ -182,6 +254,20 @@ public class CustomParticle extends Blob {
                     case WATER_SPLASH_PARTICLE: return SPLASH_FACTORY;
                     case FLAMES_PARTICLE: return FlameParticle.FACTORY;
                     case ETERNAL_FLAMES_PARTICLE: return ElmoParticle.FACTORY;
+                    case SACRIFICIAL_FIRE_PARTICLE: return SacrificialParticle.FACTORY;
+                    
+                    case BLAST_PARTICLE: return BlastParticle.FACTORY;
+                    case CHALLENGE_PARTICLE: return ChallengeParticle.FACTORY;
+                    case CORROSION_PARTICLE: return CorrosionParticle.MISSILE;
+                    case ENERGY_PARTICLE: return EnergyParticle.FACTORY;
+                    case FOLIAGE_PARTICLE: return ShaftParticle.FACTORY;
+                    case LEAF_PARTICLE: return LeafParticle.GENERAL;
+                    case POISON_PARTICLE: return PoisonParticle.MISSILE;
+                    case RAINBOW_PARTICLE: return RainbowParticle.BURST;
+                    case SNOW_PARTICLE: return SnowParticle.FACTORY;
+                    case SPARK_PARTICLE: return SparkParticle.FACTORY;
+                    case WEB_PARTICLE: return WebParticle.FACTORY;
+                    
                     default: return new GizmoFactory();
                 }
             } else return Speck.factory(type);
