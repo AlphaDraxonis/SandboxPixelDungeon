@@ -80,6 +80,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.VaultLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
@@ -437,7 +438,15 @@ public class Dungeon {
             level.name = levelName;
             ((MiningLevel) level).destCell = Dungeon.hero.pos;
             level.create();
-        } else level = customDungeon.getFloor(levelName).initLevel();
+        }
+        else if (branch == QuestLevels.IMP.ID) {
+//            if (MiningLevel.generateWithThisQuest == null) MiningLevel.generateWithThisQuest = new Blacksmith(new BlacksmithQuest());
+            Dungeon.level = level = new VaultLevel();
+            level.setLevelScheme(customDungeon.getFloor(levelName));
+            level.name = levelName;
+            level.create();
+        }
+		else level = customDungeon.getFloor(levelName).initLevel();
 
 		Dungeon.level = null;
 
