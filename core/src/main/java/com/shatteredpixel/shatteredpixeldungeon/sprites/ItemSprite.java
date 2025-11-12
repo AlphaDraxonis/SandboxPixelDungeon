@@ -215,53 +215,65 @@ public class ItemSprite extends MovieClip {
 		}
 	}
 
-    public ItemSprite view(Item item) {
-        return view(item, item.glowing());
-    }
-
-    public ItemSprite view(Heap heap) {
-        if (heap.size() <= 0 || heap.items == null) {
-            return view(0, null);
-        }
-
-        dontRenderShadow = heap.type != Heap.Type.HEAP && heap.type != Heap.Type.FOR_SALE;
-        switch (heap.type) {
-            case HEAP:
-            case FOR_SALE:
-                Item item = heap.peek();
-                int img = item.image();
-                dontRenderShadow = img >= ItemSpriteSheet.SOMETHING && img < ItemSpriteSheet.SOMETHING + 16;
-                return view(heap.peek());
-            case CHEST:
-                return view(ItemSpriteSheet.CHEST, null);
-            case LOCKED_CHEST:
-                return view(ItemSpriteSheet.LOCKED_CHEST, null);
-            case CRYSTAL_CHEST:
-                return view(ItemSpriteSheet.CRYSTAL_CHEST, null);
-            case TOMB:
-                return view(ItemSpriteSheet.TOMB, null);
-            case SKELETON:
-                return view(ItemSpriteSheet.BONES, null);
-            case REMAINS:
-                return view(ItemSpriteSheet.REMAINS, null);
-            default:
-                return view(0, null);
-        }
-    }
-
-    public ItemSprite view(Item item, Glowing glowing) {
-		return view(item, glowing, item.emitter());
-		
+	public ItemSprite view( Item item ){
+		return view(item, item.glowing());
 	}
 	
-    public ItemSprite view(Item item, Glowing glowing, Emitter emitter) {
+	public ItemSprite view( Heap heap ) {
+		if (heap.size() <= 0 || heap.items == null){
+			return view( 0, null );
+		}
+		
+		dontRenderShadow = true;
+		switch (heap.type) {
+			case HEAP: case FOR_SALE:
+				Item item = heap.peek();
+				int img = item.image();
+				dontRenderShadow = img >= ItemSpriteSheet.SOMETHING && img < ItemSpriteSheet.SOMETHING + 16;
+				view( heap.peek() ); break;
+			case CHEST:
+				view( ItemSpriteSheet.CHEST, null ); break;
+			case LOCKED_CHEST:
+				view( ItemSpriteSheet.LOCKED_CHEST, null ); break;
+			case CRYSTAL_CHEST:
+				view( ItemSpriteSheet.CRYSTAL_CHEST, null ); break;
+			case TOMB:
+				view( ItemSpriteSheet.TOMB, null ); break;
+			case SKELETON:
+				view( ItemSpriteSheet.BONES, null ); break;
+			case REMAINS:
+				view( ItemSpriteSheet.REMAINS, null ); break;
+			default:
+				view( 0, null );
+		}
+		
+		if (heap.hidden){
+			alpha(0.15f);
+		}
+		
+		return this;
+	}
+	
+	public ItemSprite view(Item item, Glowing glowing) {
+		return view(item, glowing, item.emitter());
+	}
+	
+	public ItemSprite view( int image, Glowing glowing ) {
+		if (this.emitter != null) this.emitter.killAndErase();
+		emitter = null;
+		frame( image );
+		glow( glowing );
+		return this;
+	}
+	
+	public ItemSprite view(Item item, Glowing glowing, Emitter emitter) {
 		
 		if (this.emitter != null) this.emitter.killAndErase();
 		this.emitter = null;
 		
-        SmartTexture tx;
-        if (item.customImage == null
-                || (tx = TextureCache.getFromCurrentSavePath(CustomDungeonSaves.getExternalFilePath(item.customImage))) == null) {
+		SmartTexture tx;
+		if (item.customImage == null
+				|| (tx = TextureCache.getFromCurrentSavePath(CustomDungeonSaves.getExternalFilePath(item.customImage))) == null) {
 			
 			view(item.image(), glowing, emitter);
 		}
@@ -280,27 +292,22 @@ public class ItemSprite extends MovieClip {
 			
 			glow(glowing);
 		}
-        
 		
-        return this;
-    }
-
-    public ItemSprite view(int image, Glowing glowing) {
-		return view(image, glowing, null);
+		return this;
 	}
 	
-    public ItemSprite view(int image, Glowing glowing, Emitter emitter) {
-        if (!usesItemSpriteSheet) {
-            texture(Assets.Sprites.ITEMS);
-            scale.set(1f);
-        }
-        if (this.emitter != null) this.emitter.killAndErase();
-        this.emitter = null;
-        frame(image);
-        glow(glowing);
+	public ItemSprite view(int image, Glowing glowing, Emitter emitter) {
+		if (!usesItemSpriteSheet) {
+			texture(Assets.Sprites.ITEMS);
+			scale.set(1f);
+		}
+		if (this.emitter != null) this.emitter.killAndErase();
+		this.emitter = null;
+		frame(image);
+		glow(glowing);
 		useEmitter(emitter);
-        return this;
-    }
+		return this;
+	}
 
 	public void frame( int image ){
 		frame( ItemSpriteSheet.film.get( image ));
