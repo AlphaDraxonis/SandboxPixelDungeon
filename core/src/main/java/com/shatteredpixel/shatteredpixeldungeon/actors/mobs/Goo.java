@@ -37,7 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrCo
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.WornKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GooBlob;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -313,6 +313,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		Dungeon.level.unseal();
 		
 		if (showBossBar) GameScene.bossSlain();
+		Dungeon.level.drop( new WornKey( Dungeon.depth ), pos ).sprite.drop();
 		
 		Badges.validateBossSlain(Goo.class);
 		if (Statistics.qualifiedForBossChallengesBadge[0]){

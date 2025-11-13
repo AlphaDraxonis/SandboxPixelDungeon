@@ -29,18 +29,18 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
-public class SkeletonKey extends Key {
+public class WornKey extends Key {
 	
 	{
 		type = Type.SKELETON;
-		image = ItemSpriteSheet.SKELETON_KEY;
+		image = ItemSpriteSheet.WORN_KEY;
 	}
 	
-	public SkeletonKey() {
+	public WornKey() {
 		this( Dungeon.levelName, -1);
 	}
 
-	public SkeletonKey( String levelName, int cell ) {
+	public WornKey( String levelName, int cell ) {
 		super();
 		if (Level.NONE.equals(levelName)) this.levelName = CustomLevel.tempDungeonNameForKey;
 		else this.levelName = levelName;
