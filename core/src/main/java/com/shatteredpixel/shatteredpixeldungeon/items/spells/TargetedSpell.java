@@ -57,6 +57,10 @@ public abstract class TargetedSpell extends Spell {
 				callback);
 		Sample.INSTANCE.play( Assets.Sounds.ZAP );
 	}
+
+	protected float timeToCast(){
+		return Actor.TICK;
+	}
 	
 	private static CellSelector.Listener targeter = new  CellSelector.Listener(){
 		
@@ -93,7 +97,7 @@ public abstract class TargetedSpell extends Spell {
 						curSpell.detach( curUser.belongings.backpack );
 						Invisibility.dispel();
 						curSpell.updateQuickslot();
-						curUser.spendAndNext( 1f );
+						curUser.spendAndNext( curSpell.timeToCast() );
 						Catalog.countUse(curSpell.getClass());
 						if (Random.Float() < curSpell.talentChance){
 							Talent.onScrollUsed(curUser, curUser.pos, curSpell.talentFactor, curSpell.getClass());
