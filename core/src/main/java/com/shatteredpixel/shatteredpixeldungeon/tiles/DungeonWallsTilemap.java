@@ -63,7 +63,9 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 
 				if (map[pos + mapWidth] == Terrain.DOOR || map[pos + mapWidth] == Terrain.MIMIC_DOOR){
 					return DungeonTileSheet.DOOR_SIDEWAYS;
-				} else if (map[pos + mapWidth] == Terrain.LOCKED_DOOR){
+				} else if (map[pos + mapWidth] == Terrain.LOCKED_DOOR) {
+					return DungeonTileSheet.DOOR_SIDEWAYS_LOCKED;
+				} else if (map[pos + mapWidth] == Terrain.HERO_LKD_DR){
 					return DungeonTileSheet.DOOR_SIDEWAYS_LOCKED;
 				} else if (map[pos + mapWidth] == Terrain.COIN_DOOR){
 					return DungeonTileSheet.DOOR_SIDEWAYS_COIN;
@@ -105,6 +107,7 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 
 		} else if (Dungeon.level.insideMap(pos)
 				&& (map[pos+mapWidth] == Terrain.DOOR || map[pos+mapWidth] == Terrain.LOCKED_DOOR
+				|| map[pos+mapWidth] == Terrain.HERO_LKD_DR
 				|| map[pos+mapWidth] == Terrain.COIN_DOOR || map[pos+mapWidth] == Terrain.MIMIC_DOOR) ) {
 			return DungeonTileSheet.DOOR_OVERHANG;
 		} else if (Dungeon.level.insideMap(pos) && map[pos+mapWidth] == Terrain.OPEN_DOOR ) {

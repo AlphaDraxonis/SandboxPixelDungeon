@@ -1343,6 +1343,17 @@ public class Hero extends Char {
 					&& Notes.keyCount(new IronKey(Dungeon.levelName, doorCell)) > 0) {
 				
 				hasKey = true;
+
+			} else if (door == Terrain.HERO_LKD_DR){
+
+				if (belongings.getItem(SkeletonKey.class) != null
+						&& !belongings.getItem(SkeletonKey.class).cursed){
+					GLog.i(Messages.get(SkeletonKey.class, "locked_with_key"));
+					ready();
+					return false;
+				} else {
+					hasKey = true;
+				}
 				
 			} else if (door == Terrain.CRYSTAL_DOOR
 					&& Notes.keyCount(new CrystalKey(Dungeon.levelName, doorCell)) > 0) {
@@ -2118,6 +2129,7 @@ public class Hero extends Char {
 			}
 			
 		} else if (Dungeon.level.map[cell] == Terrain.LOCKED_DOOR
+				|| Dungeon.level.map[cell] == Terrain.HERO_LKD_DR
 				|| Dungeon.level.map[cell] == Terrain.CRYSTAL_DOOR
 				|| Dungeon.level.map[cell] == Terrain.LOCKED_EXIT
 				|| Dungeon.level.map[cell] == Terrain.COIN_DOOR) {
@@ -2604,6 +2616,10 @@ public class Hero extends Char {
 							skele.keyUsed(new IronKey(Dungeon.levelName, doorCell));
 						}
 					}
+				} else if (door == Terrain.HERO_LKD_DR) {
+					hasKey = true;
+					Level.set(doorCell, Terrain.DOOR);
+					GLog.i( Messages.get(SkeletonKey.class, "force_lock"));
 				} else if (door == Terrain.CRYSTAL_DOOR) {
 					hasKey = Notes.remove(new CrystalKey(Dungeon.levelName, doorCell));
 					if (hasKey) {
