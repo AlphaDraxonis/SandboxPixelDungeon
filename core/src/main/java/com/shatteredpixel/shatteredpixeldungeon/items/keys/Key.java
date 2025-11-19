@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -110,7 +111,13 @@ public abstract class Key extends Item {
 		GameScene.pickUpJournal(this, pos);
 		WndJournal.last_index = 0;
 		Notes.add(this);
+		Sample.INSTANCE.play( Assets.Sounds.ITEM );
+		hero.spendAndNext( pickupDelay() );
 		GameScene.updateKeyDisplay();
+
+		if (hero.buff(SkeletonKey.KeyReplacementTracker.class) != null){
+			hero.buff(SkeletonKey.KeyReplacementTracker.class).processExcessKeys();
+		}
 	}
 
 	private static final String LEVEL_NAME = "levelName";
