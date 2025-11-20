@@ -2612,9 +2612,6 @@ public class Hero extends Char {
 					hasKey = Notes.remove(new IronKey(Dungeon.levelName, doorCell));
 					if (hasKey) {
 						Level.set(doorCell, Terrain.DOOR);
-						if (skele != null && !skele.isCursed()){
-							skele.keyUsed(new IronKey(Dungeon.levelName, doorCell));
-						}
 					}
 				} else if (door == Terrain.HERO_LKD_DR) {
 					hasKey = true;
@@ -2626,17 +2623,11 @@ public class Hero extends Char {
 						Level.set(doorCell, Terrain.EMPTY);
 						Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 						CellEmitter.get( doorCell ).start( Speck.factory( Speck.DISCOVER ), 0.025f, 20 );
-						if (skele != null && !skele.isCursed()){
-							skele.keyUsed(new CrystalKey(Dungeon.levelName, doorCell));
-						}
 					}
 				} else if (door == Terrain.LOCKED_EXIT){
 					hasKey = Notes.remove(new WornKey(Dungeon.levelName, doorCell));
 					if (hasKey) {
 						Level.set(doorCell, Terrain.UNLOCKED_EXIT);
-						if (skele != null && !skele.isCursed()){
-							skele.keyUsed(new WornKey(Dungeon.levelName, doorCell));
-						}
 					}
 				} else if (door == Terrain.COIN_DOOR){
 					hasKey = Dungeon.gold >= Dungeon.level.getCoinDoorCost(doorCell) || Dungeon.customDungeon.permaKey;
@@ -2671,14 +2662,8 @@ public class Hero extends Char {
 					Sample.INSTANCE.play( Assets.Sounds.BONES );
 				} else if (heap.type == Type.LOCKED_CHEST){
 					hasKey = Notes.remove(new GoldenKey(Dungeon.levelName, curAction.dst));
-					if (hasKey && skele != null && !skele.isCursed()){
-						skele.keyUsed(new GoldenKey(Dungeon.levelName, curAction.dst));
-					}
 				} else if (heap.type == Type.CRYSTAL_CHEST){
 					hasKey = Notes.remove(new CrystalKey(Dungeon.levelName, curAction.dst));
-					if (hasKey && skele != null && !skele.isCursed()){
-						skele.keyUsed(new CrystalKey(Dungeon.levelName, curAction.dst));
-					}
 				}
 
 				if (hasKey) {
