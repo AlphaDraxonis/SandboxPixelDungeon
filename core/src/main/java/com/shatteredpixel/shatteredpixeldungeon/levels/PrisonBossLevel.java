@@ -312,16 +312,6 @@ public class PrisonBossLevel extends Level {
 			cell += width();
 		}
 
-		//pre-2.5.1 saves, if exit wasn't already added
-		if (exit() == entrance()) {
-			int exitCell = pointToCell(levelExit);
-			LevelTransition exit = addRegularExit(exitCell);
-			if (exit != null) {
-				exit.right+=2;
-				exit.bottom+=3;
-			}
-		}
-
 		addCagesToCells();
 	}
 	

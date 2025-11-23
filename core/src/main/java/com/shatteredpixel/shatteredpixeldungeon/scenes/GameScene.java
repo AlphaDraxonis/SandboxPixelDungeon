@@ -927,11 +927,6 @@ public class GameScene extends DungeonScene {
 		sortMobSprites();
 	}
 	
-	//FIXME added a sync check here in v3.2.5, which caused deadlocks
-	// what I really need to do is have these queue additions that then happen on render thread
-	// this can also apply to adding mob sprites
-	//private void addHeapSprite( Heap heap ) {
-	
 	
 	@Override
 	protected synchronized void prompt(Component newPrompt) {
