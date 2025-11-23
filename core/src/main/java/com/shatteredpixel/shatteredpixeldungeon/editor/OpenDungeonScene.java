@@ -93,6 +93,7 @@ public class OpenDungeonScene extends PixelScene {
 		public void actuallyEnter() {
 			switch (this) {
 				case EDITOR_LOAD:
+					Dungeon.levelName = null;
 					String lastEditedFloor = Dungeon.customDungeon.getLastEditedFloor();
 					LevelScheme l;
 					if (Dungeon.customDungeon.getNumFloors() == 0 || lastEditedFloor == null || (l = Dungeon.customDungeon.getFloor(lastEditedFloor)) == null) {
@@ -337,12 +338,14 @@ public class OpenDungeonScene extends PixelScene {
 				if (error instanceof FileNotFoundException)     errorMsg = Messages.get(this, "file_not_found");
 				else if (error instanceof IOException)          errorMsg = Messages.get(this, "io_error");
 				else if (error.getCause() instanceof CustomDungeonSaves.RenameRequiredException) errorMsg = error.getCause().getMessage();
+				else if (error instanceof CustomDungeonSaves.RenameRequiredException) errorMsg = error.getMessage();
 
 				else throw new RuntimeException("fatal error occurred during loading!", error);
 
 				add( new WndError( errorMsg ) {
 					{
-						if (error.getCause() instanceof CustomDungeonSaves.RenameRequiredException) {
+						if (error.getCause() instanceof CustomDungeonSaves.RenameRequiredException
+							|| error instanceof CustomDungeonSaves.RenameRequiredException) {
 							setHighlightingEnabled(false);
 						}
 					}

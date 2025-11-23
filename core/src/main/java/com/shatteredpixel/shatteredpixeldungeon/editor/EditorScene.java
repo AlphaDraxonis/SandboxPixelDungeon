@@ -132,6 +132,7 @@ public class EditorScene extends DungeonScene {
     private static PointF mainCameraPos;
 
     public static void open(CustomLevel customLevel) {
+        Dungeon.levelName = null;
         if (customLevel == null) {
             SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
             return;

@@ -609,7 +609,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		
 		if (HP > HT/2 && Dungeon.level instanceof PrisonBossLevel) return false;
 		
-		if (abilitiesUsed >= targetAbilityUses() || new Ballistica(pos, enemy.pos, Ballistica.REAL_PROJECTILE, null).collisionPos != enemy.pos) {
+		if (abilitiesUsed >= targetAbilityUses() || enemy == null || new Ballistica(pos, enemy.pos, Ballistica.REAL_PROJECTILE, null).collisionPos != enemy.pos) {
 			return false;
 		} else {
 			

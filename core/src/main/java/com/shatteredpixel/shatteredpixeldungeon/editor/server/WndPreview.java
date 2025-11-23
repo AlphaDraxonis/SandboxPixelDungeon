@@ -130,9 +130,8 @@ public class WndPreview extends Component {
                     btnDownload.setRect(x + width / 5, y, width * 3 / 5, HEIGHT);
                     btnOpenPopupMenu.setRect(x + width - HEIGHT, y, HEIGHT, HEIGHT);
                 } else {
-                    btnDownload.setRect(x, y, width * 3 / 5, HEIGHT);
-                    btnOpenPopupMenu.setRect(x + width - btnOpenPopupMenu.icon().width(), y + (HEIGHT - btnOpenPopupMenu.icon().height()) * 0.5f,
-                            btnOpenPopupMenu.icon().width(), btnOpenPopupMenu.icon().height());
+                    btnDownload.setRect(x, y, width - HEIGHT - 2, HEIGHT);
+                    btnOpenPopupMenu.setRect(x + width - HEIGHT, y, HEIGHT, HEIGHT);
                 }
                 
                 height = HEIGHT;
