@@ -185,7 +185,7 @@ public class BeaconOfReturning extends Spell {
 				}
 			}
 
-			if (ScrollOfTeleportation.teleportToLocation(hero, returnPos, false)){
+			if (ScrollOfTeleportation.teleportToLocation(hero, tracker.returnPos, false)){
 				hero.spendAndNext( 1f );
 			} else {
 				return;
