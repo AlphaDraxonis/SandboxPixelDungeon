@@ -94,6 +94,9 @@ public class HeroSelectScene extends PixelScene {
 
 	private RectF insets;
 
+	private static boolean heroWasRandomized = true;
+	private static boolean chalWasRandomized = false;
+
 	@Override
 	public void create() {
 		super.create();
@@ -781,9 +784,15 @@ public class HeroSelectScene extends PixelScene {
 			public WndRandomize(){
 				super();
 
-				chkHero = new CheckBox(Messages.get(HeroSelectScene.class, "randomize_hero"));
+				chkHero = new CheckBox(Messages.get(HeroSelectScene.class, "randomize_hero")){
+					@Override
+					public void checked(boolean value) {
+						super.checked(value);
+						heroWasRandomized = value;
+					}
+				};
 				chkHero.setRect(0, 0, 120, 16);
-				chkHero.checked(true);
+				chkHero.checked(heroWasRandomized);
 				add(chkHero);
 
 				chkChals = new CheckBox(Messages.get(HeroSelectScene.class, "randomize_chals")){
@@ -791,6 +800,7 @@ public class HeroSelectScene extends PixelScene {
 					public void checked(boolean value) {
 						super.checked(value);
 						optChals.enable(value);
+						chalWasRandomized = value;
 					}
 				};
 				chkChals.setRect(0, 20, 120, 16);
@@ -807,6 +817,8 @@ public class HeroSelectScene extends PixelScene {
 				optChals.setSelectedValue(Challenges.activeChallenges(SPDSettings.challenges()));
 				optChals.setRect(0, 38, 120, 22);
 				add(optChals);
+
+				chkChals.checked(chalWasRandomized);
 
 				RedButton btnCancel = new RedButton(Messages.get(HeroSelectScene.class, "randomize_cancel")){
 					@Override
