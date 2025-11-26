@@ -105,7 +105,6 @@ public class WndOptions extends Window {
 			Image icon = getIcon(i);
 			if (icon != null) buttons[i].icon(icon);
 			buttons[i].multiline = true;
-			buttons[i].enable(enabled(i));
 			buttonsComp.add( buttons[i] );
 			
 			if (hasInfo(i)) {
@@ -117,6 +116,7 @@ public class WndOptions extends Window {
 				};
 				buttonsComp.add(infos[i]);
 			}
+			buttons[i].enable(enabled(i));
 		}
 		
 		spForButtons = new ScrollPane(buttonsComp);
@@ -188,7 +188,7 @@ public class WndOptions extends Window {
 				buttons[i].setRect(0, pos, width - BUTTON_HEIGHT, BUTTON_HEIGHT);
 				infos[i].setRect(width-BUTTON_HEIGHT, pos, BUTTON_HEIGHT, BUTTON_HEIGHT);
 			}
-			
+
 			pos += BUTTON_HEIGHT + MARGIN;
 		}
 		return pos - MARGIN;
