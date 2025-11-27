@@ -367,7 +367,7 @@ public class PrisonBossLevel extends Level {
 		visualMap = oldVisualMap;
 		traps.clear();
 
-		for (CustomTilemap t : customTiles){
+		for (CustomTilemap t : customTiles.toArray(new CustomTilemap[0])){
 			if (t instanceof FadingTraps){
 				((FadingTraps) t).remove();
 			}
