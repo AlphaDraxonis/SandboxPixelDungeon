@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -91,6 +90,7 @@ public class DemonSpawner extends SpawnerMob implements MobBasedOnDepth {
 	private float spawnCooldown = 0;
 	public float maxSpawnCooldown = 0;
 
+	//pre-v3.3.0 , leftover from when these could record their spawn on act
 	public boolean spawnRecorded = false;
 
 	@Override
