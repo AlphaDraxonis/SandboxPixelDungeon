@@ -63,7 +63,7 @@ import java.util.concurrent.TimeoutException;
 @NotAllowedInLua
 public class WelcomeScene extends PixelScene {
 
-	private static final int LATEST_UPDATE = SandboxPixelDungeon.v3_2_0;
+	private static final int LATEST_UPDATE = SandboxPixelDungeon.v3_3_0;
 
 	//used so that the game does not keep showing the window forever if cleaning fails
 	private static boolean triedCleaningTemp = false;
