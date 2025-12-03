@@ -80,7 +80,7 @@ public class CityLevel extends RegularLevel {
 		//6 to 8, average 7
 		return 6+Random.chances(new float[]{1, 3, 1});
 	}
-	
+
 	@Override
 	protected int specialRooms(boolean forceMax) {
 		if (forceMax) return 3;
@@ -95,7 +95,7 @@ public class CityLevel extends RegularLevel {
 				.setGrass(feeling == Feeling.GRASS ? 0.80f : 0.20f, 3)
 				.setTraps(nTraps(), trapClasses(), trapChances());
 	}
-	
+
 	@Override
 	protected Class<?>[] trapClasses() {
 		return new Class[]{
