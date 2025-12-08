@@ -1360,8 +1360,9 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 								crystal.returnCell = hero.pos;
 								crystal.collect();
 							}
-							Dungeon.hero.belongings.armor = new ClothArmor();
-							Dungeon.hero.belongings.armor.identify();
+							hero.belongings.armor = new ClothArmor();
+							hero.belongings.armor.identify();
+							hero.updateHT( false );
 							defaultActiveTransitionImpl(hero, transition);
 						}
 					}
