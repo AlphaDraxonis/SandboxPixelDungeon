@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -177,6 +178,12 @@ public class VaultLevel extends Level { //for now
 						Generator.Category.ARMOR,
 						Generator.Category.WAND,
 						Generator.Category.RING));
+
+				//regrowth is disallowed as it can be used to farm HP regen
+				if (item instanceof WandOfRegrowth){
+					continue;
+				}
+
 				int pos;
 				do {
 					pos = pointToCell(n.random());
