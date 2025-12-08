@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
@@ -1323,7 +1324,8 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 	}
 	
 	private void transitionEnterImpVault(Hero hero, LevelTransition transition) {
-		if (hero.buff(AscensionChallenge.class) != null){
+		if (hero.buff(AscensionChallenge.class) != null
+				|| hero.buff(LostInventory.class) != null){
 			return;
 		}
 		
