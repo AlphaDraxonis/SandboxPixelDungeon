@@ -383,19 +383,19 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		// + 1 SkeletonKey
 
 		ItemsWithChanceDistrComp.ItemWithCount itemWithCount = new ItemsWithChanceDistrComp.ItemWithCount();
-		itemWithCount.items.add(new SkeletonKey());
+		itemWithCount.items.add(new WornKey());
 		itemWithCount.items.add(new GooBlob().quantity(2));
 		itemWithCount.setCount(6);
 		customLootInfo.distrSlots.add(itemWithCount);
 
 		itemWithCount = new ItemsWithChanceDistrComp.ItemWithCount();
-		itemWithCount.items.add(new SkeletonKey());
+		itemWithCount.items.add(new WornKey());
 		itemWithCount.items.add(new GooBlob().quantity(3));
 		itemWithCount.setCount(3);
 		customLootInfo.distrSlots.add(itemWithCount);
 
 		itemWithCount = new ItemsWithChanceDistrComp.ItemWithCount();
-		itemWithCount.items.add(new SkeletonKey());
+		itemWithCount.items.add(new WornKey());
 		itemWithCount.items.add(new GooBlob().quantity(4));
 		itemWithCount.setCount(1);
 		customLootInfo.distrSlots.add(itemWithCount);

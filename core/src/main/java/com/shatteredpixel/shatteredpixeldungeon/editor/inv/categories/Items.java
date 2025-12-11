@@ -73,6 +73,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.WornKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHaste;
@@ -678,6 +679,7 @@ public final class Items extends GameObjectCategory<Item> {
                     IronKey.class,
                     GoldenKey.class,
                     CrystalKey.class,
+                    WornKey.class,
                     SkeletonKey.class,
 
                     RandomItem.RandomItemAny.class,

@@ -46,7 +46,8 @@ public abstract class Key extends Item {
 		IRON(IronKey.class),
 		GOLD(GoldenKey.class),
 		CRYSTAL(CrystalKey.class),
-		SKELETON(SkeletonKey.class);
+		SKELETON(SkeletonKey.class),
+		WORN(WornKey.class);
 		
 		private final Class<? extends Key> asKeyClass;
 		
