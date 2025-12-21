@@ -313,7 +313,6 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		Dungeon.level.unseal();
 		
 		if (showBossBar) GameScene.bossSlain();
-		Dungeon.level.drop( new WornKey( Dungeon.depth ), pos ).sprite.drop();
 		
 		Badges.validateBossSlain(Goo.class);
 		if (Statistics.qualifiedForBossChallengesBadge[0]){

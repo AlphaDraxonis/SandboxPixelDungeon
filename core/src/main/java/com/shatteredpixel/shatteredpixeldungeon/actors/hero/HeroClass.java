@@ -496,6 +496,15 @@ public enum HeroClass {
 	public HeroSubClass[] subClasses() {
 		return subClasses;
 	}
+	
+	public boolean areAllSubClassesDisabled() {
+		for (HeroSubClass cls : subClasses()) {
+			if (Dungeon.customDungeon.heroSubClassesEnabled[cls.getIndex()]) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	public ArmorAbility[] armorAbilities(){
 		switch (this) {

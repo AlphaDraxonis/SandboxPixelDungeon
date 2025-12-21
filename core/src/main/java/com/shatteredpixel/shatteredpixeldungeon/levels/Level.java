@@ -101,11 +101,15 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
 import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.EscapeCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
@@ -122,6 +126,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfYendor;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
@@ -142,6 +147,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
@@ -1123,6 +1129,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 		if (transition.destType == LevelTransition.Type.BRANCH_ENTRANCE) {
 
 			if (transition.destBranch == QuestLevels.MINING.ID) transitionEnterBlacksmithMine(hero, transition);
+			if (transition.destBranch == QuestLevels.IMP.ID) transitionEnterImpVault(hero, transition);
 
 			return false;
 		}
@@ -1313,6 +1320,52 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 				}
 			});
 		}
+	}
+	
+	private void transitionEnterImpVault(Hero hero, LevelTransition transition) {
+		if (hero.buff(AscensionChallenge.class) != null){
+			return;
+		}
+		
+		Game.runOnRenderThread(new Callback() {
+			@Override
+			public void call() {
+				GameScene.show( new WndOptions( Icons.SHPX.get(),
+						Messages.titleCase(Messages.get(CityLevel.class, "upcoming_quest_intro_title")),
+						Messages.get(CityLevel.class, "upcoming_quest_intro_body"),
+						Messages.get(CityLevel.class, "upcoming_quest_intro_yes"),
+						Messages.get(CityLevel.class, "upcoming_quest_intro_no")){
+					@Override
+					protected void onSelect(int index) {
+						if (index == 0){
+							
+							//for full release this will remove any non revive persists buff, but for now just do item buffs
+							for (Buff b : hero.buffs()){
+								if (b instanceof Wand.Charger
+										|| b instanceof Artifact.ArtifactBuff
+										|| b instanceof Ring.RingBuff
+										|| b instanceof MeleeWeapon.Charger
+										|| b instanceof ClassArmor.Charger){
+									b.detach();
+								}
+							}
+							
+							//not ideal handler for a crash, should improve this
+							EscapeCrystal crystal = hero.belongings.getItem(EscapeCrystal.class);
+							if (crystal == null) {
+								crystal = new EscapeCrystal();
+								crystal.storeHeroBelongings(hero);
+								crystal.returnCell = hero.pos;
+								crystal.collect();
+							}
+							Dungeon.hero.belongings.armor = new ClothArmor();
+							Dungeon.hero.belongings.armor.identify();
+							defaultActiveTransitionImpl(hero, transition);
+						}
+					}
+				} );
+			}
+		});
 	}
 
 	public final LevelTransition addRegularEntrance(int cell) {

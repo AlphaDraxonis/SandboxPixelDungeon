@@ -178,7 +178,7 @@ public class Feint extends ArmorAbility {
 		}
 
 		@Override
-		public String description() {
+		public String desc() {
 			return ""; //shouldn't be examinable
 		}
 

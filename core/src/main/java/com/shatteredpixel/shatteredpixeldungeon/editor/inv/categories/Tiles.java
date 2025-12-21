@@ -279,6 +279,8 @@ public enum Tiles {
         customTileBag.items.add(new CustomTileItem(new CavesBossLevel.TrapTile(), -1));
         customTileBag.items.add(new CustomTileItem(new CavesBossLevel.MetalGate(), -1));
         customTileBag.items.add(new CustomTileItem(new CityBossLevel.KingsThrone(), -1));
+//		customTileBag.items.add(new CustomTileItem(new AmbitiousImpRoom.EntranceBarrier(), -1));
+//		customTileBag.items.add(new CustomTileItem(new AmbitiousImpRoom.QuestEntrance(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExit(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExitOverhang(), -1));
         customTileBag.items.add(new CustomTileItem(new DemonSpawnerRoom.NoDemonSpawnerFloor(), -1));

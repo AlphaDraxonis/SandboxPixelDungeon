@@ -903,7 +903,7 @@ public class LuaGlobals extends Globals {
 				Object obj = itemKey.checkuserdata();
 				if (!(obj instanceof Key)) throw new LuaError("Illegal arguments: use collectKey(Key key) or collectKey(Key key, int fromCell)");
 				int cell = pos.isint() ? pos.checkint() : Dungeon.hero.pos;
-				((Key) obj).instantPickupKey(cell);
+				((Key) obj).instantPickupKey(Dungeon.hero, cell);
 				return LuaValue.TRUE;
 			}
 		});

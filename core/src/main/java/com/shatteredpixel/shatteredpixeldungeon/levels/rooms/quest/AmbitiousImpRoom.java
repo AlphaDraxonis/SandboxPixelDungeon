@@ -22,8 +22,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -55,10 +55,10 @@ public class AmbitiousImpRoom extends SpecialRoom {
 
 		Point c = center();
 
-		Painter.set(level, c.x-2, c.y-2, Terrain.REGION_DECO);
-		Painter.set(level, c.x+2, c.y-2, Terrain.REGION_DECO);
-		Painter.set(level, c.x-2, c.y+2, Terrain.REGION_DECO);
-		Painter.set(level, c.x+2, c.y+2, Terrain.REGION_DECO);
+		Painter.set(level, c.x-2, c.y-2, Terrain.FLAMING_PEDESTAL);
+		Painter.set(level, c.x+2, c.y-2, Terrain.FLAMING_PEDESTAL);
+		Painter.set(level, c.x-2, c.y+2, Terrain.FLAMING_PEDESTAL);
+		Painter.set(level, c.x+2, c.y+2, Terrain.FLAMING_PEDESTAL);
 
 		Painter.set(level, c.x-3, c.y-3, Terrain.WALL_DECO);
 		Painter.set(level, c.x+3, c.y-3, Terrain.WALL_DECO);
@@ -66,9 +66,35 @@ public class AmbitiousImpRoom extends SpecialRoom {
 		Painter.set(level, c.x+3, c.y+3, Terrain.WALL_DECO);
 
 		Door entrance = entrance();
-		Imp npc = new Imp();
-		npc.pos = level.pointToCell(c);
 
+		Painter.drawInside(level, this, entrance, 1, Terrain.EMPTY);
+		entrance.set( Door.Type.REGULAR ); //TODO maybe lock?
+
+		//TODO finalize quest entrance visuals
+//		QuestEntrance vis = new QuestEntrance();
+//		vis.pos(c.x - 2, c.y - 2);
+//		level.customTiles.add(vis);
+
+//		EntranceBarrier vis2 = new EntranceBarrier();
+//		vis2.pos(c.x - 1, c.y - 1);
+//		level.customTiles.add(vis2);
+
+		int entrancePos = level.pointToCell(c);
+
+		level.transitions.put(entrancePos, new LevelTransition(level,
+				entrancePos,
+				LevelTransition.Type.BRANCH_EXIT,
+				-1, QuestLevels.IMP.ID));
+		
+		Painter.set(level, entrancePos, Terrain.EXIT);
+
+	}
+	
+	public boolean placeImp(Level level, Imp npc) {
+		npc.pos = level.pointToCell(center());
+		
+		Door entrance = entrance();
+		
 		//TODO we have imp in front for now, do we want to put him in the back?
 		if (entrance.x == left || entrance.x == right){
 			npc.pos += Random.IntRange(-1, 1)*level.width();
@@ -77,30 +103,10 @@ public class AmbitiousImpRoom extends SpecialRoom {
 			npc.pos += Random.IntRange(-1, 1);
 			npc.pos += level.width() * (entrance.y == top ? -2 : 2);
 		}
-		level.mobs.add( npc );
-
-		Painter.drawInside(level, this, entrance, 1, Terrain.EMPTY);
-		entrance.set( Door.Type.REGULAR ); //TODO maybe lock?
-
-		//TODO finalize quest entrance visuals
-		QuestEntrance vis = new QuestEntrance();
-		vis.pos(c.x - 2, c.y - 2);
-		level.customTiles.add(vis);
-
-		EntranceBarrier vis2 = new EntranceBarrier();
-		vis2.pos(c.x - 1, c.y - 1);
-		level.customTiles.add(vis2);
-
-		int entrancePos = level.pointToCell(c);
-
-		level.transitions.add(new LevelTransition(level,
-				entrancePos,
-				LevelTransition.Type.BRANCH_EXIT,
-				Dungeon.depth,
-				Dungeon.branch + 1,
-				LevelTransition.Type.BRANCH_ENTRANCE));
-		Painter.set(level, entrancePos, Terrain.EXIT);
-
+		
+		level.mobs.add(npc);
+		
+		return true;
 	}
 
 	@Override
@@ -134,6 +140,8 @@ public class AmbitiousImpRoom extends SpecialRoom {
 			texture = Assets.Environment.CITY_QUEST;
 
 			tileW = tileH = 5;
+			
+			offsetCenterX = offsetCenterY = 2;
 		}
 
 		final int TEX_WIDTH = 128;
@@ -171,6 +179,8 @@ public class AmbitiousImpRoom extends SpecialRoom {
 			texture = Assets.Environment.CITY_QUEST;
 
 			tileW = tileH = 3;
+			
+			offsetCenterX = offsetCenterY = 1;
 		}
 
 		final int TEX_WIDTH = 128;

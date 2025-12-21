@@ -153,7 +153,9 @@ public class BlacksmithQuest extends Quest {
         if (type == BASED_ON_DEPTH) {
             type = levelScheme.generateBlacksmithQuest();
             levelScheme.roomsToSpawn.add(new BlacksmithRoom());
-        } else if (type == RANDOM) type = CRYSTAL + Random.Int(getNumQuests()-2);//Do not generate the old quests
+        } else if (type == RANDOM) {
+            type = CRYSTAL + Random.Int(getNumQuests()-2);//Do not generate the old quests
+        }
     }
 
     @Override

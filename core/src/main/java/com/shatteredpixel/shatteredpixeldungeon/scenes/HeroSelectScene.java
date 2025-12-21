@@ -714,7 +714,7 @@ public class HeroSelectScene extends PixelScene {
 			buttons.add(seedButton);
 			add(seedButton);
 
-			StyledButton challengeButton = new StyledButton(Chrome.Type.BLANK, Messages.get(WndChallenges.class, "title"), 6){
+			challengeButton = new StyledButton(Chrome.Type.BLANK, Messages.get(WndChallenges.class, "title"), 6){
 				@Override
 				protected void onClick() {
 					if (!Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug() && false){
@@ -751,8 +751,8 @@ public class HeroSelectScene extends PixelScene {
 					@Override
 					protected void onClick() {
 
-						if (Badges.isUnlocked(Badges.Badge.VICTORY) || DeviceCompat.isDebug()){
-							ShatteredPixelDungeon.scene().addToFront(new WndRandomize());
+						if (Badges.isUnlocked(Badges.Badge.VICTORY) || DeviceCompat.isDebug() || true){
+							SandboxPixelDungeon.scene().addToFront(new WndRandomize());
 						} else {
 
 							HeroClass randomCls;
@@ -816,7 +816,7 @@ public class HeroSelectScene extends PixelScene {
 					}
 				};
 				optChals.enable(false);
-				optChals.setSelectedValue(Challenges.activeChallenges(SPDSettings.challenges()));
+				optChals.setSelectedValue(Challenges.activeChallenges(SPDSettings.challenges(true)));
 				optChals.setRect(0, 38, 120, 22);
 				add(optChals);
 
@@ -842,15 +842,20 @@ public class HeroSelectScene extends PixelScene {
 							int chals = optChals.getSelectedValue();
 							ArrayList<Integer> chalMasks = new ArrayList<>();
 							for (int i = 0; i < Challenges.MAX_CHALS; i++){
-								chalMasks.add((int)Math.pow(2, i));
+								int mask = (int)Math.pow(2, i);
+								if ((Dungeon.customDungeon.forceChallenges & mask) != 0) {
+									chals--;
+								} else {
+									chalMasks.add(mask);
+								}
 							}
 							Random.shuffle(chalMasks);
-							int mask = 0;
+							int mask = Dungeon.customDungeon.forceChallenges;
 							for (int i = 0; i < chals; i++){
 								mask += chalMasks.remove(0);
 							}
 							SPDSettings.challenges(mask);
-							challengeButton.icon(Icons.get(SPDSettings.challenges() > 0 ? Icons.CHALLENGE_COLOR : Icons.CHALLENGE_GREY));
+							challengeButton.icon(Icons.get(SPDSettings.challenges(true) > 0 ? Icons.CHALLENGE_COLOR : Icons.CHALLENGE_GREY));
 							SandboxPixelDungeon.scene().addToFront(new WndChallenges(mask, false));
 						}
 

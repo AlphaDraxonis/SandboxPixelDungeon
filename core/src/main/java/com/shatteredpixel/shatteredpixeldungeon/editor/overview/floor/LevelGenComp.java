@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.ItemContainer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
@@ -14,6 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.FeelingSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
+import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableCompWithAdd;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
@@ -30,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.builders.FigureEightBuild
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.LineBuilder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.LoopBuilder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.AmbitiousImpRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -340,6 +343,18 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                         if (numSmithRooms < numSmiths)
                             sectionRooms.container.addNewItem(new RoomItem(new BlacksmithRoom()));
                     }
+                    if (item.mob() instanceof Imp) {
+                        int numImps = 0;
+                        for (Mob m : newLevelScheme.mobsToSpawn) {
+                            if (m instanceof Imp) numImps++;
+                        }
+                        int numImpRooms = 0;
+                        for (Room r : newLevelScheme.roomsToSpawn) {
+                            if (r instanceof AmbitiousImpRoom) numImpRooms++;
+                        }
+                        if (numImpRooms < numImps)
+                            sectionRooms.container.addNewItem(new RoomItem(new AmbitiousImpRoom()));
+                    }
                     super.doAddItem(item);
                 }
 
@@ -387,6 +402,18 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                         }
                         if (numSmiths < numSmithRooms)
                             ((SpawnSectionMore<MobItem>) sectionMobs).container.addNewItem(new MobItem(new Blacksmith(new BlacksmithQuest())));
+                    }
+                    if (item.room() instanceof AmbitiousImpRoom) {
+                        int numImps = 0;
+                        for (Mob m : newLevelScheme.mobsToSpawn) {
+                            if (m instanceof Imp) numImps++;
+                        }
+                        int numImpRooms = 0;
+                        for (Room r : newLevelScheme.roomsToSpawn) {
+                            if (r instanceof AmbitiousImpRoom) numImpRooms++;
+                        }
+                        if (numImps < numImpRooms)
+                            ((SpawnSectionMore<MobItem>) sectionMobs).container.addNewItem(new MobItem(new Imp(new ImpQuest())));
                     }
                     item.room().doOnAllGameObjects(obj -> obj.onRenameLevelScheme(Dungeon.levelName, newLevelScheme.getName()));
                     super.doAddItem(item);

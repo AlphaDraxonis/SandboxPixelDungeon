@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArmband;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SandalsOfNature;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.UnstableSpellbook;
@@ -72,7 +73,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKeyOld;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.WornKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
@@ -459,6 +460,7 @@ public final class Items extends GameObjectCategory<Item> {
                     HornOfPlenty.class,
                     MasterThievesArmband.class,
                     SandalsOfNature.class,
+                    SkeletonKey.class,
                     TalismanOfForesight.class,
                     TimekeepersHourglass.class,
                     TimekeepersHourglass.sandBag.class,
@@ -680,7 +682,7 @@ public final class Items extends GameObjectCategory<Item> {
                     GoldenKey.class,
                     CrystalKey.class,
                     WornKey.class,
-                    SkeletonKey.class,
+					SkeletonKeyOld.class,
 
                     RandomItem.RandomItemAny.class,
                     Gold.class,

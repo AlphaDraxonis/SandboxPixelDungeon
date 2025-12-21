@@ -440,7 +440,6 @@ public class Dungeon {
             level.create();
         }
         else if (branch == QuestLevels.IMP.ID) {
-//            if (MiningLevel.generateWithThisQuest == null) MiningLevel.generateWithThisQuest = new Blacksmith(new BlacksmithQuest());
             Dungeon.level = level = new VaultLevel();
             level.setLevelScheme(customDungeon.getFloor(levelName));
             level.name = levelName;

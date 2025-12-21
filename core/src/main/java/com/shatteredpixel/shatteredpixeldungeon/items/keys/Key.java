@@ -47,7 +47,7 @@ public abstract class Key extends Item {
 		IRON(IronKey.class),
 		GOLD(GoldenKey.class),
 		CRYSTAL(CrystalKey.class),
-		SKELETON(SkeletonKey.class),
+		SKELETON(SkeletonKeyOld.class),
 		WORN(WornKey.class);
 		
 		private final Class<? extends Key> asKeyClass;
@@ -93,7 +93,7 @@ public abstract class Key extends Item {
 
 	@Override
 	public boolean doPickUp(Hero hero, int pos) {
-		instantPickupKey(pos);
+		instantPickupKey(hero, pos);
 		hero.spendAndNext( pickupDelay() );
 		Sample.INSTANCE.play( Assets.Sounds.ITEM );
 		return true;
@@ -101,11 +101,11 @@ public abstract class Key extends Item {
 
 	@Override
 	public boolean collect(Bag bag) {
-		instantPickupKey(Dungeon.hero.pos);
+		instantPickupKey(Dungeon.hero, Dungeon.hero.pos);
 		return true;
 	}
 
-	public void instantPickupKey(int pos) {
+	public void instantPickupKey(Hero hero, int pos) {
 		Catalog.setSeen(getClass());
 		Statistics.itemTypesDiscovered.add(getClass());
 		GameScene.pickUpJournal(this, pos);

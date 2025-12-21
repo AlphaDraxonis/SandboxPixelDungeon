@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.AmbitiousImpRoom;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GolemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MonkSprite;
 import com.watabou.noosa.Image;
@@ -35,8 +36,13 @@ public class ImpQuest extends Quest {
 
     @Override
     public void initRandom(LevelScheme levelScheme) {
-        if (type == BASED_ON_DEPTH) type = levelScheme.generateImpQuestNotRandom();
-        else if (type == RANDOM) type = Random.Int(2);
+        if (type == BASED_ON_DEPTH) {
+            type = levelScheme.generateImpQuestNotRandom();
+            levelScheme.roomsToSpawn.add(new AmbitiousImpRoom());
+        }
+        else if (type == RANDOM) {
+            type = Random.Int(2);
+        }
         if (reward == null) {
             do {
                 reward = (Ring) Generator.randomUsingDefaults(Generator.Category.RING);

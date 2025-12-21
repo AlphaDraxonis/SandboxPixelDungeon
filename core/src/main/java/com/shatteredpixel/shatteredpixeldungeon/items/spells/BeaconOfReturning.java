@@ -121,7 +121,7 @@ public class BeaconOfReturning extends Spell {
 		}
 		if (hero.buff(BeaconTracker.class) != null){
 			Notes.remove(Notes.Landmark.BEACON_LOCATION,
-					hero.buff(BeaconTracker.class).returnDepth);
+					hero.buff(BeaconTracker.class).returnLevel);
 		}
 
 		BeaconTracker tracker = Buff.affect(hero, BeaconTracker.class);

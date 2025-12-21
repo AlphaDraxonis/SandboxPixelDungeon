@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -32,6 +31,10 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Sungrass;
 import com.watabou.utils.Random;
 
 public class GardenRoom extends SpecialRoom {
+	
+	{
+		spawnItemsOnLevel.add(new IronKey());
+	}
 
 	public void paint( Level level ) {
 		
@@ -40,7 +43,6 @@ public class GardenRoom extends SpecialRoom {
 		Painter.fill( level, this, 2, Terrain.GRASS );
 		
 		entrance().set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey( Dungeon.depth ) );
 
 		int bushes = Random.Int(3);
 		if (bushes == 0) {

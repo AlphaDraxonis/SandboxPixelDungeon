@@ -426,7 +426,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             desc = EditorUtilities.addIronKeyDescription(desc, level);
         else if (obj.terrainType() == Terrain.CRYSTAL_DOOR || obj.terrainType() == Terrain.SECRET_CRYSTAL_DOOR)
             desc = EditorUtilities.addCrystalKeyDescription(desc, level);
-        else if (obj.terrainType() == Terrain.LOCKED_EXIT) desc = EditorUtilities.addSkeletonKeyDescription(desc, level);
+        else if (obj.terrainType() == Terrain.LOCKED_EXIT) desc = EditorUtilities.addWornKeyDescription(desc, level);
         else if (obj.terrainType() == Terrain.COIN_DOOR) desc = EditorUtilities.addCoinDoorDescription(desc, level);
 
         if (obj.cell() >= 0) {

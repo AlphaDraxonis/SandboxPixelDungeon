@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
@@ -45,6 +46,8 @@ import java.util.ArrayList;
 
 public class EscapeCrystal extends Item {
 
+	public int returnCell;
+	
 	{
 		image = ItemSpriteSheet.ESCAPE;
 
@@ -69,7 +72,7 @@ public class EscapeCrystal extends Item {
 
 		if (action.equals( AC_USE )) {
 
-			if (Dungeon.depth > 15 && Dungeon.depth < 20 && Dungeon.branch == 1 && Dungeon.level instanceof VaultLevel){
+			if (Dungeon.branch == QuestLevels.IMP.ID && Dungeon.level instanceof VaultLevel){
 
 				Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
@@ -90,9 +93,7 @@ public class EscapeCrystal extends Item {
 				InterlevelScene.curTransition = new LevelTransition(Dungeon.level,
 						hero.pos,
 						LevelTransition.Type.BRANCH_ENTRANCE,
-						Dungeon.depth,
-						0,
-						LevelTransition.Type.BRANCH_EXIT);
+						returnCell);
 				InterlevelScene.mode = InterlevelScene.Mode.ASCEND;
 				Game.switchScene( InterlevelScene.class );
 				detachAll(hero.belongings.backpack);
@@ -156,16 +157,19 @@ public class EscapeCrystal extends Item {
 	public Bundle storedItems;
 
 	public static String STORED_ITEMS = "stored_items";
+	public static final String RETURN_CELL = "return_cell";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(STORED_ITEMS, storedItems);
+		bundle.put(RETURN_CELL, returnCell);
 	}
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		storedItems = bundle.getBundle(STORED_ITEMS);
+		returnCell = bundle.getInt(RETURN_CELL);
 	}
 }

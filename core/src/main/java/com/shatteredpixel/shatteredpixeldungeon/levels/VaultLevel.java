@@ -21,10 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Bones;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -37,13 +36,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.RoomRect;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EmptyRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RegionDecoLineRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.SegmentedRoom;
 import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
 
 import java.util.ArrayList;
 
@@ -57,16 +56,6 @@ public class VaultLevel extends Level { //for now
 	@Override
 	public void playLevelMusic() {
 		Music.INSTANCE.playTracks(CityLevel.CITY_TRACK_LIST, CityLevel.CITY_TRACK_CHANCES, false);
-	}
-
-	@Override
-	public String tilesTex() {
-		return Assets.Environment.TILES_CITY;
-	}
-
-	@Override
-	public String waterTex() {
-		return Assets.Environment.WATER_CITY;
 	}
 
 	@Override
@@ -137,14 +126,14 @@ public class VaultLevel extends Level { //for now
 				Room.Door door = r.connected.get( n );
 				if (door == null) {
 
-					Rect i = r.intersect( n );
+					RoomRect i = r.intersect( n );
 					ArrayList<Point> doorSpots = new ArrayList<>();
 					for (Point p : i.getPoints()){
 						if (r.canConnect(p) && n.canConnect(p))
 							doorSpots.add(p);
 					}
 					if (doorSpots.isEmpty()){
-						ShatteredPixelDungeon.reportException(
+						SandboxPixelDungeon.reportException(
 								new RuntimeException("Could not place a door! " +
 										"r=" + r.getClass().getSimpleName() +
 										" n=" + n.getClass().getSimpleName()));
@@ -162,22 +151,21 @@ public class VaultLevel extends Level { //for now
 			n.paint(this);
 			if (n instanceof RegionDecoLineRoom){
 				Painter.fill(this, n, 1, Terrain.EMPTY_SP);
-				Painter.fill(this, n.left+1, n.top+1, 7, 1, Terrain.REGION_DECO_ALT);
-				Painter.fill(this, n.left+1, n.top+1, 1, 14, Terrain.REGION_DECO_ALT);
-				Painter.fill(this, n.right-1, n.top+1, 1, 14, Terrain.REGION_DECO_ALT);
+				Painter.fill(this, n.left+1, n.top+1, 7, 1, Terrain.FLAMING_PEDESTAL_ALT);
+				Painter.fill(this, n.left+1, n.top+1, 1, 14, Terrain.FLAMING_PEDESTAL_ALT);
+				Painter.fill(this, n.right-1, n.top+1, 1, 14, Terrain.FLAMING_PEDESTAL_ALT);
 			}
 			for (Point door : n.connected.values()){
 				Painter.set(this, door, Terrain.DOOR);
 			}
 		}
 
-		entrance = pointToCell(entryRoom.random());
-		transitions.add(new LevelTransition(this,
+		int entrance = pointToCell(entryRoom.random());
+		transitions.put(entrance, new LevelTransition(this,
 				entrance,
 				LevelTransition.Type.BRANCH_ENTRANCE,
 				Dungeon.depth,
-				0,
-				LevelTransition.Type.BRANCH_EXIT));
+				0));
 
 		rooms.remove(entryRoom);
 		rooms.remove(finalRoom);

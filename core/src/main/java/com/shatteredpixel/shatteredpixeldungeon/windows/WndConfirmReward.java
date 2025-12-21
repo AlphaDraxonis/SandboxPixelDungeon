@@ -10,7 +10,7 @@ public class WndConfirmReward extends WndInfoItem {
 	public WndConfirmReward(Item item, Consumer<Item> onConfirm) {
 		super(item);
 
-		RedButton btnConfirm = new RedButton(Messages.get(this, "confirm")) {
+		RedButton btnConfirm = new RedButton(Messages.get(WndSadGhost.class, "confirm")) {
 			@Override
 			protected void onClick() {
 				hide();
@@ -20,7 +20,7 @@ public class WndConfirmReward extends WndInfoItem {
 		btnConfirm.setRect(0, height + 2, width / 2 - 1, 16);
 		add(btnConfirm);
 
-		RedButton btnCancel = new RedButton(Messages.get(this, "cancel")) {
+		RedButton btnCancel = new RedButton(Messages.get(WndSadGhost.class, "cancel")) {
 			@Override
 			protected void onClick() {
 				hide();

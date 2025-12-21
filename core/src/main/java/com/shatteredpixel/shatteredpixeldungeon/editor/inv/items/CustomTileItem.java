@@ -22,7 +22,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Point;
 
-import java.util.Set;
+import java.util.List;
 
 public class CustomTileItem extends EditorItem<CustomTilemap> {
 
@@ -181,7 +181,7 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
         return cust == null ? findCustomTileAt(p, Dungeon.level.customWalls) : cust;
     }
 
-    private static CustomTilemap findCustomTileAt(Point p, Set<CustomTilemap> customTiles) {
+    private static CustomTilemap findCustomTileAt(Point p, List<CustomTilemap> customTiles) {
         for (CustomTilemap cust : customTiles) {
             if (cust instanceof CustomTilemap.BossLevelVisuals) continue;
             Point custPoint = new Point(p);

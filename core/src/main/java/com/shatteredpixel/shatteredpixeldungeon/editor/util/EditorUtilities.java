@@ -217,10 +217,10 @@ public final class EditorUtilities {
 
     public static String addGoldKeyDescription(String desc, Level level) {
         int numLockedChests = EditorUtilities.getNumContainer(Heap.Type.LOCKED_CHEST, level);
-        int numIronKeys = EditorUtilities.getNumKeys(Key.Type.GOLD, level);
+        int numGoldKeys = EditorUtilities.getNumKeys(Key.Type.GOLD, level);
         if (desc.length() > 0) desc += "\n";
         desc += "\n" + Messages.get(EditTileComp.class, "num_gold_containers") + ": " + numLockedChests;
-        desc += "\n" + Messages.get(EditTileComp.class, "num_gold_keys") + ": " + numIronKeys;
+        desc += "\n" + Messages.get(EditTileComp.class, "num_gold_keys") + ": " + numGoldKeys;
         return desc;
     }
 
@@ -235,12 +235,25 @@ public final class EditorUtilities {
         desc += "\n" + Messages.get(EditTileComp.class, "num_crystal_keys") + ": " + numCrystalKeys;
         return desc;
     }
-
+	
+	public static String addWornKeyDescription(String desc, Level level) {
+		int numLockedDoors = EditorUtilities.getNumTiles(Terrain.LOCKED_EXIT, level);
+		int numWornKeys = EditorUtilities.getNumKeys(Key.Type.WORN, level);
+		if (desc.length() > 0) desc += "\n";
+		desc += "\n" + Messages.get(EditTileComp.class, "num_locked_exits") + ": " + numLockedDoors;
+		desc += "\n" + Messages.get(EditTileComp.class, "num_worn_keys") + ": " + numWornKeys;
+		return desc;
+	}
     public static String addSkeletonKeyDescription(String desc, Level level) {
-        int numLockedDoors = EditorUtilities.getNumTiles(Terrain.LOCKED_EXIT, level);
-        int numSkeleKeys = EditorUtilities.getNumKeys(Key.Type.SKELETON, level);
-        if (desc.length() > 0) desc += "\n";
-        desc += "\n" + Messages.get(EditTileComp.class, "num_locked_exits") + ": " + numLockedDoors;
+		int numLockedStuff = EditorUtilities.getNumTiles(Terrain.LOCKED_DOOR, level) //iron
+						+ EditorUtilities.getNumTiles(Terrain.SECRET_LOCKED_DOOR, level) //iron
+						+ EditorUtilities.getNumContainer(Heap.Type.LOCKED_CHEST, level) //gold
+						+ EditorUtilities.getNumTiles(Terrain.CRYSTAL_DOOR, level) //crystal
+						+ EditorUtilities.getNumTiles(Terrain.SECRET_CRYSTAL_DOOR, level) //crystal
+						+ EditorUtilities.getNumTiles(Terrain.LOCKED_EXIT, level); //worn
+		int numSkeleKeys = EditorUtilities.getNumKeys(Key.Type.SKELETON, level);
+		if (desc.length() > 0) desc += "\n";
+        desc += "\n" + Messages.get(EditTileComp.class, "num_locked_stuff") + ": " + numLockedStuff;
         desc += "\n" + Messages.get(EditTileComp.class, "num_skeleton_keys") + ": " + numSkeleKeys;
         return desc;
     }

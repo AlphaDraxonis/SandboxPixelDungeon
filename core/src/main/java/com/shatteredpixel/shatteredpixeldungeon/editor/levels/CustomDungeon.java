@@ -1013,8 +1013,8 @@ public class CustomDungeon implements Bundlable {
                 else level.blobs.put(SacrificialFire.class, newValue);
             })) saveNeeded = true;
 
-			if (GameObject.doOnAllGameObjectsSet(level.customTiles, whatToDo)) saveNeeded = true;
-			if (GameObject.doOnAllGameObjectsSet(level.customWalls, whatToDo)) saveNeeded = true;
+			if (GameObject.doOnAllGameObjectsList(level.customTiles, whatToDo)) saveNeeded = true;
+			if (GameObject.doOnAllGameObjectsList(level.customWalls, whatToDo)) saveNeeded = true;
 
             if (load) {
                 if (saveNeeded) CustomDungeonSaves.saveLevel(level);

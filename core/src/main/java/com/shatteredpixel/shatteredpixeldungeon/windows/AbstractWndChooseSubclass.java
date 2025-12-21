@@ -18,10 +18,14 @@ public abstract class AbstractWndChooseSubclass extends Window {
 
 	private static final int WIDTH		= 130;
 	private static final float GAP		= 2;
+	
+	protected final Component titlebar;
 
 	public AbstractWndChooseSubclass(Component titlebar, String msg, String cancelLabel, final HeroClass heroClass, final TengusMask tome ) {
 
 			super();
+			
+			this.titlebar = titlebar;
 
 			if (titlebar instanceof RenderedTextBlock) {
 				((RenderedTextBlock) titlebar).maxWidth(WIDTH);

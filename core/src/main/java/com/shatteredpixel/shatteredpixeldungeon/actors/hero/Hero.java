@@ -1978,7 +1978,7 @@ public class Hero extends Char {
 
 			if (Dungeon.level.pit[step] && !Dungeon.level.solid[step]
 					&& (Dungeon.level.zone[step] == null || !Dungeon.level.zone[step].appliesBuff(Levitation.class, this))
-					&& (!isFlying() || buff(Levitation.class) != null && buff(Levitation.class).detachesWithinDelay(delay / speed()))){
+					&& (!isFlying() || buff(Levitation.class) != null && buff(Levitation.class).detachesWithinDelay(delay / speed(), step))){
 				if (!Chasm.jumpConfirmed){
 					Chasm.heroJump(this);
 					interrupt();

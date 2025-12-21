@@ -54,7 +54,7 @@ public class Swiftness extends Armor.Glyph {
 					break;
 				} else {
 					for (int i : PathFinder.NEIGHBOURS8){
-						if (Dungeon.level.adjacent(owner.pos+i, ch.pos) && (!Dungeon.level.solid[owner.pos+i] || Dungeon.level.passable[owner.pos+i])){
+						if (Dungeon.level.adjacent(owner.pos+i, ch.pos) && (!Dungeon.level.solid[owner.pos+i] || Dungeon.level.isPassable(owner.pos+i, ch))){
 							enemyNear = true;
 							break;
 						}

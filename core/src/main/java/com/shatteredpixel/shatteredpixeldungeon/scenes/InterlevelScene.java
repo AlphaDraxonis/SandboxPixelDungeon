@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.effects.ShadowBox;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -651,7 +652,7 @@ public class InterlevelScene extends PixelScene {
         	Level level = Dungeon.newLevel(null, 0);
         	Dungeon.switchLevel(level, -1);
     	} else {
-        	if (curTransition.destBranch != Dungeon.branch && Dungeon.depth >= 16 && Dungeon.depth <= 20 tzz) {
+        	if (curTransition.destBranch != Dungeon.branch && Dungeon.branch == QuestLevels.IMP.ID || curTransition.destBranch == QuestLevels.IMP.ID) {
 					//FIXME avoids holding allies when entering city quest area, this is very sloppy though
 					// perhaps holding allies could be a property of the transition?
 			} else {
@@ -704,7 +705,7 @@ public class InterlevelScene extends PixelScene {
 
     private void ascend() throws IOException {
 		
-		if (curTransition.destBranch != Dungeon.branch && Dungeon.depth >= 16 && Dungeon.depth <= 20 tzz) {
+		if (curTransition.destBranch != Dungeon.branch && Dungeon.branch == QuestLevels.IMP.ID || curTransition.destBranch == QuestLevels.IMP.ID) {
 			//FIXME avoids holding allies when entering city quest area, this is very sloppy though
 			// perhaps holding allies could be a property of the transition?
 		} else {

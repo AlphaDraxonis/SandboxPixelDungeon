@@ -618,7 +618,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			Statistics.qualifiedForBossChallengesBadge[3] = false;
 		//Only damage-dealing spells from the Cleric
 		} else if (src instanceof ClericSpell){
-			Statistics.qualifiedForBossChallengeBadge[3] = false;
+			Statistics.qualifiedForBossChallengesBadge[3] = false;
 		}
 
 		if (isInvulnerable(src.getClass())){

@@ -3,7 +3,21 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
-import com.shatteredpixel.shatteredpixeldungeon.levels.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CavesLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CityLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.DeadEndLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.HallsBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.HallsLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.VaultLevel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.NotAllowedInLua;
 
@@ -59,14 +73,14 @@ public abstract class WndSelectLevelType extends WndChooseOneInCategories {
                     {null, LastLevel.class, DeadEndLevel.class},
                     {SewerLevel.class, PrisonLevel.class, CavesLevel.class, CityLevel.class, HallsLevel.class},
                     {SewerBossLevel.class, PrisonBossLevel.class, CavesBossLevel.class, CityBossLevel.class, HallsBossLevel.class},
-                    {MiningLevel.CrystalMiningLevel.class, MiningLevel.GnollMiningLevel.class, MiningLevel.FungiMiningLevel.class}
+                    {MiningLevel.CrystalMiningLevel.class, MiningLevel.GnollMiningLevel.class, MiningLevel.FungiMiningLevel.class, VaultLevel.class}
             };
         }
         return new Object[][]{
                 {CustomLevel.class, LastLevel.class, DeadEndLevel.class},
                 {SewerLevel.class, PrisonLevel.class, CavesLevel.class, CityLevel.class, HallsLevel.class},
                 {SewerBossLevel.class, PrisonBossLevel.class, CavesBossLevel.class, CityBossLevel.class, HallsBossLevel.class},
-                {MiningLevel.CrystalMiningLevel.class, MiningLevel.GnollMiningLevel.class, MiningLevel.FungiMiningLevel.class}
+                {MiningLevel.CrystalMiningLevel.class, MiningLevel.GnollMiningLevel.class, MiningLevel.FungiMiningLevel.class, VaultLevel.class}
         };
     }
 

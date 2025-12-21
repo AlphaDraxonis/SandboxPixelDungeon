@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.AmbitiousImpRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
@@ -201,7 +202,9 @@ public final class Rooms extends GameObjectCategory<Room> {
                     StatuesRoom.class,
                     SegmentedLibraryRoom.class,
                     LibraryRingRoom.class,
-                    LibraryHallRoom.class
+                    LibraryHallRoom.class,
+                    
+                    AmbitiousImpRoom.class
             });
         }
 

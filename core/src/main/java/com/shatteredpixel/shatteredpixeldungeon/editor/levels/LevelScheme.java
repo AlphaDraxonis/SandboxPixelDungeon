@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.VaultLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
@@ -954,7 +955,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (SewerLevel.class.isAssignableFrom(level) || SewerBossLevel.class.isAssignableFrom(level)) return REGION_SEWERS;
         if (PrisonLevel.class.isAssignableFrom(level) || PrisonBossLevel.class.isAssignableFrom(level)) return REGION_PRISON;
         if (CavesLevel.class.isAssignableFrom(level) || CavesBossLevel.class.isAssignableFrom(level) || MiningLevel.class.isAssignableFrom(level)) return REGION_CAVES;
-        if (CityLevel.class.isAssignableFrom(level) || CityBossLevel.class.isAssignableFrom(level)) return REGION_CITY;
+        if (CityLevel.class.isAssignableFrom(level) || CityBossLevel.class.isAssignableFrom(level) || VaultLevel.class.isAssignableFrom(level)) return REGION_CITY;
         if (HallsLevel.class.isAssignableFrom(level) || HallsBossLevel.class.isAssignableFrom(level)
                 || LastLevel.class.isAssignableFrom(level) || DeadEndLevel.class.isAssignableFrom(level))
             return REGION_HALLS;
@@ -972,6 +973,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     public final int getRegion() {
         if (Dungeon.branch == QuestLevels.MINING.ID) return REGION_CAVES;
+        if (Dungeon.branch == QuestLevels.IMP.ID) return REGION_CITY;
         if (type == null) return LevelScheme.REGION_NONE;
         if (CustomLevel.class.isAssignableFrom(type)) return region;
         return getRegion(type);
@@ -979,6 +981,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     public final int getVisualRegion() {
         if (Dungeon.branch == QuestLevels.MINING.ID) return REGION_CAVES;
+        if (Dungeon.branch == QuestLevels.IMP.ID) return REGION_CITY;
         return region;
     }
 

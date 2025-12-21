@@ -61,7 +61,10 @@ public abstract class TransitionEditPart extends Component {
                     }
                 }
                 if (showEntrances == null || !showEntrances) ret.add(1, LevelScheme.SURFACE_LEVEL_SCHEME);
-                if (showEntrances == null || showEntrances) ret.add(1, QuestLevels.MINING);
+                if (showEntrances == null || showEntrances) {
+                    ret.add(1, QuestLevels.MINING);
+                    ret.add(2, QuestLevels.IMP);
+                }
                 return ret;
             }
         };

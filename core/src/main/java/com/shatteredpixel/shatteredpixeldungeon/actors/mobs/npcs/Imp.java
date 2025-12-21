@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.AmbitiousImpRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ImpSprite;
@@ -38,7 +39,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndImp;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuest;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
-import com.watabou.utils.PathFinder;
 
 import java.util.List;
 
@@ -143,16 +143,11 @@ public class Imp extends QuestNPC<ImpQuest> {
 
 	@Override
 	public void place(RegularLevel level, List<Room> rooms) {
-		do {
-			pos = level.randomRespawnCell(this);
-		} while (pos == -1 ||
-				level.heaps.get(pos) != null ||
-				level.traps.get(pos) != null ||
-				level.findMob(pos) != null ||
-				//The imp doesn't move, so he cannot obstruct a passageway
-				!(level.isPassableHero(pos + PathFinder.CIRCLE4[0]) && level.isPassableHero(pos + PathFinder.CIRCLE4[2])) ||
-				!(level.isPassableHero(pos + PathFinder.CIRCLE4[1]) && level.isPassableHero(pos + PathFinder.CIRCLE4[3])));
-		if (pos != -1) level.mobs.add(this);
+		for (Room room : rooms) {
+			if (room instanceof AmbitiousImpRoom) {
+				if (((AmbitiousImpRoom) room).placeImp(level, this)) break;
+			}
+		}
 	}
 
 

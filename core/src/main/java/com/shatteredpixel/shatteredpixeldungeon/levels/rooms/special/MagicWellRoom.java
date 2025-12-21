@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfAwareness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfHealth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
@@ -33,6 +32,10 @@ import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
 public class MagicWellRoom extends SpecialRoom {
+	
+	{
+		spawnItemsOnLevel.add(new IronKey());
+	}
 
 	private static final Class<?>[] WATERS =
 		{WaterOfAwareness.class, WaterOfHealth.class};
@@ -57,6 +60,5 @@ public class MagicWellRoom extends SpecialRoom {
 		WellWater.seed(c.x + level.width() * c.y, 1, waterClass, level);
 		
 		entrance().set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey( Dungeon.depth ) );
 	}
 }

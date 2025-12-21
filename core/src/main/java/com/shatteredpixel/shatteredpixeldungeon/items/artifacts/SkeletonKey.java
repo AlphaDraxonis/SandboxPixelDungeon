@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -58,7 +59,10 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class SkeletonKey extends Artifact {
 
@@ -144,7 +148,7 @@ public class SkeletonKey extends Artifact {
 						return;
 					}
 					if (Dungeon.level.map[target] == Terrain.LOCKED_DOOR){
-						if (Dungeon.level.locked){
+						if (Dungeon.level.locked()){
 							GLog.w(Messages.get(SkeletonKey.class, "wont_open"));
 							return;
 						}
@@ -231,7 +235,7 @@ public class SkeletonKey extends Artifact {
 							}
 
 							if (pushCell != -1 && !Char.hasProp(toMove, Char.Property.IMMOVABLE)){
-								Ballistica push = new Ballistica(target, pushCell, Ballistica.PROJECTILE);
+								Ballistica push = new Ballistica(target, pushCell, Ballistica.PROJECTILE, toMove);
 								WandOfBlastWave.throwChar(toMove, push, 1, false, false, this);
 							} else {
 								GLog.w(Messages.get(SkeletonKey.class, "lock_no_space"));
@@ -254,7 +258,7 @@ public class SkeletonKey extends Artifact {
 								if (Dungeon.level.heaps.get(target) != null){
 									ArrayList<Integer> candidates = new ArrayList<>();
 									for (int n : PathFinder.NEIGHBOURS8){
-										if (Dungeon.level.passable[target+n]){
+										if (Dungeon.level.isPassableHero(target+n)){
 											candidates.add(target+n);
 										}
 									}
@@ -446,13 +450,13 @@ public class SkeletonKey extends Artifact {
 	}
 
 	private void placeWall(int pos, int knockbackDIR ){
-		Blob wall = Dungeon.level.blobs.get(KeyWall.class);
+		Blob wall = Dungeon.level.blobs.getOnly(KeyWall.class);
 		if (!Dungeon.level.solid[pos] || (wall != null && wall.cur[pos] > 0)) {
 			GameScene.add(Blob.seed(pos, 10, KeyWall.class));
 
 			Char ch = Actor.findChar(pos);
 			if (ch != null && ch.alignment == Char.Alignment.ENEMY){
-				WandOfBlastWave.throwChar(ch, new Ballistica(pos, pos+knockbackDIR, Ballistica.PROJECTILE), 1, false, false, this);
+				WandOfBlastWave.throwChar(ch, new Ballistica(pos, pos+knockbackDIR, Ballistica.PROJECTILE, ch), 1, false, false, this);
 			}
 		}
 	}
@@ -486,7 +490,7 @@ public class SkeletonKey extends Artifact {
 
 					l.losBlocking[cell] = off[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.LOS_BLOCKING) != 0;
 					l.solid[cell] = off[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.SOLID) != 0;
-					l.passable[cell] = off[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0;
+					l.setPassableLater(cell, off[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0);
 					l.avoid[cell] = off[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.AVOID) != 0;
 				}
 			}
@@ -501,7 +505,7 @@ public class SkeletonKey extends Artifact {
 			super.seed(level, cell, amount);
 			level.losBlocking[cell] = cur[cell] > 0 || (Terrain.flags[level.map[cell]] & Terrain.LOS_BLOCKING) != 0;
 			level.solid[cell] = cur[cell] > 0 || (Terrain.flags[level.map[cell]] & Terrain.SOLID) != 0;
-			level.passable[cell] = cur[cell] == 0 && (Terrain.flags[level.map[cell]] & Terrain.PASSABLE) != 0;
+			level.setPassableLater(cell, cur[cell] == 0 && (Terrain.flags[level.map[cell]] & Terrain.PASSABLE) != 0);
 			level.avoid[cell] = cur[cell] == 0 && (Terrain.flags[level.map[cell]] & Terrain.AVOID) != 0;
 		}
 
@@ -512,7 +516,7 @@ public class SkeletonKey extends Artifact {
 			Level l = Dungeon.level;
 			l.losBlocking[cell] = cur[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.LOS_BLOCKING) != 0;
 			l.solid[cell] = cur[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.SOLID) != 0;
-			l.passable[cell] = cur[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0;
+			l.setPassableLater(cell, cur[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0);
 			l.avoid[cell] = cur[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.AVOID) != 0;
 		}
 
@@ -528,7 +532,9 @@ public class SkeletonKey extends Artifact {
 				for (int i=0; i < l.length(); i++) {
 					l.losBlocking[i] = l.losBlocking[i] || cur[i] > 0;
 					l.solid[i] = l.solid[i] || cur[i] > 0;
-					l.passable[i] = l.passable[i] && cur[i] == 0;
+					if (l.isPassable(i)) {
+						l.setPassableLater(i, cur[i] == 0);
+					}
 					l.avoid[i] = l.avoid[i] && cur[i] == 0;
 				}
 			}
@@ -549,84 +555,94 @@ public class SkeletonKey extends Artifact {
 
 	public static class KeyReplacementTracker extends Buff {
 
-		public int[] ironKeysNeeded, goldenKeysNeeded, crystalKeysNeeded;
+		public List<String> ironKeysNeeded, goldenKeysNeeded, crystalKeysNeeded;
+		private Set<String> checkedLevels = new HashSet<>();
 
 		{
 			revivePersists = true;
-			ironKeysNeeded = new int[26];
-			Arrays.fill(ironKeysNeeded, -1);
-			goldenKeysNeeded = new int[26];
-			Arrays.fill(goldenKeysNeeded, -1);
-			crystalKeysNeeded = new int[26];
-			Arrays.fill(crystalKeysNeeded, -1);
+			ironKeysNeeded = new ArrayList<>();
+			goldenKeysNeeded = new ArrayList<>();
+			crystalKeysNeeded = new ArrayList<>();
 		}
 
 		public void setupKeysForDepth(){
-			ironKeysNeeded[Dungeon.depth] = 0;
-			goldenKeysNeeded[Dungeon.depth] = 0;
-			crystalKeysNeeded[Dungeon.depth] = 0;
 
 			for (Heap h : Dungeon.level.heaps.valueList()){
 				if (h.type == Heap.Type.LOCKED_CHEST){
-					goldenKeysNeeded[Dungeon.depth]++;
+					goldenKeysNeeded.add(Dungeon.levelName);
 				} else if (h.type == Heap.Type.CRYSTAL_CHEST){
-					crystalKeysNeeded[Dungeon.depth]++;
+					crystalKeysNeeded.add(Dungeon.levelName);
 				}
 			}
 
 			for (int i = 0; i < Dungeon.level.length(); i++){
 				if (Dungeon.level.map[i] == Terrain.LOCKED_DOOR){
-					ironKeysNeeded[Dungeon.depth]++;
+					ironKeysNeeded.add(Dungeon.levelName);
 				} else if (Dungeon.level.map[i] == Terrain.CRYSTAL_DOOR){
-					crystalKeysNeeded[Dungeon.depth]++;
+					crystalKeysNeeded.add(Dungeon.levelName);
 				}
 			}
+			
+			checkedLevels.add(Dungeon.levelName);
 		}
 
 		public void processIronLockOpened(){
-			if (ironKeysNeeded[Dungeon.depth] == -1){
+			if (!checkedLevels.contains(Dungeon.levelName)){
 				setupKeysForDepth();
 			}
-			ironKeysNeeded[Dungeon.depth] -= 1;
+			ironKeysNeeded.remove(Dungeon.levelName);
 			processExcessKeys();
 		}
 
 		public void processGoldLockOpened(){
-			if (goldenKeysNeeded[Dungeon.depth] == -1){
+			if (!checkedLevels.contains(Dungeon.levelName)){
 				setupKeysForDepth();
 			}
-			goldenKeysNeeded[Dungeon.depth] -= 1;
+			goldenKeysNeeded.remove(Dungeon.levelName);
 			processExcessKeys();
 		}
 
 		public void processCrystalLockOpened(){
-			if (crystalKeysNeeded[Dungeon.depth] == -1){
+			if (!checkedLevels.contains(Dungeon.levelName)){
 				setupKeysForDepth();
 			}
-			crystalKeysNeeded[Dungeon.depth] -= 1;
+			crystalKeysNeeded.remove(Dungeon.levelName);
 			processExcessKeys();
 		}
 
 		public void processExcessKeys(){
-			int keysNeeded = ironKeysNeeded[Dungeon.depth];
+			if (!checkedLevels.contains(Dungeon.levelName)) {
+				//we haven’t opened any door on this level yet, so we cannot discard the key
+				return;
+			}
+			int keysNeeded = 0;
+			for (String s : ironKeysNeeded) {
+				if (s.equals(Dungeon.levelName)) keysNeeded++;
+			}
 			boolean removed = false;
 			if (keysNeeded >= 0) {
-				while (Notes.keyCount(new IronKey(Dungeon.depth)) > keysNeeded) {
-					Notes.remove(new IronKey(Dungeon.depth));
+				while (Notes.keyCount(new IronKey(Dungeon.levelName, -1)) > keysNeeded) {
+					Notes.remove(new IronKey(Dungeon.levelName, -1));
 					removed = true;
 				}
 			}
-			keysNeeded = goldenKeysNeeded[Dungeon.depth];
+			keysNeeded = 0;
+			for (String s : goldenKeysNeeded) {
+				if (s.equals(Dungeon.levelName)) keysNeeded++;
+			}
 			if (keysNeeded >= 0) {
-				while (Notes.keyCount(new GoldenKey(Dungeon.depth)) > keysNeeded) {
-					Notes.remove(new GoldenKey(Dungeon.depth));
+				while (Notes.keyCount(new GoldenKey(Dungeon.levelName, -1)) > keysNeeded) {
+					Notes.remove(new GoldenKey(Dungeon.levelName, -1));
 					removed = true;
 				}
 			}
-			keysNeeded = crystalKeysNeeded[Dungeon.depth];
+			keysNeeded = 0;
+			for (String s : crystalKeysNeeded) {
+				if (s.equals(Dungeon.levelName)) keysNeeded++;
+			}
 			if (keysNeeded >= 0) {
-				while (Notes.keyCount(new CrystalKey(Dungeon.depth)) > keysNeeded) {
-					Notes.remove(new CrystalKey(Dungeon.depth));
+				while (Notes.keyCount(new CrystalKey(Dungeon.levelName, -1)) > keysNeeded) {
+					Notes.remove(new CrystalKey(Dungeon.levelName, -1));
 					removed = true;
 				}
 			}
@@ -639,21 +655,28 @@ public class SkeletonKey extends Artifact {
 		public static String IRON_NEEDED = "iron_needed";
 		public static String GOLDEN_NEEDED = "golden_needed";
 		public static String CRYSTAL_NEEDED = "crystal_needed";
+		private static final String CHECKED_LEVELS = "checked_levels";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
-			bundle.put(IRON_NEEDED, ironKeysNeeded);
-			bundle.put(GOLDEN_NEEDED, goldenKeysNeeded);
-			bundle.put(CRYSTAL_NEEDED, crystalKeysNeeded);
+			bundle.put(IRON_NEEDED, ironKeysNeeded.toArray(EditorUtilities.EMPTY_STRING_ARRAY));
+			bundle.put(GOLDEN_NEEDED, goldenKeysNeeded.toArray(EditorUtilities.EMPTY_STRING_ARRAY));
+			bundle.put(CRYSTAL_NEEDED, crystalKeysNeeded.toArray(EditorUtilities.EMPTY_STRING_ARRAY));
+			bundle.put(CHECKED_LEVELS, checkedLevels.toArray(EditorUtilities.EMPTY_STRING_ARRAY));
 		}
 
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			ironKeysNeeded = bundle.getIntArray(IRON_NEEDED);
-			goldenKeysNeeded = bundle.getIntArray(GOLDEN_NEEDED);
-			crystalKeysNeeded = bundle.getIntArray(CRYSTAL_NEEDED);
+			ironKeysNeeded.clear();
+			goldenKeysNeeded.clear();
+			crystalKeysNeeded.clear();
+			checkedLevels.clear();
+			Collections.addAll(ironKeysNeeded, bundle.getStringArray(IRON_NEEDED));
+			Collections.addAll(goldenKeysNeeded, bundle.getStringArray(GOLDEN_NEEDED));
+			Collections.addAll(crystalKeysNeeded, bundle.getStringArray(CRYSTAL_NEEDED));
+			Collections.addAll(checkedLevels, bundle.getStringArray(CHECKED_LEVELS));
 		}
 
 	}

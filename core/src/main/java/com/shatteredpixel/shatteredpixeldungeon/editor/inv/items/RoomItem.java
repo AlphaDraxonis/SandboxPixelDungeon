@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRoomComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.AmbitiousImpRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
@@ -101,7 +102,8 @@ public class RoomItem extends EditorItem<Room> {
 
     public static Image getImage(Class<? extends Room> r) {
 
-        //standard rooms
+        //standard room
+        if (r == AmbitiousImpRoom.class) return new ImpSprite();
         if (r == AquariumRoom.class)  return new PiranhaSprite();//TODO maybe make own sprite with bg included?
         if (r == BlacksmithRoom.class) return new BlacksmithSprite();
         if (r == BurnedRoom.class) return new TileSprite(Assets.Environment.TILES_SEWERS, Terrain.EMBERS);
