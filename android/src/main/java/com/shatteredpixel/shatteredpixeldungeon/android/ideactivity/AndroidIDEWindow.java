@@ -45,6 +45,7 @@ import android.widget.TextView;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.android.AndroidLauncher;
 import com.shatteredpixel.shatteredpixeldungeon.android.R;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
@@ -577,6 +578,7 @@ public class AndroidIDEWindow extends Activity {
 	}
 
 	private void doInGameSelection(Runnable whatToDo) {
+		SandboxPixelDungeon.ignoreDisplaySizeChange = true;
 		Intent backToLibGDX = new Intent(AndroidIDEWindow.this, AndroidLauncher.class);
 		backToLibGDX.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		startActivity(backToLibGDX);
@@ -585,6 +587,8 @@ public class AndroidIDEWindow extends Activity {
 	}
 
 	private void goBackAfterInGameSelection(String scriptPath, LuaScript luaScript, String resultKey, String resultValue) {
+		SandboxPixelDungeon.ignoreDisplaySizeChange = false;
+		
 		selectedScriptPathFromSelectionDialog = scriptPath;
 		selectedScriptFromSelectionDialog = luaScript;
 		Intent backToIDEWindow = new Intent(AndroidLauncher.instance, AndroidIDEWindow.class);

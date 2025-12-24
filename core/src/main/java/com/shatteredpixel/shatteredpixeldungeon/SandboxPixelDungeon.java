@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.WelcomeScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ScrollArea;
 import com.watabou.noosa.audio.Music;
@@ -209,8 +210,12 @@ public class SandboxPixelDungeon extends Game {
 		GameScene.endActorThread();
 	}
 	
+	//weird workaround, see usages for explanation, but it shouldn’t ever be set to true!
+	@NotAllowedInLua
+	public static boolean ignoreDisplaySizeChange = false;
+	
 	public void updateDisplaySize(){
-		platform.updateDisplaySize();
+		if (!ignoreDisplaySizeChange) platform.updateDisplaySize();
 	}
 
 	public static void updateSystemUI() {
