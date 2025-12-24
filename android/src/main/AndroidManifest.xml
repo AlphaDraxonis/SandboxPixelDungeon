@@ -54,7 +54,8 @@
 			android:name=".AndroidMissingNativesHandler">
 		</activity>
 		<activity
-			android:name=".ideactivity.AndroidIDEWindow">
+			android:name=".ideactivity.AndroidIDEWindow"
+            android:theme="@style/IdeWindowTheme">
 		</activity>
 	</application>
 

@@ -3,5 +3,5 @@
     <!-- Compat with Android 8 and older, which don't have full inset handling support -->
     <!-- This is the classic plain black theme that Pixel Dungeons have always used -->
     <style name="GameTheme" parent="@android:style/Theme.Black.NoTitleBar"/>
+    <style name="IdeWindowTheme" parent="@android:style/Theme.Black.NoTitleBar"/>
 </resources>
-

@@ -6,4 +6,10 @@
             shortEdges <!-- For Android 14- devices. Edge-to-edge is automatic for Android 15+ -->
         </item>
     </style>
+
+
+    <style name="IdeWindowTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
+
 </resources>
