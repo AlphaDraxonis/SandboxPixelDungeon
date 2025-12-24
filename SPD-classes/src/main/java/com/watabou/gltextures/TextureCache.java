@@ -27,6 +27,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.watabou.NotAllowedInLua;
 import com.watabou.glwrap.Texture;
 import com.watabou.noosa.Game;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 
 import java.util.HashMap;
@@ -165,6 +166,8 @@ public class TextureCache {
 	
 	public static Pixmap getBitmap( Object src ) {
 		
+		FileHandle srcAsFile = null;
+		
 		try {
 			if (src instanceof Integer){
 				
@@ -176,14 +179,14 @@ public class TextureCache {
 
 				String s = (String) src;
 				if (s.startsWith(EXTERNAL_ASSET_PREFIX)) {
-					return new Pixmap(FileUtils.getFileHandle(s.substring(EXTERNAL_ASSET_PREFIX_LENGTH)));
+					return new Pixmap(srcAsFile = FileUtils.getFileHandle(s.substring(EXTERNAL_ASSET_PREFIX_LENGTH)));
 				} else {
-					return new Pixmap(Gdx.files.internal(s));
+					return new Pixmap(srcAsFile = Gdx.files.internal(s));
 				}
 
 			} else if (src instanceof FileHandle) {
 
-				return new Pixmap((FileHandle) src);
+				return new Pixmap(srcAsFile = (FileHandle) src);
 				
 			} else if (src instanceof Pixmap) {
 
@@ -196,8 +199,16 @@ public class TextureCache {
 			}
 		} catch (Exception e) {
 			
-			Game.reportException(e);
-			return null;
+			if (srcAsFile != null && DeviceCompat.isAndroid()) {
+				//try again using a more robust, more platform-specific approach
+				try {
+					return Game.platform.loadPixmapRobust(srcAsFile);
+				} catch (Exception ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+			
+			throw e;
 			
 		}
 	}

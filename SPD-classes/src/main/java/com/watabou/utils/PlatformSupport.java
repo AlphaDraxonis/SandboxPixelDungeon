@@ -234,5 +234,15 @@ public abstract class PlatformSupport {
 
 		return fonts.get(generator).get(key);
 	}
+	
+	
+	/**
+	 * if {@code new Pixmap(file)} fails for some reason, this method will try its luck
+	 * @param file the location of the valid image file (png/jpg/bmp)
+	 * @return a hopefully working Pixmap
+	 */
+	public Pixmap loadPixmapRobust(FileHandle file) throws Exception {
+		throw new Exception("loadPixmapRobust(FileHandle) is only available for Android! use new Pixmap(FileHandle) instead!");
+	}
 
 }

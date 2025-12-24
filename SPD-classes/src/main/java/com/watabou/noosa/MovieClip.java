@@ -135,6 +135,10 @@ public class MovieClip extends Image {
 			this.frames = new RectF[frames.length];
 			for (int i=0; i < frames.length; i++) {
 				this.frames[i] = film.get( frames[i] );
+				if (this.frames[i] == null) {
+					this.frames = null;
+					break;
+				}
 			}
 			return this;
 		}

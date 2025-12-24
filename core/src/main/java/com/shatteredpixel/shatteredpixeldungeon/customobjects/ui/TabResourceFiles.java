@@ -25,10 +25,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.customobjects.ui;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ResourcePath;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.CategoryScroller;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.LoadCustomObjects;
@@ -47,6 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndSoundFileViewer;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.NotAllowedInLua;
 import com.watabou.noosa.ColorBlock;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -207,23 +208,23 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 
 	public static void viewResource(String path, FileHandle file) {
 		String extension = file.extension();
-		if (ResourcePath.isImage(extension)) {
-			DungeonScene.show(new WndImageViewer(new Image(file)));
-		}
-		else if (ResourcePath.isSound(extension)) {
-			DungeonScene.show(new WndSoundFileViewer(file));
-		}
-		else if (ResourcePath.isText(extension) || ResourcePath.isLua(extension)) {
-			Image icon = getSpriteForPath(path, file);
-			try {
+		try {
+			if (ResourcePath.isImage(extension)) {
+				DungeonScene.show(new WndImageViewer(new Image(file)));
+			}
+			else if (ResourcePath.isSound(extension)) {
+				DungeonScene.show(new WndSoundFileViewer(file));
+			}
+			else if (ResourcePath.isText(extension) || ResourcePath.isLua(extension)) {
+				Image icon = getSpriteForPath(path, file);
 				DungeonScene.show(new WndTitledMessage(icon, path, file.readString()) {
 					{
 						setHighlightingEnabled(ResourcePath.isText(extension));
 					}
 				});
-			} catch (GdxRuntimeException ex) {
-				DungeonScene.show(new WndError(ex));
 			}
+		} catch (Exception ex) {
+			DungeonScene.show(new WndError(ex));
 		}
 	}
 
@@ -332,17 +333,33 @@ public class TabResourceFiles extends WndAllCustomObjects.TabCustomObjs {
 				icon.remove();
 			}
 			
-			if (file != null && ResourcePath.isImage(file.extension())) {
-				icon = new Image(file);
-				if (icon.texture.width > ICON_SIZE) {
-					icon.scale.set(ICON_SIZE / (float) (Math.max(icon.texture.width, icon.texture.height)));
-				} else if (icon.texture.height > ICON_SIZE * 2) {
-					icon.scale.set(ICON_SIZE*2 / (float) icon.texture.height);
+			try {
+				if (file != null && ResourcePath.isImage(file.extension())) {
+					icon = new Image(file);
+					if (icon.texture.width > ICON_SIZE) {
+						icon.scale.set(ICON_SIZE / (float) (Math.max(icon.texture.width, icon.texture.height)));
+					} else if (icon.texture.height > ICON_SIZE * 2) {
+						icon.scale.set(ICON_SIZE*2 / (float) icon.texture.height);
+					}
+					add(icon);
+				} else {
+					icon = getSpriteForPath(path, file);
+					add(icon);
 				}
+				active = true;
+			} catch (Exception e) {
+				Game.reportException(e);
+				new Thread(() -> {
+					try {
+						Thread.sleep(100);
+					Game.runOnRenderThread(() -> EditorScene.show(new WndError(e)));
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				}).start();
+				icon = Icons.WARNING.get();
 				add(icon);
-			} else {
-				icon = getSpriteForPath(path, file);
-				add(icon);
+				active = false;
 			}
 			
 			text.text(path);

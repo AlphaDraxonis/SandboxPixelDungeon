@@ -24,6 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.android;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.os.Build;
@@ -50,6 +52,10 @@ import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.RectF;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -435,5 +441,31 @@ public class AndroidPlatformSupport extends PlatformSupport {
 		return new net.bytebuddy.android.AndroidClassLoadingStrategy.Wrapping(AndroidLauncher.instance.getDir(
 				"generated",
 				Context.MODE_PRIVATE));
+	}
+	
+	
+	/**
+	 * if {@code new Pixmap(file)} fails for some reason, this method will try its luck
+	 * @param file the location of the valid image file (png/jpg/bmp)
+	 * @return a hopefully working Pixmap
+	 */
+	@Override
+	public Pixmap loadPixmapRobust(FileHandle file) throws Exception {
+		
+		try (InputStream is = new FileInputStream(file.file())) {
+			Bitmap bmp = BitmapFactory.decodeStream(is);
+			if (bmp == null) throw new IOException("Bitmap decode failed");
+			
+			Bitmap argb = bmp.getConfig() == Bitmap.Config.ARGB_8888
+					? bmp
+					: bmp.copy(Bitmap.Config.ARGB_8888, false);
+			
+			Pixmap pixmap = new Pixmap(argb.getWidth(), argb.getHeight(), Pixmap.Format.RGBA8888);
+			ByteBuffer buffer = pixmap.getPixels();
+			argb.copyPixelsToBuffer(buffer);
+			buffer.position(0);
+			
+			return pixmap;
+		}
 	}
 }
