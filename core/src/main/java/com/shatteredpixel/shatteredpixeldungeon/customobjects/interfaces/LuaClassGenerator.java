@@ -68,9 +68,13 @@ import org.luaj.vm2.LuaValue;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 public final class LuaClassGenerator {
@@ -237,80 +241,87 @@ public final class LuaClassGenerator {
     //lua code cannot override these methods
     private static Collection<Method> methodsToIntercept(Class<?> originalClass) {
 		Map<String, Method> methods = new HashMap<>();
+		Set<String> namesOfMethodsToRemove = new HashSet<>();
 		if (Char.class.isAssignableFrom(originalClass)) {
 			
 			findAllMethodsToOverride(originalClass, Actor.class, methods);
 			
-			methods.remove("setDurationForFlavourBuff");
+			namesOfMethodsToRemove.add("setDurationForFlavourBuff");
 			
 		} else if (Level.class.isAssignableFrom(originalClass)) {
 			
 			findAllMethodsToOverride(originalClass, Level.class, methods);
 			
-			methods.remove("width");
-			methods.remove("height");
-			methods.remove("adjacent");
-			methods.remove("distance");
-			methods.remove("trueDistance");
-			methods.remove("cellToPoint");
-			methods.remove("pointToCell");
-			methods.remove("tilesTex");
-			methods.remove("waterTex");
-			methods.remove("getTransition");
-			methods.remove("getTransition");
-			methods.remove("getTransitionFromSurface");
-			methods.remove("setLevelScheme");
-			methods.remove("addVisuals");
-			methods.remove("addWallVisuals");
-			methods.remove("cleanWalls");
-			methods.remove("cleanWallCell");
-			methods.remove("removeSimpleCustomTile");
-			methods.remove("findMob");
-			methods.remove("addRespawner");
-			methods.remove("buildFlagMaps");
+			namesOfMethodsToRemove.add("width");
+			namesOfMethodsToRemove.add("height");
+			namesOfMethodsToRemove.add("adjacent");
+			namesOfMethodsToRemove.add("distance");
+			namesOfMethodsToRemove.add("trueDistance");
+			namesOfMethodsToRemove.add("cellToPoint");
+			namesOfMethodsToRemove.add("pointToCell");
+			namesOfMethodsToRemove.add("tilesTex");
+			namesOfMethodsToRemove.add("waterTex");
+			namesOfMethodsToRemove.add("getTransition");
+			namesOfMethodsToRemove.add("getTransitionFromSurface");
+			namesOfMethodsToRemove.add("setLevelScheme");
+			namesOfMethodsToRemove.add("addVisuals");
+			namesOfMethodsToRemove.add("addWallVisuals");
+			namesOfMethodsToRemove.add("cleanWalls");
+			namesOfMethodsToRemove.add("cleanWallCell");
+			namesOfMethodsToRemove.add("removeSimpleCustomTile");
+			namesOfMethodsToRemove.add("findMob");
+			namesOfMethodsToRemove.add("addRespawner");
+			namesOfMethodsToRemove.add("buildFlagMaps");
 			
-			methods.remove("isPassable");
-			methods.remove("isPassableAlly");
-			methods.remove("isPassableHero");
-			methods.remove("isPassableMob");
-			methods.remove("getPassableVar");
-			methods.remove("getPassableHeroVar");
-			methods.remove("getPassableMobVar");
-			methods.remove("getPassableAndAvoidVar");
-			methods.remove("getPassableAndAvoidVarForBoth");
+			namesOfMethodsToRemove.add("isPassable");
+			namesOfMethodsToRemove.add("isPassableAlly");
+			namesOfMethodsToRemove.add("isPassableHero");
+			namesOfMethodsToRemove.add("isPassableMob");
+			namesOfMethodsToRemove.add("getPassableVar");
+			namesOfMethodsToRemove.add("getPassableHeroVar");
+			namesOfMethodsToRemove.add("getPassableMobVar");
+			namesOfMethodsToRemove.add("getPassableAndAvoidVar");
+			namesOfMethodsToRemove.add("getPassableAndAvoidVarForBoth");
 			
 			// CustomLevel
-			methods.remove("updateTransitionCells");
+			namesOfMethodsToRemove.add("updateTransitionCells");
 			
 		} else if (CharSprite.class.isAssignableFrom(originalClass)) {
 			
 			findAllMethodsToOverride(originalClass, Visual.class, methods);
 			
-			methods.remove("texture");
+			namesOfMethodsToRemove.add("texture");
 		} else {
 			//null means all classes except Object.class
 			findAllMethodsToOverride(originalClass, null, methods);
 		}
 		
-		methods.remove("storeInBundle");
-		methods.remove("restoreFromBundle");
+		namesOfMethodsToRemove.add("storeInBundle");
+		namesOfMethodsToRemove.add("restoreFromBundle");
 		
 		//will be force-added later
-		methods.remove("name");
+		namesOfMethodsToRemove.add("name");
 		
 		//interface NameCustomizable
-		methods.remove("getCustomName");
-		methods.remove("setCustomName");
+		namesOfMethodsToRemove.add("getCustomName");
+		namesOfMethodsToRemove.add("setCustomName");
 		
 		if (GameObject.class.isAssignableFrom(originalClass)) {
-			methods.remove("onRenameLevelScheme");
-			methods.remove("onDeleteLevelScheme");
-			methods.remove("initAsInventoryItem");
+			namesOfMethodsToRemove.add("onRenameLevelScheme");
+			namesOfMethodsToRemove.add("onDeleteLevelScheme");
+			namesOfMethodsToRemove.add("initAsInventoryItem");
 		}
 		
-		methods.remove("getCopy");
+		namesOfMethodsToRemove.add("getCopy");
 		
-		return methods.values();
+		List<Method> result = new ArrayList<>();
+		for (Method m : methods.values()) {
+			if (!namesOfMethodsToRemove.contains(m.getName())) {
+				result.add(m);
+			}
+		}
+		
+		return result;
     }
 
     public static class InterceptorNewInstance {
@@ -416,6 +427,7 @@ public final class LuaClassGenerator {
 			LuaValue script = getScript(self);
 			if (script != null && script.get(method.getName()).isfunction()) {
 				try {
+					//TODO possibly delegated to wrong method here in case of overloading!!!
 					return LuaRestrictionProxy.coerceLuaToJava( script.get(method.getName()).invoke(convertArgsToLua(self, self.getVars(), args)).arg1(), method.getReturnType() );
 				} catch (LuaError error) {
 					Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error)));
@@ -491,10 +503,13 @@ public final class LuaClassGenerator {
                 //don't override these
                 continue;
             }
+			
+			//prevent duplicate method signature
 			String identifier = m.getName();
-			Method currentMethod = currentMethods.get(identifier);
-            if (currentMethod == null || currentMethod.getParameterTypes().length < m.getParameterTypes().length)
-                currentMethods.put(identifier, m);
+			for (Class<?> paramType : m.getParameterTypes()) {
+				identifier += "," + paramType;
+			}
+			currentMethods.put(identifier, m);
         }
         if (currentClass != highestClass) {
 			Class<?> superClass = currentClass.getSuperclass();
