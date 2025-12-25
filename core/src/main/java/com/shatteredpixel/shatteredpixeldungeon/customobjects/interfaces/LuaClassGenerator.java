@@ -418,7 +418,10 @@ public final class LuaClassGenerator {
 				try {
 					return LuaRestrictionProxy.coerceLuaToJava( script.get(method.getName()).invoke(convertArgsToLua(self, self.getVars(), args)).arg1(), method.getReturnType() );
 				} catch (LuaError error) {
-					Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error)));
+					Game.runOnRenderThread(() -> {
+						WndError wnd = WndError.WndErrorLua.create(error);
+						if (wnd != null) DungeonScene.show(wnd);
+					});
 				}
 			}
 			return originalMethod.call();
@@ -469,7 +472,10 @@ public final class LuaClassGenerator {
 				try {
 					return LuaRestrictionProxy.coerceLuaToJava( script.get(method.getName()).invoke(MethodInterceptor.convertArgsToLua(self, self.getVars(), args)).arg1(), method.getReturnType() );
 				} catch (LuaError error) {
-					Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error)));
+					Game.runOnRenderThread(() -> {
+						WndError wnd = WndError.WndErrorLua.create(error);
+						if (wnd != null) DungeonScene.show(wnd);
+					});
 				}
 			}
 			

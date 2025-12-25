@@ -30,6 +30,8 @@ import org.luaj.vm2.LuaError;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WndError extends WndTitledMessage {
 
@@ -97,6 +99,37 @@ public class WndError extends WndTitledMessage {
 		}
 
 		return b.toString();
+	}
+	
+	public static final class WndErrorLua extends WndError {
+		
+		private WndErrorLua( LuaError error ) {
+			super( error );
+		}
+		
+		private static final Map<String, Long> lastCheckedErrorMessages = new HashMap<>();
+		private static final int INTERVAL_TIMER = 4000;
+		
+		public static WndErrorLua create(LuaError error) {
+			//prevent duplicate windows
+			String windowText = addLineNumbers(error.getMessage());
+			for (WndErrorLua w : Game.scene().members(WndErrorLua.class)) {
+				if (w.text.text().equals(windowText)) return null;
+			}
+			//don’t spam the same error over and over again
+			Long lastChecked = lastCheckedErrorMessages.get(windowText);
+			if (lastChecked != null && lastChecked > System.currentTimeMillis() - INTERVAL_TIMER) {
+				return null;
+			}
+			return new WndErrorLua(error);
+		}
+		
+		@Override
+		public void destroy() {
+			lastCheckedErrorMessages.put(text.text(), System.currentTimeMillis());
+			super.destroy();
+		}
+		
 	}
 
 }
