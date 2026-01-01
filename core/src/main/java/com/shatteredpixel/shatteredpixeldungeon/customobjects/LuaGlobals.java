@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
@@ -826,6 +827,20 @@ public class LuaGlobals extends Globals {
 					}
 				}
 				throw new LuaError("Illegal arguments: use placeMob(Mob mob, int pos)");
+			}
+		});
+		
+		set("seedBlob", new ThreeArgFunction() {//TODO add to documentation!
+			@Override
+			public LuaValue call(LuaValue blobClassName, LuaValue pos, LuaValue amount) {
+				//GameScene.add( Blob.seed( cell+i, 120, Blizzard.class ) );
+				if (blobClassName.isstring() && pos.isint() && amount.isint()) {
+					Class cl = (Class) LuaRestrictionProxy.coerceLuaToJava(LuaGlobals.this.get("class").call(blobClassName));
+					Blob blob = Blob.seed(pos.checkint(), amount.checkint(), cl);
+					GameScene.add(blob);
+					return LuaRestrictionProxy.wrapObject(blob);
+				}
+				throw new LuaError("Illegal arguments: use seedBlob(String blobClassName, int pos, int amount)");
 			}
 		});
 
