@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ColorBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
@@ -231,7 +232,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
 
         List<BuffItem> asBuffItems = new ArrayList<>();
         for (Buff buff : zone.heroBuffs.values()) {
-            if (buff.icon() != BuffIndicator.NONE) {
+            if (buff.icon() != BuffIndicator.NONE || buff instanceof ColorBuff) {
                 buff.zoneBuff = buff.permanent = true;
                 asBuffItems.add(new BuffItem(buff));
              }
@@ -265,7 +266,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
 
         asBuffItems = new ArrayList<>();
         for (Buff buff : zone.mobBuffs.values()) {
-            if (buff.icon() != BuffIndicator.NONE) {
+            if (buff.icon() != BuffIndicator.NONE || buff instanceof ColorBuff) {
                 buff.zoneBuff = buff.permanent = true;
                 asBuffItems.add(new BuffItem(buff));
             }

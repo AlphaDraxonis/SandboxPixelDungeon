@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ColorBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
@@ -787,7 +788,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
                 List<BuffItem> asBuffItems = new ArrayList<>();
                 for (Buff b : mob.buffs()) {
-                    if (b.icon() != BuffIndicator.NONE) asBuffItems.add(new BuffItem(b));
+                    if (b.icon() != BuffIndicator.NONE || b instanceof ColorBuff) asBuffItems.add(new BuffItem(b));
                 }
                 buffs = new BuffListContainer(asBuffItems, EditMobComp.this, label("buffs")) {
                     @Override
@@ -1008,7 +1009,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (buffs != null) {
             List<BuffItem> asBuffItems = new ArrayList<>();
             for (Buff b : obj.buffs()) {
-                if (b.icon() != BuffIndicator.NONE) asBuffItems.add(new BuffItem(b));
+                if (b.icon() != BuffIndicator.NONE || b instanceof ColorBuff) asBuffItems.add(new BuffItem(b));
             }
             buffs.setItemList(asBuffItems);
         }

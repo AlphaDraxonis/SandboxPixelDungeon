@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BuffWithDuration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ColorBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corrosion;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
@@ -21,6 +22,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ChangeColorComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -46,6 +48,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
     protected RedButton removeBuff;
     protected StyledSpinner duration, level;
     protected StyledCheckBox showFx;
+	protected ChangeColorComp changeColor;
 
     private final Component[] rectComps, linearComps;
 
@@ -154,6 +157,17 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
             });
             add(showFx);
         }
+		
+		if (buff instanceof ColorBuff) {
+			changeColor = new ChangeColorComp(Messages.get(this, "color"));
+			changeColor.setColor(((ColorBuff) buff).color);
+			changeColor.addChangeListener(newColor -> {
+				((ColorBuff) buff).color = newColor;
+//				updateObj();
+				if (buff.target != null) buff.fx(true);
+			});
+			add(changeColor);
+		}
 
         if (buff.target != null) {
             removeBuff = new RedButton(Messages.get(this, "remove")) {
@@ -191,7 +205,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
 //        } else changeDuration = null;
 
 
-        rectComps = new Component[]{permanent, duration, level, showFx};
+        rectComps = new Component[]{permanent, duration, level, showFx, changeColor};
         linearComps = new Component[]{removeBuff};
 
         initializeCompsForCustomObjectClass();
@@ -211,6 +225,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
             else duration.setValue(((BuffWithDuration) obj).left);
         }
         if (showFx != null) showFx.checked(!obj.alwaysHidesFx);
+		if (changeColor != null) changeColor.setColor(((ColorBuff) obj).color);
     }
 
     @Override
@@ -278,6 +293,10 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
         if (a instanceof CustomGameObjectClass) {
             if (((CustomGameObjectClass) a).getInheritStats() != ((CustomGameObjectClass) b).getInheritStats()) return false;
         }
+		
+		if (a instanceof ColorBuff) {
+			if (((ColorBuff) a).color != ((ColorBuff) b).color) return false;
+		}
 
         return true;
     }

@@ -177,6 +177,8 @@ public final class Buffs extends GameObjectCategory<Buff> {
                     Recharging.class,
                     ArtifactRecharge.class,
 //                  EnhancedRings.class,
+					
+					ColorBuff.class
             });
         }
     }

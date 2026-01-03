@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.effects.ColoringBlock;
 import com.shatteredpixel.shatteredpixeldungeon.effects.DarkBlock;
 import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
@@ -91,7 +92,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	protected float shadowOffset    = 0.25f;
 
 	public enum State {
-		BURNING, LEVITATING, INVISIBLE, HALF_INVISIBLE, PARALYSED, FROZEN, ILLUMINATED, CHILLED, DARKENED, MARKED, HEALING, SHIELDED, HEARTS, GLOWING, AURA
+		BURNING, LEVITATING, INVISIBLE, HALF_INVISIBLE, PARALYSED, FROZEN, ILLUMINATED, CHILLED, DARKENED, MARKED, HEALING, SHIELDED, HEARTS, GLOWING, AURA, COLORED
 	}
 	
 	public Animation idle;
@@ -114,6 +115,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	
 	protected IceBlock iceBlock;
 	protected DarkBlock darkBlock;
+	protected ColoringBlock coloringBlock;
 	protected GlowBlock glowBlock;
 	protected TorchHalo light;
 	protected ShieldHalo shield;
@@ -469,6 +471,16 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			auraRays = nRays;
 		}
 	}
+	
+	private int coloringBlockColor;
+	
+	//COLORED needs color data too
+	public void applyColor(int color) {
+		if (!subSprite) {
+			add(State.COLORED);
+			coloringBlockColor = color;
+		}
+	}
 
 	protected synchronized void processStateAddition( State state ) {
 		switch (state) {
@@ -551,6 +563,10 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 				if (parent != null) {
 					aura.show(this, 0);
 				}
+				break;
+			case COLORED:
+				if (coloringBlock != null) coloringBlock.killAndErase();
+				coloringBlock = ColoringBlock.apply(this, coloringBlockColor);
 				break;
 		}
 		if (realCharSprite != null) realCharSprite.add(state);
@@ -665,6 +681,12 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					aura = null;
 				}
 				break;
+			case COLORED:
+				if (coloringBlock != null) {
+					coloringBlock.undoEffect();
+					coloringBlock = null;
+				}
+				break;
 		}
 		if (realCharSprite != null) realCharSprite.remove(state);
 	}
@@ -732,6 +754,9 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		}
 		if (glowBlock != null){
 			glowBlock.visible =visible;
+		}
+		if (coloringBlock != null) {
+			coloringBlock.visible = visible;
 		}
 
 		if (sleeping) {

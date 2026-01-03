@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ColorBuff;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 
@@ -34,8 +35,13 @@ public class WndInfoBuff extends WndTitledMessage {
         super(createIconTitle(buff),buff.desc());
     }
 
-    public  static  IconTitle createIconTitle(Buff buff){
-        return new IconTitle( new BuffIcon(buff, true), Messages.titleCase(buff.name()));
+    public static IconTitle createIconTitle(Buff buff){
+        return new IconTitle(
+				buff instanceof ColorBuff
+					? ColorBuff.createIcon()
+					: new BuffIcon(buff, true),
+				Messages.titleCase(buff.name())
+		);
     }
 
 }
