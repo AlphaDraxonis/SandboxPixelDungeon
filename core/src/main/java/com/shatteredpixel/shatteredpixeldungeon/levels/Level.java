@@ -127,7 +127,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfYendor;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
@@ -1346,7 +1345,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 								if (b instanceof Wand.Charger
 										|| b instanceof Artifact.ArtifactBuff
 										|| b instanceof Ring.RingBuff
-										|| b instanceof MeleeWeapon.Charger
+										//not melee charger, Duelist should retain her charge count
 										|| b instanceof ClassArmor.Charger){
 									b.detach();
 								}
