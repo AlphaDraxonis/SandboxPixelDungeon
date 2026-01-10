@@ -218,7 +218,7 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			//Char Sprite
 			addMethod(201, CharSprite.class.getMethod("initAnimations"));
 			addMethod(202, CharSprite.class.getMethod("getAnimations"));
-			addMethod(203, CharSprite.class.getMethod("play", MovieClip.Animation.class), "anim");
+			addMethod(203, CharSprite.class.getMethod("play", MovieClip.Animation.class, boolean.class), "anim", "force");
 			addMethod(204, CharSprite.class.getMethod("link", Char.class), "ch");
 			addMethod(205, CharSprite.class.getMethod("worldToCamera", int.class), "cell");
 			addMethod(206, CharSprite.class.getMethod("showStatusWithIcon", boolean.class, int.class, String.class, int.class, Object[].class), "ignoreVisibility", "color", "text", "icon", "args");
