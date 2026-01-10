@@ -47,6 +47,7 @@ public class LuaTemplates {
 	private static final LuaScript KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK;
 
 	private static final LuaScript REPLACES_WALLS_WITH_EMBERS;
+	private static final LuaScript THE_FLOOR_IS_LAVA;
 	private static final LuaScript INSCRIBE_LOOT_TABLE;
 	private static final LuaScript SET_CURSED_EFFECTS;
 	
@@ -196,6 +197,32 @@ public class LuaTemplates {
 				"\n" +
 				"Random.popGenerator();" +
 				"\nend\n" +
+				"\n" +
+				"\n" +
+				"return {\n" +
+				"    vars = vars; static = static; initForPlay = initForPlay;\n" +
+				"}";
+		
+		THE_FLOOR_IS_LAVA = new LuaScript(Level.class, "All characters on the specified terrain catch fire!");
+		THE_FLOOR_IS_LAVA.code = "vars = {} static = {} function initForPlay(this, vars) this:super_initForPlay();\n" +
+				"\n" +
+				"-- btw, it is very important that you don't try accessing this using 'level', instead use 'this'\n" +
+				"Arrays.iterate(this.mobs, function(m)\n" +
+				"    if Arrays.get(this.map, m.pos) == Terrain.EMPTY then\n" +
+				"        local buff = affectBuff(m, \"Burning\");\n" +
+				"        buff:reignite(m, 5);\n" +
+				"    end \n" +
+				"end);\n" +
+				"\nend\n" +
+				"\n" +
+				"function occupyCell(ch)\n" +
+				"this:super_occupyCell(ch);\n" +
+				"\n" +
+				"if Arrays.get(this.map, ch.pos) == Terrain.EMPTY then\n" +
+				"    local buff = affectBuff(ch, \"Burning\");\n" +
+				"    buff:reignite(ch, 5);\n" +
+				"end\n" +
+				"end\n" +
 				"\n" +
 				"\n" +
 				"return {\n" +
@@ -372,7 +399,7 @@ public class LuaTemplates {
 				"}";
 
 		TEMPLATES = new LuaScript[]{KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK,
-				REPLACES_WALLS_WITH_EMBERS, INSCRIBE_LOOT_TABLE, SET_CURSED_EFFECTS, CUSTOM_CHAR_SPRITE};
+				REPLACES_WALLS_WITH_EMBERS, THE_FLOOR_IS_LAVA, INSCRIBE_LOOT_TABLE, SET_CURSED_EFFECTS, CUSTOM_CHAR_SPRITE};
 	}
 
 	private static String name(LuaScript script) {
@@ -381,6 +408,7 @@ public class LuaTemplates {
 		if (script == CRYSTAL_GUARDIAN_RECOVERY) return Messages.get(LuaTemplates.class, "crystal_guardian_recovery_name");
 		if (script == RANGED_ATTACK) return Messages.get(LuaTemplates.class, "ranged_attack_name");
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_name");
+		if (script == THE_FLOOR_IS_LAVA) return Messages.get(LuaTemplates.class, "the_floor_is_lava_name");
 		if (script == INSCRIBE_LOOT_TABLE) return Messages.get(LuaTemplates.class, "inscribe_loot_table_name");
 		if (script == SET_CURSED_EFFECTS) return Messages.get(LuaTemplates.class, "set_cursed_effects_name");
 		if (script == CUSTOM_CHAR_SPRITE) return Messages.get(LuaTemplates.class, "custom_char_sprite_name");
@@ -393,6 +421,7 @@ public class LuaTemplates {
 		if (script == CRYSTAL_GUARDIAN_RECOVERY) return Messages.get(LuaTemplates.class, "crystal_guardian_recovery_desc");
 		if (script == RANGED_ATTACK) return Messages.get(LuaTemplates.class, "ranged_attack_desc");
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_desc");
+		if (script == THE_FLOOR_IS_LAVA) return Messages.get(LuaTemplates.class, "the_floor_is_lava_desc");
 		if (script == INSCRIBE_LOOT_TABLE) return Messages.get(LuaTemplates.class, "inscribe_loot_table_desc");
 		if (script == SET_CURSED_EFFECTS) return Messages.get(LuaTemplates.class, "set_cursed_effects_desc");
 		if (script == CUSTOM_CHAR_SPRITE) return Messages.get(LuaTemplates.class, "custom_char_sprite_desc");
