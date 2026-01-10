@@ -847,9 +847,12 @@ public class LuaGlobals extends Globals {
 		set("affectBuff", new ThreeArgFunction() {
 			@Override
 			public LuaValue call(LuaValue target, LuaValue buff, LuaValue duration) {
-				if (target.isuserdata() && buff.isuserdata()) {
+				if (target.isuserdata() && (buff.isuserdata() || buff.isstring())) {
 					Char ch = (Char) LuaRestrictionProxy.coerceLuaToJava(target, Char.class);
 					if (ch != null) {
+						if (buff.isstring()) {
+							buff = LuaGlobals.this.get("class").call(buff);
+						}
 						Object b = LuaRestrictionProxy.coerceLuaToJava(buff);
 						
 						if (b instanceof Class) {
@@ -858,7 +861,7 @@ public class LuaGlobals extends Globals {
 								if (Buff.class.isAssignableFrom(buffClass)) {
 									return LuaRestrictionProxy.wrapObject(Buff.affect(ch, ((Class<? extends Buff>) buffClass)));
 								}
-							} else {
+							} else if (FlavourBuff.class.isAssignableFrom(buffClass)){
 								return LuaRestrictionProxy.wrapObject(Buff.affect(ch, ((Class<? extends FlavourBuff>) buffClass), duration.tofloat()));
 							}
 							
@@ -873,11 +876,11 @@ public class LuaGlobals extends Globals {
 						}
 						
 						//this contains extra info that the buff is wrong
-						throw new LuaError("Illegal arguments: use affectBuff(Char target, Buff buff) or affectBuff(Char target, Class<? extends Buff> buff) or affectBuff(Char target, Buff buff, float duration) or affectBuff(Char target, Class<? extends Buff> buff, float duration)\nIn this case, you did not provide a valid buff instance!");
+						throw new LuaError("Illegal arguments: use affectBuff(Char target, Buff buff) or affectBuff(Char target, Buff buff, float duration) or affectBuff(Char target, Class<? extends Buff> buff) or affectBuff(Char target, Class<? extends Buff> buff, float duration) or affectBuff(Char target, String buffClassName) or affectBuff(Char target, String buffClassName, float duration)");
 
 					}
 				}
-				throw new LuaError("Illegal arguments: use affectBuff(Char target, Buff buff) or affectBuff(Char target, Class<? extends Buff> buff) or affectBuff(Char target, Buff buff, float duration) or affectBuff(Char target, Class<? extends Buff> buff, float duration)");
+				throw new LuaError("Illegal arguments: use affectBuff(Char target, Buff buff) or affectBuff(Char target, Buff buff, float duration) or affectBuff(Char target, Class<? extends Buff> buff) or affectBuff(Char target, Class<? extends Buff> buff, float duration) or affectBuff(Char target, String buffClassName) or affectBuff(Char target, String buffClassName, float duration)");
 			}
 		});
 
