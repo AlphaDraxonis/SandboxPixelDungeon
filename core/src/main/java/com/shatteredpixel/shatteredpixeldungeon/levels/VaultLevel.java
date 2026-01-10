@@ -136,7 +136,7 @@ public class VaultLevel extends CityLevel {
 				}
 			}
 			//not true ID, prevents extra info about rings leaking to main game
-			item.levelKnown = item.cursedKnown = true;
+			item.setCursedKnown(item.levelKnown = true);
 			addItemToSpawn(item);
 		}
 
@@ -147,8 +147,8 @@ public class VaultLevel extends CityLevel {
 		Room finalRoom = room(RegionDecoLineRoom.class);
 		for (Point p : finalRoom.getPoints()){
 			int cell = pointToCell(p);
-			if (map[cell] == Terrain.REGION_DECO){
-				set(cell, Terrain.REGION_DECO_ALT, this);
+			if (map[cell] == Terrain.FLAMING_PEDESTAL){
+				set(cell, Terrain.FLAMING_PEDESTAL_ALT, this);
 			} else if (map[cell] == Terrain.EMPTY || map[cell] == Terrain.EMPTY_DECO || map[cell] == Terrain.WATER || map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.GRASS){
 				set(cell, Terrain.EMPTY_SP, this);
 			}
@@ -156,7 +156,7 @@ public class VaultLevel extends CityLevel {
 		
 		set(entrance(), Terrain.EMPTY, this);
 		transitions.put(entrance(), new LevelTransition(this,
-				entrance,
+				entrance(),
 				LevelTransition.Type.BRANCH_ENTRANCE,
 				Dungeon.depth,
 				0));
@@ -191,7 +191,7 @@ public class VaultLevel extends CityLevel {
 			if (item instanceof TrinketCatalyst){
 				drop( item, cell ).type = Heap.Type.LOCKED_CHEST;
 				int keyCell = randomDropCell();
-				drop( new GoldenKey(Dungeon.depth), keyCell ).type = Heap.Type.HEAP;
+				drop( new GoldenKey(), keyCell ).type = Heap.Type.HEAP;
 				if (map[keyCell] == Terrain.HIGH_GRASS || map[keyCell] == Terrain.FURROWED_GRASS) {
 					map[keyCell] = Terrain.GRASS;
 					losBlocking[keyCell] = false;

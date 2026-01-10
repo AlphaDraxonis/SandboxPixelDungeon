@@ -62,6 +62,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.remains.RemainsItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Spell;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.TargetedSpell;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.InventoryStone;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
@@ -331,15 +332,16 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(2002, Scroll.class.getDeclaredMethod("readAnimation"));
 
 			addMethod(2003, Spell.class.getDeclaredMethod("onCast", Hero.class), "hero");
+			addMethod(2004, TargetedSpell.class.getDeclaredMethod("onSpellused"));
 
-			addMethod(2004, Runestone.class.getDeclaredMethod("activate", int.class), "cell");
-			addMethod(2005, StoneOfEnchantment.class.getDeclaredMethod("createEnchantmentToInscribe", Weapon.class), "weapon");
-			addMethod(2006, StoneOfEnchantment.class.getDeclaredMethod("createGlyphToInscribe", Armor.class), "armor");
-			addMethod(2007, InventoryStone.class.getDeclaredMethod("inventoryTitle"));
-			addMethod(2008, InventoryStone.class.getDeclaredMethod("usableOnItem", Item.class), "item");
-			addMethod(2009, InventoryStone.class.getDeclaredMethod("onItemSelected", Item.class), "item");
+			addMethod(2005, Runestone.class.getDeclaredMethod("activate", int.class), "cell");
+			addMethod(2006, StoneOfEnchantment.class.getDeclaredMethod("createEnchantmentToInscribe", Weapon.class), "weapon");
+			addMethod(2007, StoneOfEnchantment.class.getDeclaredMethod("createGlyphToInscribe", Armor.class), "armor");
+			addMethod(2008, InventoryStone.class.getDeclaredMethod("inventoryTitle"));
+			addMethod(2009, InventoryStone.class.getDeclaredMethod("usableOnItem", Item.class), "item");
+			addMethod(2010, InventoryStone.class.getDeclaredMethod("onItemSelected", Item.class), "item");
 
-			addMethod(2008, Trinket.class.getDeclaredMethod("upgradeEnergyCost"));
+			addMethod(2009, Trinket.class.getDeclaredMethod("upgradeEnergyCost"));
 
 			addMethod(2011, Wand.class.getMethod("cursedEffect", Char.class, Ballistica.class, boolean.class), "user", "bolt", "positiveOnly");
 			addMethod(2012, Wand.class.getMethod("onZap", Ballistica.class), "attack");

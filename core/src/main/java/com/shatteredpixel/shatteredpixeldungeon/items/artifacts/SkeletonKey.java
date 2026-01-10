@@ -211,7 +211,7 @@ public class SkeletonKey extends Artifact {
 								curUser.sprite.idle();
 
 								//if there is a distant well landmark above, remove it, as we just opened the door
-								Notes.remove(Notes.Landmark.DISTANT_WELL, Dungeon.depth-1);
+								Notes.remove(Notes.Landmark.DISTANT_WELL, Dungeon.level.levelScheme.getDefaultAbove());
 							}
 						});
 						curUser.busy();
@@ -600,9 +600,9 @@ public class SkeletonKey extends Artifact {
 
 		//used if a level was reset, e.g. via unblessed ankh vs. boss
 		public void clearDepth(){
-			ironKeysNeeded[Dungeon.depth] = -1;
-			goldenKeysNeeded[Dungeon.depth] = -1;
-			crystalKeysNeeded[Dungeon.depth] = -1;
+			while (ironKeysNeeded.remove(Dungeon.level));
+			while (goldenKeysNeeded.remove(Dungeon.level));
+			while (crystalKeysNeeded.remove(Dungeon.level));
 		}
 
 		public void processIronLockOpened(){

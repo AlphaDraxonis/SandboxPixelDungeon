@@ -678,7 +678,9 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             LINE(LineBuilder.class),
             LOOP(LoopBuilder.class),
             FIGURE_EIGHT(FigureEightBuilder.class),
-            BRANCHES(BranchesBuilder.class);
+            BRANCHES(BranchesBuilder.class),
+//			GRID(GridBuilder.class) // to unflexible for now
+			;
 
             private final Class<? extends Builder> type;
 

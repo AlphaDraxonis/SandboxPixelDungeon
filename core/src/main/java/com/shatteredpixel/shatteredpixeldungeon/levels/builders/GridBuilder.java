@@ -54,7 +54,7 @@ public class GridBuilder extends Builder {
 		}
 
 		if (!entrance.forceSize(ROOM_SIZE, ROOM_SIZE)){
-			throw new RuntimeException("rigid room sizes for now!");
+			throw new RuntimeException("rigid room sizes for now; but if that changes, you might wanna add this builder to BuilderSpinner!");
 		}
 		entrance.setPos(0, 0);
 
@@ -81,7 +81,7 @@ public class GridBuilder extends Builder {
 			//TODO this works on rigid multiples atm, would be nicer to buffer rooms that don't quite work
 			if (!r.forceSize(ROOM_SIZE, ROOM_SIZE)){
 				if (!r.forceSize(2*ROOM_SIZE-1, 2*ROOM_SIZE-1)) {
-					throw new RuntimeException("rigid room sizes for now!");
+					throw new RuntimeException("rigid room sizes for now; but if that changes, you might wanna add this builder to BuilderSpinner!");
 				}
 				cellWidth = cellHeight = 2;
 			}
