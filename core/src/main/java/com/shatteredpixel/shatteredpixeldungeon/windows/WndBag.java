@@ -147,6 +147,10 @@ public class WndBag extends WndTabbed {
 		layoutTabs();
 	}
 
+	public ItemSelector getSelector() {
+		return selector;
+	}
+
 	protected List<Bag> getBags() {
 		if (selector == null) return Dungeon.hero.belongings.getBags();
 		else {
