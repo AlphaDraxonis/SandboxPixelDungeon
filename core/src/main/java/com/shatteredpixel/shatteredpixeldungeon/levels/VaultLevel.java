@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.GridBuilder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EmptyRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RegionDecoLineRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.SegmentedRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance.EntranceRoom;
@@ -101,12 +102,32 @@ public class VaultLevel extends CityLevel {
 
 		initRooms.add(roomEntrance = new VaultEntrance());
 
-		for (int i = 0; i < 23; i++){
+		for (int i = 0; i < 18; i++){
 			initRooms.add(new VaultSegmentedRoom());
 		}
 
-		initRooms.add(new VaultRegionDecoLineRoom());
+		initRooms.add(new EmptyRoom(){
+			@Override
+			public int minWidth() {
+				return 10;
+			}
+			@Override
+			public int maxWidth() {
+				return 20;
+			}
+		});
+		initRooms.add(new EmptyRoom(){
+			@Override
+			public int minHeight() {
+				return 10;
+			}
+			@Override
+			public int maxHeight() {
+				return 20;
+			}
+		});
 
+		initRooms.add(new VaultRegionDecoLineRoom());
 		return initRooms;
 	}
 
