@@ -310,8 +310,10 @@ public final class ChangeMapSizeActionPart implements ActionPart {
 		changeArrayForMapSizeHeight(oldMap, level.map, add, levelWidth, width);
 		changeArrayForMapSizeHeight(level.discoverable, nDiscoverable, add, levelWidth, width);
 		
-		if (oldTileVariance != null)
+		if (oldTileVariance != null) {
+			level.tileVariance = new byte[newLength];
 			changeArrayForMapSizeHeight(oldTileVariance, level.tileVariance, add, levelWidth, width);
+		}
 		
 		level.discoverable = nDiscoverable;
 		
@@ -355,8 +357,10 @@ public final class ChangeMapSizeActionPart implements ActionPart {
 		changeArrayForMapSizeWidth(oldMap, level.map, addLeft, levelWidth, newWidth);
 		changeArrayForMapSizeWidth(level.discoverable, nDiscoverable, addLeft, levelWidth, newWidth);
 		
-		if (oldTileVariance != null)
+		if (oldTileVariance != null) {
+			level.tileVariance = new byte[newLength];
 			changeArrayForMapSizeWidth(oldTileVariance, level.tileVariance, addLeft, levelWidth, newWidth);
+		}
 		
 		level.discoverable = nDiscoverable;
 		
