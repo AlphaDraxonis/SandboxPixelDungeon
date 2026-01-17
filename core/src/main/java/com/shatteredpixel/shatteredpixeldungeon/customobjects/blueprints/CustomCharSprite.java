@@ -106,6 +106,7 @@ public class CustomCharSprite extends LuaCustomObject {
 		Class<?> clazz = LuaClassGenerator.luaUserContentClass(targetClass);
 		LuaCustomObjectClass instance = (LuaCustomObjectClass) Reflection.newInstance(clazz, params);
 		instance.setIdentifier(getIdentifier());
+		LuaClassGenerator.fetchVarsFromScript(instance, null);
 		return instance;
 	}
 

@@ -78,7 +78,9 @@ public abstract class CustomGameObject<T extends CustomGameObjectClass> extends 
 
 	@Override
 	public LuaCustomObjectClass newInstance(Object[] params) {
-		return (LuaCustomObjectClass) userContentClass.newInstance();
+		LuaCustomObjectClass instance = (LuaCustomObjectClass) userContentClass.newInstance();
+		LuaClassGenerator.fetchVarsFromScript(instance, null);
+		return instance;
 	}
 
 	private static final String USER_CONTENT_CLASS = "user_content_class";

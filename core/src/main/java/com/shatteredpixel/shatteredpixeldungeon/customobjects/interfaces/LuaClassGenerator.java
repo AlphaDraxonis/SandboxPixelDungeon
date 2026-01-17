@@ -379,18 +379,24 @@ public final class LuaClassGenerator {
 		self.setIdentifier(bundle.getInt("identifier"));
 		
 		if (!CustomDungeon.isEditing()) {
-			LuaValue script = CustomObjectManager.getScript(self.getIdentifier());
-			if (script != null) {
-				if (script.get("vars").isnil()) script.set("vars", new LuaTable());
-				if (script.get("static").isnil()) script.set("static", new LuaTable());
+			fetchVarsFromScript(self, bundle);
+		}
+	}
+	
+	public static void fetchVarsFromScript(LuaCustomObjectClass self, Bundle bundle) {
+		LuaValue script = CustomObjectManager.getScript(self.getIdentifier());
+		if (script != null) {
+			if (script.get("vars").isnil()) script.set("vars", new LuaTable());
+			if (script.get("static").isnil()) script.set("static", new LuaTable());
+			
+			if (script.get("vars").istable()) {
+				self.setVars( LuaManager.deepCopyLuaValue(script.get("vars")).checktable() );
 				
-				if (script.get("vars").istable()) {
-					self.setVars( LuaManager.deepCopyLuaValue(script.get("vars")).checktable() );
-					
+				if (bundle != null) {
 					LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, LuaCustomObjectClass.VARS);
 					if (loaded != null && loaded.istable()) self.setVars( loaded.checktable() );
-					if (script.get("static").istable()) self.getVars().set("static", script.get("static"));
 				}
+				if (script.get("static").istable()) self.getVars().set("static", script.get("static"));
 			}
 		}
 	}

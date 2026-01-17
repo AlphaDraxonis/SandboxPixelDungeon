@@ -63,6 +63,7 @@ public abstract class AbstractAnyLuaCustomObj extends LuaCustomObject {
 		Class<?> clazz = LuaClassGenerator.luaUserContentClass(target);
 		LuaCustomObjectClass instance = (LuaCustomObjectClass) Reflection.newInstance(clazz, params);
 		instance.setIdentifier(getIdentifier());
+		LuaClassGenerator.fetchVarsFromScript(instance, null);
 		return instance;
 	}
 
