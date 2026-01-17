@@ -27,6 +27,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 //This class stores all methods and tells names of parameters etc
 //it also tells which are all displayed
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
@@ -171,37 +172,37 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(90, Hero.class.getMethod("updateHT", boolean.class), "boostHP");
 			addMethod(91, Hero.class.getMethod("STR"));
 
-			addMethod(1, Mob.class.getDeclaredMethod("attackSkill", Char.class), "target");//accuracy
-			addMethod(2, Mob.class.getMethod("defenseSkill", Char.class), "enemy");//evasion
-			addMethod(3, Mob.class.getMethod("defenseVerb"));//what to say if it evades an attack
-			addMethod(4, Mob.class.getMethod("speed"));//movement speed
-			addMethod(5, Mob.class.getMethod("attackDelay"));//attack speed (result > 1 -> slower)
-			addMethod(6, Mob.class.getMethod("drRoll"));//armor
-			addMethod(7, Mob.class.getMethod("damageRoll"));//attack damage
+			addMethod(1, Char.class.getMethod("attackSkill", Char.class), "target");//accuracy
+			addMethod(2, Char.class.getMethod("defenseSkill", Char.class), "enemy");//evasion
+			addMethod(3, Char.class.getMethod("defenseVerb"));//what to say if it evades an attack
+			addMethod(4, Char.class.getMethod("speed"));//movement speed
+			addMethod(5, Char.class.getMethod("attackDelay"));//attack speed (result > 1 -> slower)
+			addMethod(6, Char.class.getMethod("drRoll"));//armor
+			addMethod(7, Char.class.getMethod("damageRoll"));//attack damage
 
 //			addMethod(11, Mob.class.getDeclaredMethod("spawningWeight"));
 			addMethod(12, Mob.class.getDeclaredMethod("lootChance"));
-			addMethod(13, Mob.class.getMethod("hitSound", float.class), "pitch");
+			addMethod(13, Char.class.getMethod("hitSound", float.class), "pitch");
 
 			addMethod(21, Mob.class.getDeclaredMethod("heroShouldInteract"));
-			addMethod(22, Mob.class.getMethod("interact", Char.class), "ch");
+			addMethod(22, Char.class.getMethod("interact", Char.class), "ch");
 
 			addMethod(26, Mob.class.getMethod("notice"));
 
 			addMethod(31, Mob.class.getDeclaredMethod("canAttack", Char.class), "enemy");
 			addMethod(32, Mob.class.getDeclaredMethod("doAttack", Char.class), "enemy");
-			addMethod(33, Mob.class.getDeclaredMethod("damage", int.class, Object.class), "dmg", "source");//when taking damage
-			addMethod(34, Mob.class.getMethod("attack", Char.class, float.class, float.class, float.class), "enemy", "dgmMulti", "dmgBonus", "accMulti");//complicated attack logic, only modify input parameters!
+			addMethod(33, Char.class.getDeclaredMethod("damage", int.class, Object.class), "dmg", "source");//when taking damage
+			addMethod(34, Char.class.getMethod("attack", Char.class, float.class, float.class, float.class), "enemy", "dgmMulti", "dmgBonus", "accMulti");//complicated attack logic, only modify input parameters!
 			addMethod(35, Char.class.getDeclaredMethod("zap"));
-			addMethod(36, Mob.class.getMethod("attackProc", Char.class, int.class), "enemy", "damage");
-			addMethod(37, Mob.class.getMethod("defenseProc", Char.class, int.class), "enemy", "damage");
+			addMethod(36, Char.class.getMethod("attackProc", Char.class, int.class), "enemy", "damage");
+			addMethod(37, Char.class.getMethod("defenseProc", Char.class, int.class), "enemy", "damage");
 			addMethod(38, Mob.class.getMethod("surprisedBy", Char.class, boolean.class), "enemy", "attacking");//attacking is always true unless the Masterthieves thing was used
 
 			addMethod(51, Mob.class.getDeclaredMethod("onAdd"));
-			addMethod(52, Mob.class.getDeclaredMethod("die", Object.class), "cause");
-			addMethod(53, Mob.class.getDeclaredMethod("destroy"));
+			addMethod(52, Char.class.getDeclaredMethod("die", Object.class), "cause");
+			addMethod(53, Char.class.getDeclaredMethod("destroy"));
 
-			addMethod(61, Mob.class.getMethod("move", int.class, boolean.class), "step", "travelling");//travelling may be false when a character is moving instantaneously, such as via teleportation
+			addMethod(61, Char.class.getMethod("move", int.class, boolean.class), "step", "travelling");//travelling may be false when a character is moving instantaneously, such as via teleportation
 			addMethod(62, Mob.class.getDeclaredMethod("randomDestination"));//where to walk to
 			addMethod(63, Mob.class.getDeclaredMethod("cellIsPathable", int.class), "cell");//whether it can walk onto a passable cell
 			addMethod(64, Mob.class.getMethod("beckon", int.class), "cell");//makes the mob walk torwards to that cell, e.g. called by alarming trap
@@ -210,19 +211,19 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(67, Mob.class.getMethod("clearEnemy"));//forgets current enemy
 			addMethod(68, Mob.class.getMethod("restoreEnemy"));//restore any actors if only id was stored
 
-			addMethod(81, Mob.class.getDeclaredMethod("act"));
+			addMethod(81, Actor.class.getDeclaredMethod("act"));
 			addMethod(82, Mob.class.getMethod("info"));
-			addMethod(83, Mob.class.getMethod("add", Buff.class), "buff");
-			addMethod(84, Mob.class.getMethod("remove", Buff.class), "buff");
-			addMethod(85, Mob.class.getMethod("isImmune", Class.class), "effect");
-			addMethod(86, Mob.class.getMethod("isInvulnerable", Class.class), "effect");
-			addMethod(87, Char.class.getDeclaredMethod("spend", float.class), "time");
+			addMethod(83, Char.class.getMethod("add", Buff.class), "buff");
+			addMethod(84, Char.class.getMethod("remove", Buff.class), "buff");
+			addMethod(85, Char.class.getMethod("isImmune", Class.class), "effect");
+			addMethod(86, Char.class.getMethod("isInvulnerable", Class.class), "effect");
+			addMethod(87, Actor.class.getDeclaredMethod("spend", float.class), "time");
 
 
 			//Char Sprite
 			addMethod(201, CharSprite.class.getMethod("initAnimations"));
 			addMethod(202, CharSprite.class.getMethod("getAnimations"));
-			addMethod(203, CharSprite.class.getMethod("play", MovieClip.Animation.class, boolean.class), "anim", "force");
+			addMethod(203, MovieClip.class.getMethod("play", MovieClip.Animation.class, boolean.class), "anim", "force");
 			addMethod(204, CharSprite.class.getMethod("link", Char.class), "ch");
 			addMethod(205, CharSprite.class.getMethod("worldToCamera", int.class), "cell");
 			addMethod(206, CharSprite.class.getMethod("showStatusWithIcon", boolean.class, int.class, String.class, int.class, Object[].class), "ignoreVisibility", "color", "text", "icon", "args");
