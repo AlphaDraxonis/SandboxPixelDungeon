@@ -66,7 +66,7 @@ public class AndroidMethodPanel extends AndroidCodeInputPanel {
 
 		desc.setText(AndroidIDEWindow.createSpannableStringWithColorsFromText(LuaMethodManager.descriptionForMethod(method)));
 
-		String modifiers = Modifier.toString(method.getModifiers());
+		String modifiers = Modifier.toString(method.getModifiers()).replace(" abstract", "").replace(" synchronized", "");
 		if (!modifiers.isEmpty()) modifiers += " ";
 
 		modifiers += method.getReturnType().getSimpleName() + " ";

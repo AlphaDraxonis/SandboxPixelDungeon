@@ -49,7 +49,7 @@ public class MethodPanel extends CodeInputPanel {
 
 		StringBuilder b = new StringBuilder();
 
-		b.append(Modifier.toString(method.getModifiers())).append(' ');
+		b.append(Modifier.toString(method.getModifiers()).replace(" abstract", "").replace(" synchronized", "")).append(' ');
 
 		b.append(method.getReturnType().getSimpleName()).append(" _");
 		b.append(method.getName()).append("_ (");
