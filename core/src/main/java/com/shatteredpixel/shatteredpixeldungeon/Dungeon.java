@@ -370,12 +370,13 @@ public class Dungeon {
 
         BossHealthBar.reset();
 
-		hero = new Hero();
+		CustomObjectManager.loadScripts(true);
+		
+		hero = Dungeon.dungeonScript.createHero();
 		hero.live();
 		
 		Badges.reset();
 
-		CustomObjectManager.loadScripts(true);
 		GamesInProgress.selectedClass.initHero( hero );
 	}
 

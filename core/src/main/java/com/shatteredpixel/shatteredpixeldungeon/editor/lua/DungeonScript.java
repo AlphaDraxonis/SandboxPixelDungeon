@@ -81,6 +81,12 @@ public abstract class DungeonScript extends LuaCodeHolder {
 	@KeepProguard
 	public void onLevelUp() {
 	}
+	
+	
+	@KeepProguard
+	public Hero createHero() {
+		return new Hero();
+	}
 
 
 	public List<? extends Mob> getMobRotation(int depth ) {

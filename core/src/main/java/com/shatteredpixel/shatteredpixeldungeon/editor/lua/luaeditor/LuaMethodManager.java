@@ -166,7 +166,10 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 		try {
 
 			//thief
-			addMethod(87, Thief.class.getMethod("steal", Hero.class), "hero");
+			addMethod(88, Thief.class.getMethod("steal", Hero.class), "hero");
+			
+			addMethod(90, Hero.class.getMethod("updateHT", boolean.class), "boostHP");
+			addMethod(91, Hero.class.getMethod("STR"));
 
 			addMethod(1, Mob.class.getDeclaredMethod("attackSkill", Char.class), "target");//accuracy
 			addMethod(2, Mob.class.getMethod("defenseSkill", Char.class), "enemy");//evasion
@@ -455,6 +458,7 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 
 			addMethod(10020, DungeonScript.class.getMethod("onEarnXP", int.class, Class.class), "amount", "source");
 			addMethod(10021, DungeonScript.class.getMethod("onLevelUp"));
+			addMethod(10025, DungeonScript.class.getMethod("createHero"));
 
 			addMethod(10030, DungeonScript.class.getMethod("getMobRotation", int.class), "depth");
 
