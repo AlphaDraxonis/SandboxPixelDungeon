@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Acidic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Albino;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredBrute;
@@ -143,7 +142,7 @@ public class DistortionTrap extends Trap{
 				continue;
 			}
 
-			mob.maxLvl = Hero.MAX_LEVEL-1;
+			mob.maxLvl = Dungeon.hero.maxLevel -1;
 			if (mob.state != mob.PASSIVE) {
 				mob.state = mob.WANDERING;
 			}

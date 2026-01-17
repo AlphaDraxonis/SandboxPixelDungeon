@@ -166,7 +166,7 @@ public abstract class Mob extends Char implements Customizable {
 	public int playerAlignment;
 	
 	public int EXP = 1;
-	public int maxLvl = Hero.MAX_LEVEL-1;
+	public int maxLvl = Hero.DEFAULT_MAX_LEVEL -1;
 	
 	public Char enemy;
 	protected int enemyID = -1; //used for save/restore
@@ -1248,7 +1248,7 @@ public abstract class Mob extends Char implements Customizable {
 				// after this enemy kills which reduce the amulet curse still grant 10 effective xp
 				// for the purposes of on-exp effects, see AscensionChallenge.processEnemyKill
 				if (Dungeon.hero.buff(AscensionChallenge.class) != null &&
-						exp == 0 && maxLvl > 0 && EXP > 0 && Dungeon.hero.lvl < Hero.MAX_LEVEL){
+						exp == 0 && maxLvl > 0 && EXP > 0 && Dungeon.hero.lvl < Dungeon.hero.maxLevel){
 					exp = Math.round(10 * spawningWeight());
 				}
 

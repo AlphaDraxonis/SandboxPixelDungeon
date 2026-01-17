@@ -177,7 +177,7 @@ public class Hero extends Char {
 		alignment = Alignment.ALLY;
 	}
 	
-	public static final int MAX_LEVEL = 30;
+	public static final int DEFAULT_MAX_LEVEL = 30;
 
 	public static final int STARTING_HP = 20;
 	public static final int STARTING_STR = 10;
@@ -215,6 +215,7 @@ public class Hero extends Char {
 	
 	public float awareness;
 	
+	public int maxLevel = DEFAULT_MAX_LEVEL;
 	public int lvl = 1;
 	public int exp = 0;
 	
@@ -279,6 +280,7 @@ public class Hero extends Char {
 	private static final String ATTACK		= "attackSkill";
 	private static final String DEFENSE		= "defenseSkill";
 	private static final String STRENGTH	= "STR";
+	private static final String MAX_LEVEL	= "max_lvl";
 	private static final String LEVEL		= "lvl";
 	private static final String EXPERIENCE	= "exp";
 	private static final String HTBOOST     = "htboost";
@@ -300,6 +302,7 @@ public class Hero extends Char {
 		
 		bundle.put( STRENGTH, STR );
 		
+		bundle.put( MAX_LEVEL, maxLevel );
 		bundle.put( LEVEL, lvl );
 		bundle.put( EXPERIENCE, exp );
 		
@@ -311,6 +314,7 @@ public class Hero extends Char {
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 
+		maxLevel = bundle.contains(MAX_LEVEL) ? bundle.getInt(MAX_LEVEL) : DEFAULT_MAX_LEVEL;
 		lvl = bundle.getInt( LEVEL );
 		exp = bundle.getInt( EXPERIENCE );
 
@@ -2218,7 +2222,7 @@ public class Hero extends Char {
 				buff(Talent.WandPreservationCounter.class).detach();
 			}
 
-			if (lvl < MAX_LEVEL) {
+			if (lvl < maxLevel) {
 				lvl++;
 				levelUp = true;
 				

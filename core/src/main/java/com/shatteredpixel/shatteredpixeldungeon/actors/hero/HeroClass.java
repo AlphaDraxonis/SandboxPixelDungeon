@@ -159,9 +159,14 @@ public enum HeroClass {
         collectStartItems(classItems);
         collectStartItems(generalItems);
 
+		int maxLevel = classItems.maxLvl == 0 ? generalItems.maxLvl : classItems.maxLvl;
+		if (maxLevel != 0) {
+			hero.maxLevel = Math.max(1, maxLevel + Hero.DEFAULT_MAX_LEVEL);
+		}
+		
         int plusLvl = generalItems.plusLvl + classItems.plusLvl;
         if (plusLvl != 0) {
-            hero.lvl += plusLvl;
+			hero.lvl = Math.min(hero.maxLevel, hero.lvl + plusLvl);
             hero.updateHT(true);
             hero.attackSkill += plusLvl;
             hero.defenseSkill += plusLvl;

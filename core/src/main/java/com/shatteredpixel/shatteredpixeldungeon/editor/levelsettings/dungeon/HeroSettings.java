@@ -84,7 +84,7 @@ public class HeroSettings extends Component {
             {
                 tabs = new TabControlButton[heroTabs.length];
                 for (int j = 0; j < tabs.length; j++) {
-                    tabs[j] = new OutsideSpSwitchTabs.TabControlButton(j);
+                    tabs[j] = new TabControlButton(j);
                     tabs[j].icon(createTabIcon(j));
                     add(tabs[j]);
                 }
@@ -158,7 +158,7 @@ public class HeroSettings extends Component {
         private final ItemContainerWithLabel<Item> startItems;
         private final ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
         private final ItemSelector sprite;
-        private final StyledSpinner plusLvl, plusStr;
+        private final StyledSpinner maxLvl, plusLvl, plusStr;
         private final PropertyListContainer properties;
 
         public HeroTab(int index) {
@@ -332,6 +332,17 @@ public class HeroSettings extends Component {
             add(sprite);
 
 
+			maxLvl = new StyledSpinner(new SpinnerIntegerModel(1, 1000, Hero.DEFAULT_MAX_LEVEL + data.maxLvl) {
+				{
+					setAbsoluteMinimum(1);
+				}
+				@Override
+				public float getInputFieldWidth(float height) {
+					return Spinner.FILL;
+				}
+			}, Messages.titleCase(Messages.get(HeroSettings.class, "max_lvl")), 10, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
+			add(maxLvl);
+			
             plusLvl = new StyledSpinner(new SpinnerIntegerModel(1, 30, 1 + data.plusLvl) {
                 {
                     setAbsoluteMinimum(1);
@@ -352,6 +363,16 @@ public class HeroSettings extends Component {
             }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, EditorUtilities.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
             plusStr.addChangeListener(() -> data.plusStr = (int) plusStr.getValue() - Hero.STARTING_STR);
             add(plusStr);
+			
+			maxLvl.addChangeListener(() -> {
+				data.maxLvl = (int) maxLvl.getValue() - Hero.DEFAULT_MAX_LEVEL;
+				SpinnerIntegerModel model = (SpinnerIntegerModel) plusLvl.getModel();
+				
+				model.setMaximum(data.maxLvl + Hero.DEFAULT_MAX_LEVEL);
+				if (data.maxLvl + Hero.DEFAULT_MAX_LEVEL < (int) plusLvl.getValue()) {
+					model.setValue(data.maxLvl + Hero.DEFAULT_MAX_LEVEL);
+				}
+			});
 
             startItems = new ItemContainerWithLabel<Item>(data.items, Messages.get(HeroSettings.class, "items")) {
 
@@ -412,7 +433,7 @@ public class HeroSettings extends Component {
 
             height = EditorUtilities.layoutStyledCompsInRectangles(WndTitledMessage.GAP, width, this,
                     startWeapon, startArmor, startRing, startArti, startMisc, sprite, EditorUtilities.PARAGRAPH_INDICATOR_INSTANCE,
-                            plusLvl, plusStr);
+                            maxLvl, plusLvl, plusStr);
             height += WndTitledMessage.GAP * 1.5f;
 
             height = EditorUtilities.layoutCompsLinear(WndTitledMessage.GAP, this, startItems, properties);
@@ -434,6 +455,7 @@ public class HeroSettings extends Component {
         public Artifact artifact;
         public KindofMisc misc;
         public List<Item> items = new ArrayList<>(4);
+		public int maxLvl;//default is 0, which means when setting it to the hero or displaying it on the screen, Hero.DEFAUlT_MAX_LEVEL must be added!
         public int plusLvl;//default is 0
         public int plusStr;//default is 0
 
@@ -448,6 +470,7 @@ public class HeroSettings extends Component {
         private static final String RING = "ring";
         private static final String ARTIFACT = "artifact";
         private static final String MISC = "misc";
+        private static final String MAX_LVL = "max_lvl";
         private static final String LVL = "lvl";
         private static final String STR = "str";
         private static final String ITEMS = "items";
@@ -461,6 +484,7 @@ public class HeroSettings extends Component {
             bundle.put(RING, ring);
             bundle.put(ARTIFACT, artifact);
             bundle.put(MISC, misc);
+            bundle.put(MAX_LVL, maxLvl);
             bundle.put(LVL, plusLvl);
             bundle.put(STR, plusStr);
             bundle.put(SPRITE_WRAPPER, spriteWrapper);
@@ -485,6 +509,7 @@ public class HeroSettings extends Component {
             misc = (KindofMisc) bundle.get(MISC);
 
             needToAddDefaultConfiguration = !bundle.contains(LVL);
+			maxLvl = bundle.getInt(MAX_LVL);
             plusLvl = bundle.getInt(LVL);
             plusStr = bundle.getInt(STR);
             
@@ -566,7 +591,7 @@ public class HeroSettings extends Component {
         }
         
         public static HeroStartItemsData getDefault(int i) {
-            HeroStartItemsData startItems = new HeroSettings.HeroStartItemsData();
+            HeroStartItemsData startItems = new HeroStartItemsData();
             startItems.needToAddDefaultConfiguration = true;
             startItems.maybeInitDefault(i);
             return startItems;
