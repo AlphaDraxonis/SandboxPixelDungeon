@@ -24,6 +24,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -46,6 +47,8 @@ public class LuaTemplates {
 
 	private static final LuaScript KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK;
 
+	private static final LuaScript HERO_ONE_HP;
+	
 	private static final LuaScript REPLACES_WALLS_WITH_EMBERS;
 	private static final LuaScript THE_FLOOR_IS_LAVA;
 	private static final LuaScript INSCRIBE_LOOT_TABLE;
@@ -178,6 +181,29 @@ public class LuaTemplates {
 				"\n" +
 				"return {\n" +
 				"    vars = vars; static = static; canAttack = canAttack; doAttack = doAttack; playZapAnim = playZapAnim; \n" +
+				"}";
+		
+		
+		HERO_ONE_HP = new LuaScript(Hero.class, "Always keeps the hit points of this hero at 1.");
+		HERO_ONE_HP.code = "vars = {} static = {} function updateHT(this, vars, boostHP)\n" +
+				"this:super_updateHT(boostHP);\n" +
+				"this.HT = 1;\n" +
+				"if this.HP > this.HT then" +
+				"    this.HP = this.HT;" +
+				"end\n" +
+				"end\n" +
+				"\n" +
+				"function live(this, vars)\n" +
+				"    this:super_live();\n" +
+				"    this.HT = 1;\n" +
+				"    if this.HP > this.HT then" +
+				"        this.HP = this.HT;" +
+				"    end\n" +
+				"end\n" +
+				"\n" +
+				"\n" +
+				"return {\n" +
+				"    vars = vars; static = static; updateHT = updateHT; live = live; \n" +
 				"}";
 
 
@@ -398,7 +424,7 @@ public class LuaTemplates {
 				"    vars = vars; static = static; initAnimations = initAnimations;\n" +
 				"}";
 
-		TEMPLATES = new LuaScript[]{KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK,
+		TEMPLATES = new LuaScript[]{KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK, HERO_ONE_HP,
 				REPLACES_WALLS_WITH_EMBERS, THE_FLOOR_IS_LAVA, INSCRIBE_LOOT_TABLE, SET_CURSED_EFFECTS, CUSTOM_CHAR_SPRITE};
 	}
 
@@ -407,6 +433,7 @@ public class LuaTemplates {
 		if (script == SPAWN_MOB_ON_DIE) return Messages.get(LuaTemplates.class, "spawn_mob_on_die_name");
 		if (script == CRYSTAL_GUARDIAN_RECOVERY) return Messages.get(LuaTemplates.class, "crystal_guardian_recovery_name");
 		if (script == RANGED_ATTACK) return Messages.get(LuaTemplates.class, "ranged_attack_name");
+		if (script == HERO_ONE_HP) return Messages.get(LuaTemplates.class, "hero_one_hp_name");
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_name");
 		if (script == THE_FLOOR_IS_LAVA) return Messages.get(LuaTemplates.class, "the_floor_is_lava_name");
 		if (script == INSCRIBE_LOOT_TABLE) return Messages.get(LuaTemplates.class, "inscribe_loot_table_name");
@@ -420,6 +447,7 @@ public class LuaTemplates {
 		if (script == SPAWN_MOB_ON_DIE) return Messages.get(LuaTemplates.class, "spawn_mob_on_die_desc");
 		if (script == CRYSTAL_GUARDIAN_RECOVERY) return Messages.get(LuaTemplates.class, "crystal_guardian_recovery_desc");
 		if (script == RANGED_ATTACK) return Messages.get(LuaTemplates.class, "ranged_attack_desc");
+		if (script == HERO_ONE_HP) return Messages.get(LuaTemplates.class, "hero_one_hp_desc");
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_desc");
 		if (script == THE_FLOOR_IS_LAVA) return Messages.get(LuaTemplates.class, "the_floor_is_lava_desc");
 		if (script == INSCRIBE_LOOT_TABLE) return Messages.get(LuaTemplates.class, "inscribe_loot_table_desc");
