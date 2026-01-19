@@ -338,6 +338,8 @@ abstract public class MissileWeapon extends Weapon {
 					parent.identify();
 				}
 			}
+		} else if (parent != null && isIdentified() && !parent.isIdentified()){
+			parent.identify();
 		}
 
 		if (!isIdentified() && ShardOfOblivion.passiveIDDisabled()){
