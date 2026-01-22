@@ -89,6 +89,11 @@ public class FlowParticle extends PixelParticle {
 			if (visible = (pos < Dungeon.level.heroFOV.length && Dungeon.level.heroFOV[pos])) {
 				
 				super.update();
+				
+				if (!Dungeon.level.water[pos] || !Dungeon.level.pit[pos+Dungeon.level.width()]){
+					killAndErase();
+					return;
+				}
 
 			}
 		}

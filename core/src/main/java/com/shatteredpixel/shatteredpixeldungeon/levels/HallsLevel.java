@@ -168,12 +168,9 @@ public class HallsLevel extends RegularLevel {
 		}
 	}
 	
-	public static void addHallsVisuals( Level level, Group group ) {
-		boolean isHallsLevel = LevelScheme.getRegion(level) == LevelScheme.REGION_HALLS;
-		for (int i=0; i < level.length(); i++) {
-			if (level.visualMap[i] == Terrain.WATER && (isHallsLevel || level.visualRegions[i] == LevelScheme.REGION_HALLS)) {
-				group.add( new Stream( i ) );
-			}
+	public static void addHallsVisualsAtTile( int region, Level level, Group group, int i ) {
+		if (level.visualMap[i] == Terrain.WATER && Dungeon.level.isVisualRegionAtTile(i, region, LevelScheme.REGION_HALLS)) {
+			group.add( new Stream( i ) );
 		}
 	}
 	
@@ -193,15 +190,15 @@ public class HallsLevel extends RegularLevel {
 		
 		@Override
 		public void update() {
-
-			if (!Dungeon.level.water[pos]){
-				killAndErase();
-				return;
-			}
 			
 			if (visible = (pos < Dungeon.level.heroFOV.length && Dungeon.level.heroFOV[pos])) {
 				
 				super.update();
+				
+				if (Dungeon.level.visualMap[pos] != Terrain.WATER || !Dungeon.level.isVisualRegionAtTile(pos, LevelScheme.REGION_HALLS)){
+					killAndErase();
+					return;
+				}
 				
 				if ((delay -= Game.elapsed) <= 0) {
 					

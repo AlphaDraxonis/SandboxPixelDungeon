@@ -222,8 +222,8 @@ public class SewerBossLevel extends SewerLevel {
 			for (CustomTilemap customTile : level.customTiles) {
 				if (customTile instanceof SewerBossExitRoom.SewerExit) {
 					int pos = customTile.tileX + 1 + customTile.tileY * level.width();
-					visuals.add(new PrisonLevel.Torch(pos - 1));
-					visuals.add(new PrisonLevel.Torch(pos + 1));
+					visuals.add(new PrisonLevel.Torch(pos - 1, (SewerBossExitRoom.SewerExit) customTile));
+					visuals.add(new PrisonLevel.Torch(pos + 1, (SewerBossExitRoom.SewerExit) customTile));
 				}
 			}
 		}

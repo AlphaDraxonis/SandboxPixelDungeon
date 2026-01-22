@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.effects.particles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.particles.Emitter.Factory;
@@ -95,7 +96,12 @@ public class WindParticle extends PixelParticle {
 			if (visible = (pos < Dungeon.level.heroFOV.length && Dungeon.level.heroFOV[pos])) {
 				
 				super.update();
-
+				
+				if (!Dungeon.level.pit[pos] && Dungeon.level.visualMap[pos] != Terrain.CAGE_ALT){
+					killAndErase();
+					return;
+				}
+				
 			}
 		}
 	}

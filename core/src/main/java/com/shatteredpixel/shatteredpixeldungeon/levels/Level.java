@@ -1456,21 +1456,11 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 			visuals.clear();
 			visuals.camera = null;
 		}
+		
+		int region = levelScheme.getVisualRegion();
 		for (int i=0; i < length(); i++) {
-			if (pit[i]) {
-				visuals.add( new WindParticle.Wind( i ) );
-				if (i >= width() && water[i-width()]) {
-					visuals.add( new FlowParticle.Flow( i - width() ) );
-				}
-			}
+			addVisualsAtTile(i, region);
 		}
-		
-		SewerLevel  .addSewerVisuals( this, visuals);
-		PrisonLevel .addPrisonVisuals(this, visuals);
-		CavesLevel  .addCavesVisuals( this, visuals);
-		CityLevel   .addCityVisuals(  this, visuals);
-		HallsLevel  .addHallsVisuals( this, visuals);
-		
 		SewerBossLevel.addSewerBossVisuals(this, visuals);
 		
 		return visuals;
@@ -1484,10 +1474,46 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 			wallVisuals.clear();
 			wallVisuals.camera = null;
 		}
-		CityLevel   .addCityWallVisuals(  this, wallVisuals);
+		int region = levelScheme.getVisualRegion();
+		for (int i=0; i < length(); i++) {
+			addWallVisualsAtTile(i, region);
+		}
 		return wallVisuals;
 	}
 
+	public void addVisualsAtTile(int i) {
+		addVisualsAtTile(i, levelScheme.getVisualRegion());
+	}
+	
+	public void addVisualsAtTile(int i, int region) {
+		if (pit[i]) {
+			visuals.add( new WindParticle.Wind( i ) );
+			if (i >= width() && water[i-width()]) {
+				visuals.add( new FlowParticle.Flow( i - width() ) );
+			}
+		}
+		SewerLevel  .addSewerVisualsAtTile( region, this, visuals, i);
+		PrisonLevel .addPrisonVisualsAtTile(region, this, visuals, i);
+		CavesLevel  .addCavesVisualsAtTile( region, this, visuals, i);
+		CityLevel   .addCityVisualsAtTile(  region, this, visuals, i);
+		HallsLevel  .addHallsVisualsAtTile( region, this, visuals, i);
+	}
+	
+	public void addWallVisualsAtTile(int i) {
+		addWallVisualsAtTile(i, levelScheme.getVisualRegion());
+	}
+	
+	public void addWallVisualsAtTile(int i, int region) {
+		CityLevel   .addCityWallVisualsAtTile(region, this, wallVisuals, i);
+	}
+	
+	public boolean isVisualRegionAtTile(int pos, int targetRegion) {
+		return isVisualRegionAtTile(pos, levelScheme.getVisualRegion(), targetRegion);
+	}
+	
+	public boolean isVisualRegionAtTile(int pos, int levelRegion, int targetRegion) {
+		return levelRegion == targetRegion && visualRegions[pos] == LevelScheme.REGION_NONE || visualRegions[pos] == targetRegion;
+	}
 
 	public int mobLimit() {
 		return 0;

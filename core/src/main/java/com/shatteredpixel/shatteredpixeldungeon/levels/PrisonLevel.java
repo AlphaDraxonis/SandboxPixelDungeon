@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.PrisonPainter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.SewerBossExitRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.AlarmTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BurningTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ChillingTrap;
@@ -132,27 +133,26 @@ public class PrisonLevel extends RegularLevel {
 		}
 	}
 
-	public static void addPrisonVisuals(Level level, Group group){
-		boolean isPrisonLevel = LevelScheme.getRegion(level) == LevelScheme.REGION_PRISON;
-		for (int i=0; i < level.length(); i++) {
-			if (level.visualMap[i] == Terrain.WALL_DECO && (isPrisonLevel || level.visualRegions[i] == LevelScheme.REGION_PRISON)) {
-				group.add( new Torch( i ) );
-			}
-			//alt deco is a chasm visual in the prison
-			if (level.map[i] == Terrain.CAGE_ALT) {
-				group.add( new WindParticle.Wind( i ) );
-			}
+	public static void addPrisonVisualsAtTile(int region, Level level, Group group, int i){
+		if (level.visualMap[i] == Terrain.WALL_DECO && Dungeon.level.isVisualRegionAtTile(i, region, LevelScheme.REGION_PRISON)) {
+			group.add( new Torch( i, null ) );
+		}
+		//alt deco is a chasm visual in the prison
+		if (level.map[i] == Terrain.CAGE_ALT) {
+			group.add( new WindParticle.Wind( i ) );
 		}
 	}
 
     public static class Torch extends Emitter {
 		
 		private int pos;
+		private final SewerBossExitRoom.SewerExit sewerExitTile;
 		
-		public Torch( int pos ) {
+		public Torch( int pos, SewerBossExitRoom.SewerExit sewerExitTile ) {
 			super();
 			
 			this.pos = pos;
+			this.sewerExitTile = sewerExitTile;
 			
 			PointF p = DungeonTilemap.tileCenterToWorld( pos );
 			pos( p.x - 1, p.y + 2, 2, 0 );
@@ -166,6 +166,19 @@ public class PrisonLevel extends RegularLevel {
 		public void update() {
 			if (visible = (pos < Dungeon.level.heroFOV.length && Dungeon.level.heroFOV[pos])) {
 				super.update();
+				
+				if (sewerExitTile == null) {
+					if (Dungeon.level.visualMap[pos] != Terrain.WALL_DECO|| !Dungeon.level.isVisualRegionAtTile(pos, LevelScheme.REGION_PRISON)) {
+						killAndErase();
+						return;
+					}
+				} else {
+					if (!Dungeon.level.customTiles.contains(sewerExitTile)) {
+						killAndErase();
+						return;
+					}
+				}
+
 			}
 		}
 	}

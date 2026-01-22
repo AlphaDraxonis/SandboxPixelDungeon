@@ -146,21 +146,16 @@ public class CityLevel extends RegularLevel {
 				return super.tileDesc( tile, cell );
 		}
 	}
-
-	public static void addCityVisuals( Level level, Group group ) {
-		boolean isCityLevel = LevelScheme.getRegion(level) == LevelScheme.REGION_CITY;
-		for (int i=0; i < level.length(); i++) {
-			if (level.visualMap[i] == Terrain.WALL_DECO && (isCityLevel || level.visualRegions[i] == LevelScheme.REGION_CITY)) {
-				group.add( new Smoke( i ) );
-			}
+	
+	public static void addCityVisualsAtTile( int region, Level level, Group visuals, int i ) {
+		if (level.visualMap[i] == Terrain.WALL_DECO && Dungeon.level.isVisualRegionAtTile(i, region, LevelScheme.REGION_CITY)) {
+			visuals.add( new Smoke( i ) );
 		}
 	}
 
-	public static void addCityWallVisuals( Level level, Group group ) {
-		for (int i=0; i < level.length(); i++) {
-			if (level.map[i] == Terrain.FLAMING_PEDESTAL || level.map[i] == Terrain.FLAMING_PEDESTAL_ALT) {
-				group.add( new GreenFlame( i ) );
-			}
+	public static void addCityWallVisualsAtTile(int region, Level level, Group group, int i ) {
+		if (level.map[i] == Terrain.FLAMING_PEDESTAL || level.map[i] == Terrain.FLAMING_PEDESTAL_ALT) {
+			group.add( new GreenFlame( i ) );
 		}
 	}
 
@@ -195,6 +190,11 @@ public class CityLevel extends RegularLevel {
 		public void update() {
 			if (visible = (pos < Dungeon.level.heroFOV.length && Dungeon.level.heroFOV[pos])) {
 				super.update();
+				
+				if (Dungeon.level.visualMap[pos] != Terrain.FLAMING_PEDESTAL && Dungeon.level.visualMap[pos] != Terrain.FLAMING_PEDESTAL_ALT){
+					killAndErase();
+					return;
+				}
 			}
 		}
 
@@ -238,6 +238,11 @@ public class CityLevel extends RegularLevel {
 		public void update() {
 			if (visible = (pos < Dungeon.level.heroFOV.length && Dungeon.level.heroFOV[pos])) {
 				super.update();
+				
+				if (Dungeon.level.visualMap[pos] != Terrain.WALL_DECO || !Dungeon.level.isVisualRegionAtTile(pos, LevelScheme.REGION_CITY)){
+					killAndErase();
+					return;
+				}
 			}
 		}
 	}

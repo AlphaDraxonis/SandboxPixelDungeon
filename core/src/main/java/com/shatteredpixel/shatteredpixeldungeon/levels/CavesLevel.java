@@ -142,16 +142,18 @@ public class CavesLevel extends RegularLevel {
 		}
 	}
 
-	public static void addCavesVisuals( Level level, Group group ) {
-		addCavesVisuals(level, group, false);
-	}
-	
-	public static void addCavesVisuals( Level level, Group group, boolean overHang ) {
-		boolean isCavesLevel = LevelScheme.getRegion(level) == LevelScheme.REGION_CAVES;
+	protected static void addCavesVisuals( Level level, Group group, boolean overHang ) {
+		int region = LevelScheme.getRegion(level);
 		for (int i=0; i < level.length(); i++) {
-			if (level.visualMap[i] == Terrain.WALL_DECO && (isCavesLevel || level.visualRegions[i] == LevelScheme.REGION_CAVES)) {
+			if (level.visualMap[i] == Terrain.WALL_DECO && Dungeon.level.isVisualRegionAtTile(i, region, LevelScheme.REGION_CAVES)) {
 				group.add( new Vein( i, overHang ) );
 			}
+		}
+	}
+	
+	public static void addCavesVisualsAtTile( int region, Level level, Group group, int i ) {
+		if (level.visualMap[i] == Terrain.WALL_DECO && Dungeon.level.isVisualRegionAtTile(i, region, LevelScheme.REGION_CAVES)) {
+			group.add( new Vein( i, false ) );
 		}
 	}
 	
@@ -186,7 +188,7 @@ public class CavesLevel extends RegularLevel {
 				if ((delay -= Game.elapsed) <= 0) {
 
 					//pickaxe can remove the ore, should remove the sparkling too.
-					if (Dungeon.level.visualMap[pos] != Terrain.WALL_DECO){
+					if (Dungeon.level.visualMap[pos] != Terrain.WALL_DECO || !Dungeon.level.isVisualRegionAtTile(pos, LevelScheme.REGION_CAVES)){
 						kill();
 						return;
 					}
