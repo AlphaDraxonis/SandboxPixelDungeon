@@ -55,8 +55,10 @@ public class SummoningTrap extends Trap {
 
 	@Override
 	public void activate() {
+		
+		List<Mob> modifiableSpawnMobs = new ArrayList<>(spawnMobs);
 
-		boolean useCustomConfig = !spawnMobs.isEmpty();
+		boolean useCustomConfig = !modifiableSpawnMobs.isEmpty();
 
 		int nMobs = 1;
 		if (Random.Int( 2 ) == 0) {
@@ -66,8 +68,8 @@ public class SummoningTrap extends Trap {
 			}
 		}
 		if (useCustomConfig) {
-			nMobs = spawnMobs.size();
-			Random.shuffle(spawnMobs);
+			nMobs = modifiableSpawnMobs.size();
+			Random.shuffle(modifiableSpawnMobs);
 		}
 
 		ArrayList<Integer> candidates = new ArrayList<>();
@@ -101,7 +103,7 @@ public class SummoningTrap extends Trap {
 				boolean repeat;
 				int tries = 20;
 				do {
-					mob = useCustomConfig ? spawnMobs.get(index) : Dungeon.level.createMob();
+					mob = useCustomConfig ? modifiableSpawnMobs.get(index) : Dungeon.level.createMob();
 					index++;
 					tries--;
 					repeat = Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[point] || Barrier.stopChar(point, mob);
