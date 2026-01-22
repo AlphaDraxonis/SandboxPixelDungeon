@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -65,9 +66,13 @@ public class PressurePlateTrap extends Trap {
 		int target = targetCell;
 		if (target == -1) target = pos;
 		
-		if (changeTerrain != -1 && changeTerrain != Dungeon.level.map[target]) {
+		boolean wouldChangeRegion = Dungeon.level.visualRegions[target] != LevelScheme.REGION_NONE && Dungeon.level.visualRegions[target] != Dungeon.level.levelScheme.getVisualRegion();
+		if (changeTerrain != -1 && changeTerrain != Dungeon.level.map[target] || wouldChangeRegion) {
+			Dungeon.level.visualRegions[target] = LevelScheme.REGION_NONE;
 			Level.set( target, changeTerrain );
 			GameScene.updateMap( target );
+			Dungeon.level.addVisualsAtTile(target);
+			Dungeon.level.addWallVisualsAtTile(target);
 		}
 	
 		for (Item item : spawnItems) {
