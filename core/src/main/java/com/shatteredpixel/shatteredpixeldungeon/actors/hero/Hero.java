@@ -1420,7 +1420,7 @@ public class Hero extends Char {
 						}
 
 						//1 hunger spent total
-						if (Dungeon.level.map[action.dst] == Terrain.WALL_DECO && Dungeon.visualRegion() == LevelScheme.REGION_CAVES){
+						if (Dungeon.level.map[action.dst] == Terrain.WALL_DECO && Dungeon.level.isVisualRegionAtTile(action.dst, LevelScheme.REGION_CAVES)){
 							DarkGold gold = new DarkGold();
 							if (gold.doPickUp( Hero.this )) {
 								DarkGold existing = belongings.getItem(DarkGold.class);
@@ -1439,6 +1439,7 @@ public class Hero extends Char {
 							CellEmitter.center( action.dst ).burst( Speck.factory( Speck.STAR ), 7 );
 							Sample.INSTANCE.play( Assets.Sounds.EVOKE );
 							Level.set( action.dst, Terrain.EMPTY_DECO );
+							Dungeon.level.visualMap[action.dst] = Terrain.EMPTY_DECO;
 
 							//mining gold doesn't break crystals
 							crystalAdjacent = false;
@@ -1450,18 +1451,21 @@ public class Hero extends Char {
 							CellEmitter.get( action.dst ).burst( Speck.factory( Speck.ROCK ), 2 );
 							Sample.INSTANCE.play( Assets.Sounds.MINE );
 							Level.set( action.dst, Terrain.EMPTY_DECO );
+							Dungeon.level.visualMap[action.dst] = Terrain.EMPTY_DECO;
 
 						//1 hunger spent total
 						} else if (Dungeon.level.map[action.dst] == Terrain.MINE_CRYSTAL){
 							Splash.at(action.dst, 0xFFFFFF, 5);
 							Sample.INSTANCE.play( Assets.Sounds.SHATTER );
 							Level.set( action.dst, Terrain.EMPTY );
+							Dungeon.level.visualMap[action.dst] = Terrain.EMPTY;
 
 						//1 hunger spent total
 						} else if (Dungeon.level.map[action.dst] == Terrain.MINE_BOULDER){
 							Splash.at(action.dst, 0x555555, 5);
 							Sample.INSTANCE.play( Assets.Sounds.MINE, 0.6f );
 							Level.set( action.dst, Terrain.EMPTY_DECO );
+							Dungeon.level.visualMap[action.dst] = Terrain.EMPTY_DECO;
 						}
 
 						for (int i : PathFinder.NEIGHBOURS9) {
@@ -1480,6 +1484,7 @@ public class Hero extends Char {
 										if (Dungeon.level.map[action.dst+i] == Terrain.MINE_CRYSTAL){
 											Splash.at(action.dst+i, 0xFFFFFF, 5);
 											Level.set( action.dst+i, Terrain.EMPTY );
+											Dungeon.level.visualMap[action.dst] = Terrain.EMPTY;
 											broke = true;
 										}
 									}

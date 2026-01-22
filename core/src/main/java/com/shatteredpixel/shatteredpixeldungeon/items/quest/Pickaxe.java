@@ -104,15 +104,10 @@ public class Pickaxe extends MeleeWeapon {
 		
 		if (action.equals(AC_MINE)) {
 			
-			if (Dungeon.level.levelScheme.getVisualRegion() != LevelScheme.REGION_CAVES) {
-				GLog.w( Messages.get(this, "no_vein") );
-				return;
-			}
-			
 			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 				
 				final int pos = hero.pos + PathFinder.NEIGHBOURS8[i];
-				if (Dungeon.level.map[pos] == Terrain.WALL_DECO) {
+				if (Dungeon.level.map[pos] == Terrain.WALL_DECO && Dungeon.level.isVisualRegionAtTile(pos, LevelScheme.REGION_CAVES)) {
 				
 					hero.spend( TIME_TO_MINE );
 					hero.busy();
@@ -126,6 +121,7 @@ public class Pickaxe extends MeleeWeapon {
 							Sample.INSTANCE.play( Assets.Sounds.EVOKE );
 							
 							Level.set( pos, Terrain.WALL );
+							Dungeon.level.visualMap[pos] = Terrain.WALL;
 							GameScene.updateMap( pos );
 							
 							DarkGold gold = new DarkGold();
