@@ -456,8 +456,14 @@ public class SkeletonKey extends Artifact {
 
 	@Override
 	public Item upgrade() {
-		chargeCap = 3 + (level()+1)/2;
-		return super.upgrade();
+		level(level()+1);
+		return this;
+	}
+	
+	@Override
+	public void level(int value) {
+		chargeCap = Math.min(3 + (level()+1)/2, 10);
+		super.level(value);
 	}
 
 	private void placeWall(int pos, int knockbackDIR ){
