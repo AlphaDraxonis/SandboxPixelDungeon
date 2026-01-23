@@ -16,7 +16,7 @@ public class Backpack extends Bag {
 
     @Override
     public boolean canHold(Item item) {
-        return super.canHold(item) && !(item instanceof Backpack);
+        return super.canHold(item) && !(item instanceof Bag);
     }
 
     @Override
