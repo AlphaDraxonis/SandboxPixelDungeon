@@ -173,7 +173,7 @@ public final class Notes {
 					return Icons.STAIRS_SECRETS.get();
 
 				case SHOP:
-					new Image(new ShopkeeperSprite());
+					return new Image(new ShopkeeperSprite());
 				case IMP_SHOP:
 					return new Image(new ImpSprite());
 				case ALCHEMY:
