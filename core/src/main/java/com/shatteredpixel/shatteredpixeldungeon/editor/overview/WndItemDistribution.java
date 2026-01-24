@@ -4,7 +4,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.ItemDistribution;
-import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -12,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -24,7 +24,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.NotAllowedInLua;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
@@ -33,8 +32,8 @@ import java.util.List;
 @NotAllowedInLua
 public class WndItemDistribution extends Window {
 
-    private ScrollingListPane distributions;
-    private List<DistributionCompInList> distributionComps;
+    private final ScrollingListPane distributions;
+    private final List<DistributionCompInList> distributionComps;
 
     public WndItemDistribution() {
 
@@ -99,26 +98,23 @@ public class WndItemDistribution extends Window {
     }
 
     private <T extends Item> void showCreateDistrDialog(ItemDistribution<T> distribution) {
-        Window w = new WndEditItemDistribution<T>(distribution, Messages.get(WndNewFloor.class, "create_label")) {
+        DungeonScene.show(new WndEditItemDistribution<T>(distribution) {
             @Override
-            protected void doAfterPositive() {
+            protected void onChange() {
                 addDistribution(distribution);
             }
-
-        };
-        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-        else Game.scene().addToFront(w);
+            
+        });
     }
 
     public static void showWindow() {
-        if (Game.scene() instanceof EditorScene) EditorScene.show(new WndItemDistribution());
-        else Game.scene().addToFront(new WndItemDistribution());
+        DungeonScene.show(new WndItemDistribution());
     }
 
 
     private class DistributionCompInList extends AdvancedListPaneItem {
         private final ItemDistribution<?> distribution;
-        private IconButton remove;
+        private final IconButton remove;
 
         public DistributionCompInList(ItemDistribution<?> distribution) {
             super(new Image(), null, "");
@@ -136,9 +132,9 @@ public class WndItemDistribution extends Window {
 
         @Override
         protected void onClick() {
-            EditorScene.show(new WndEditItemDistribution(distribution, Messages.get(WndItemDistribution.class, "save")) {
+            EditorScene.show(new WndEditItemDistribution(distribution) {
                 @Override
-                protected void doAfterPositive() {
+                protected void onChange() {
                     updateUI();
                     layout2();
                 }
