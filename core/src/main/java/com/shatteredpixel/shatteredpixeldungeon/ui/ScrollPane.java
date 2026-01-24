@@ -123,6 +123,10 @@ public class ScrollPane extends Component {
 	public void scrollToCurrentView() {
 		scrollTo(content().camera.scroll.x, content().camera.scroll.y);
 	}
+	
+	public void scrollToBottom() {
+		scrollTo(content().camera.scroll.x, content().height());
+	}
 
 	@Override
 	public synchronized void update() {
