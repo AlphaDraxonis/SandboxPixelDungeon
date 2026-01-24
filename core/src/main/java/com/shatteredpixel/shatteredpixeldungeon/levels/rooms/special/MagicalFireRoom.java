@@ -114,8 +114,12 @@ public class MagicalFireRoom extends SpecialRoom {
 		int n = Random.IntRange( 3, 4 );
 
 		for (int i=0; i < n; i++) {
-			if (honeyPot) spawnItemsInRoom.add(new Honeypot());
-			else spawnItemsInRoom.add(prize(level));
+			if (honeyPot) {
+				spawnItemsInRoom.add(new Honeypot());
+				honeyPot = false;
+			} else {
+				spawnItemsInRoom.add(prize(level));
+			}
 		}
 	}
 
