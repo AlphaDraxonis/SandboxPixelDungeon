@@ -826,6 +826,27 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			}
 		}
 	}
+
+	public void showInvestigate() {
+		synchronized (EmoIcon.class) {
+			if (!(emo instanceof EmoIcon.Investigate)) {
+				if (emo != null) {
+					emo.killAndErase();
+				}
+				emo = new EmoIcon.Investigate(this);
+				emo.visible = visible;
+			}
+		}
+	}
+
+	public void hideInvestigate() {
+		synchronized (EmoIcon.class) {
+			if (emo instanceof EmoIcon.Investigate) {
+				emo.killAndErase();
+				emo = null;
+			}
+		}
+	}
 	
 	public void showLost() {
 		synchronized (EmoIcon.class) {
@@ -878,7 +899,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		if (extraCode != null) extraCode.onKill(this);
 	}
 
-	private float[] shadowMatrix = new float[16];
+	private final float[] shadowMatrix = new float[16];
 
 	@Override
 	protected void updateMatrix() {
