@@ -44,7 +44,9 @@ public class RingOfTime extends Ring {
 			}
 			return info;
 		} else {
-			return Messages.get(this, "typical_stats", Messages.decimalFormat("#.##", 20f));
+			return Messages.get(this, "typical_stats",
+					Messages.decimalFormat("#.##", 100f * (1 + RingOfHaste.POWER_BASE * 0.4)),
+					Messages.decimalFormat("#.##", 100f * (1 + RingOfFuror.POWER_BASE * 0.4)));
 		}
 	}
 	
