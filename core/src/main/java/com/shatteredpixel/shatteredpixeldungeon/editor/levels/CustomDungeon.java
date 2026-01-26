@@ -53,6 +53,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.Elixir;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfWipeOut;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
@@ -103,7 +104,7 @@ public class CustomDungeon implements Bundlable {
     private String startFloor;
     private Set<String> ratKingLevels;
     private List<ItemDistribution<? extends Bundlable>> itemDistributions;
-    private Map<String, LevelScheme> floors = new HashMap<>();
+    private final Map<String, LevelScheme> floors = new HashMap<>();
 
     //heroSubClasses assumes that there are exactly 2 subclasses per hero, see HeroSubClass.getIndex() for more details
     public boolean[] heroesEnabled, heroSubClassesEnabled;
@@ -457,7 +458,7 @@ public class CustomDungeon implements Bundlable {
             itemDistributions.add(sty);
         }
         ItemDistribution.Items soTransmutation = new ItemDistribution.Items(true);
-        soTransmutation.getObjectsToDistribute().add(new StoneOfEnchantment());//I wonder if the comment in shatteredPD is a mistake...
+        soTransmutation.getObjectsToDistribute().add(new ScrollOfTransmutation());
         for (int i = 6; i < 20; i++) {
             if (i % 5 != 0) soTransmutation.getLevels().add(Integer.toString(i));
         }
@@ -969,11 +970,9 @@ public class CustomDungeon implements Bundlable {
             else level = (CustomLevel) levelScheme.getLevel();
             if (level == null) return;//skip if level couldn't be loaded
 
-            boolean saveNeeded = false;
-
-            if (extraTasksCL != null && extraTasksCL.apply(level)) saveNeeded = true;
-
-            if (GameObject.doOnAllGameObjectsSparseArray(level.heaps, whatToDo)) saveNeeded = true;
+            boolean saveNeeded = extraTasksCL != null && extraTasksCL.apply(level);
+			
+			if (GameObject.doOnAllGameObjectsSparseArray(level.heaps, whatToDo)) saveNeeded = true;
             for (Heap h : level.heaps.valueList()) {
                 if (h.isEmpty()) {
                     level.heaps.remove(h.pos);
