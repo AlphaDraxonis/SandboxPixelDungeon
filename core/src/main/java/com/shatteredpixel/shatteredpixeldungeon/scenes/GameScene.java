@@ -1381,7 +1381,7 @@ public class GameScene extends DungeonScene {
 	@Override
 	public synchronized void saveWindows() {
 		super.saveWindows();
-		if (scene.inventory != null && scene.inventory.getSelector() != null){
+		if (scene != null && scene.inventory != null && scene.inventory.getSelector() != null){
 			savedSelector = scene.inventory.getSelector();
 		} else {
 			for (Gizmo g : members.toArray(new Gizmo[0])){
@@ -1401,7 +1401,7 @@ public class GameScene extends DungeonScene {
 	public synchronized void restoreWindows() {
 		super.restoreWindows();
 		if (savedSelector != null){
-			if (scene.inventory != null){
+			if (scene != null && scene.inventory != null){
 				scene.inventory.setSelector(savedSelector);
 			} else {
 				addToFront(new WndBag(Dungeon.hero.belongings.backpack, savedSelector));
