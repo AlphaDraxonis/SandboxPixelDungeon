@@ -97,7 +97,9 @@ public class CustomParticle extends Blob {
     @Override
     public void use(BlobEmitter emitter) {
         super.use(emitter);
-        if (properties != null) emitter.start(properties.createFactory(), properties.interval, properties.quantity);
+        if (properties != null) {
+            emitter.start(properties.createFactory(), 0.1f, properties.quantity);
+        }
     }
 
     public boolean removeOnEnter() {
@@ -351,13 +353,13 @@ public class CustomParticle extends Blob {
         private CellEmitter[] emitters;
         private Visual[] visualsOnTop;
 
-        private CustomParticle particle;
-
-        private float originalInterval;
+        private final CustomParticle particle;
+		private float particleInterval;
 
         public ParticleEmitter(CustomParticle particle) {
             super(particle);
             this.particle = particle;
+			particleInterval = particle.properties.interval;
             particle.use(this);
         }
 
@@ -366,7 +368,6 @@ public class CustomParticle extends Blob {
             this.factory = factory;
             this.interval = interval;
             this.quantity = quantity;
-            originalInterval = interval;
             super.start(factory, interval, quantity);
         }
 
@@ -405,12 +406,12 @@ public class CustomParticle extends Blob {
                         f.setParticle(particle);
                         if (particle.cur[cell] == CELL_WILL_GO_INACTIVE) {
                             f.setValueOnKill(valueOnEmitterKill);
-                            if (particle.alwaysEmitting()) f.sohw(this, cell, 0.2f);
-                            else f.sohw(this, cell, quantity == 0 ? 1.6f : quantity);
+                            if (particle.alwaysEmitting()) f.show(this, cell, 0.2f);
+                            else f.show(this, cell, quantity == 0 ? 1.6f : quantity);
                         } else {
                             if (!particle.alwaysEmitting() || newVisual) {
                                 f.setValueOnKill(CELL_ACTIVE);
-                                f.sohw(this, cell, charJustEnteredCell && quantity == 0 ? 1.6f : quantity);
+                                f.show(this, cell, charJustEnteredCell && quantity == 0 ? 1.6f : quantity);
                             }
                         }
                     }
@@ -434,13 +435,14 @@ public class CustomParticle extends Blob {
                 }
                 if (particle.cur[cell] == CELL_WILL_GO_INACTIVE) {
                     emitter.valueOnKill = valueOnEmitterKill;
-                    if (particle.alwaysEmitting()) emitter.start(factory, 0.01f, 1);
-                    else emitter.start(factory, interval, quantity == 0 ? Math.max(1, (int) (1.2f / interval)) : quantity);
-                } else {
-                    if (!particle.alwaysEmitting() || !emitter.on) {
-                        emitter.valueOnKill = CELL_ACTIVE;
-                        emitter.start(factory, interval, charJustEnteredCell && quantity == 0 ? Math.max(1, (int) (1.2f / interval)) : quantity);
-                    }
+                    if (particle.alwaysEmitting()) emitter.startDelayed(factory, 0.01f, 1, 0f);
+                    else emitter.startDelayed(factory, particleInterval, quantity == 0 ? Math.max(1, (int) (1.2f / particleInterval)) : quantity, 0f);
+                } else if (!particle.alwaysEmitting()) {
+                    emitter.valueOnKill = CELL_ACTIVE;
+                    emitter.startDelayed(factory, particleInterval, charJustEnteredCell && quantity == 0 ? Math.max(1, (int) (1.2f / particleInterval)) : quantity, 0f);
+                } else if (!emitter.on) {
+                    emitter.valueOnKill = CELL_ACTIVE;
+                    emitter.start(factory, particleInterval, charJustEnteredCell && quantity == 0 ? Math.max(1, (int) (1.2f / particleInterval)) : quantity);
                 }
             }
         }
@@ -484,7 +486,7 @@ public class CustomParticle extends Blob {
 
             int cellsWithEmitter = particle.volume / CELL_ACTIVE;//not perfect, but good enough since 99% of emitting cells are CELL_ACTIVE
             if (cellsWithEmitter > 0)
-                interval = Math.max( cellsWithEmitter / MAX_NUMBER_OF_PARTICLES_PER_SECOND__TIMES__AVERAGE_LIFESPAN, originalInterval);
+                particleInterval = Math.max( cellsWithEmitter / MAX_NUMBER_OF_PARTICLES_PER_SECOND__TIMES__AVERAGE_LIFESPAN, particle.properties.interval);
             for (int i = particle.area.left; i < particle.area.right; i++) {
                 for (int j = particle.area.top; j < particle.area.bottom; j++) {
                     updateCell(i + j*Dungeon.level.width());
@@ -527,113 +529,112 @@ public class CustomParticle extends Blob {
 
     }
 
-    public static class GizmoEmitter extends BlobEmitter {
-
-        private Visual[] visuals;
-
-        private CustomParticle particle;
-
-        public GizmoEmitter(CustomParticle particle) {
-            super(particle);
-            this.particle = particle;
-            particle.use(this);
-        }
-
-        @Override
-        public void start(Factory factory, float interval, int quantity) {
-            this.factory = factory;
-            this.interval = interval;
-            this.quantity = quantity;
-            super.start(factory, interval, quantity);
-        }
-
-        protected void updateCell(int cell) {
-            if (cell < Dungeon.level.heroFOV.length
-                    && (Dungeon.level.heroFOV[cell] || particle.alwaysVisible || CustomDungeon.isEditing())
-                    && particle.cur[cell] > (particle.alwaysEmitting() || CustomDungeon.isEditing() ? CELL_INACTIVE : CELL_ACTIVE)) {
-
-                boolean heroJustEnteredCell = particle.cur[cell] == HERO_JUST_ENTERED;
-                boolean charJustEnteredCell = particle.cur[cell] >= HERO_JUST_ENTERED;
-                int valueOnEmitterKill = particle.removeOnEnter() ? particle.cur[cell] - HERO_JUST_ENTERED - 1 : CELL_ACTIVE;
-
-                if (heroJustEnteredCell) {
-                    int setValue = particle.removeOnEnter() ? CELL_WILL_GO_INACTIVE : CELL_ACTIVE;
-                    particle.volume += setValue - particle.cur[cell];
-                    particle.cur[cell] = setValue;
-                }
-
-                if (particle.properties.type > 2000) {
-                    Visual visual;
-                    boolean newVisual = false;
-                    if (visuals[cell] == null || !visuals[cell].alive) {
-                        if (particle.properties.type == LIGHT_HALO) visual = visuals[cell] = new ParticleHalo();
-                        else if (particle.properties.type == FLARE) visual = visuals[cell] = new ParticleFlare(Window.TITLE_COLOR);//tzz user set color!
-                        else return;
-                        newVisual = true;
-                    } else {
-                        if (charJustEnteredCell) {
-                            visual = visuals[cell];
-                        } else return;
-                    }
-                    if (visual instanceof VisualAsParticle) {
-                        VisualAsParticle f = (VisualAsParticle) visual;
-                        f.setPos(cell);
-                        f.setParticle(particle);
-                        if (particle.cur[cell] == CELL_WILL_GO_INACTIVE) {
-                            f.setValueOnKill(valueOnEmitterKill);
-                            if (particle.alwaysEmitting()) f.sohw(this, cell, 0.2f);
-                            else f.sohw(this, cell, quantity == 0 ? 1.6f : quantity);
-                        } else {
-                            if (!particle.alwaysEmitting() || newVisual) {
-                                f.setValueOnKill(CELL_ACTIVE);
-                                f.sohw(this, cell, charJustEnteredCell && quantity == 0 ? 1.6f : quantity);
-                            }
-                        }
-                    }
-                    return;
-                }
-            }
-        }
-
-        @Override
-        protected void emit(int index) {
-            if (particle == null) {
-                return;
-            }
-
-            if (visuals != null) {
-                for (int i = 0; i < visuals.length; i++) {
-                    if (visuals[i] != null && particle.cur[i] == 0) {
-                        visuals[i].remove();
-                        visuals[i].destroy();
-                        visuals[i] = null;
-                    }
-                }
-            }
-
-            if (particle.volume <= 0) {
-                return;
-            }
-
-            if (particle.area.isEmpty())
-                particle.setupArea();
-
-            if (visuals == null) {
-                visuals = new Visual[Dungeon.level.length()];
-            } else if (visuals.length != Dungeon.level.length()) {
-                for (int i = 0; i < visuals.length; i++) {
-                    visuals[i].destroy();
-                }
-                visuals = new Visual[Dungeon.level.length()];
-            }
-
-            for (int i = particle.area.left; i < particle.area.right; i++) {
-                for (int j = particle.area.top; j < particle.area.bottom; j++) {
-                    updateCell(i + j * Dungeon.level.width());
-                }
-            }
-        }
-    }
+//    public static class GizmoEmitter extends BlobEmitter {
+//
+//        private Visual[] visuals;
+//
+//        private CustomParticle particle;
+//
+//        public GizmoEmitter(CustomParticle particle) {
+//            super(particle);
+//            this.particle = particle;
+//            particle.use(this);
+//        }
+//
+//        @Override
+//        public void start(Factory factory, float interval, int quantity) {
+//            this.factory = factory;
+//            this.interval = interval;
+//            this.quantity = quantity;
+//            super.start(factory, interval, quantity);
+//        }
+//
+//        protected void updateCell(int cell) {
+//            if (cell < Dungeon.level.heroFOV.length
+//                    && (Dungeon.level.heroFOV[cell] || particle.alwaysVisible || CustomDungeon.isEditing())
+//                    && particle.cur[cell] > (particle.alwaysEmitting() || CustomDungeon.isEditing() ? CELL_INACTIVE : CELL_ACTIVE)) {
+//
+//                boolean heroJustEnteredCell = particle.cur[cell] == HERO_JUST_ENTERED;
+//                boolean charJustEnteredCell = particle.cur[cell] >= HERO_JUST_ENTERED;
+//                int valueOnEmitterKill = particle.removeOnEnter() ? particle.cur[cell] - HERO_JUST_ENTERED - 1 : CELL_ACTIVE;
+//
+//                if (heroJustEnteredCell) {
+//                    int setValue = particle.removeOnEnter() ? CELL_WILL_GO_INACTIVE : CELL_ACTIVE;
+//                    particle.volume += setValue - particle.cur[cell];
+//                    particle.cur[cell] = setValue;
+//                }
+//
+//                if (particle.properties.type > 2000) {
+//                    Visual visual;
+//                    boolean newVisual = false;
+//                    if (visuals[cell] == null || !visuals[cell].alive) {
+//                        if (particle.properties.type == LIGHT_HALO) visual = visuals[cell] = new ParticleHalo();
+//                        else if (particle.properties.type == FLARE) visual = visuals[cell] = new ParticleFlare(Window.TITLE_COLOR);//tzz user set color!
+//                        else return;
+//                        newVisual = true;
+//                    } else {
+//                        if (charJustEnteredCell) {
+//                            visual = visuals[cell];
+//                        } else return;
+//                    }
+//                    if (visual instanceof VisualAsParticle) {
+//                        VisualAsParticle f = (VisualAsParticle) visual;
+//                        f.setPos(cell);
+//                        f.setParticle(particle);
+//                        if (particle.cur[cell] == CELL_WILL_GO_INACTIVE) {
+//                            f.setValueOnKill(valueOnEmitterKill);
+//                            if (particle.alwaysEmitting()) f.show(this, cell, 0.2f);
+//                            else f.show(this, cell, quantity == 0 ? 1.6f : quantity);
+//                        } else {
+//                            if (!particle.alwaysEmitting() || newVisual) {
+//                                f.setValueOnKill(CELL_ACTIVE);
+//                                f.show(this, cell, charJustEnteredCell && quantity == 0 ? 1.6f : quantity);
+//                            }
+//                        }
+//                    }
+//                    return;
+//                }
+//            }
+//        }
+//        @Override
+//        protected void emit(int index) {
+//            if (particle == null) {
+//                return;
+//            }
+//
+//            if (visuals != null) {
+//                for (int i = 0; i < visuals.length; i++) {
+//                    if (visuals[i] != null && particle.cur[i] == 0) {
+//                        visuals[i].remove();
+//                        visuals[i].destroy();
+//                        visuals[i] = null;
+//                    }
+//                }
+//            }
+//
+//            if (particle.volume <= 0) {
+//                return;
+//            }
+//
+//            if (particle.area.isEmpty())
+//                particle.setupArea();
+//
+//            if (visuals == null) {
+//                visuals = new Visual[Dungeon.level.length()];
+//            } else if (visuals.length != Dungeon.level.length()) {
+//                for (int i = 0; i < visuals.length; i++) {
+//                    visuals[i].destroy();
+//                }
+//                visuals = new Visual[Dungeon.level.length()];
+//            }
+//
+//            for (int i = particle.area.left; i < particle.area.right; i++) {
+//                for (int j = particle.area.top; j < particle.area.bottom; j++) {
+//                    updateCell(i + j * Dungeon.level.width());
+//                }
+//            }
+//        }
+//    }
 
     private static final Emitter.Factory SPLASH_FACTORY = new Emitter.Factory() {
         @Override
@@ -687,7 +688,7 @@ public class CustomParticle extends Blob {
         }
 
         @Override
-        public void sohw(Group group, int cell, float duration) {
+        public void show(Group group, int cell, float duration) {
             show(group, DungeonTilemap.tileCenterToWorld(cell), duration);
         }
     }
@@ -732,7 +733,7 @@ public class CustomParticle extends Blob {
         }
 
         @Override
-        public void sohw( Group parent, int cell, float duration ) {
+        public void show(Group parent, int cell, float duration ) {
             point( DungeonTilemap.tileCenterToWorld(cell) );
             parent.add( this );
 
@@ -769,7 +770,7 @@ public class CustomParticle extends Blob {
          void setValueOnKill(int valueOnKill);
          void setParticle(CustomParticle particle);
 
-         void sohw(Group group, int cell, float duration);
+         void show(Group group, int cell, float duration);
 
     }
 
