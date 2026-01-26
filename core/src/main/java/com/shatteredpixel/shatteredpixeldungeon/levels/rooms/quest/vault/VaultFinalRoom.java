@@ -36,7 +36,7 @@ public class VaultFinalRoom extends SpecialRoom {
 	@Override
 	public void paint(Level level) {
 		Painter.fill( level, this, Terrain.WALL );
-		Painter.fill( level, this, 1 , Terrain.REGION_DECO_ALT );
+		Painter.fill( level, this, 1 , Terrain.FLAMING_PEDESTAL_ALT );
 		Painter.fill( level, this, 2 , Terrain.EMPTY_SP );
 
 		for (Door door : connected.values()) {

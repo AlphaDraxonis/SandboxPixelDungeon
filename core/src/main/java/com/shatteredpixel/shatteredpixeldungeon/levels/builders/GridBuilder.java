@@ -24,8 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.builders;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
 import com.watabou.utils.SparseArray;
+import com.watabou.utils.WatabouRect;
 
 import java.util.ArrayList;
 
@@ -130,7 +130,7 @@ public class GridBuilder extends Builder {
 
 					//more complex check for larger rooms
 					} else {
-						Rect space = findFreeGridSpace(new Point(x, y), gridCells, cellWidth, cellHeight);
+						WatabouRect space = findFreeGridSpace(new Point(x, y), gridCells, cellWidth, cellHeight);
 						//add 1 to width/height as it's inclusive
 						int excessWidth = (space.width() + 1) - cellWidth;
 						int excessHeight = (space.height() + 1) - cellHeight;
@@ -177,8 +177,8 @@ public class GridBuilder extends Builder {
 
 	//same as Builder.findFreeSpace, but using grid coordination and collision
 	//assumes the starting cell is open
-	public Rect findFreeGridSpace(Point start, SparseArray<Room> collision, int maxWidth, int maxHeight){
-		Rect space = new Rect(start.x, start.y, start.x, start.y);
+	public WatabouRect findFreeGridSpace(Point start, SparseArray<Room> collision, int maxWidth, int maxHeight){
+		WatabouRect space = new WatabouRect(start.x, start.y, start.x, start.y);
 
 		//expand one at a time in each direction, so as to prioritize a more square shape
 		boolean expanded = true;

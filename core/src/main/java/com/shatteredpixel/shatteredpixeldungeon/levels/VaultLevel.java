@@ -47,6 +47,8 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 
 public class VaultLevel extends CityLevel {
+	
+	public int destCell = -1;//where the exit in VaultEntranceRoom should lead to
 
 	@Override
 	protected ArrayList<Room> initRooms() {

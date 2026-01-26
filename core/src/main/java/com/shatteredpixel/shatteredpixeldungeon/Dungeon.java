@@ -444,9 +444,12 @@ public class Dungeon {
             Dungeon.level = level = new VaultLevel();
             level.setLevelScheme(customDungeon.getFloor(levelName));
             level.name = levelName;
+			((VaultLevel) level).destCell = Dungeon.hero.pos;
             level.create();
         }
-		else level = customDungeon.getFloor(levelName).initLevel();
+		else {
+			level = customDungeon.getFloor(levelName).initLevel();
+		}
 
 		Dungeon.level = null;
 
@@ -497,7 +500,7 @@ public class Dungeon {
 	}
 
 	public static long seedForLevel(String levelName, int branch) {
-		return customDungeon.getFloor(levelName).getSeed() + 13 * branch;
+		return customDungeon.getFloor(levelName).getSeed() + 13L * branch;
 	}
 
 	public static boolean bossLevel() {
@@ -519,12 +522,9 @@ public class Dungeon {
 	}
 
 	public static boolean interfloorTeleportAllowed(){
-		if (Dungeon.level.locked()
-				|| Dungeon.level instanceof MiningLevel
-				|| (Dungeon.hero != null && Dungeon.hero.belongings.getItem(Amulet.class) != null)){
-			return false;
-		}
-		return true;
+		return !Dungeon.level.locked()
+				&& !(Dungeon.level instanceof MiningLevel)
+				&& (Dungeon.hero == null || Dungeon.hero.belongings.getItem(Amulet.class) == null);
 	}
 
 	public static void switchLevel( final Level level, int pos ) {
@@ -616,8 +616,7 @@ public class Dungeon {
 			int targetPOSLeft = 2 - floorThisSet / 2;
 			if (floorThisSet % 2 == 1 && Random.Int(2) == 0) targetPOSLeft--;
 			
-			if (targetPOSLeft < posLeftThisSet) return true;
-			else return false;
+			return targetPOSLeft < posLeftThisSet;
 		}
         return false;//uses ItemDistribution
     }
@@ -694,9 +693,7 @@ public class Dungeon {
 	public static boolean labRoomNeeded() {
 		LevelScheme ls = curLvlScheme();
 		if (ls.getRegion() > LimitedDrops.LAB_ROOM.count){
-			if (ls.getNumInRegion() >= 4 || (ls.getNumInRegion() == 3 && Random.Int(2) == 0)){
-				return true;
-			}
+			return ls.getNumInRegion() >= 4 || (ls.getNumInRegion() == 3 && Random.Int(2) == 0);
 		}
 		return false;
 	}
@@ -782,7 +779,7 @@ public class Dungeon {
 			bundle.put ( LIMDROPS, limDrops );
 			
 			int count = 0;
-			int ids[] = new int[chapters.size()];
+			int[] ids = new int[chapters.size()];
 			for (Integer id : chapters) {
 				ids[count++] = id;
 			}
@@ -913,7 +910,7 @@ public class Dungeon {
             LimitedDrops.restore(bundle.getBundle(LIMDROPS));
 
 			chapters = new HashSet<>();
-			int ids[] = bundle.getIntArray( CHAPTERS );
+			int[] ids = bundle.getIntArray( CHAPTERS );
 			if (ids != null) {
 				for (int id : ids) {
 					chapters.add( id );
