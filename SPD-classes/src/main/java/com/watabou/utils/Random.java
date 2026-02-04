@@ -281,7 +281,18 @@ public class Random {
 			}
 		}
 	}
-	
+
+	public static void shuffle( int[] array ) {
+		for (int i=0; i < array.length - 1; i++) {
+			int j = Int( i, array.length );
+			if (j != i) {
+				int t = array[i];
+				array[i] = array[j];
+				array[j] = t;
+			}
+		}
+	}
+
 	public static<T> void shuffle( T[] array ) {
 		for (int i=0; i < array.length - 1; i++) {
 			int j = Int( i, array.length );
