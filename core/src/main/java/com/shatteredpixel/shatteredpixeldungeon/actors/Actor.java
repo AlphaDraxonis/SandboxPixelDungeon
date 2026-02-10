@@ -288,15 +288,17 @@ public abstract class Actor extends GameObject {
 			if (!interrupted && !Game.switchingScene()) {
 				float earliest = Float.MAX_VALUE;
 
-				for (Actor actor : all) {
-					
-					//some actors will always go before others if time is equal.
-					if (actor.time < earliest ||
-							actor.time == earliest && (current == null || actor.actPriority > current.actPriority)) {
-						earliest = actor.time;
-						current = actor;
+				synchronized (Actor.class) {
+					for (Actor actor : all) {
+
+						//some actors will always go before others if time is equal.
+						if (actor.time < earliest ||
+								actor.time == earliest && (current == null || actor.actPriority > current.actPriority)) {
+							earliest = actor.time;
+							current = actor;
+						}
+
 					}
-					
 				}
 			}
 
