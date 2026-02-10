@@ -61,7 +61,7 @@ public final class WndVersionHistory extends Component {
     private final DungeonPreview preview;
     private DungeonPreview.DungeonVersionsHistoryEntry[] historyEntries;
     
-    private SingleEntryComp[] comps;
+    private final SingleEntryComp[] comps;
 
     private WndVersionHistory(SimpleWindow simpleWindow, DungeonPreview preview, DungeonPreview.DungeonVersionsHistoryEntry[] historyEntries) {
 		this.simpleWindow = simpleWindow;
@@ -165,7 +165,7 @@ public final class WndVersionHistory extends Component {
             this.entry = entry;
             
             if (entry.getName() == null || entry.getName().isEmpty()) {
-                name.text(Messages.get(WndVersionHistory.class, "entry_default_name", index+1));
+                name.text(Messages.format("Version %d", index+1));
             } else {
                 name.text(entry.getName());
             }
