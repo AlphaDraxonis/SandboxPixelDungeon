@@ -54,12 +54,15 @@ public class DownloadDungeonAction {
 	private int openResponses;
 	private boolean canceled;
 
-	private List<Throwable> errors = new ArrayList<>(2);
-	private List<Net.HttpRequest> openRequests = new ArrayList<>();
+	private final List<Throwable> errors = new ArrayList<>(2);
+	private final List<Net.HttpRequest> openRequests = new ArrayList<>();
 
 	private String downloadToDir;
 	private final String dungeonName;
 	private boolean isCreator;
+	
+	private int filesToReceive;
+	private int receivedFiles;
 
 	public DownloadDungeonAction(String dungeonName, String folderID, ServerCommunication.OnDungeonReceive callback) {
 		this.dungeonName = dungeonName;
@@ -101,8 +104,11 @@ public class DownloadDungeonAction {
 					Bundle[] bundles = Bundle.read(httpResponse.getResultAsStream()).getBundleArray();
 					isCreator = bundles[0].getBoolean("creator");
 					
+					receivedFiles = 0;
+					filesToReceive = bundles.length-1;
+					
 					Game.runOnRenderThread(() -> {
-						callback.appendMessage(Messages.get(ServerCommunication.class, "connection_established"));
+						callback.setMessage(Messages.get(ServerCommunication.class, "downloading_files", receivedFiles, filesToReceive));
 					});
 					
 					for (int i = 1; i < bundles.length; i++) {
@@ -170,7 +176,8 @@ public class DownloadDungeonAction {
 				CustomDungeonSaves.writeBytesToFileNoBackup(downloadToDir, path, bytes);
 				
 				Game.runOnRenderThread(() -> {
-					callback.appendMessage(Messages.get(ServerCommunication.class, "received", path));
+					receivedFiles++;
+					callback.setMessage(Messages.get(ServerCommunication.class, "downloading_files", receivedFiles, filesToReceive));
 				});
 				
 			} catch (Exception e) {

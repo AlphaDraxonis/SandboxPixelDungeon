@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -98,12 +99,8 @@ public final class ServerCommunication {
         if (userID == null) {
             userID = SPDSettings.uuid();
             if (userID == null) {
-                try {
-                    userID = URLEncoder.encode(UUID.randomUUID().toString(), "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    userID = String.valueOf(System.currentTimeMillis());
-                }
-                SPDSettings.uuid(userID);
+				userID = URLEncoder.encode(UUID.randomUUID().toString(), StandardCharsets.UTF_8);
+				SPDSettings.uuid(userID);
             }
         }
         return userID;
@@ -155,10 +152,10 @@ public final class ServerCommunication {
                     });
                 }
         }
-
-        public void appendMessage(String msg) {
+        
+        public void setMessage(String msg) {
             if (waitWindow instanceof WndOptions) {
-                ((WndOptions) waitWindow).appendMessage(msg);
+                ((WndOptions) waitWindow).setMessage(msg);
             }
         }
 
@@ -336,44 +333,40 @@ public final class ServerCommunication {
     }
 
     public static void reportBug(String dungeonName, String description, UploadCallback callback) {
-        try {
-            Bundle dungeonAsBundle;
-            if (dungeonName == null) dungeonAsBundle = null;
-            else {
-                try {
-                    dungeonAsBundle = CustomDungeonSaves.getExportDungeonBundle(dungeonName);
-                } catch (Exception ex) {
-                    ExportDungeonWrapper.AdditionalFileInfo dungeonFiles = new ExportDungeonWrapper.AdditionalFileInfo(
-                            FileUtils.getFileHandle(CustomDungeonSaves.DUNGEON_FOLDER + dungeonName.replace(' ', '_'))
-                    );
-                    dungeonAsBundle = new Bundle();
-                    dungeonAsBundle.put(CustomDungeonSaves.BUGGED, dungeonFiles);
-                }
-            }
-            String fileName = URLEncoder.encode(description.substring(0, Math.min(20, description.length())), "UTF-8");
-
-            DungeonPreview uploadPreview = new DungeonPreview();
-            uploadPreview.title = fileName;
-            uploadPreview.description = description;
-            uploadPreview.version = Game.version;
-            uploadPreview.intVersion = Game.versionCode;
-            uploadPreview.uploader = "null";
-
-            Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
-            httpRequest.setUrl(getURL()
-                    + "?action=" + ACTION_BUG_REPORT
-                    + "&fileName=" + URLEncoder.encode(fileName, "UTF-8")
-                    + uploadPreview.writeArgumentsForURL());
-            httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
-            httpRequest.setContent("dungeon=" + dungeonAsBundle);
-
-            callback.showWindow(httpRequest);
-
-            Gdx.net.sendHttpRequest(httpRequest, new UploadDataListener(callback));
-        } catch (IOException e) {
-            Game.runOnRenderThread(() -> callback.failed(e));
-        }
-    }
+		Bundle dungeonAsBundle;
+		if (dungeonName == null) dungeonAsBundle = null;
+		else {
+			try {
+				dungeonAsBundle = CustomDungeonSaves.getExportDungeonBundle(dungeonName);
+			} catch (Exception ex) {
+				ExportDungeonWrapper.AdditionalFileInfo dungeonFiles = new ExportDungeonWrapper.AdditionalFileInfo(
+						FileUtils.getFileHandle(CustomDungeonSaves.DUNGEON_FOLDER + dungeonName.replace(' ', '_'))
+				);
+				dungeonAsBundle = new Bundle();
+				dungeonAsBundle.put(CustomDungeonSaves.BUGGED, dungeonFiles);
+			}
+		}
+		String fileName = URLEncoder.encode(description.substring(0, Math.min(20, description.length())), StandardCharsets.UTF_8);
+		
+		DungeonPreview uploadPreview = new DungeonPreview();
+		uploadPreview.title = fileName;
+		uploadPreview.description = description;
+		uploadPreview.version = Game.version;
+		uploadPreview.intVersion = Game.versionCode;
+		uploadPreview.uploader = "null";
+		
+		Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
+		httpRequest.setUrl(getURL()
+				+ "?action=" + ACTION_BUG_REPORT
+				+ "&fileName=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8)
+				+ uploadPreview.writeArgumentsForURL());
+		httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		httpRequest.setContent("dungeon=" + dungeonAsBundle);
+		
+		callback.showWindow(httpRequest);
+		
+		Gdx.net.sendHttpRequest(httpRequest, new UploadDataListener(callback));
+	}
 
     public static void deleteDungeon(String dungeonID, String dungeonName, UploadCallback callback) {
         Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
@@ -500,10 +493,10 @@ public final class ServerCommunication {
         try {
             String combined = userID + salt;
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(combined.getBytes("UTF-8"));
+            byte[] hash = digest.digest(combined.getBytes(StandardCharsets.UTF_8));
 //            Base64.getEncoder().encodeToString(hash);
             return convertToHexString(hash);
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
         }

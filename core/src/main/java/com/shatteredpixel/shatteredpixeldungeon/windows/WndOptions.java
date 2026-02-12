@@ -235,8 +235,8 @@ public class WndOptions extends Window {
 //		}
 	}
 	
-	public void appendMessage(String msg) {
-		tfMessage.text(tfMessage.text() + " " + msg);
+	public void setMessage(String msg) {
+		tfMessage.text(msg);
 		layout(width);
 	}
 	

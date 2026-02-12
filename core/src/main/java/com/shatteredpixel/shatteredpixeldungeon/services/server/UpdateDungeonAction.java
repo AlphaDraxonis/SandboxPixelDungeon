@@ -38,6 +38,7 @@ import com.watabou.utils.Bundle;
 
 import java.net.SocketException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,8 +54,8 @@ public class UpdateDungeonAction {
 	
 	private DungeonPreview uploadPreview;
 
-	private List<Throwable> errors = new ArrayList<>(2);
-	private List<Net.HttpRequest> openRequests = new ArrayList<>();
+	private final List<Throwable> errors = new ArrayList<>(2);
+	private final List<Net.HttpRequest> openRequests = new ArrayList<>();
 	
 	private String dungeonID;
 	private String versionID;//folder of the version
@@ -63,6 +64,9 @@ public class UpdateDungeonAction {
 	private String versionName;
 
 	private FileHandle[] files;
+	
+	private int filesToSend;
+	private int sentFiles;
 
 	public UpdateDungeonAction(DungeonPreview oldDungeonPreview, String dungeonName, String title, String description, int difficulty, String versionName, ServerCommunication.UploadCallback callback) {
 		this.callback = callback;
@@ -139,8 +143,10 @@ public class UpdateDungeonAction {
 						if (files == null) {
 							sendFinish();
 						} else {
+							sentFiles = 0;
+							filesToSend = countFiles(files);
 							Game.runOnRenderThread(() -> {
-								callback.appendMessage(Messages.get(ServerCommunication.class, "connection_established"));
+								callback.setMessage(Messages.get(ServerCommunication.class, "uploading_files", sentFiles, filesToSend));
 							});
 							
 							for (FileHandle f : files) {
@@ -175,6 +181,19 @@ public class UpdateDungeonAction {
 			Game.runOnRenderThread(() -> callback.failed(e));
 		}
 	}
+	
+	private int countFiles(FileHandle[] files) {
+		int sum = 0;
+		for (FileHandle f : files) {
+			if (f.isDirectory()) {
+				sum += countFiles(f.list());
+			}
+			else {
+				sum++;
+			}
+		}
+		return sum;
+	}
 
 	private void uploadFile(FileHandle file) {
 		if (file.isDirectory()) {
@@ -191,7 +210,7 @@ public class UpdateDungeonAction {
 					+ "&userID=" + ServerCommunication.getUUID()
 					+ "&versionID=" + versionID
 					+ "&dungeonID=" + dungeonID
-					+ "&fileName=" + URLEncoder.encode(CustomDungeonSaves.cutBasePathFromFileName(file), "UTF-8"));
+					+ "&fileName=" + URLEncoder.encode(CustomDungeonSaves.cutBasePathFromFileName(file), StandardCharsets.UTF_8));
 			httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
 			byte[] bytes = file.readBytes();
@@ -254,7 +273,8 @@ public class UpdateDungeonAction {
 			}
 			
 			Game.runOnRenderThread(() -> {
-				callback.appendMessage(Messages.get(ServerCommunication.class, "sent", fileName));
+				sentFiles++;
+				callback.setMessage(Messages.get(ServerCommunication.class, "uploading_files", sentFiles, filesToSend));
 			});
 			
 			decreaseOpenResponses();

@@ -39,6 +39,7 @@ import com.watabou.utils.Bundle;
 
 import java.net.SocketException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,8 +55,8 @@ public class UploadDungeonAction {
 	
 	private DungeonPreview uploadPreview;
 
-	private List<Throwable> errors = new ArrayList<>(2);
-	private List<Net.HttpRequest> openRequests = new ArrayList<>();
+	private final List<Throwable> errors = new ArrayList<>(2);
+	private final List<Net.HttpRequest> openRequests = new ArrayList<>();
 
 	private String dungeonID;
 	private String versionID;//folder of the version
@@ -63,6 +64,9 @@ public class UploadDungeonAction {
 	private String versionName;
 	
 	private FileHandle[] files;
+	
+	private int filesToSend;
+	private int sentFiles;
 	
 	//TODO maybe ask if want to include a dungeon before!
 	public UploadDungeonAction(String dungeonName, String title, String description, String userName, int difficulty, String versionName, ServerCommunication.UploadCallback callback) {
@@ -131,9 +135,12 @@ public class UploadDungeonAction {
 							return;
 						}
 						ServerDungeonList.dungeons = null;
+						
+						sentFiles = 0;
+						filesToSend = countFiles(files);
 
 						Game.runOnRenderThread(() -> {
-							callback.appendMessage(Messages.get(ServerCommunication.class, "connection_established"));
+							callback.setMessage(Messages.get(ServerCommunication.class, "uploading_files", sentFiles, filesToSend));
 						});
 
 						for (FileHandle f : files) {
@@ -163,6 +170,19 @@ public class UploadDungeonAction {
 			Game.runOnRenderThread(() -> callback.failed(e));
 		}
 	}
+	
+	private int countFiles(FileHandle[] files) {
+		int sum = 0;
+		for (FileHandle f : files) {
+			if (f.isDirectory()) {
+				sum += countFiles(f.list());
+			}
+			else {
+				sum++;
+			}
+		}
+		return sum;
+	}
 
 	private void uploadFile(FileHandle file) {
 		if (file.isDirectory()) {
@@ -179,7 +199,7 @@ public class UploadDungeonAction {
 					+ "&userID=" + ServerCommunication.getUUID()
 					+ "&versionID=" + versionID
 					+ "&dungeonID=" + dungeonID
-					+ "&fileName=" + URLEncoder.encode(CustomDungeonSaves.cutBasePathFromFileName(file), "UTF-8"));
+					+ "&fileName=" + URLEncoder.encode(CustomDungeonSaves.cutBasePathFromFileName(file), StandardCharsets.UTF_8));
 			httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
 			byte[] bytes = file.readBytes();
@@ -242,7 +262,8 @@ public class UploadDungeonAction {
 			}
 			
 			Game.runOnRenderThread(() -> {
-				callback.appendMessage(Messages.get(ServerCommunication.class, "sent", fileName));
+				sentFiles++;
+				callback.setMessage(Messages.get(ServerCommunication.class, "uploading_files", sentFiles, filesToSend));
 			});
 			
 			decreaseOpenResponses();
