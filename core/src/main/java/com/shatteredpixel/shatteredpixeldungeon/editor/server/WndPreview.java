@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.server;
 
+import com.badlogic.gdx.Gdx;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
@@ -15,6 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.StartScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.DungeonPreview;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
@@ -40,6 +42,7 @@ public class WndPreview extends Component {
     private final ServerDungeonList serverDungeonList;
 
     protected RenderedTextBlock desc, difficulty, creator, time, version;
+    protected Button btnCopyDesc;
 
     protected Component outsideSp;
     protected RedButton btnDownload;
@@ -53,6 +56,15 @@ public class WndPreview extends Component {
 
         desc = PixelScene.renderTextBlock(preview.description, 7);
         add(desc);
+        btnCopyDesc = new Button() {
+            @Override
+            protected boolean onLongClick() {
+                String content = preview.title + "\n\n" + preview.description;
+                Gdx.app.getClipboard().setContents(content);
+                return true;
+            }
+        };
+        add(btnCopyDesc);
 
         creator = PixelScene.renderTextBlock(Messages.get(WndPreview.class, "creator") + ": _" + preview.uploader + "_", 6);
         add(creator);
@@ -151,6 +163,7 @@ public class WndPreview extends Component {
         height = 2;
         height = EditorUtilities.layoutCompsLinear(4, this, desc) + 6;
         height = EditorUtilities.layoutCompsLinear(4, this, creator, difficulty, time, version);
+        btnCopyDesc.setRect(desc.left(), desc.top(), desc.width(), desc.height());
         
         if (images != null && images.length > 0) {
             height += 5;
