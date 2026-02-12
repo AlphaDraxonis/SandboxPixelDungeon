@@ -81,7 +81,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
     protected final SimpleWindow window;
 
     private ServerCommunication.UploadType type;
-	private boolean typeSwitchingEnabled;
+	private final boolean typeSwitchingEnabled;
 
     protected Component outsideSp;
 
@@ -177,11 +177,11 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
 		add(previewImageSelector);
 		
 		difficulty = new StyledSpinner(new SpinnerTextModel(true, preview == null ? DungeonPreview.HARD : preview.difficulty,
-				new Object[]{DungeonPreview.EASY,
-						DungeonPreview.MEDIUM,
-						DungeonPreview.HARD,
-						DungeonPreview.EXPERT,
-						DungeonPreview.INSANE}) {
+				DungeonPreview.EASY,
+				DungeonPreview.MEDIUM,
+				DungeonPreview.HARD,
+				DungeonPreview.EXPERT,
+				DungeonPreview.INSANE) {
 			@Override
 			protected String displayString(Object value) {
 				if (value instanceof Integer) return DungeonPreview.displayDifficulty((int) value);
@@ -248,9 +248,13 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
 							if (type == UPLOAD && existingUpload != null) {
 								setType(CHANGE);
 								
-								if (dungeonTitleInput.getText() == null || dungeonTitleInput.getText().isEmpty() || dungeonTitleInput.getText().equals(selectDungeon.getObject()))
+								//this code is also copied further down in the file
+								if (dungeonTitleInput.getText() == null || dungeonTitleInput.getText().isEmpty() || dungeonTitleInput.getText().equals(selectDungeon.getObject())) {
 									dungeonTitleInput.setText(existingUpload.title);
-								if (description.getText() == null || description.getText().isEmpty()) description.setText(existingUpload.description);
+								}
+								if (description.getText() == null || description.getText().isEmpty()) {
+									description.setText(existingUpload.description);
+								}
 								difficulty.setValue(existingUpload.difficulty);
 								UploadDungeon.this.preview = existingUpload;
 								
@@ -290,6 +294,20 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         dungeonTitleInput.gainFocus();
 		
 		setType(type);
+		
+		
+		//this code is also copied to further up in the file
+		DungeonPreview existingUpload = UploadedDungeonRegistry.getAssociatedPreview(coreID);
+		if (existingUpload != null) {
+			if (dungeonTitleInput.getText() == null || dungeonTitleInput.getText().isEmpty() || dungeonTitleInput.getText().equals(selectDungeon.getObject())) {
+				dungeonTitleInput.setText(existingUpload.title);
+			}
+			if (description.getText() == null || description.getText().isEmpty()) {
+				description.setText(existingUpload.description);
+			}
+			difficulty.setValue(existingUpload.difficulty);
+			UploadDungeon.this.preview = existingUpload;
+		}
     }
 	
 	private void setType(ServerCommunication.UploadType type) {
@@ -515,7 +533,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                         char num = name.charAt(7);
                         if (Character.isDigit(num)) {
                             int index = Integer.parseInt(Character.toString(num)) - 1;
-                            newPreviewImages[index] = files[i];
+							if (index >= 0 && index < newPreviewImages.length) newPreviewImages[index] = files[i];
                         }
                     }
                 }
@@ -598,9 +616,9 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         if (errorMessage != null) {
             Game.scene().addToFront(new WndMessage(errorMessage));
             return false;
-        };
-        
-        return true;
+        }
+		
+		return true;
     }
 
     private void uploadDungeon(Runnable onSuccessful) {
@@ -611,6 +629,9 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         String desc = description.getText();
         int difficulty = (int) this.difficulty.getValue();
         String versionTitle = versionTitleInput.getText();
+		
+//		String uploader = "AlphaDraxonis";
+//		String desc = "Description";
 		
 		ServerCommunication.UploadCallback callback = new ServerCommunication.UploadCallback() {
 			@Override
@@ -645,8 +666,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         }
 		if (type == CHANGE) {
             ServerCommunication.updateDungeon(preview, dungeon, title, desc, difficulty, versionTitle, callback);
-			return;
-        }
+		}
     }
 
     @Override
@@ -689,5 +709,5 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                 }
             }
         });
-    };
+    }
 }
