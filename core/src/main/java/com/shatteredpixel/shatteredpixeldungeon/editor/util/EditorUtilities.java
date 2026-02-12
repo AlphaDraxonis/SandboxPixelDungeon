@@ -52,6 +52,7 @@ import com.watabou.utils.Random;
 import com.watabou.utils.RectF;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Map;
 
 public final class EditorUtilities {
@@ -281,7 +282,30 @@ public final class EditorUtilities {
         long hours = minutes / 60;
         long days = hours / 24;
         long weeks = days / 7;
-        long years = seconds / 31556952;
+//        long years = seconds / 31556952;
+        int months = 0;
+        int years = 0;
+        
+        if (weeks > 2) {
+            Calendar now = Calendar.getInstance();
+            Calendar other = Calendar.getInstance();
+            other.setTimeInMillis(now.getTimeInMillis() - timeDifferenceMillis);
+            
+            years = now.get(Calendar.YEAR) - other.get(Calendar.YEAR);
+            Calendar temp = (Calendar) other.clone();
+            temp.add(Calendar.YEAR, years);
+            if (temp.after(now)) {
+                years--;
+            }
+
+            months = (now.get(Calendar.YEAR) - other.get(Calendar.YEAR)) * 12 +
+                    (now.get(Calendar.MONTH) - other.get(Calendar.MONTH));
+            temp = (Calendar) other.clone();
+            temp.add(Calendar.MONTH, months);
+            if (temp.after(now)) {
+                months--;
+            }
+        }
 
         if (timeDifferenceMillis < 0) {
             if (timeDifferenceMillis > - 15_000) return Messages.get(EditorUtilities.class, "time_diff_seconds_true", 0);
@@ -289,6 +313,8 @@ public final class EditorUtilities {
             return Messages.get(EditorUtilities.class, "time_diff_future", days, hours % 24, minutes % 60);
         } else if (years > 0) {
             return Messages.get(EditorUtilities.class, "time_diff_years_" + (years != 1), years);
+        } else if (months > 0) {
+            return Messages.get(EditorUtilities.class, "time_diff_months_" + (months != 1), months);
         } else if (weeks > 0) {
             return Messages.get(EditorUtilities.class, "time_diff_weeks_" + (weeks != 1), weeks);
         } else if (days > 0) {
