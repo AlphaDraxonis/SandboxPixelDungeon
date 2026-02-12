@@ -491,7 +491,19 @@ public interface RandomItem<T extends GameObject> {
         public String desc() {
             return RandomItem.getDesc();
         }
-
+        
+        @Override
+        protected ArtifactBuff passiveBuff() {
+            return new RandomArtifactDummyBuff();
+        }
+        
+        public class RandomArtifactDummyBuff extends ArtifactBuff{
+            @Override
+            public boolean act(){
+                spend(TICK);
+                return true;
+            }
+        }
     }
 
 
