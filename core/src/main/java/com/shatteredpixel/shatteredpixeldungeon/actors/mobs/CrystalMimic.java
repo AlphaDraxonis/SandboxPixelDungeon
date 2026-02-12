@@ -82,7 +82,7 @@ public class CrystalMimic extends Mimic {
 					}
 				}
 				if (desc == null && !items.isEmpty())
-					desc = Messages.get(this, "crystal_chest_desc", Messages.get(Heap.class, "sth"));
+					desc = Messages.get(Heap.class, "crystal_chest_desc", Messages.get(Heap.class, "sth"));
 			}
 			if (desc == null) {
 				desc = Messages.get(Heap.class, "crystal_chest_desc_none");
@@ -164,7 +164,7 @@ public class CrystalMimic extends Mimic {
 			if (!item.stackable) {
 				Dungeon.quickslot.convertToPlaceholder(item);
 			}
-			item.updateQuickslot();
+			Item.updateQuickslot();
 
 			if (item instanceof Honeypot){
 				items.add(((Honeypot)item).shatter(this, this.pos));
