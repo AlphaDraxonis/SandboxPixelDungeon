@@ -80,17 +80,17 @@ public class EditorCellSelector extends CellSelector {
         if (enabled && !EditorScene.interfaceBlockingHero() && listener != null && cell != -1) {
 
             switch (button) {
-                default:
-                    if (dragClick) listener.onSelectDragging(cell);
-                    else listener.onSelect(cell);
-                    break;
-                case PointerEvent.RIGHT:
+				case PointerEvent.RIGHT:
                     listener.onRightClick(cell);
                     break;
                 case PointerEvent.MIDDLE:
                     listener.onMiddleClick(cell);
                     break;
-            }
+				default:
+					if (dragClick) listener.onSelectDragging(cell);
+					else listener.onSelect(cell);
+					break;
+			}
             EditorScene.ready();
         } else {
             EditorScene.cancel();
@@ -142,8 +142,9 @@ public class EditorCellSelector extends CellSelector {
 
     @Override
     protected boolean shiftKeyAction() {
-        if (shiftHolding) EToolbar.selectRemoverTemporarily();
-        else EToolbar.unselectTemporarilyRemover();
+        EditorScene.setEraserMode(shiftHolding);
+//        if (shiftHolding) EToolbar.selectRemoverTemporarily();
+//        else EToolbar.unselectTemporarilyRemover();
         return true;
     }
 

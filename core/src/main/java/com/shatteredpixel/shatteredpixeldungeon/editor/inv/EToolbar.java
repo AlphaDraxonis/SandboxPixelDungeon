@@ -1,6 +1,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv;
 
-import com.shatteredpixel.shatteredpixeldungeon.*;
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
+import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInventory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
@@ -478,6 +483,10 @@ public class EToolbar extends Component {
             if (instance.btnQuick[i].visible) instance.btnQuick[i].setSelected(i == selectedSlot);
         }
         EditorScene.cancel();
+        
+        if (EditorScene.isEraserMode() && Dungeon.quickslot.getItem(slot) != EditorItem.REMOVER_ITEM) {
+            EditorScene.setEraserMode(false);
+        }
 
         if (Dungeon.customDungeon != null) Dungeon.customDungeon.lastSelectedToolbarSlot = slot;
     }
@@ -519,7 +528,7 @@ public class EToolbar extends Component {
         if (actuallyScrolling != 0) scrollUnits = 0;
         else return;
         int numVisibleSlots = getNumVisibleSlots();
-        int slot = (int) (selectedSlot - actuallyScrolling) % numVisibleSlots;
+        int slot = (selectedSlot - actuallyScrolling) % numVisibleSlots;
         while (slot < 0) slot += numVisibleSlots;
         select(slot);
     }

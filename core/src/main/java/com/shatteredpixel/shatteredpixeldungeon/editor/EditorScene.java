@@ -110,6 +110,8 @@ public class EditorScene extends DungeonScene {
     private Group realMobs;
 
     private static boolean displayZones = false;
+    
+    private static boolean eraserMode = false;
 
 
     public static void start() {
@@ -139,6 +141,7 @@ public class EditorScene extends DungeonScene {
         }
         isEditing = true;
         displayZones = false;
+        eraserMode = false;
         isEditingRoomLayout = customLevel instanceof RoomLayoutLevel;
         if (isEditingRoomLayout && !(EditorScene.customLevel instanceof RoomLayoutLevel)) {
             customLevelBeforeRoomLayout = EditorScene.customLevel.levelScheme;
@@ -369,7 +372,18 @@ public class EditorScene extends DungeonScene {
     public static boolean isDisplayZones() {
         return displayZones;
     }
-
+    
+    public static void setEraserMode(boolean flag) {
+        EditorScene.eraserMode = flag;
+        if (scene != null && scene.sideControlPane != null) {
+            scene.sideControlPane.setButtonEnabled(SideControlPane.EraserModeBtn.class, flag);
+        }
+    }
+    
+    public static boolean isEraserMode() {
+        return eraserMode;
+    }
+    
     @Override
     public void update() {
         super.update();
@@ -549,7 +563,7 @@ public class EditorScene extends DungeonScene {
 //            bitmapText.point(pos);
 //            bitmapText.y += 5.5f;
 //        } else {
-            RenderedTextBlock textBlock = (RenderedTextBlock) text;
+            RenderedTextBlock textBlock = text;
             textBlock.setScale(TRANSITION_INDICATOR_SCALE);
             textBlock.text(Messages.get(LevelTransition.class, "to") + ": "
                     + (transition.destLevel == null && transition.destBranch == 0 ? "" : EditorUtilities.getDispayName(transition)));
@@ -721,9 +735,15 @@ public class EditorScene extends DungeonScene {
         public void onSelect(Integer cell) {
             if (cell == null) return;
 
-            Item selected = EToolbar.getSelectedItem();
-
-            if (selected instanceof EditorItem) ((EditorItem<?>) selected).place(cell);
+            if (isEraserMode()) {
+                EditorItem.REMOVER_ITEM.place(cell);
+            }
+            else {
+                Item selected = EToolbar.getSelectedItem();
+                if (selected instanceof EditorItem) {
+                    ((EditorItem<?>) selected).place(cell);
+                }
+            }
         }
 
         @Override
@@ -822,7 +842,7 @@ public class EditorScene extends DungeonScene {
 
     public static void fillAllWithOneTerrain(Integer cell) {
         if (cell != null && cell >= 0 && cell < Dungeon.level.length()) {
-            Item selected = EToolbar.getSelectedItem();
+            Item selected = isEraserMode() ? EditorItem.REMOVER_ITEM : EToolbar.getSelectedItem();
 
             if (selected instanceof EditorItem) {
 
@@ -860,8 +880,8 @@ public class EditorScene extends DungeonScene {
         }
     }
 
-    private static Set<Integer> changedCells = new HashSet<>();
-    private static Set<Integer> queue = new HashSet<>();//avoid StackOverflowError
+    private static final Set<Integer> changedCells = new HashSet<>();
+    private static final Set<Integer> queue = new HashSet<>();//avoid StackOverflowError
 
     public static void fillAllWithOneTerrainQueue(int cell, int terrainClick, int[] map, int lvlWidth) {
 

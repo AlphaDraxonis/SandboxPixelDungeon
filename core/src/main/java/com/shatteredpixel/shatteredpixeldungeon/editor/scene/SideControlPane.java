@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
@@ -43,16 +44,18 @@ public class SideControlPane extends Component {
 
 
     public static final int WIDTH = 16;
-    private SideControlButton[] buttons;
+    private final SideControlButton[] buttons;
 
     public SideControlPane(boolean editor) {
 
         if (editor) {
-            buttons = new SideControlButton[4];
-            buttons[0] = new StartBtn();
-            buttons[1] = new PipetteBtn();
-            buttons[2] = new FillBtn();
-            if (!EditorScene.isEditingRoomLayout) buttons[3] = new ToggleZoneViewBtn();
+            buttons = new SideControlButton[5];
+            int i = 0;
+            buttons[i++] = new StartBtn();
+            if (!EditorScene.isEditingRoomLayout) buttons[i++] = new ToggleZoneViewBtn();
+            buttons[i++] = new PipetteBtn();
+            buttons[i++] = new FillBtn();
+            buttons[i++] = new EraserModeBtn();
         } else {
             buttons = new SideControlButton[9];
             buttons[0] = new ExitBtn();
@@ -107,7 +110,8 @@ public class SideControlPane extends Component {
 
 
     private static abstract class SideControlButton extends Button {
-        private Image bg, icon;
+        private Image bg;
+		private final Image icon;
         protected boolean btnEnabled;
 
         public SideControlButton(int num) {
@@ -206,11 +210,31 @@ public class SideControlPane extends Component {
             }
         }
     }
+    
+    public static final class ToggleZoneViewBtn extends SideControlButton {
+        
+        private ToggleZoneViewBtn() {
+            super(1, false);
+            enable(EditorScene.isDisplayZones());
+        }
+        
+        @Override
+        protected void onClick() {
+            boolean value = !EditorScene.isDisplayZones();
+            EditorScene.setDisplayZoneState(value);
+            enable(value);
+        }
+        
+        @Override
+        protected String hoverText() {
+            return Messages.get(this, "label_" + (btnEnabled ? "on" : "off"));
+        }
+    }
 
     public static final class PipetteBtn extends SideControlButton {
 
         private PipetteBtn() {
-            super(1);
+            super(2);
             enable(true);
         }
 
@@ -233,24 +257,24 @@ public class SideControlPane extends Component {
                 EditorScene.selectCell(fillAllCellListener);
         }
     }
+    
+    public static final class EraserModeBtn extends SideControlButton {
 
-    public static final class ToggleZoneViewBtn extends SideControlButton {
-
-        private ToggleZoneViewBtn() {
-            super(2, false);
-            enable(EditorScene.isDisplayZones());
+        private EraserModeBtn() {
+            super(2, true);
+            enable(EditorScene.isEraserMode());
         }
 
         @Override
         protected void onClick() {
-            boolean value = !EditorScene.isDisplayZones();
-            EditorScene.setDisplayZoneState(value);
-            enable(value);
+            boolean value = !EditorScene.isEraserMode();
+            EditorScene.setEraserMode(value);
+//          enable(value);  already included
         }
 
         @Override
         protected String hoverText() {
-            return Messages.get(this, "label_" + (btnEnabled ? "on" : "off"));
+            return Messages.titleCase(EditorItem.REMOVER_ITEM.name());
         }
     }
 
@@ -435,7 +459,7 @@ public class SideControlPane extends Component {
                 public boolean onSelect(LevelSchemeLike levelScheme) {
                     if (levelScheme instanceof LevelScheme) {
                         Level.beforeTransition();
-                        InterlevelScene.curTransition = new LevelTransition(Dungeon.level, Dungeon.hero.pos, -1, ((LevelScheme) levelScheme).getName());
+                        InterlevelScene.curTransition = new LevelTransition(Dungeon.level, Dungeon.hero.pos, -1, levelScheme.getName());
                         InterlevelScene.mode = ((LevelScheme) levelScheme).getDepth() >= Dungeon.depth
                                 ? InterlevelScene.Mode.DESCEND
                                 : InterlevelScene.Mode.ASCEND;
