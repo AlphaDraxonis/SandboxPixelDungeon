@@ -31,7 +31,7 @@ public class VaultLaser extends NPC {
 		cooldown--;
 		if (cooldown <= 0){
 
-			Ballistica beam = new Ballistica(pos, laserDirs[laserDirIdx], Ballistica.STOP_SOLID);
+			Ballistica beam = new Ballistica(pos, laserDirs[laserDirIdx], Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null);
 			boolean visible = false;
 			for (int cell : beam.subPath(1, beam.dist)){
 				if (Dungeon.level.heroFOV[cell]){
@@ -55,7 +55,7 @@ public class VaultLaser extends NPC {
 
 		if (cooldown == 1){
 
-			Ballistica nextBeam = new Ballistica(pos, laserDirs[laserDirIdx], Ballistica.STOP_SOLID);
+			Ballistica nextBeam = new Ballistica(pos, laserDirs[laserDirIdx], Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null);
 			for (int cell : nextBeam.subPath(1, nextBeam.dist)){
 				if (Dungeon.level.heroFOV[cell]) {
 					sprite.parent.add(new TargetedCell(cell, 0xFF0000));
@@ -114,8 +114,8 @@ public class VaultLaser extends NPC {
 	}
 
 	@Override
-	public CharSprite sprite() {
-		WardSprite sprite = (WardSprite) super.sprite();
+	public CharSprite createSprite() {
+		WardSprite sprite = (WardSprite) super.createSprite();
 		sprite.linkVisuals(this);
 		return sprite;
 	}

@@ -35,10 +35,10 @@ public class VaultSentry extends NPC {
 
 		for (int scanDir : scanDirsThisTurn) {
 			ConeAOE scan = new ConeAOE(
-					new Ballistica(pos, scanDir, Ballistica.STOP_SOLID),
+					new Ballistica(pos, scanDir, Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null),
 					scanLength,
 					scanWidth,
-					Ballistica.STOP_SOLID | Ballistica.STOP_TARGET);
+					Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.STOP_BARRIER_PROJECTILES, null);
 
 			for (int cell : scan.cells) {
 				if (Actor.findChar(cell) == Dungeon.hero){
@@ -107,8 +107,8 @@ public class VaultSentry extends NPC {
 	}
 
 	@Override
-	public CharSprite sprite() {
-		WardSprite sprite = (WardSprite) super.sprite();
+	public CharSprite createSprite() {
+		WardSprite sprite = (WardSprite) super.createSprite();
 		sprite.linkVisuals(this);
 		return sprite;
 	}
