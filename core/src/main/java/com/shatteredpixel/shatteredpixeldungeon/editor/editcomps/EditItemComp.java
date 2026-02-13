@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ReorderHeapComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeItemCustomizable;
@@ -74,6 +75,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.ReclaimTrap;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfSummoning;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Corrupting;
@@ -128,6 +130,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledCheckBox spreadIfLoot;
     protected StyledCheckBox exactItemInRecipe;
     protected StyledCheckBox blessed;
+    protected StyledCheckBox onlyFurrowedGrass;
     protected StyledCheckBox igniteBombOnDrop;
     protected StyledSpinner shockerDuration;
     protected StyledItemSelector reclaimTrap;
@@ -498,6 +501,17 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 });
                 add(blessed);
             }
+            
+            if (item instanceof WandOfRegrowth) {
+                onlyFurrowedGrass = new StyledCheckBox(label("only_furrowed_grass"));
+                onlyFurrowedGrass.icon(new TileSprite(Terrain.FURROWED_GRASS));
+                onlyFurrowedGrass.checked(((WandOfRegrowth) item).onlySpawnFurrowedGrass);
+                onlyFurrowedGrass.addChangeListener(v -> {
+                    ((WandOfRegrowth) item).onlySpawnFurrowedGrass = v;
+                    updateObj();
+                });
+                add(onlyFurrowedGrass);
+            }
 
             if (item instanceof Bomb) {
                 igniteBombOnDrop = new StyledCheckBox(label("ignite_bomb_on_drop"));
@@ -567,7 +581,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
                     @Override
                     protected void doAddItem(MobItem mobItem) {
-                        mobItem = (MobItem) mobItem.getCopy();
+                        mobItem = mobItem.getCopy();
                         super.doAddItem(mobItem);
                         ((WandOfSummoning) item).summonTemplate.add(mobItem.mob());
                         ((WandOfSummoning) item).nextSummon = null;
@@ -732,13 +746,13 @@ public class EditItemComp extends DefaultEditComp<Item> {
         } else {
             rename.setVisible(false);
             randomItem = new Component() {
-                private RandomItemDistrComp distr = new RandomItemDistrComp((RandomItem<?>) item) {
+                private final RandomItemDistrComp distr = new RandomItemDistrComp((RandomItem<?>) item) {
                     @Override
                     protected void updateParent() {
                         updateObj();
                     }
                 };
-                private Component outsideSp = distr.getOutsideSp();
+                private final Component outsideSp = distr.getOutsideSp();
 
                 {
                     add(distr);
@@ -756,7 +770,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
 
         rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, potionsKnown, reclaimTrap, volume, chargeSpinner, rechargingRule, levelSpinner, durabilitySpinner,
-                augmentationSpinner, curseBtn, permaCursed, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, classArmorTier, blessed, igniteBombOnDrop, docPageType, spreadIfLoot, exactItemInRecipe};
+                augmentationSpinner, curseBtn, permaCursed, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, classArmorTier, onlyFurrowedGrass, blessed, igniteBombOnDrop, docPageType, spreadIfLoot, exactItemInRecipe};
         linearComps = new Component[]{rollTrinkets, potionCocktailPotions, summonMobs, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
 
         initializeCompsForCustomObjectClass();
@@ -898,6 +912,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (magesStaffWand != null)         magesStaffWand.setSelectedItem(((MagesStaff) obj).wand);
         if (hasSeal != null)                hasSeal.checked(((Armor) obj).checkSeal() != null);
         if (blessed != null)                blessed.checked(((Ankh) obj).blessed);
+        if (onlyFurrowedGrass != null)      onlyFurrowedGrass.checked(((WandOfRegrowth) obj).onlySpawnFurrowedGrass);
         if (igniteBombOnDrop != null)       igniteBombOnDrop.checked(((Bomb) obj).igniteOnDrop);
         if (volume != null)                 volume.setValue(((Waterskin) obj).volume);
         if (potionsKnown != null)           potionsKnown.checked(((PotionCocktail)obj).potionsKnown);
@@ -1008,6 +1023,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (a instanceof Wand) {
             if (((Wand) a).curCharges != ((Wand) b).curCharges) return false;
             if (((Wand) a).rechargeRule != ((Wand) b).rechargeRule) return false;
+            if (a instanceof WandOfRegrowth) {
+                if (((WandOfRegrowth) a).onlySpawnFurrowedGrass != ((WandOfRegrowth) b).onlySpawnFurrowedGrass) return false;
+            }
         }
         if (a instanceof MagesStaff) {
             if (!areEqual(((MagesStaff) a).wand, ((MagesStaff) b).wand)) return false;
@@ -1059,7 +1077,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (a instanceof TrapItem) return EditTrapComp.areEqual(((TrapItem) a).getObject(), ((TrapItem) b).getObject());
 		
 		if (a instanceof CustomGameObjectClass) {
-			if (((CustomGameObjectClass) a).getInheritStats() != ((CustomGameObjectClass) b).getInheritStats()) return false;
+			return ((CustomGameObjectClass) a).getInheritStats() == ((CustomGameObjectClass) b).getInheritStats();
 		}
 
         return true;

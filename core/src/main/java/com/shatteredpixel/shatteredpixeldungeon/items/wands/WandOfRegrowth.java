@@ -68,6 +68,8 @@ public class WandOfRegrowth extends Wand {
 		collisionProperties = Ballistica.WONT_STOP;
 	}
 	
+	public boolean onlySpawnFurrowedGrass = false;
+	
 	private int totChrgUsed = 0;
 	private int chargesOverLimit = 0;
 
@@ -93,6 +95,7 @@ public class WandOfRegrowth extends Wand {
 		if (totChrgUsed >= chargeLimit(Dungeon.hero.lvl)){
 			furrowedChance = (chargesOverLimit+1)/5f;
 		}
+		if (onlySpawnFurrowedGrass) furrowedChance = 1f;
 
 		int chrgUsed = chargesPerCast();
 		int grassToPlace = Math.round((3.67f+buffedLvl()/3f)*chrgUsed);
@@ -126,7 +129,7 @@ public class WandOfRegrowth extends Wand {
 
 		Random.shuffle(cells);
 
-		if (chargesPerCast() >= 3){
+		if (chargesPerCast() >= 3 && !onlySpawnFurrowedGrass){
 			Lotus l = new Lotus();
 			l.setLevel(buffedLvl());
 			if (cells.contains(target) && Actor.findChar(target) == null){
@@ -323,12 +326,14 @@ public class WandOfRegrowth extends Wand {
 	
 	private static final String TOTAL = "totChrgUsed";
 	private static final String OVER = "chargesOverLimit";
+	private static final String ONLY_FURROWED_GRASS = "only_furrowed_grass";
 	
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put( TOTAL, totChrgUsed );
 		bundle.put( OVER, chargesOverLimit);
+		bundle.put( ONLY_FURROWED_GRASS, onlySpawnFurrowedGrass );
 	}
 	
 	@Override
@@ -336,6 +341,7 @@ public class WandOfRegrowth extends Wand {
 		super.restoreFromBundle(bundle);
 		totChrgUsed = bundle.getInt(TOTAL);
 		chargesOverLimit = bundle.getInt(OVER);
+		onlySpawnFurrowedGrass = bundle.getBoolean(ONLY_FURROWED_GRASS);
 	}
 	
 	public static class Dewcatcher extends Plant{
