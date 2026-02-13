@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRoomComp;
@@ -108,7 +109,7 @@ public class RoomItem extends EditorItem<Room> {
         if (r == BlacksmithRoom.class) return new BlacksmithSprite();
         if (r == BurnedRoom.class) return new TileSprite(Assets.Environment.TILES_SEWERS, Terrain.EMBERS);
         if (r == CaveRoom.class) return new TileSprite(Assets.Environment.TILES_CAVES, Terrain.EMPTY);
-        if(r == CavesFissureRoom.class) return TileSprite.createTilespriteWithImage(Assets.Environment.TILES_CAVES, DungeonTileSheet.CHASM_FLOOR);
+        if (r == CavesFissureRoom.class) return TileSprite.createTilespriteWithImage(Assets.Environment.TILES_CAVES, DungeonTileSheet.CHASM_FLOOR);
         //CellBlock
         if (r == ChasmRoom.class) return TileSprite.createTilespriteWithImage(Assets.Environment.TILES_SEWERS, DungeonTileSheet.CHASM_WALL);
         if (r == CircleBasinRoom.class) return TileSprite.createTilespriteWithImage(Assets.Environment.TILES_SEWERS,DungeonTileSheet.CHASM_FLOOR_SP);
@@ -119,11 +120,14 @@ public class RoomItem extends EditorItem<Room> {
         if (r == GrassyGraveRoom.class) return new ItemSprite(ItemSpriteSheet.TOMB);
         if (r == HallwayRoom.class) return new TileSprite(Assets.Environment.TILES_CITY, Terrain.EMPTY_SP);
         if (r == ImpShopRoom.class) return new ImpSprite();
+        if (r == LibraryRingRoom.class) return new TileSprite(Assets.Environment.TILES_CITY, Terrain.BOOKSHELF);
+        if (r == LibraryHallRoom.class) return new TileSprite(Assets.Environment.TILES_CITY, Terrain.BOOKSHELF);
         if (r == MinefieldRoom.class) return EditorUtilities.getTerrainFeatureTexture(65);//explosive trap
         //Pillars
-        //Plants
+        if (r == PlantsRoom.class) return EditorUtilities.getTerrainFeatureTexture(126);//Seedpod
         if (r == PlatformRoom.class) return TileSprite.createTilespriteWithImage(Assets.Environment.TILES_SEWERS, DungeonTileSheet.CHASM_FLOOR_SP);
         //Ring
+        if (r == RitualRoom.class) return TileSprite.createTilespriteWithImage(Assets.Environment.TILES_HALLS, DungeonTileSheet.PEDESTAL);
         if (r == RitualSiteRoom.class) return new ItemSprite(ItemSpriteSheet.CANDLE);
         //Ruins
         if (r == SegmentedLibraryRoom.class) return new TileSprite(Assets.Environment.TILES_CITY, Terrain.BOOKSHELF);
@@ -145,7 +149,7 @@ public class RoomItem extends EditorItem<Room> {
         if (r == GardenRoom.class) return new ItemSprite(ItemSpriteSheet.SEED_SUNGRASS);
         if (r == LaboratoryRoom.class) return new TileSprite(Assets.Environment.TILES_SEWERS, Terrain.ALCHEMY);
         if (r == LibraryRoom.class) return new TileSprite(Assets.Environment.TILES_SEWERS, Terrain.BOOKSHELF);
-        //MagicalFire
+        if (r == MagicalFireRoom.class) return BlobItem.createIcon(MagicalFireRoom.EternalFire.class);
         if (r == MagicWellRoom.class) return new TileSprite(Assets.Environment.TILES_SEWERS, Terrain.WELL);
         if (r == MassGraveRoom.class) return new ItemSprite(ItemSpriteSheet.TOMB);
         if (r == PitRoom.class) return new ItemSprite(ItemSpriteSheet.BONES);
@@ -153,11 +157,11 @@ public class RoomItem extends EditorItem<Room> {
         if (r == RatKingRoom.class) return new RatKingSprite();
         if (r == RotGardenRoom.class) return new ItemSprite(ItemSpriteSheet.SEED_ROTBERRY);
         if (r == RunestoneRoom.class) return new ItemSprite(ItemSpriteSheet.STONE_ENCHANT);
-        //SacrificeRoom
+        if (r == SacrificeRoom.class) return BlobItem.createIcon(SacrificialFire.class);
         if (r == SentryRoom.class) return new SentryRoom.SentrySprite();
         if (r == ShopRoom.class) return new ShopkeeperSprite();
         if (r == StatueRoom.class) return new StatueSprite();
-        //Storage
+        if (r == StorageRoom.class) return TileSprite.createTilespriteWithImage(Assets.Environment.TILES_SEWERS, DungeonTileSheet.FLAT_BARREL_ALT);
         if (r == ToxicGasRoom.class) return EditorUtilities.getTerrainFeatureTexture(40);//toxic vent
         if (r == TrapsRoom.class) return EditorUtilities.getTerrainFeatureTexture(7);
         if (r == TreasuryRoom.class) return new ItemSprite(ItemSpriteSheet.GOLD);
