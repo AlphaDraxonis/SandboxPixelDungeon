@@ -177,6 +177,8 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
         pos += BUTTON_HEIGHT + MARGIN * 3;
 
         textBox.setRect(MARGIN, textBox.top(), width, inputHeight);
+        
+        pos = Math.max(pos, height - (BUTTON_HEIGHT+2));
 
         create.setRect(MARGIN, pos, (width - MARGIN * 2) / 2, BUTTON_HEIGHT + 1);
         cancel.setRect(create.right() + MARGIN * 2, pos, (width - MARGIN * 2) / 2, BUTTON_HEIGHT + 1);

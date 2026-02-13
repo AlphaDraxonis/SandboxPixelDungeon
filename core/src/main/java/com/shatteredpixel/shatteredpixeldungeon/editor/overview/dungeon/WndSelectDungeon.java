@@ -580,7 +580,7 @@ public class WndSelectDungeon extends Window {
                     content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(2, width, 2, content, exportDun, exportJson, upload) + GAP);
                     content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(2, width, 1, content, upload));
                 }
-                pos = content.bottom() + GAP * 2;
+                pos = content.bottom() + GAP;
                 
                 
                 open.icon(Icons.get(Icons.ENTER));
