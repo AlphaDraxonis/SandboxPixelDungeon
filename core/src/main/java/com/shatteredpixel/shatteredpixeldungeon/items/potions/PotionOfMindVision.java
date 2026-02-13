@@ -24,7 +24,9 @@ package com.shatteredpixel.shatteredpixeldungeon.items.potions;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVisionImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -40,7 +42,11 @@ public class PotionOfMindVision extends Potion {
 	public void apply( Hero hero ) {
 		if (hero == Dungeon.hero) {
 			identify();
-			if (Dungeon.level.mobs.size() > 0) {
+			int countMobs = 0;
+			for (Mob m : Dungeon.level.mobs) {
+				if (m.buff(MindVisionImmunity.class) == null) countMobs++;
+			}
+			if (countMobs > 0) {
 				GLog.i(Messages.get(this, "see_mobs"));
 			} else {
 				GLog.i(Messages.get(this, "see_none"));

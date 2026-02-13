@@ -488,7 +488,8 @@ public abstract class Mob extends Char implements Customizable {
 		
 		enemy = chooseEnemy();
 		
-		boolean enemyInFOV = enemy != null && enemy.isAlive() && (fieldOfView[enemy.pos] && enemy.invisible <= 0 || following || buff(MindVision.class) != null);
+		boolean enemyInFOV = enemy != null && enemy.isAlive() &&
+				(fieldOfView[enemy.pos] && enemy.invisible <= 0 || following || buff(MindVision.class) != null && enemy.buff(MindVisionImmunity.class) == null);
 		if (enemyInFOV && target == -1 && !justAlerted) justAlerted = true;
 
 		//prevents action, but still updates enemy seen status
@@ -622,7 +623,7 @@ public abstract class Mob extends Char implements Customizable {
 				//try to find an enemy mob to attack first.
 				for (Mob mob : Dungeon.level.mobs)
 					if (mob.alignment == Alignment.ENEMY && mob != this
-							&& (fieldOfView[mob.pos] && mob.invisible <= 0 || hasMindVision)) {
+							&& (fieldOfView[mob.pos] && mob.invisible <= 0 || hasMindVision && mob.buff(MindVisionImmunity.class) == null)) {
 						enemies.add(mob);
 					}
 				

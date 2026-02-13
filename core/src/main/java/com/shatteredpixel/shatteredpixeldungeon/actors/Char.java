@@ -159,7 +159,7 @@ public abstract class Char extends Actor {
 	
 	public boolean[] fieldOfView = null;
 	
-	private LinkedHashSet<Buff> buffs = new LinkedHashSet<>();
+	private final LinkedHashSet<Buff> buffs = new LinkedHashSet<>();
 
 	public Zone currentZoneBuffs;
 
@@ -218,14 +218,10 @@ public abstract class Char extends Actor {
 	public boolean canInteract(Char c){
 		if (Dungeon.level.adjacent( pos, c.pos )){
 			return true;
-		} else if (c instanceof Hero
+		} else return c instanceof Hero
 				&& alignment == Alignment.ALLY
 				&& !hasProp(this, Property.IMMOVABLE)
-				&& Dungeon.level.distance(pos, c.pos) <= 2*Dungeon.hero.pointsInTalent(Talent.ALLY_WARP)){
-			return true;
-		} else {
-			return false;
-		}
+				&& Dungeon.level.distance(pos, c.pos) <= 2 * Dungeon.hero.pointsInTalent(Talent.ALLY_WARP);
 	}
 	
 	//swaps places by default
@@ -762,8 +758,8 @@ public abstract class Char extends Actor {
 	}
 	
 	public int drRoll() { //defenseRoll
-		int dr = Random.NormalIntRange(0, damageReductionMax);;
-
+		int dr = Random.NormalIntRange(0, damageReductionMax);
+		
 		dr += Random.NormalIntRange( 0 , Barkskin.currentLevel(this) );
 
 		return dr;
@@ -1100,7 +1096,7 @@ public abstract class Char extends Actor {
 	}
 
 	//these are misc. sources of physical damage which do not apply armor, they get a different icon
-	private static HashSet<Class> NO_ARMOR_PHYSICAL_SOURCES = new HashSet<>();
+	private static final HashSet<Class> NO_ARMOR_PHYSICAL_SOURCES = new HashSet<>();
 	{
 		NO_ARMOR_PHYSICAL_SOURCES.add(CrystalSpire.SpireSpike.class);
 		NO_ARMOR_PHYSICAL_SOURCES.add(GnollGeomancer.Boulder.class);
@@ -1327,7 +1323,7 @@ public abstract class Char extends Actor {
 	}
 
 	public boolean shouldSpriteBeVisible(){
-		return Dungeon.level.heroFOV[pos] && (invisible <= 0 || Dungeon.hero.buff(MindVision.class) != null);
+		return Dungeon.level.heroFOV[pos] && (invisible <= 0 || Dungeon.hero.buff(MindVision.class) != null && buff(MindVisionImmunity.class) == null);
 	}
 
 	public float stealth() {
@@ -1487,7 +1483,7 @@ public abstract class Char extends Actor {
 		PERMEABLE,//walls become passable (barriers not), excluding walls at the level border
 		LARGE,
 		IMMOVABLE ( new HashSet<Class>(),
-				new HashSet<Class>( Arrays.asList(Vertigo.class) )),
+				new HashSet<Class>(List.of(Vertigo.class))),
 		BOSS ( new HashSet<Class>( Arrays.asList(Grim.class, GrimTrap.class, ScrollOfRetribution.class, ScrollOfPsionicBlast.class)),
 				new HashSet<Class>( Arrays.asList(AllyBuff.class, Dread.class) )),
 		MINIBOSS ( new HashSet<Class>(),
@@ -1501,8 +1497,8 @@ public abstract class Char extends Actor {
 				new HashSet<Class>( Arrays.asList(Burning.class, Blazing.class))),
 		ICY ( new HashSet<Class>( Arrays.asList(WandOfFrost.class, Elemental.FrostElemental.class)),
 				new HashSet<Class>( Arrays.asList(Frost.class, Chill.class))),
-		ACIDIC ( new HashSet<Class>( Arrays.asList(Corrosion.class)),
-				new HashSet<Class>( Arrays.asList(Ooze.class))),
+		ACIDIC ( new HashSet<Class>(List.of(Corrosion.class)),
+				new HashSet<Class>(List.of(Ooze.class))),
 		ELECTRIC ( new HashSet<Class>( Arrays.asList(WandOfLightning.class, Shocking.class, Potential.class,
 										Electricity.class, ShockingDart.class, Elemental.ShockElemental.class )),
 				new HashSet<Class>()),
@@ -1512,7 +1508,7 @@ public abstract class Char extends Actor {
 				new HashSet<Class>( Arrays.asList(AllyBuff.class, Dread.class, Terror.class, Amok.class, Charm.class, Sleep.class,Paralysis.class, Frost.class, Chill.class, Slow.class, Speed.class) )),
 
 		AQUATIC ( new HashSet<Class>(),
-				new HashSet<Class>( Arrays.asList(Burning.class))),
+				new HashSet<Class>(List.of(Burning.class))),
 		FLYING ( new HashSet<Class>(),
 				new HashSet<Class>());
 
@@ -1521,8 +1517,8 @@ public abstract class Char extends Actor {
 			if (FLYING.ordinal() != 15) throw new RuntimeException("Char.Property: PLEASE MAKE SURE THAT THE ORDINALS ARE ALWAYS IN THE CORRECT ORDER!!!");
 		}
 
-		private HashSet<Class> resistances;
-		private HashSet<Class> immunities;
+		private final HashSet<Class> resistances;
+		private final HashSet<Class> immunities;
 		
 		Property(){
 			this(new HashSet<Class>(), new HashSet<Class>());

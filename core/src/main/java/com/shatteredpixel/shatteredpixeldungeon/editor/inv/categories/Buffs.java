@@ -18,7 +18,7 @@ import java.util.Locale;
 
 public final class Buffs extends GameObjectCategory<Buff> {
 
-    private static Buffs instance = new Buffs();
+    private static final Buffs instance = new Buffs();
 
     private final Champions CHAMPIONS = new Champions();
     private final Movement MOVEMENT = new Movement();
@@ -152,6 +152,7 @@ public final class Buffs extends GameObjectCategory<Buff> {
                     Blindness.class,
                     Light.class,
                     MindVision.class,
+                    MindVisionImmunity.class,
                     MagicalSight.class,
                     Foresight.class
             });

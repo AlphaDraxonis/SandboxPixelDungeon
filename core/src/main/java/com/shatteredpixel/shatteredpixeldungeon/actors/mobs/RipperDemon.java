@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVisionImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.effects.TargetedCell;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -191,7 +192,8 @@ public class RipperDemon extends Mob {
 				}
 
 				//do leap
-				sprite.visible = (invisible <= 0 || Dungeon.hero.buff(MindVision.class) != null) && (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[leapPos] || Dungeon.level.heroFOV[endPos]);
+				sprite.visible = (invisible <= 0 || Dungeon.hero.buff(MindVision.class) != null && buff(MindVisionImmunity.class) == null)
+						&& (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[leapPos] || Dungeon.level.heroFOV[endPos]);
 				sprite.jump(pos, leapPos, new Callback() {
 					@Override
 					public void call() {

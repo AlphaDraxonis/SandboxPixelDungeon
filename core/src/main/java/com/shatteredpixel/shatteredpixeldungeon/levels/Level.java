@@ -46,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVisionImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PinCushion;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
@@ -186,7 +187,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 
 	public static final String SURFACE = "surface", NONE = "none", ANY = "any" + (char) 30 + (char) 31;
 
-	public static enum Feeling {
+	public enum Feeling {
 		NONE,
 		CHASM,
 		WATER,
@@ -1026,7 +1027,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 	
 	abstract protected boolean build();
 	
-	private List<Mob> mobsToSpawn = new ArrayList<>();
+	private final List<Mob> mobsToSpawn = new ArrayList<>();
 	
 	public Mob createMob() {
 		return MobSpawner.createMob(mobsToSpawn, this::getMobRotation);
@@ -2682,7 +2683,7 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 			Dungeon.hero.mindVisionEnemies.clear();
 			if (c.buff( MindVision.class ) != null) {
 				for (Mob mob : mobs) {
-					if (mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL && ((Mimic) mob).stealthy()){
+					if (mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL && ((Mimic) mob).stealthy() || mob.buff(MindVisionImmunity.class) != null){
 						continue;
 					}
 					for (int i : PathFinder.NEIGHBOURS9) {
