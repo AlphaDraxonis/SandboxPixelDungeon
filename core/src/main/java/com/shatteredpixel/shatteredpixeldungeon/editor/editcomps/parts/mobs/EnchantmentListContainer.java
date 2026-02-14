@@ -79,7 +79,7 @@ public class EnchantmentListContainer extends ItemContainerWithLabel<Enchantment
             mob.glyphArmor.removeGlyph(((Armor.Glyph) ench).getClass());
     }
 
-    public void setProperties(Mob mob) {
+    public void setEnchantments(Mob mob) {
         while (!slots.isEmpty()) {
             removeSlot(slots.get(0));
         }

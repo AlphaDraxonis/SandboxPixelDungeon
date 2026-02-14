@@ -14,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomObjectItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PropertyItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
@@ -414,11 +415,28 @@ public class HeroSettings extends Component {
                 }
 
                 @Override
-                protected Set<Char.Property> getPropertiesToIgnore() {
-                    Set<Char.Property> result = super.getPropertiesToIgnore();
-                    result.add(Char.Property.PERMEABLE);
+                protected Char.Property doAddProperty(Char.Property property) {
+                    Char.Property result = super.doAddProperty(property);
+                    
+                    //LARGE and PERMEABLE are mutual excluded
+                    if (result == Char.Property.LARGE && data.properties.contains(Char.Property.PERMEABLE)) {
+                        for (Slot slot : slots) {
+                            if (((PropertyItem) slot.item()).getObject() == Char.Property.PERMEABLE) removeSlot(slot);
+                        }
+                    } else if (result == Char.Property.PERMEABLE && data.properties.contains(Char.Property.LARGE)){
+                        for (Slot slot : slots) {
+                            if (((PropertyItem) slot.item()).getObject() == Char.Property.LARGE) removeSlot(slot);
+                        }
+                    }
+                    
                     return result;
                 }
+                
+//                @Override
+//                protected Set<Char.Property> getPropertiesToIgnore() {
+//                    Set<Char.Property> result = super.getPropertiesToIgnore();
+//                    return result;
+//                }
             };
             add(properties);
         }

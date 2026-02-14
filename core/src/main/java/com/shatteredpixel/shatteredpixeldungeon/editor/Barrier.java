@@ -158,17 +158,12 @@ public class Barrier implements Bundlable, Copyable<Barrier> {
     }
 
     public static boolean canEnemyEnterCell(int cell, boolean enterAvoid) {
-        return (Dungeon.level.isPassable(cell) || (enterAvoid && Dungeon.level.avoid[cell]))
-                && ( Dungeon.level.barriers.get(cell) == null || !Dungeon.level.barriers.get(cell).blocksMobs())
+        return (Dungeon.level.isPassableMob(cell) || (enterAvoid && Dungeon.level.avoid[cell]))
                 && Actor.findChar(cell) == null;
     }
 
-//    public static boolean canEnterCell(int cell, Char ch, boolean enterAvoid) {
-//        return (Dungeon.level.isPassable(cell) || (enterAvoid && Dungeon.level.avoid[cell])) && !Barrier.stopChar(cell, ch) && Actor.findChar(cell) == null;
-//    }
-
     public static boolean canEnterCell(int cell, Char ch, boolean enterAvoid, boolean checkOtherActors) {
-        return (Dungeon.level.isPassable(cell) || (enterAvoid && Dungeon.level.avoid[cell])) && !Barrier.stopChar(cell, ch)
+        return (Dungeon.level.isPassable(cell, ch) || (enterAvoid && Dungeon.level.avoid[cell]))
                 && (!checkOtherActors || Actor.findChar(cell) == null);
     }
 }

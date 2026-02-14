@@ -1891,6 +1891,18 @@ public abstract class Level implements Bundlable, Copyable<Level> {
                 }
             }
         }
+		
+		if (Char.hasProp(Dungeon.hero, Char.Property.PERMEABLE)) {
+			for (int i = 0; i < passableHero.length; i++) {
+				if (!passableHero[i] && insideMap(i)) {
+					Barrier b;
+					if ((Terrain.flags[map[i]] & Terrain.SOLID) != 0
+							&& ((b = barriers.get(i)) == null || !b.blocksChar(Dungeon.hero))) {
+						passableHero[i] = true;
+					}
+				}
+			}
+		}
 
 	}
 
@@ -1929,6 +1941,14 @@ public abstract class Level implements Bundlable, Copyable<Level> {
 			}
 		} else {
 			passableHero[cell] = passableMob[cell] = passableAlly[cell] = false;
+			
+			if (Char.hasProp(Dungeon.hero, Char.Property.PERMEABLE) && insideMap(cell)) {
+				Barrier b;
+				if ((Terrain.flags[map[cell]] & Terrain.SOLID) != 0
+						&& ((b = barriers.get(cell)) == null || !b.blocksChar(Dungeon.hero))) {
+					passableHero[cell] = true;
+				}
+			}
 		}
 	}
 
