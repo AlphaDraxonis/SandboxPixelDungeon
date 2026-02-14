@@ -103,9 +103,8 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
     }
 
     public final void addNewItem(T item) {
-        int sizePrev = itemList.size();
-        doAddItem((T) item);
-        if (itemList.size() > sizePrev)//if it wasn't stacked
+        doAddItem(item);
+        if (itemList.size() > slots.size())//if it wasn't stacked
             addItemToUI(item, !reverseUiOrder);
         else {
             updateItemListOrder();
