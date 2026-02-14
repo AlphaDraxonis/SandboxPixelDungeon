@@ -2059,15 +2059,11 @@ public class Hero extends Char {
 			fieldOfView = new boolean[Dungeon.level.length()];
 			Dungeon.level.updateFieldOfView( this, fieldOfView );
 		}
-
-		if (!Dungeon.level.visited[cell] && !Dungeon.level.mapped[cell]
+		
+		walkingToVisibleTrapInFog = !Dungeon.level.visited[cell] && !Dungeon.level.mapped[cell]
 				&& Dungeon.level.traps.get(cell) != null
 				&& Dungeon.level.traps.get(cell).visible
-				&& Dungeon.level.traps.get(cell).active) {
-			walkingToVisibleTrapInFog = true;
-		} else {
-			walkingToVisibleTrapInFog = false;
-		}
+				&& Dungeon.level.traps.get(cell).active;
 
 		Char ch = Actor.findChar( cell );
 		Heap heap = Dungeon.level.heaps.get( cell );
@@ -2606,7 +2602,7 @@ public class Hero extends Char {
 		
 		if (curAction instanceof HeroAction.Unlock) {
 
-			int doorCell = ((HeroAction.Unlock)curAction).dst;
+			int doorCell = curAction.dst;
 			int door = Dungeon.level.map[doorCell];
 
 			SkeletonKey.keyRecharge skele = buff(SkeletonKey.keyRecharge.class);
@@ -2663,7 +2659,7 @@ public class Hero extends Char {
 			
 		} else if (curAction instanceof HeroAction.OpenChest) {
 			
-			Heap heap = Dungeon.level.heaps.get( ((HeroAction.OpenChest)curAction).dst );
+			Heap heap = Dungeon.level.heaps.get( curAction.dst );
 			SkeletonKey.keyRecharge skele = buff(SkeletonKey.keyRecharge.class);
 			SkeletonKey.KeyReplacementTracker keyUseTrack = buff(SkeletonKey.KeyReplacementTracker.class);
 
@@ -2722,7 +2718,7 @@ public class Hero extends Char {
 		}
 
 		if (foresight) {
-			distance = Foresight.DISTANCE;
+			distance = Dungeon.level.levelScheme.magicMappingDisabled ? 2 : Foresight.DISTANCE;
 			circular = true;
 		}
 
@@ -2897,7 +2893,7 @@ public class Hero extends Char {
 			super.next();
 	}
 
-	public static interface Doom {
-		public void onDeath();
+	public interface Doom {
+		void onDeath();
 	}
 }
