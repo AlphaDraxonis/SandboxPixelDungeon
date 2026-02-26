@@ -98,7 +98,7 @@ function doPost(e) {
 
     //verify that the folder given by versionID actually belongs to the dungeon
     if (!versionBelongsToDungeon(versionID, dungeonID)) {
-      return ContentService.createTextOutput("Illegal arguments: incorrect version folder id given.")
+      return ContentService.createTextOutput(KEYWORD_NOT_THE_CREATOR)//actually the dungeon id was not found but we don’t want to give away this information
       .setMimeType(ContentService.MimeType.TEXT);
     }
 
@@ -187,7 +187,7 @@ function doPost(e) {
     const dungeonID = e.parameter.dungeonID;
 
     if (!isValidFolder(dungeonID)) {
-      return ContentService.createTextOutput(KEYWORD_INVALID_DUNGEON_ID)
+      return ContentService.createTextOutput(KEYWORD_NOT_THE_CREATOR)//actually the dungeon ID was not found but we don’t want to give away this information
       .setMimeType(ContentService.MimeType.TEXT);
     }
 
