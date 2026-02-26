@@ -19,7 +19,6 @@ import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
@@ -92,7 +91,7 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return URL == null ? "https://script.google.com/macros/s/AKfycbzsUDU6W1eDTNJfy5s8KNXfF6tT1YShOe8jG6ISQgEPSJzmxRWBm9CssLJaeUEbA-4/exec" : URL;
+        return URL == null ? "https://script.google.com/macros/s/AKfycbzRY6eKCjzgkm3EbdtVZMOR0h_k8AAvc1w9t_Tkv_puTcBgFILmLm3h8KBxNhdEUDBi/exec" : URL;
     }
 
     static String getUUID() {

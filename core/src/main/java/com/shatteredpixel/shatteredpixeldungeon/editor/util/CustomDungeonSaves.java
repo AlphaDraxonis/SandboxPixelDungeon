@@ -712,6 +712,7 @@ public class CustomDungeonSaves {
             numLevels = bundle.getInt(NUM_LEVELS);
             hashcode = bundle.getInt(HASHCODE);
             downloaded = bundle.getBoolean(DOWNLOADED);
+//            downloaded = false;
         }
 
         @Override

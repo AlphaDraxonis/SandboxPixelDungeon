@@ -176,12 +176,8 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
 		previewImageSelector = new PreviewImageSelector();
 		add(previewImageSelector);
 		
-		difficulty = new StyledSpinner(new SpinnerTextModel(true, preview == null ? DungeonPreview.HARD : preview.difficulty,
-				DungeonPreview.EASY,
-				DungeonPreview.MEDIUM,
-				DungeonPreview.HARD,
-				DungeonPreview.EXPERT,
-				DungeonPreview.INSANE) {
+		Object[] varargs = new Integer[] {DungeonPreview.EASY, DungeonPreview.MEDIUM, DungeonPreview.HARD, DungeonPreview.EXPERT, DungeonPreview.INSANE};
+		difficulty = new StyledSpinner(new SpinnerTextModel(true, preview == null ? DungeonPreview.HARD : preview.difficulty, varargs) {
 			@Override
 			protected String displayString(Object value) {
 				if (value instanceof Integer) return DungeonPreview.displayDifficulty((int) value);
