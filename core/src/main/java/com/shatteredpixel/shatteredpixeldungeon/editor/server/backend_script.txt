@@ -993,7 +993,7 @@ function isCreatorDuringUpload(dungeonTempFolder, userIdFileName, id1, id2) {
 function isUserBanned(id1, id2) {
 
   const folder = DriveApp.getFolderById(BANNED_USER_FOLDER);
-  const fileName = id1 + "&" + id2;
+  const fileName = (id1 + "&" + id2).replaceAll("/", "_");
 
   const isBanned = fileExistsInFolder(folder, fileName);
 
