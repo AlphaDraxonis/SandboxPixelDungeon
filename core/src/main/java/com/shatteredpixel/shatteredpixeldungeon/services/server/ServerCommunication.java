@@ -132,6 +132,12 @@ public final class ServerCommunication {
                         else Gdx.net.cancelHttpRequest(httpRequest);
                     }
                 }
+                
+                @Override
+                public void destroy() {
+                    onSelect(0);//select cancel
+                    super.destroy();
+                }
             };
             Game.scene().addToFront(waitWindow);
         }
