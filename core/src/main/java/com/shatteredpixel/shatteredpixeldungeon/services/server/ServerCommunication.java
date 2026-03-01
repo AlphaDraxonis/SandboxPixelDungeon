@@ -132,10 +132,20 @@ public final class ServerCommunication {
                     }
                 }
                 
+                private boolean selectCancelOnDestroy = true;
+                
                 @Override
                 public void destroy() {
-                    onSelect(0);//select cancel
+                    if (selectCancelOnDestroy) {
+                        onSelect(0);//select cancel
+                    }
                     super.destroy();
+                }
+                
+                @Override
+                public void hide() {
+                    selectCancelOnDestroy = false;
+                    super.hide();
                 }
             };
             Game.scene().addToFront(waitWindow);
