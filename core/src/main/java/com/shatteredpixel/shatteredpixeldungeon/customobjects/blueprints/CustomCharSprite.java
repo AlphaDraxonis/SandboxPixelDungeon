@@ -45,7 +45,7 @@ import com.watabou.utils.Reflection;
 
 public class CustomCharSprite extends LuaCustomObject {
 
-	private Class<? extends Mob> targetClass;
+	private Class<? extends Mob> targetMobClass;
 
 	private final ResourcePath spritePath = new ResourcePath();
 
@@ -55,7 +55,7 @@ public class CustomCharSprite extends LuaCustomObject {
 	}
 
 	private Class<? extends CharSprite> getTargetSpriteClass() {
-		return DefaultStatsCache.getDefaultObject(targetClass).spriteClass;
+		return DefaultStatsCache.getDefaultObject(targetMobClass).spriteClass;
 	}
 
 	private Class<? extends CharSprite> createCharSpriteClass() {
@@ -64,12 +64,12 @@ public class CustomCharSprite extends LuaCustomObject {
 
 	@Override
 	public Image getSprite(Runnable spriteReloader) {
-		if (targetClass == null || getIdentifier() == 0) return new ItemSprite();
+		if (targetMobClass == null || getIdentifier() == 0) return new ItemSprite();
 		return getCharSprite(spriteReloader);
 	}
 
 	public CharSprite getCharSprite(Runnable spriteReloader) {
-		if (targetClass == null || getIdentifier() == 0) return new CharSprite();
+		if (targetMobClass == null || getIdentifier() == 0) return new CharSprite();
 
 		CharSprite charSprite = Reflection.newInstance(createCharSpriteClass());
 		((LuaCharSprite) charSprite).setIdentifier(getIdentifier());
@@ -87,7 +87,7 @@ public class CustomCharSprite extends LuaCustomObject {
 	}
 
 	public CharSprite getActualCustomCharSpriteOrNull() {
-		if (targetClass == null || getIdentifier() == 0) return null;
+		if (targetMobClass == null || getIdentifier() == 0) return null;
 		return getCharSprite(null);
 	}
 
@@ -103,7 +103,7 @@ public class CustomCharSprite extends LuaCustomObject {
 
 	@Override
 	public LuaCustomObjectClass newInstance(Object[] params) {
-		Class<?> clazz = LuaClassGenerator.luaUserContentClass(targetClass);
+		Class<?> clazz = LuaClassGenerator.luaUserContentClass(getTargetSpriteClass());
 		LuaCustomObjectClass instance = (LuaCustomObjectClass) Reflection.newInstance(clazz, params);
 		instance.setIdentifier(getIdentifier());
 		LuaClassGenerator.fetchVarsFromScript(instance, null);
@@ -120,7 +120,7 @@ public class CustomCharSprite extends LuaCustomObject {
 
 	@Override
 	public void setTargetClass(String superClass) {
-		targetClass = Reflection.forName(superClass);
+		targetMobClass = Reflection.forName(superClass);
 	}
 
 	@Override
@@ -150,8 +150,8 @@ public class CustomCharSprite extends LuaCustomObject {
 
 	@Override
 	public String desc() {
-		if (targetClass == null) return super.desc();
-		return "Sprite for " + targetClass.getSimpleName();
+		if (targetMobClass == null) return super.desc();
+		return "Sprite for " + targetMobClass.getSimpleName();
 	}
 
 	@Override
@@ -170,18 +170,18 @@ public class CustomCharSprite extends LuaCustomObject {
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		spritePath.storeInBundle(bundle, SPRITE_PATH);
-		bundle.put(TARGET_CLASS, targetClass);
+		bundle.put(TARGET_CLASS, targetMobClass);
 	}
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		spritePath.restoreFromBundle(bundle, SPRITE_PATH);
-		targetClass = bundle.getClass(TARGET_CLASS);
+		targetMobClass = bundle.getClass(TARGET_CLASS);
 	}
 
 	public boolean isAvailableAsSprite(Class<? /*extends Char*/> ch) {
-		return isAvailableAsSprite(ch, targetClass);
+		return isAvailableAsSprite(ch, targetMobClass);
 	}
 	
 	public static boolean isAvailableAsSprite(Class<? /*extends Char*/> ch, Class<?> spriteTargetClass) {

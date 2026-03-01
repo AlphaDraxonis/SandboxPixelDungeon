@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaCustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
@@ -87,6 +88,12 @@ public abstract class GameObjectCategory<T> {
             customObjectBag.items.add(EditorItem.wrapObject(obj));
             ((GameObject) obj).initAsInventoryItem();
             sortCustomObjects();
+        }
+    }
+
+    public void addCustomObject(LuaCustomObject obj) {
+        if (obj != null) {
+            customObjectBag.items.add(EditorItem.wrapObject(obj));
         }
     }
 

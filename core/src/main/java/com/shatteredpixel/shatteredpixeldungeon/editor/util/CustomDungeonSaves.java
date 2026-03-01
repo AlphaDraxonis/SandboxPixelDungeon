@@ -9,12 +9,14 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
+import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomCharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.blueprints.CustomGameObject;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomGameObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.CustomObjectClass;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.interfaces.LuaClassGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -530,8 +532,11 @@ public class CustomDungeonSaves {
             obj.onDelete(customObject);
         }
 
-        if (customObject instanceof CustomGameObject)
+        if (customObject instanceof CustomGameObject) {
             ((CustomGameObject<?>) customObject).inventoryCategory().updateCustomObjects();
+        } else if (customObject instanceof CustomCharSprite) {
+            MobSprites.instance().updateCustomObjects();
+        }
 
         customObject.reloadSprite();
 	}
