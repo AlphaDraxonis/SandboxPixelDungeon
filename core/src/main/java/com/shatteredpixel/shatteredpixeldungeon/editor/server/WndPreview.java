@@ -387,6 +387,7 @@ public class WndPreview extends Component {
                                             ServerCommunication.deleteDungeon(preview.dungeonID, preview.title, new ServerCommunication.UploadCallback() {
                                                 @Override
                                                 protected void onSuccessful(String dungeonID) {
+                                                    UploadedDungeonRegistry.dungeonDeletedFromServer(dungeonID);
                                                     preview.description = preview.uploader = preview.title = Messages.get(ServerCommunication.class, "deleted");
                                                     preview.version = "n/a";
                                                     preview.dungeonID = "";
