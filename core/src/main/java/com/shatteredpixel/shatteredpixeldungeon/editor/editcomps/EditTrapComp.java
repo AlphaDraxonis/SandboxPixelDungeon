@@ -290,11 +290,13 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                             
                             @Override
                             public void onSelect(Item item) {
-                                int terrain = item == EditorItem.NULL_ITEM ? -1 : ((TileItem) item).terrainType();
-                                ((PressurePlateTrap) obj).changeTerrain = terrain;
-                                Image image = terrain == -1 ? new ItemSprite(ItemSpriteSheet.NO_ITEM) : new TileSprite(terrain);
-                                image.scale.set(12 / Math.max(image.width(), image.height()));
-                                pressurePlatePlaceTerrain.icon(image);
+                                if (item != null) {
+                                    int terrain = item == EditorItem.NULL_ITEM ? -1 : ((TileItem) item).terrainType();
+                                    ((PressurePlateTrap) obj).changeTerrain = terrain;
+                                    Image image = terrain == -1 ? new ItemSprite(ItemSpriteSheet.NO_ITEM) : new TileSprite(terrain);
+                                    image.scale.set(12 / Math.max(image.width(), image.height()));
+                                    pressurePlatePlaceTerrain.icon(image);
+                                }
                             }
                         });
                     }
