@@ -312,6 +312,10 @@ public class CompactCategoryScroller extends AbstractCategoryScroller<CompactCat
 		private void doAction(CategoryAction.Action action, Item item) {
 			if (item instanceof CategoryAction) {
 				((CategoryAction) item).doAction(action);
+				if (isDestroyed()) {
+					//we don’t need to continue updating the UI if the current UI no longer exists
+					return;
+				}
 				updateItemsInCategories(true);
 
 				itemComp.showAddBtn();
