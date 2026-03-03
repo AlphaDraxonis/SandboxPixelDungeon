@@ -232,8 +232,10 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                         Messages.get(EditTrapComp.class, "vent_strength"));
                 toxicVentStrength.addChangeListener(() -> {
                     ((ToxicGasRoom.ToxicVent) obj).strength = (int) toxicVentStrength.getValue();
-                    BlobActionPart.clearBlobAtCell(ToxicGasRoom.ToxicGasSeed.class, obj.pos);
-                    BlobActionPart.place(obj.pos, ToxicGasRoom.ToxicGasSeed.class, ((ToxicGasRoom.ToxicVent) obj).strength);
+                    if (obj.pos != -1) {
+                        BlobActionPart.clearBlobAtCell(ToxicGasRoom.ToxicGasSeed.class, obj.pos);
+                        BlobActionPart.place(obj.pos, ToxicGasRoom.ToxicGasSeed.class, ((ToxicGasRoom.ToxicVent) obj).strength);
+                    }
                 });
                 add(toxicVentStrength);
             }
