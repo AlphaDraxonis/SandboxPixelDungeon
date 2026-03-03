@@ -398,6 +398,15 @@ public class WndSelectDungeon extends Window {
                     }
                 };
                 add(erase);
+                
+                StyledButtonWithIconAndText upload = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndSelectDungeon.class, "upload_label")) {
+                    @Override
+                    protected void onClick() {
+                        UploadDungeon.showUploadWindow(
+                                UploadedDungeonRegistry.hasDungeonBeenUploaded(info.coreID) ? ServerCommunication.UploadType.CHANGE : ServerCommunication.UploadType.UPLOAD,
+                                info.name, info.coreID);
+                    }
+                };
 
                 StyledButton exportJson = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndSelectDungeon.class, "export_json_label"), 8) {
                     @Override
@@ -436,6 +445,12 @@ public class WndSelectDungeon extends Window {
                             }
                         });
                     }
+                    
+                    @Override
+                    protected void layout() {
+                        height = Math.max(getMinimumHeight(width()), Math.max(height(), upload.height()*3/4));
+                        super.layout();
+                    }
                 };
                 exportJson.enable(info.numLevels > 0);
                 exportJson.multiline = true;
@@ -447,20 +462,18 @@ public class WndSelectDungeon extends Window {
                     protected void onClick() {
                         EditorScene.show(new WndExportDungeon(info));
                     }
+                    
+                    @Override
+                    protected void layout() {
+                        height = Math.max(getMinimumHeight(width()), Math.max(height(), upload.height()*3/4));
+                        super.layout();
+                    }
                 };
                 exportDun.enable(info.numLevels > 0);
                 exportDun.multiline = true;
                 exportDun.leftJustify = false;
                 content.add(exportDun);
                 
-                StyledButtonWithIconAndText upload = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndSelectDungeon.class, "upload_label")) {
-                    @Override
-                    protected void onClick() {
-                        UploadDungeon.showUploadWindow(
-                                UploadedDungeonRegistry.hasDungeonBeenUploaded(info.coreID) ? ServerCommunication.UploadType.CHANGE : ServerCommunication.UploadType.UPLOAD,
-                                info.name, info.coreID);
-                    }
-                };
                 upload.enable(!info.downloaded && info.numLevels > 0);
                 upload.icon(Icons.UPLOAD.get());
                 upload.multiline = true;
@@ -577,7 +590,8 @@ public class WndSelectDungeon extends Window {
                 if (PixelScene.landscape()) {
                     content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(2, width, 3, content, exportDun, exportJson, upload));
                 } else {
-                    content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(2, width, 2, content, exportDun, exportJson, upload) + GAP);
+                    EditorUtilities.layoutStyledCompsInRectangles(2, width, 1, content, upload);//we need to determine the height of the upload-btn first
+                    content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(2, width, 2, content, exportDun, exportJson) + GAP);
                     content.setSize(width, EditorUtilities.layoutStyledCompsInRectangles(2, width, 1, content, upload));
                 }
                 pos = content.bottom() + GAP;
