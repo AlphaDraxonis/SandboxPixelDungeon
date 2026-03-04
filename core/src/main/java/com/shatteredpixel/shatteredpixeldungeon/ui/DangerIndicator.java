@@ -110,7 +110,7 @@ public class DangerIndicator extends Tag {
 	@Override
 	protected void onClick() {
 		super.onClick();
-		if (Dungeon.hero.visibleEnemies() > 0) {
+		if (Dungeon.hero != null && Dungeon.hero.visibleEnemies() > 0) {
 
 			Mob target = Dungeon.hero.visibleEnemy(++enemyIndex);
 
