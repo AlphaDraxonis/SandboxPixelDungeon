@@ -91,10 +91,12 @@ public class WndItemDistribution extends Window {
     }
 
     public void addDistribution(ItemDistribution<?> distribution) {
-        DistributionCompInList comp = new DistributionCompInList(distribution);
-        distributionComps.add(comp);
-        distributions.addItem(comp);
-        Dungeon.customDungeon.getItemDistributions().add(distribution);
+        if (!Dungeon.customDungeon.getItemDistributions().contains(distribution)) {
+            DistributionCompInList comp = new DistributionCompInList(distribution);
+            distributionComps.add(comp);
+            distributions.addItem(comp);
+            Dungeon.customDungeon.getItemDistributions().add(distribution);
+        }
     }
 
     private <T extends Item> void showCreateDistrDialog(ItemDistribution<T> distribution) {
@@ -102,6 +104,7 @@ public class WndItemDistribution extends Window {
             @Override
             protected void onChange() {
                 addDistribution(distribution);
+                super.onChange();
             }
             
         });
@@ -137,6 +140,7 @@ public class WndItemDistribution extends Window {
                 protected void onChange() {
                     updateUI();
                     layout2();
+                    super.onChange();
                 }
             });
         }
