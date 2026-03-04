@@ -113,7 +113,10 @@ public class ItemSprite extends MovieClip {
 	public ItemSprite( int image, Glowing glowing, Emitter emitter ) {
 		super( Assets.Sprites.ITEMS );
 		
-		view(image, glowing, emitter);
+		view(image);
+		
+		glow(glowing);
+		useEmitter(emitter);
 	}
 	
 	public void link() {
@@ -273,7 +276,7 @@ public class ItemSprite extends MovieClip {
 		if (item.customImage == null
 				|| (tx = TextureCache.getFromCurrentSavePath(CustomDungeonSaves.getExternalFilePath(item.customImage))) == null) {
 			
-			view(item.image(), glowing, emitter);
+			view(item.image());
 		}
 		else {
 			boolean setOriginToCenter = origin.x == width / 2 && origin.y == height / 2;
@@ -287,14 +290,15 @@ public class ItemSprite extends MovieClip {
 			}
 			
 			if (setOriginToCenter) originToCenter();
-			
-			glow(glowing);
 		}
+		
+		glow(glowing);
+		useEmitter(emitter);
 		
 		return this;
 	}
 	
-	public ItemSprite view(int image, Glowing glowing, Emitter emitter) {
+	public ItemSprite view(int image) {
 		if (!usesItemSpriteSheet) {
 			texture(Assets.Sprites.ITEMS);
 			scale.set(1f);
@@ -302,8 +306,6 @@ public class ItemSprite extends MovieClip {
 		if (this.emitter != null) this.emitter.killAndErase();
 		this.emitter = null;
 		frame(image);
-		glow(glowing);
-		useEmitter(emitter);
 		return this;
 	}
 
