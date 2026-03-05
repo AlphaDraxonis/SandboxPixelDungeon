@@ -537,8 +537,6 @@ public class CustomDungeonSaves {
         } else if (customObject instanceof CustomCharSprite) {
             MobSprites.instance().updateCustomObjects();
         }
-
-        customObject.reloadSprite();
 	}
 
     public static String fileName(CustomObject customObject) {

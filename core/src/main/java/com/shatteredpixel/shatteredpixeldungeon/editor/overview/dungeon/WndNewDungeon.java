@@ -3,11 +3,11 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.OpenDungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -76,9 +76,10 @@ public class WndNewDungeon extends WndTextInput {
             SandboxPixelDungeon.reportException(e);
             return;
         }
-        EditorScene.start();
-        CustomTileLoader.loadTiles(true);
-        SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
+        OpenDungeonScene.quickOpenDungeon(Dungeon.customDungeon, OpenDungeonScene.Mode.EDITOR_LOAD);
+//        EditorScene.start();
+//        CustomTileLoader.loadTiles(true);
+//        SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
     }
 
     public static void showNameWarning() {

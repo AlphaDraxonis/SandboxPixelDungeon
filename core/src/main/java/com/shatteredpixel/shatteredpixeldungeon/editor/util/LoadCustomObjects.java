@@ -62,7 +62,10 @@ public class LoadCustomObjects {
 		this.onlyLoadResourceFiles = onlyLoadResourceFiles;
 		
 		CustomObjectManager.allResourcePaths.clear();
-		CustomObjectManager.allUserContents.clear();
+		
+		if (!onlyLoadResourceFiles) {
+			CustomObjectManager.allUserContents.clear();
+		}
 		
 		if (bundle != null) {
 			CustomObjectManager.restorePre_v_1_3(bundle, curDungeon);

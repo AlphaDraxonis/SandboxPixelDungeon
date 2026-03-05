@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
@@ -73,6 +74,17 @@ public class OpenDungeonScene extends PixelScene {
 		}
 	}
 	
+	public static void quickOpenDungeon(CustomDungeon loadedDungeon, Mode mode) {
+		try {
+			OpenDungeonScene.mode = mode;
+			Dungeon.customDungeon = loadedDungeon;
+			mode.afterLoading();
+			mode.actuallyEnter();
+		} catch (Exception e) {
+			error = e;
+		}
+	}
+	
 	public enum Mode {
 		EDITOR_LOAD,
 		GAME_LOAD;
@@ -82,10 +94,12 @@ public class OpenDungeonScene extends PixelScene {
 				case EDITOR_LOAD:
 					EditorScene.isEditing = true;
 					CustomTileLoader.loadTiles(EditorScene.openDifferentLevel);
+					CustomObjectManager.loadUserContentFromFiles();
 					break;
 				case GAME_LOAD:
 					EditorScene.isEditing = false;
 					CustomTileLoader.loadTiles(true);
+					CustomObjectManager.loadUserContentFromFiles();
 					break;
 			}
 		}
