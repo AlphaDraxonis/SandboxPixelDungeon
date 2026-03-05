@@ -308,7 +308,7 @@ public class Artifact extends KindofMisc {
 		if (chargeCap > 0)  charge = Math.min( chargeCap, bundle.getInt( CHARGE ));
 		else                charge = bundle.getInt( CHARGE );
 		partialCharge = bundle.getFloat( PARTIALCHARGE );
-		rechargeRule = bundle.getEnum(RECHARGE_RULE, RechargeRule.class);
+		rechargeRule = bundle.contains(RECHARGE_RULE) ? bundle.getEnum(RECHARGE_RULE, RechargeRule.class) : null;
 	}
 
 	public final int levelCap() {
