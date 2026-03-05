@@ -597,10 +597,10 @@ public class WndSelectDungeon extends Window {
                 pos = content.bottom() + GAP;
                 
                 
-                open.icon(Icons.get(Icons.ENTER));
+                open.icon(Icons.ENTER.get());
                 open.setRect(0, pos, width / 2f - 1, 20);
                 
-                erase.icon(Icons.get(Icons.CLOSE));
+                erase.icon(Icons.TRASH.get());
                 erase.setRect(width / 2f + 1, pos, width / 2f - 1, 20);
                 
                 
