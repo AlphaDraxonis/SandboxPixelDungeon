@@ -159,6 +159,16 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 			((HeroSprite) dest).fly = ((HeroSprite) dest).read = null;
 		}
 		
+		dest.scale = anims.scale;
+		dest.rm = anims.rm;
+		dest.gm = anims.gm;
+		dest.bm = anims.bm;
+		dest.am = anims.am;
+		dest.ra = anims.ra;
+		dest.ga = anims.ga;
+		dest.ba = anims.ba;
+		dest.aa = anims.aa;
+		
 		anims.destroy();
 		
 		return true;
