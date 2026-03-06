@@ -45,6 +45,15 @@ const FILE_NAME_VERSIONS = "versions.json";
 
 
 function doPost(e) {
+  try {
+    return doPostInternal(e);
+  } catch (err) {
+    createAutomaticErrorReportForError(err, e);
+    throw err;//keeps the execution failing
+  }
+}
+
+function doPostInternal(e) {
 
   if (e.parameter.action == ACTION_UPLOAD_START) {
 
@@ -408,7 +417,7 @@ function doPost(e) {
 
   }
   else {
-    createAutomaticErrorReport("Invalid POST action", "Invalid POST action: " + e.parameter.action);
+    createAutomaticErrorReportMessage("Invalid POST action", "Invalid POST action: " + e.parameter.action);
     return ContentService.createTextOutput("Invalid POST action: " + e.parameter.action);
   }
 }
@@ -491,7 +500,7 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.TEXT);
   }
   else {
-    createAutomaticErrorReport("Invalid GET action", "Invalid GET action: " + e.parameter.action);
+    createAutomaticErrorReportMessage("Invalid GET action", "Invalid GET action: " + e.parameter.action);
     return ContentService.createTextOutput("Invalid GET action: " + e.parameter.action);
   }
 }
@@ -567,7 +576,7 @@ function movePreviewImagesFromVersionDirToDungeonDir(versionID, dungeonID) {
   /*//make sure this operation can only be applied where we want it
   var parents = dungeonFolder.getParents();
   if (!parents.hasNext() || parents.next().getId() !== FULL_DUNGEON_FOLDER) {
-    createAutomaticErrorReport("Security check failed", "Dungeon folder is not a child of FULL_DUNGEON_FOLDER.");
+    createAutomaticErrorReportMessage("Security check failed", "Dungeon folder is not a child of FULL_DUNGEON_FOLDER.");
     throw new Error('Security check failed: Dungeon folder is not a child of FULL_DUNGEON_FOLDER.');
   }*/
 
@@ -983,7 +992,7 @@ function isCreatorDuringUpload(dungeonTempFolder, userIdFileName, id1, id2) {
   }
 
   if (!isCreator) {
-    //createAutomaticErrorReport("Not the creator (during upload)", "Not the creator during upload.");
+    //createAutomaticErrorReportMessage("Not the creator (during upload)", "Not the creator during upload.");
   }
 
   return isCreator;
@@ -998,7 +1007,7 @@ function isUserBanned(id1, id2) {
   const isBanned = fileExistsInFolder(folder, fileName);
 
   if (isBanned) {
-    createAutomaticErrorReport("Access attempt by banned user", "A banned user tried to access the system.");
+    createAutomaticErrorReportMessage("Access attempt by banned user", "A banned user tried to access the system. (" + fileName + ")");
   }
 
   return isBanned;
@@ -1035,8 +1044,36 @@ function hashUserID(userID, salt) {
 }
 
 
-function createAutomaticErrorReport(title, msg) {
+function createAutomaticErrorReportMessage(title, msg) {
   uploadFile(msg, title, ".txt", AUTOMATIC_ERROR_REPORT_FOLDER, false);
+}
+
+function createAutomaticErrorReportForError(error, event) {
+  try {
+
+    const report = {
+      message: error.message,
+      stack: error.stack,
+      parameters: event ? event.parameter : null,
+      time: new Date().toISOString()
+    };
+
+    const text = JSON.stringify(report, null, 2);
+
+    createAutomaticErrorReportMessage("error caught", text);
+
+    // optional: send email
+    MailApp.sendEmail({
+      to: "alphadraxonis@gmail.com",
+      subject: "SandboxPD Server Script Error",
+      body: text
+    });
+
+  } catch (reportError) {
+    // avoid recursive crashes
+    console.error("Error reporting failed: " + reportError);
+  }
+
 }
 
 

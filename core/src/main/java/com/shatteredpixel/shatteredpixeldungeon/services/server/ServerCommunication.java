@@ -91,7 +91,7 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return URL == null ? "https://script.google.com/macros/s/AKfycbzRY6eKCjzgkm3EbdtVZMOR0h_k8AAvc1w9t_Tkv_puTcBgFILmLm3h8KBxNhdEUDBi/exec" : URL;
+        return URL == null ? "https://script.google.com/macros/s/AKfycbxFL97fIxz7275jWPtU7pN5UiR0rmMO373XI_sl8Bt3CK0I65Se1U5zB1cdYZok3xKa/exec" : URL;
     }
 
     static String getUUID() {
