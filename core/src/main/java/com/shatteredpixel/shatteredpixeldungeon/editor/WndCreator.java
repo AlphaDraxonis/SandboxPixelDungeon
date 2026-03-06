@@ -26,7 +26,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.customobjects.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaRestrictionProxy;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -169,7 +168,7 @@ public final class WndCreator {
 		if (rewards.isnil() || !rewards.istable()) throw new LuaError(new IllegalArgumentException());
 
 		LuaTable luaList = rewards.checktable();
-		Item[] rewardItems = LuaManager.luaTableToJavaArray(luaList, new Item[luaList.length()]);
+		Item[] rewardItems = LuaRestrictionProxy.convertLuaTableToArray(luaList, new Item[luaList.length()]);
 
 		return showItemRewardWindow(parseMessage(msg), parseTitle(title), parseIcon(icon), parseMob(questInitiator), parseItem(payItem), rewardItems, onSelectReward);
 	}
@@ -208,11 +207,11 @@ public final class WndCreator {
 		if (options.isnil() || !options.istable()) throw new LuaError(new IllegalArgumentException());
 
 		LuaTable luaList = options.checktable();
-		String[] opt = LuaManager.luaTableToJavaArray(luaList, new String[luaList.length()]);
+		String[] opt = LuaRestrictionProxy.convertLuaTableToArray(luaList, new String[luaList.length()]);
 		String[] inf;
 		if (infos.istable()) {
 			luaList = infos.checktable();
-			inf = LuaManager.luaTableToJavaArray(luaList, new String[luaList.length()]);
+			inf = LuaRestrictionProxy.convertLuaTableToArray(luaList, new String[luaList.length()]);
 		} else inf = null;
 
 		return showOptionsWindow(parseMessage(msg), parseTitle(title), parseIcon(icon), opt, inf, onSelect);
@@ -221,8 +220,8 @@ public final class WndCreator {
 	public static Window showCondensedOptionsWindow(LuaValue msg, LuaValue title, LuaValue icon, LuaValue options, LuaValue infos, LuaFunction onSelect) {
 		if (options.isnil() || !options.istable()) throw new LuaError(new IllegalArgumentException());
 
-		String[] opt = LuaManager.luaTableToJavaArray(options.checktable());
-		String[] inf = infos.istable() ? LuaManager.luaTableToJavaArray(infos.checktable()) : null;
+		String[] opt = LuaRestrictionProxy.convertLuaTableToArray(options.checktable(), new String[options.checktable().length()]);
+		String[] inf = infos.istable() ? LuaRestrictionProxy.convertLuaTableToArray(infos.checktable(), new String[infos.checktable().length()]) : null;
 
 		return showCondensedOptionsWindow(parseMessage(msg), parseTitle(title), parseIcon(icon), opt, inf, onSelect);
 	}

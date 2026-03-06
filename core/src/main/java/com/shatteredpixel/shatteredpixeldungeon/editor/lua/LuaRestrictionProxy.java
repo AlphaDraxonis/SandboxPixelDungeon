@@ -268,6 +268,14 @@ public class LuaRestrictionProxy extends LuaValue {
 		System.arraycopy(javaArray, 0, result, 0, javaArray.length);
 		return result;
 	}
+	
+	//forces the type of the array
+	public static <T> T[] convertLuaTableToArray(LuaTable table, T[] result) {
+		for (int i = 0; i < result.length; i++) {
+			result[i] = (T) coerceLuaToJava(table.get(i + 1));
+		}
+		return result;
+	}
 
 	//WARNING! use carefully or else this is a security leak!
 	public static Varargs unwrapRestrictionProxies(Varargs varargs) {

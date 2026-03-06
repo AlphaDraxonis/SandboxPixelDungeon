@@ -624,7 +624,7 @@ public class LuaGlobals extends Globals {
 				Game.runOnRenderThread(() -> {
 					try {
 						WndCreator.showMessageWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), LuaValue.NIL, onHide);
-					} catch (LuaError e) {
+					} catch (Exception e) {
 						DungeonScene.show(new WndError(e));
 					}
 				});
@@ -640,7 +640,7 @@ public class LuaGlobals extends Globals {
 				Game.runOnRenderThread(() -> {
 					try {
 						WndCreator.showStoryWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), LuaValue.NIL, onHide);
-					} catch (LuaError e) {
+					} catch (Exception e) {
 						DungeonScene.show(new WndError(e));
 					}
 				});
@@ -656,7 +656,7 @@ public class LuaGlobals extends Globals {
 				Game.runOnRenderThread(() -> {
 					try {
 						WndCreator.showItemRewardWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), varargs.arg(5), varargs.arg(6), onSelectReward);
-					} catch (LuaError e) {
+					} catch (Exception e) {
 						DungeonScene.show(new WndError(e));
 					}
 				});
@@ -671,7 +671,7 @@ public class LuaGlobals extends Globals {
 				Game.runOnRenderThread(() -> {
 					try {
 						WndCreator.showOptionsWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), varargs.arg(5), onSelect);
-					} catch (LuaError e) {
+					} catch (Exception e) {
 						DungeonScene.show(new WndError(e));
 					}
 				});
@@ -686,7 +686,7 @@ public class LuaGlobals extends Globals {
 				Game.runOnRenderThread(() -> {
 					try {
 						WndCreator.showCondensedOptionsWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), varargs.arg(5), onSelect);
-					} catch (LuaError e) {
+					} catch (Exception e) {
 						DungeonScene.show(new WndError(e));
 					}
 				});
@@ -699,7 +699,7 @@ public class LuaGlobals extends Globals {
 				Game.runOnRenderThread(() -> {
 					try {
 						DungeonScene.show((Window) LuaRestrictionProxy.coerceLuaToJava(window, Window.class));
-					} catch (LuaError e) {
+					} catch (Exception e) {
 						DungeonScene.show(new WndError(e));
 					}
 				});
