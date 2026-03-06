@@ -348,9 +348,11 @@ public class GameScene extends DungeonScene {
 		add(status);
 
 		if (Dungeon.isLevelTesting()) {
+			RectF allInsets = Game.platform.getSafeInsets( PlatformSupport.INSET_ALL );
+			allInsets = allInsets.scale(1f / uiCamera.zoom);
 			sideControlPane = new SideControlPane(false);
 			sideControlPane.camera = uiCamera;
-			sideControlPane.setPos(insets.left, status.isLarge() ? (PixelScene.landscape() ? 5 : 10) : status.bottom() + (PixelScene.landscape() ? 5 : 10));
+			sideControlPane.setPos(allInsets.left, status.isLarge() ? (PixelScene.landscape() ? 5 : 10) : status.bottom() + (PixelScene.landscape() ? 5 : 10));
 			add(sideControlPane);
 		}
 

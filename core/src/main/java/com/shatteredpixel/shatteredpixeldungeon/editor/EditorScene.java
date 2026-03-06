@@ -70,7 +70,9 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.PointF;
+import com.watabou.utils.RectF;
 import com.watabou.utils.Reflection;
 
 import java.io.IOException;
@@ -292,6 +294,9 @@ public class EditorScene extends DungeonScene {
         add(cellSelector = new EditorCellSelector(tiles));
 
         int uiSize = SPDSettings.interfaceSize();
+        
+        RectF allInsets = Game.platform.getSafeInsets( PlatformSupport.INSET_ALL );
+        allInsets = allInsets.scale(1f / uiCamera.zoom);
 
         menu = new EditorMenuPane();
         menu.camera = uiCamera;
@@ -300,12 +305,12 @@ public class EditorScene extends DungeonScene {
 
         undo = new UndoPane();
         undo.camera = uiCamera;
-        undo.setPos(insets.left, uiSize > 0 && StatusPane.hpBarMaxWidth >= UndoPane.WIDTH ? uiCamera.height-20-insets.bottom : screentop + 1);
+        undo.setPos(insets.left, uiSize > 0 && StatusPane.hpBarMaxWidth >= UndoPane.WIDTH ? screentop + 1 : screentop + 1);
         add(undo);
 
         sideControlPane = new SideControlPane(true);
         sideControlPane.camera = uiCamera;
-        sideControlPane.setPos(insets.left, undo.bottom() + (PixelScene.landscape() ? 5 : 10));
+        sideControlPane.setPos(allInsets.left, undo.bottom() + (PixelScene.landscape() ? 5 : 10));
         add(sideControlPane);
 
         toolbar = new EToolbar();
