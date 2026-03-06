@@ -1,19 +1,16 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.server;
 
 import com.badlogic.gdx.Gdx;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
-import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.ui.TabResourceFiles;
+import com.shatteredpixel.shatteredpixeldungeon.editor.OpenDungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.PopupMenu;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.StartScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.DungeonPreview;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
@@ -32,7 +29,6 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.FileUtils;
 
-import java.io.IOException;
 import java.util.List;
 
 @NotAllowedInLua
@@ -250,27 +246,18 @@ public class WndPreview extends Component {
                         Messages.get(WndPreview.class, "successful_title"),
                         Messages.get(WndPreview.class, "successful_body", info.name), false,
                         Messages.get(WndPreview.class, "successful_play"),
+                        Messages.get(WndPreview.class, "successful_edit_in_editor"),
                         Messages.get(WndSupportPrompt.class, "close")
                 ) {
                     @Override
                     protected void onSelect(int index) {
                         if (index == 0) {
-                            try {
-                                Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(info.name);
-
-                                FileUtils.resetDefaultFileType();
-                                GamesInProgress.curSlot = GamesInProgress.firstEmpty();
-                                if (GamesInProgress.curSlot == -1) {
-                                    StartScene.skipDungeonSelection = true;
-                                    SandboxPixelDungeon.switchNoFade(StartScene.class);
-                                } else {
-                                    SandboxPixelDungeon.switchScene(HeroSelectScene.class);
-                                }
-
-                            } catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
-                                SandboxPixelDungeon.reportException(e);
-                            }
-
+                            FileUtils.resetDefaultFileType();
+                            GamesInProgress.curSlot = GamesInProgress.firstEmpty();
+                            OpenDungeonScene.openDungeon(info.name, OpenDungeonScene.Mode.GAME_LOAD);
+                        }
+                        else if (index == 1) {
+                            OpenDungeonScene.openDungeon(info.name, OpenDungeonScene.Mode.EDITOR_LOAD);
                         }
                     }
                 });

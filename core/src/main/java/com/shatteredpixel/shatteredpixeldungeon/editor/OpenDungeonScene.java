@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.customobjects.CustomObjectManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -34,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.StartScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
@@ -125,7 +127,12 @@ public class OpenDungeonScene extends PixelScene {
 					break;
 					
 				case GAME_LOAD:
-					SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+					if (GamesInProgress.curSlot == -1) {
+						StartScene.skipDungeonSelection = true;
+						SandboxPixelDungeon.switchNoFade(StartScene.class);
+					} else {
+						SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+					}
 					break;
 			}
 		}
