@@ -63,7 +63,7 @@ public class ImpShopRoom extends ShopRoom {
 	public void paint(Level level) {
 		//this room isn't actually filled in until the city boss is defeated, at the earliest
 		//but we want to decide the items as part of levelgen
-		if (!itemsGenerated) generateItems(null);
+		if (!itemsGenerated) generateItems(level);
 	}
 
 	@Override

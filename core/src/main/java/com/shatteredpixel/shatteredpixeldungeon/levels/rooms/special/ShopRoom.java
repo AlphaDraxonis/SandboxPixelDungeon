@@ -79,7 +79,7 @@ public class ShopRoom extends SpecialRoom {
 	}
 
 	public int spacesNeeded(){
-		if (!itemsGenerated) generateItems(null);
+		if (!itemsGenerated) generateItems(Dungeon.level);
 
 		//sandbags spawn based on current level of an hourglass the player may be holding
 		// so, to avoid rare cases of min sizes differing based on that, we ignore all sandbags
@@ -228,29 +228,29 @@ public class ShopRoom extends SpecialRoom {
 
 		MeleeWeapon w;
 		MissileWeapon m;
-		switch (Dungeon.level.levelScheme.getRegion()) {
+		switch (level.levelScheme.getRegion()) {
 			case LevelScheme.REGION_PRISON: default:
-			w = (MeleeWeapon) Generator.random(Generator.wepTiers[1]);
-			m = (MissileWeapon) Generator.random(Generator.misTiers[1]);
-			itemsToSpawn.add( new LeatherArmor().identify(false) );
-			break;
-			
-		case LevelScheme.REGION_CAVES:
-			w = (MeleeWeapon) Generator.random(Generator.wepTiers[2]);
-			m = (MissileWeapon) Generator.random(Generator.misTiers[2]);
-			itemsToSpawn.add( new MailArmor().identify(false) );
-			break;
-			
-		case LevelScheme.REGION_CITY:
-
-			if(!(Dungeon.level instanceof CityBossLevel)){
-				w = (MeleeWeapon) Generator.random(Generator.wepTiers[3]);
-				m = (MissileWeapon) Generator.random(Generator.misTiers[3]);
-				itemsToSpawn.add( new ScaleArmor().identify(false) );
+				w = (MeleeWeapon) Generator.random(Generator.wepTiers[1]);
+				m = (MissileWeapon) Generator.random(Generator.misTiers[1]);
+				itemsToSpawn.add( new LeatherArmor().identify(false) );
 				break;
-			}
+			
+			case LevelScheme.REGION_CAVES:
+				w = (MeleeWeapon) Generator.random(Generator.wepTiers[2]);
+				m = (MissileWeapon) Generator.random(Generator.misTiers[2]);
+				itemsToSpawn.add( new MailArmor().identify(false) );
+				break;
+			
+			case LevelScheme.REGION_CITY:
 
-		case LevelScheme.REGION_HALLS:
+				if(!(level instanceof CityBossLevel)){
+					w = (MeleeWeapon) Generator.random(Generator.wepTiers[3]);
+					m = (MissileWeapon) Generator.random(Generator.misTiers[3]);
+					itemsToSpawn.add( new ScaleArmor().identify(false) );
+					break;
+				}
+
+			case LevelScheme.REGION_HALLS:
 				w = (MeleeWeapon) Generator.random(Generator.wepTiers[4]);
 				m = (MissileWeapon) Generator.random(Generator.misTiers[4]);
 				itemsToSpawn.add( new PlateArmor().identify(false) );
@@ -320,13 +320,13 @@ public class ShopRoom extends SpecialRoom {
 			int bags = 0;
 			//creates the given float percent of the remaining bags to be dropped.
 			//this way players who get the hourglass late can still max it, usually.
-			switch (Dungeon.level.levelScheme.getRegion()) {
+			switch (level.levelScheme.getRegion()) {
 				case LevelScheme.REGION_PRISON:
 					bags = (int)Math.ceil(( 5-hourglass.sandBags) * 0.20f ); break;
 				case LevelScheme.REGION_CAVES:
 					bags = (int)Math.ceil(( 5-hourglass.sandBags) * 0.25f ); break;
 				case LevelScheme.REGION_CITY:
-					if(!(Dungeon.level instanceof  CityBossLevel))bags = (int)Math.ceil(( 5-hourglass.sandBags) * 0.50f ); break;
+					if(!(level instanceof  CityBossLevel))bags = (int)Math.ceil(( 5-hourglass.sandBags) * 0.50f ); break;
 				case LevelScheme.REGION_HALLS:
 					bags = (int)Math.ceil(( 5-hourglass.sandBags) * 0.80f ); break;
 			}
